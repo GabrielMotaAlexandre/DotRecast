@@ -554,7 +554,7 @@ namespace DotRecast.Detour
                     int ndv = option.detailMeshes[i * 4 + 1];
                     int nv = navPolys[i].vertCount;
                     dtl.vertBase = vbase;
-                    dtl.vertCount = (ndv - nv);
+                    dtl.vertCount = ndv - nv;
                     dtl.triBase = option.detailMeshes[i * 4 + 2];
                     dtl.triCount = option.detailMeshes[i * 4 + 3];
                     // Copy vertices except the first 'nv' verts which are equal to
@@ -581,20 +581,20 @@ namespace DotRecast.Detour
                     dtl.vertBase = 0;
                     dtl.vertCount = 0;
                     dtl.triBase = tbase;
-                    dtl.triCount = (nv - 2);
+                    dtl.triCount = nv - 2;
                     // Triangulate polygon (local indices).
                     for (int j = 2; j < nv; ++j)
                     {
                         int t = tbase * 4;
                         navDTris[t + 0] = 0;
-                        navDTris[t + 1] = (j - 1);
+                        navDTris[t + 1] = j - 1;
                         navDTris[t + 2] = j;
                         // Bit for each edge that belongs to poly boundary.
-                        navDTris[t + 3] = (1 << 2);
+                        navDTris[t + 3] = 1 << 2;
                         if (j == 2)
-                            navDTris[t + 3] |= (1 << 0);
+                            navDTris[t + 3] |= 1 << 0;
                         if (j == nv - 1)
-                            navDTris[t + 3] |= (1 << 4);
+                            navDTris[t + 3] |= 1 << 4;
                         tbase++;
                     }
                 }
@@ -617,7 +617,7 @@ namespace DotRecast.Detour
                 {
                     DtOffMeshConnection con = new();
                     offMeshCons[n] = con;
-                    con.poly = (offMeshPolyBase + n);
+                    con.poly = offMeshPolyBase + n;
                     // Copy connection end-points.
                     int endPts = i * 2 * 3;
                     Array.Copy(option.offMeshConVerts, endPts, con.pos, 0, 6);

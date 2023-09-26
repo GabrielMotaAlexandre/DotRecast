@@ -888,7 +888,7 @@ namespace DotRecast.Detour
                     link = tile.links[tidx];
                     link.refs = GetPolyRefBase(target) | (long)targetCon.poly;
                     link.edge = 0xff;
-                    link.side = (side == -1 ? 0xff : side);
+                    link.side = side == -1 ? 0xff : side;
                     link.bmin = link.bmax = 0;
                     // Add to linked list.
                     link.next = tile.polyLinks[landPoly.index];
@@ -1038,7 +1038,7 @@ namespace DotRecast.Detour
             }
 
             // Check for overlap at endpoints.
-            float thr = (py * 2) * (py * 2);
+            float thr = py * 2 * (py * 2);
             if (dmin * dmin <= thr || dmax * dmax <= thr)
             {
                 return true;
@@ -1353,8 +1353,8 @@ namespace DotRecast.Detour
         {
             nearestPt = Vector3.Zero;
 
-            Vector3 bmin = center - (halfExtents);
-            Vector3 bmax = center + (halfExtents);
+            Vector3 bmin = center - halfExtents;
+            Vector3 bmax = center + halfExtents;
 
             // Get nearby polygons from proximity grid.
             List<long> polys = QueryPolygonsInTile(tile, bmin, bmax);
@@ -1370,7 +1370,7 @@ namespace DotRecast.Detour
 
                 // If a point is directly over a polygon and closer than
                 // climb height, favor that instead of straight line nearest point.
-                Vector3 diff = center - (closestPtPoly);
+                Vector3 diff = center - closestPtPoly;
                 if (posOverPoly)
                 {
                     d = Math.Abs(diff.Y) - tile.data.header.walkableClimb;
@@ -1378,7 +1378,7 @@ namespace DotRecast.Detour
                 }
                 else
                 {
-                    d = (diff).LengthSquared();
+                    d = diff.LengthSquared();
                 }
 
                 if (d < nearestDistanceSqr)

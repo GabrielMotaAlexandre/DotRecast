@@ -28,6 +28,18 @@ namespace System.Numerics
 {
     public static class Vector3Extensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 AsVector3(this Vector2 vector)
+        {
+            return new Vector3(vector.X, 0, vector.Y);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 AsVector2XZ(this Vector3 vector)
+        {
+            return new Vector2(vector.X, vector.Z);
+        }
+
         public static Vector3 Of(float[] f, int idx)
         {
             return new Vector3(f[idx + 0], f[idx + 1], f[idx + 2]);
@@ -139,6 +151,17 @@ namespace System.Numerics
             return v1 + v2 * s;
         }
 
+        /// Performs a scaled vector addition. (@p v1 + (@p v2 * @p s))
+        /// @param[out] dest The result vector. [(x, y, z)]
+        /// @param[in] v1 The base vector. [(x, y, z)]
+        /// @param[in] v2 The vector to scale and add to @p v1. [(x, y, z)]
+        /// @param[in] s The amount to scale @p v2 by before adding to @p v1.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 Mad(Vector2 v1, Vector2 v2, float s)
+        {
+            return v1 + v2 * s;
+        }
+
         /// Performs a linear interpolation between two vectors. (@p v1 toward @p
         /// v2)
         /// @param[out] dest The result vector. [(x, y, x)]
@@ -161,15 +184,6 @@ namespace System.Numerics
             float dx = v2.X - v1.X;
             float dz = v2.Z - v1.Z;
             return (float)Math.Sqrt(dx * dx + dz * dz);
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dist2DSqr(float[] v1, float[] v2)
-        {
-            float dx = v2[0] - v1[0];
-            float dz = v2[2] - v1[2];
-            return dx * dx + dz * dz;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -281,17 +295,6 @@ namespace System.Numerics
             dest.X = v1.Y * v2.Z - v1.Z * v2.Y;
             dest.Y = v1.Z * v2.X - v1.X * v2.Z;
             dest.Z = v1.X * v2.Y - v1.Y * v2.X;
-        }
-
-        public static TTo ReadAsUnsafe<T, TTo>(this T[] array, int index = 0) where T : struct where TTo : struct
-        {
-            return Unsafe.Add(ref Unsafe.As<T[], Pinnable<TTo>>(ref array).Data, index);
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private sealed class Pinnable<T>
-        {
-            public T Data;
         }
     }
 }

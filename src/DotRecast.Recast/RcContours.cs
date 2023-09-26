@@ -556,7 +556,7 @@ namespace DotRecast.Recast
             for (int i = 0; i <= ca.nverts; ++i)
             {
                 int dst = nv * 4;
-                int src = ((ia + i) % ca.nverts) * 4;
+                int src = (ia + i) % ca.nverts * 4;
                 verts[dst + 0] = ca.verts[src + 0];
                 verts[dst + 1] = ca.verts[src + 1];
                 verts[dst + 2] = ca.verts[src + 2];
@@ -568,7 +568,7 @@ namespace DotRecast.Recast
             for (int i = 0; i <= cb.nverts; ++i)
             {
                 int dst = nv * 4;
-                int src = ((ib + i) % cb.nverts) * 4;
+                int src = (ib + i) % cb.nverts * 4;
                 verts[dst + 0] = cb.verts[src + 0];
                 verts[dst + 1] = cb.verts[src + 1];
                 verts[dst + 2] = cb.verts[src + 2];
@@ -771,7 +771,7 @@ namespace DotRecast.Recast
                             }
 
                             if (r == chf.spans[i].reg)
-                                res |= (1 << dir);
+                                res |= 1 << dir;
                         }
 
                         flags[i] = res ^ 0xf; // Inverse, mark non connected edges.

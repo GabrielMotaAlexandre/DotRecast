@@ -39,7 +39,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             int nsamples = Math.Max(2, (int)Math.Ceiling(d / cs));
             for (int i = 0; i < nsamples; ++i)
             {
-                float u = (float)i / (float)(nsamples - 1);
+                float u = i / (float)(nsamples - 1);
                 Vector3 p = tra.Apply(pa, pb, u);
                 if (CheckHeightfieldCollision(solid, p.X, p.Y + acfg.groundTolerance, p.Y + acfg.agentHeight, p.Z))
                 {

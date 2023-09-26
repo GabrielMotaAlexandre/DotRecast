@@ -25,7 +25,7 @@ namespace DotRecast.Detour
             // Find nearest polygon amongst the nearby polygons.
             _query.ClosestPointOnPoly(refs, _center, out var closestPtPoly, out var posOverPoly);
 
-            Vector3 diff = _center - (closestPtPoly);
+            Vector3 diff = _center - closestPtPoly;
 
             // If a point is directly over a polygon and closer than
             // climb height, favor that instead of straight line nearest point.
@@ -37,7 +37,7 @@ namespace DotRecast.Detour
             }
             else
             {
-                d = (diff).LengthSquared();
+                d = diff.LengthSquared();
             }
 
             if (d < _nearestDistanceSqr)

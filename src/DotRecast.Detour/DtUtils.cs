@@ -35,7 +35,7 @@ namespace DotRecast.Detour
             shift = (v > 0x3 ? 1 : 0) << 1;
             v >>= shift;
             r |= shift;
-            r |= (v >> 1);
+            r |= v >> 1;
             return r;
         }
 
@@ -163,6 +163,15 @@ namespace DotRecast.Detour
             return acx * abz - abx * acz;
         }
 
+        public static float TriArea2D(Vector3 a, Vector3 b, Vector2 c)
+        {
+            float abx = b.X - a.X;
+            float abz = b.Z - a.Z;
+            float acx = c.X - a.X;
+            float acz = c.Y - a.Z;
+            return acx * abz - abx * acz;
+        }
+
         // Returns a random point in a convex polygon.
         // Adapted from Graphics Gems article.
         public static Vector3 RandomPointInConvexPoly(float[] pts, int npts, float[] areas, float s, float t)
@@ -215,9 +224,9 @@ namespace DotRecast.Detour
             const float EPS = 1e-6f;
 
             h = 0;
-            Vector3 v0 = c - (a);
-            Vector3 v1 = b - (a);
-            Vector3 v2 = p - (a);
+            Vector3 v0 = c - a;
+            Vector3 v1 = b - a;
+            Vector3 v2 = p - a;
 
             // Compute scaled barycentric coordinates
             float denom = v0.X * v1.Z - v0.Z * v1.X;
@@ -353,15 +362,15 @@ namespace DotRecast.Detour
             segMin = -1;
             segMax = -1;
 
-            var dir = p1 - (p0);
+            var dir = p1 - p0;
 
             var p0v = p0;
             for (int i = 0, j = nverts - 1; i < nverts; j = i++)
             {
                 Vector3 vpj = verts[j];
                 Vector3 vpi = verts[i];
-                var edge = vpi - (vpj);
-                var diff = p0v - (vpj);
+                var edge = vpi - vpj;
+                var diff = p0v - vpj;
                 float n = Vector3Extensions.Perp2D(edge, diff);
                 float d = Vector3Extensions.Perp2D(dir, edge);
                 if (Math.Abs(d) < EPS)
@@ -422,9 +431,9 @@ namespace DotRecast.Detour
             s = 0;
             t = 0;
 
-            Vector3 u = aq - (ap);
-            Vector3 v = bq - (bp);
-            Vector3 w = ap - (bp);
+            Vector3 u = aq - ap;
+            Vector3 v = bq - bp;
+            Vector3 w = ap - bp;
             float d = Vector3Extensions.PerpXZ(u, v);
             if (Math.Abs(d) < 1e-6f)
             {

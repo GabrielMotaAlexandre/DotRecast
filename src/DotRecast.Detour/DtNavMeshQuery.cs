@@ -503,7 +503,7 @@ namespace DotRecast.Detour
                 }
 
                 int va = imin * 3;
-                int vb = ((imin + 1) % nv) * 3;
+                int vb = (imin + 1) % nv * 3;
                 closest = Vector3Extensions.Lerp(verts, va, vb, edget[imin]);
             }
 
@@ -707,8 +707,8 @@ namespace DotRecast.Detour
             }
 
             // Find tiles the query touches.
-            Vector3 bmin = center - (halfExtents);
-            Vector3 bmax = center + (halfExtents);
+            Vector3 bmin = center - halfExtents;
+            Vector3 bmax = center + halfExtents;
             foreach (var t in QueryTiles(center, halfExtents))
             {
                 QueryPolygonsInTile(t, bmin, bmax, filter, query);
@@ -727,8 +727,8 @@ namespace DotRecast.Detour
                 return RcImmutableArray<DtMeshTile>.Empty;
             }
 
-            Vector3 bmin = center - (halfExtents);
-            Vector3 bmax = center + (halfExtents);
+            Vector3 bmin = center - halfExtents;
+            Vector3 bmax = center + halfExtents;
             m_nav.CalcTileLoc(bmin, out var minx, out var miny);
             m_nav.CalcTileLoc(bmax, out var maxx, out var maxy);
 
@@ -2202,11 +2202,9 @@ namespace DotRecast.Detour
             hit = new DtRaycastHit();
 
             Vector3[] verts = new Vector3[m_nav.GetMaxVertsPerPoly() + 1];
-            _ = Vector3.Zero;
-            _ = Vector3.Zero;
 
             Vector3 curPos = startPos;
-            var dir = endPos - (startPos);
+            var dir = endPos - startPos;
 
             DtMeshTile prevTile, nextTile;
             DtPoly prevPoly, nextPoly;
@@ -2370,8 +2368,8 @@ namespace DotRecast.Detour
                     curPos = Vector3Extensions.Mad(startPos, dir, hit.t);
                     var e1 = verts[segMax];
                     var e2 = verts[(segMax + 1) % nv];
-                    var eDir = e2 - (e1);
-                    var diff = curPos - (e1);
+                    var eDir = e2 - e1;
+                    var diff = curPos - e1;
                     float s = RcMath.Sqr(eDir.X) > RcMath.Sqr(eDir.Z) ? diff.X / eDir.X : diff.Z / eDir.Z;
                     curPos.Y = e1.Y + eDir.Y * s;
 
@@ -3044,7 +3042,7 @@ namespace DotRecast.Detour
                     long neiRef = 0;
                     if (poly.neis[j] != 0)
                     {
-                        int idx = (poly.neis[j] - 1);
+                        int idx = poly.neis[j] - 1;
                         neiRef = DtNavMesh.GetPolyRefBase(tile) | (long)idx;
                         if (!filter.PassFilter(neiRef, tile, tile.data.polys[idx]))
                         {
@@ -3220,7 +3218,7 @@ namespace DotRecast.Detour
                     else if (bestPoly.neis[j] != 0)
                     {
                         // Internal edge
-                        int idx = (bestPoly.neis[j] - 1);
+                        int idx = bestPoly.neis[j] - 1;
                         long refs = DtNavMesh.GetPolyRefBase(bestTile) | (long)idx;
                         if (filter.PassFilter(refs, bestTile, bestTile.data.polys[idx]))
                         {
@@ -3333,7 +3331,7 @@ namespace DotRecast.Detour
             // Calc hit normal.
             if (hasBestV)
             {
-                var tangent = bestvi - (bestvj);
+                var tangent = bestvi - bestvj;
                 hitNormal.X = tangent.Z;
                 hitNormal.Y = 0;
                 hitNormal.Z = -tangent.X;

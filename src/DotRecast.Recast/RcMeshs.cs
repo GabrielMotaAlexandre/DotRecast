@@ -29,7 +29,7 @@ namespace DotRecast.Recast
     public static class RcMeshs
     {
         public const int MAX_MESH_VERTS_POLY = 0xffff;
-        public const int VERTEX_BUCKET_COUNT = (1 << 12);
+        public const int VERTEX_BUCKET_COUNT = 1 << 12;
 
 
         private static void BuildMeshAdjacency(int[] polys, int npolys, int nverts, int vertsPerPoly)
@@ -542,7 +542,7 @@ namespace DotRecast.Recast
             int nb = CountPolyVerts(polys, pb, nvp);
 
             // Merge polygons.
-            Array.Fill(polys, RC_MESH_NULL_IDX, tmp, (tmp + nvp) - (tmp));
+            Array.Fill(polys, RC_MESH_NULL_IDX, tmp, tmp + nvp - tmp);
             int n = 0;
             // Add pa
             for (int i = 0; i < na - 1; ++i)
@@ -738,7 +738,7 @@ namespace DotRecast.Recast
                         Array.Copy(mesh.polys, p2, mesh.polys, p, nvp);
                     }
 
-                    Array.Fill(mesh.polys, RC_MESH_NULL_IDX, p + nvp, (p + nvp + nvp) - (p + nvp));
+                    Array.Fill(mesh.polys, RC_MESH_NULL_IDX, p + nvp, p + nvp + nvp - (p + nvp));
                     mesh.regs[i] = mesh.regs[mesh.npolys - 1];
                     mesh.areas[i] = mesh.areas[mesh.npolys - 1];
                     mesh.npolys--;
@@ -862,7 +862,7 @@ namespace DotRecast.Recast
 
             // Build initial polygons.
             int npolys = 0;
-            Array.Fill(polys, RC_MESH_NULL_IDX, 0, (ntris * nvp) - (0));
+            Array.Fill(polys, RC_MESH_NULL_IDX, 0, (ntris * nvp) - 0);
             for (int j = 0; j < ntris; ++j)
             {
                 int t = j * 3;
@@ -946,7 +946,7 @@ namespace DotRecast.Recast
                 if (mesh.npolys >= maxTris)
                     break;
                 int p = mesh.npolys * nvp * 2;
-                Array.Fill(mesh.polys, RC_MESH_NULL_IDX, p, (p + nvp * 2) - (p));
+                Array.Fill(mesh.polys, RC_MESH_NULL_IDX, p, p + nvp * 2 - p);
                 for (int j = 0; j < nvp; ++j)
                     mesh.polys[p + j] = polys[i * nvp + j];
                 mesh.regs[mesh.npolys] = pregs[i];
@@ -1245,7 +1245,7 @@ namespace DotRecast.Recast
 
             mesh.npolys = 0;
             mesh.polys = new int[maxPolys * 2 * mesh.nvp];
-            Array.Fill(mesh.polys, RC_MESH_NULL_IDX, 0, (mesh.polys.Length) - (0));
+            Array.Fill(mesh.polys, RC_MESH_NULL_IDX, 0, mesh.polys.Length - 0);
             mesh.regs = new int[maxPolys];
             mesh.areas = new int[maxPolys];
             mesh.flags = new int[maxPolys];
@@ -1265,11 +1265,11 @@ namespace DotRecast.Recast
                 int ox = (int)Math.Floor((pmesh.bmin.X - mesh.bmin.X) / mesh.cs + 0.5f);
                 int oz = (int)Math.Floor((pmesh.bmin.Z - mesh.bmin.Z) / mesh.cs + 0.5f);
 
-                bool isMinX = (ox == 0);
-                bool isMinZ = (oz == 0);
-                bool isMaxX = (Math.Floor((mesh.bmax.X - pmesh.bmax.X) / mesh.cs + 0.5f)) == 0;
-                bool isMaxZ = (Math.Floor((mesh.bmax.Z - pmesh.bmax.Z) / mesh.cs + 0.5f)) == 0;
-                bool isOnBorder = (isMinX || isMinZ || isMaxX || isMaxZ);
+                bool isMinX = ox == 0;
+                bool isMinZ = oz == 0;
+                bool isMaxX = Math.Floor((mesh.bmax.X - pmesh.bmax.X) / mesh.cs + 0.5f) == 0;
+                bool isMaxZ = Math.Floor((mesh.bmax.Z - pmesh.bmax.Z) / mesh.cs + 0.5f) == 0;
+                bool isOnBorder = isMinX || isMinZ || isMaxX || isMaxZ;
 
                 for (int j = 0; j < pmesh.nverts; ++j)
                 {

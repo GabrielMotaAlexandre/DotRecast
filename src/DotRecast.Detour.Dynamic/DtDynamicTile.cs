@@ -62,7 +62,7 @@ namespace DotRecast.Detour.Dynamic
         private RcHeightfield BuildHeightfield(DtDynamicNavMeshConfig config, RcTelemetry telemetry)
         {
             ICollection<long> rasterizedColliders = checkpoint != null
-                ? checkpoint.colliders as ICollection<long>
+                ? checkpoint.colliders
                 : RcImmutableArray<long>.Empty;
 
             RcHeightfield heightfield = checkpoint != null

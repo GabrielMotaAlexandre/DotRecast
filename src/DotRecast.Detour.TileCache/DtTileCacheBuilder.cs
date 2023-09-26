@@ -75,7 +75,7 @@ namespace DotRecast.Detour.TileCache
                     int sid = 0xff;
 
                     // -x
-                    int xidx = (x - 1) + y * w;
+                    int xidx = x - 1 + y * w;
                     if (x > 0 && IsConnected(layer, idx, xidx, walkableClimb))
                     {
                         if (layer.regs[xidx] != 0xff)
@@ -610,7 +610,7 @@ namespace DotRecast.Detour.TileCache
                         if (Math.Abs(lh - y) <= walkableClimb && layer.areas[idx] != DT_TILECACHE_NULL_AREA)
                         {
                             height = Math.Max(height, (char)lh);
-                            portal &= (layer.cons[idx] >> 4);
+                            portal &= layer.cons[idx] >> 4;
                             if (preg != 0xff && preg != layer.regs[idx])
                                 allSameReg = false;
                             preg = layer.regs[idx];
@@ -712,7 +712,7 @@ namespace DotRecast.Detour.TileCache
             return lcset;
         }
 
-        const uint VERTEX_BUCKET_COUNT2 = (1 << 8);
+        const uint VERTEX_BUCKET_COUNT2 = 1 << 8;
 
         private static int ComputeVertexHash2(int x, int y, int z)
         {

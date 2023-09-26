@@ -16,7 +16,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         public EdgeSampler(JumpEdge edge, Trajectory trajectory)
         {
             this.trajectory = trajectory;
-            ax = edge.sq - (edge.sp);
+            ax = edge.sq - edge.sp;
             ax.Normalize();
             az = new Vector3(ax.Z, 0, -ax.X);
             az.Normalize();

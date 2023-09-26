@@ -65,7 +65,7 @@ namespace DotRecast.Recast
 
         public int Apply(int area)
         {
-            return ((Value & Mask) | (area & ~Mask));
+            return (Value & Mask) | (area & ~Mask);
         }
     }
 }

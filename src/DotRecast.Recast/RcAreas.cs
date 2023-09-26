@@ -648,8 +648,8 @@ namespace DotRecast.Recast
                     RcCompactCell cell = compactHeightfield.cells[x + z * zStride];
                     int maxSpanIndex = cell.index + cell.count;
 
-                    float cellX = compactHeightfield.bmin[0] + ((float)x + 0.5f) * compactHeightfield.cs;
-                    float cellZ = compactHeightfield.bmin[2] + ((float)z + 0.5f) * compactHeightfield.cs;
+                    float cellX = compactHeightfield.bmin[0] + (x + 0.5f) * compactHeightfield.cs;
+                    float cellZ = compactHeightfield.bmin[2] + (z + 0.5f) * compactHeightfield.cs;
                     float deltaX = cellX - position[0];
                     float deltaZ = cellZ - position[2];
 
@@ -759,12 +759,12 @@ namespace DotRecast.Recast
                 Vector3 vertC = Vector3Extensions.Of(verts, vertIndexC * 3);
 
                 // From A to B on the x/z plane
-                Vector3 prevSegmentDir = vertB - (vertA);
+                Vector3 prevSegmentDir = vertB - vertA;
                 prevSegmentDir.Y = 0; // Squash onto x/z plane
                 prevSegmentDir.SafeNormalize();
 
                 // From B to C on the x/z plane
-                Vector3 currSegmentDir = vertC - (vertB);
+                Vector3 currSegmentDir = vertC - vertB;
                 currSegmentDir.Y = 0; // Squash onto x/z plane
                 currSegmentDir.SafeNormalize();
 

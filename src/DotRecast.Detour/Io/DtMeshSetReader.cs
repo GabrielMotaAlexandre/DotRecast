@@ -146,8 +146,8 @@ namespace DotRecast.Detour.Io
             int saltMask = (1 << m_saltBits) - 1;
             int tileMask = (1 << m_tileBits) - 1;
             int polyMask = (1 << m_polyBits) - 1;
-            int salt = ((refs >> (m_polyBits + m_tileBits)) & saltMask);
-            int it = ((refs >> m_polyBits) & tileMask);
+            int salt = (refs >> (m_polyBits + m_tileBits)) & saltMask;
+            int it = (refs >> m_polyBits) & tileMask;
             int ip = refs & polyMask;
             return DtNavMesh.EncodePolyId(salt, it, ip);
         }

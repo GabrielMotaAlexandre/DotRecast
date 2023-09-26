@@ -869,7 +869,7 @@ namespace DotRecast.Recast
 
                     for (int k = 0; k <= nn; ++k)
                     {
-                        float u = (float)k / (float)nn;
+                        float u = k / (float)nn;
                         int pos = k * 3;
                         edge[pos + 0] = @in[vj + 0] + dx * u;
                         edge[pos + 1] = @in[vj + 1] + dy * u;
@@ -1102,7 +1102,7 @@ namespace DotRecast.Recast
                         continue;
                     }
 
-                    RcCompactCell c = chf.cells[(ax + bs) + (az + bs) * chf.width];
+                    RcCompactCell c = chf.cells[ax + bs + (az + bs) * chf.width];
                     for (int i = c.index, ni = c.index + c.count; i < ni && dmin > 0; ++i)
                     {
                         RcCompactSpan s = chf.spans[i];
@@ -1134,7 +1134,7 @@ namespace DotRecast.Recast
             array.Add(startCellY);
             array.Add(startSpanIndex);
             int[] dirs = { 0, 1, 2, 3 };
-            Array.Fill(hp.data, 0, 0, (hp.width * hp.height) - (0));
+            Array.Fill(hp.data, 0, 0, (hp.width * hp.height) - 0);
             // DFS to move to the center. Note that we need a DFS here and can not just move
             // directly towards the center without recording intermediate nodes, even though the polygons
             // are convex. In very rare we can get stuck due to contour simplification if we do not
@@ -1204,7 +1204,7 @@ namespace DotRecast.Recast
 
                     array.Add(newX);
                     array.Add(newY);
-                    array.Add(chf.cells[(newX + bs) + (newY + bs) * chf.width].index + GetCon(cs, dir));
+                    array.Add(chf.cells[newX + bs + (newY + bs) * chf.width].index + GetCon(cs, dir));
                 }
 
                 (dirs[directDir], dirs[3]) = (dirs[3], dirs[directDir]);
@@ -1215,7 +1215,7 @@ namespace DotRecast.Recast
             array.Add(cx + bs);
             array.Add(cy + bs);
             array.Add(ci);
-            Array.Fill(hp.data, RC_UNSET_HEIGHT, 0, (hp.width * hp.height) - (0));
+            Array.Fill(hp.data, RC_UNSET_HEIGHT, 0, (hp.width * hp.height) - 0);
             RcCompactSpan cs2 = chf.spans[ci];
             hp.data[cx - hp.xmin + (cy - hp.ymin) * hp.width] = cs2.y;
         }
@@ -1236,7 +1236,7 @@ namespace DotRecast.Recast
             // since border size offset is already removed from the polymesh vertices.
 
             List<int> queue = new(512);
-            Array.Fill(hp.data, RC_UNSET_HEIGHT, 0, (hp.width * hp.height) - (0));
+            Array.Fill(hp.data, RC_UNSET_HEIGHT, 0, (hp.width * hp.height) - 0);
 
             bool empty = true;
 

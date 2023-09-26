@@ -102,7 +102,7 @@ namespace DotRecast.Recast
                         if (s.area == RC_NULL_AREA)
                             continue;
 
-                        int bot = (s.smax);
+                        int bot = s.smax;
                         int top = s.next != null ? s.next.smin : SPAN_MAX_HEIGHT;
 
                         // Find neighbours minimum height.
@@ -190,7 +190,7 @@ namespace DotRecast.Recast
                 {
                     for (RcSpan s = solid.spans[x + y * w]; s != null; s = s.next)
                     {
-                        int bot = (s.smax);
+                        int bot = s.smax;
                         int top = s.next != null ? s.next.smin : SPAN_MAX_HEIGHT;
                         if ((top - bot) < walkableHeight)
                             s.area = RC_NULL_AREA;

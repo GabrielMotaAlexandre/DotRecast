@@ -141,7 +141,7 @@ namespace DotRecast.Recast.Toolset.Gizmos
         private static int[] GenerateCylindricalTriangles(int segments)
         {
             int circleTriangles = segments - 2;
-            int[] triangles = new int[6 * (circleTriangles + (segments + 1))];
+            int[] triangles = new int[6 * (circleTriangles + segments + 1)];
             int vi = 0;
             int ti = GenerateCircleTriangles(segments, triangles, vi, 0, false);
             ti = GenerateRingTriangles(segments, 1, triangles, segments + 1, ti);

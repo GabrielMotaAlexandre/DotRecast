@@ -75,7 +75,7 @@ namespace DotRecast.Recast
             for (int y = borderSize; y < h - borderSize; ++y)
             {
                 // Collect spans from this row.
-                Array.Fill(prevCount, 0, 0, (regId) - (0));
+                Array.Fill(prevCount, 0, 0, regId - 0);
                 int sweepId = 0;
 
                 for (int x = borderSize; x < w - borderSize; ++x)

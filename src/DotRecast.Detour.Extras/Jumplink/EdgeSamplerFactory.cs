@@ -41,7 +41,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 
             for (int j = 0; j < nsamples; ++j)
             {
-                float v = (float)j / (float)(nsamples - 1);
+                float v = j / (float)(nsamples - 1);
                 float ox = 2 * acfg.agentRadius + dx * v;
                 Trans2d(ref offset, es.az, es.ay, new RcVec2f { x = ox, y = acfg.minHeight });
                 GroundSegment end = new()

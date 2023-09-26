@@ -28,9 +28,9 @@ namespace DotRecast.Core
         {
             t = 0;
             float v, w;
-            Vector3 ab = b - (a);
-            Vector3 ac = c - (a);
-            Vector3 qp = sp - (sq);
+            Vector3 ab = b - a;
+            Vector3 ac = c - a;
+            Vector3 qp = sp - sq;
 
             // Compute triangle normal. Can be precalculated or cached if
             // intersecting multiple segments against the same triangle
@@ -47,7 +47,7 @@ namespace DotRecast.Core
             // Compute intersection t value of pq with plane of triangle. A ray
             // intersects iff 0 <= t. Segment intersects iff 0 <= t <= 1. Delay
             // dividing by d until intersection has been found to pierce triangle
-            Vector3 ap = sp - (a);
+            Vector3 ap = sp - a;
             t = Vector3.Dot(ap, norm);
             if (t < 0.0f)
             {

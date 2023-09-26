@@ -154,7 +154,7 @@ namespace DotRecast.Core.Compression
 
             /* we start with literal copy */
             copy = 2;
-            output[outOffset + op++] = (byte)(MAX_COPY - 1);
+            output[outOffset + op++] = MAX_COPY - 1;
             output[outOffset + op++] = input[inOffset + ip++];
             output[outOffset + op++] = input[inOffset + ip++];
 
@@ -226,7 +226,7 @@ namespace DotRecast.Core.Compression
                         if (copy == MAX_COPY)
                         {
                             copy = 0;
-                            output[outOffset + op++] = (byte)(MAX_COPY - 1);
+                            output[outOffset + op++] = MAX_COPY - 1;
                         }
 
                         continue;
@@ -249,7 +249,7 @@ namespace DotRecast.Core.Compression
                                 if (copy == MAX_COPY)
                                 {
                                     copy = 0;
-                                    output[outOffset + op++] = (byte)(MAX_COPY - 1);
+                                    output[outOffset + op++] = MAX_COPY - 1;
                                 }
 
                                 continue;
@@ -378,7 +378,7 @@ namespace DotRecast.Core.Compression
                             output[outOffset + op++] = (byte)((7 << 5) + ((ulong)distance >> 8));
                             for (len -= 7; len >= 255; len -= 255)
                             {
-                                output[outOffset + op++] = (byte)255;
+                                output[outOffset + op++] = 255;
                             }
 
                             output[outOffset + op++] = (byte)len;
@@ -392,21 +392,21 @@ namespace DotRecast.Core.Compression
                         {
                             distance -= MAX_DISTANCE;
                             output[outOffset + op++] = (byte)((len << 5) + 31);
-                            output[outOffset + op++] = (byte)255;
+                            output[outOffset + op++] = 255;
                             output[outOffset + op++] = (byte)((ulong)distance >> 8);
                             output[outOffset + op++] = (byte)(distance & 255);
                         }
                         else
                         {
                             distance -= MAX_DISTANCE;
-                            output[outOffset + op++] = (byte)((7 << 5) + 31);
+                            output[outOffset + op++] = (7 << 5) + 31;
                             for (len -= 7; len >= 255; len -= 255)
                             {
-                                output[outOffset + op++] = (byte)255;
+                                output[outOffset + op++] = 255;
                             }
 
                             output[outOffset + op++] = (byte)len;
-                            output[outOffset + op++] = (byte)255;
+                            output[outOffset + op++] = 255;
                             output[outOffset + op++] = (byte)((ulong)distance >> 8);
                             output[outOffset + op++] = (byte)(distance & 255);
                         }
@@ -419,7 +419,7 @@ namespace DotRecast.Core.Compression
                         while (len > MAX_LEN - 2)
                         {
                             output[outOffset + op++] = (byte)((7 << 5) + ((ulong)distance >> 8));
-                            output[outOffset + op++] = (byte)(MAX_LEN - 2 - 7 - 2);
+                            output[outOffset + op++] = MAX_LEN - 2 - 7 - 2;
                             output[outOffset + op++] = (byte)(distance & 255);
                             len -= MAX_LEN - 2;
                         }
@@ -448,7 +448,7 @@ namespace DotRecast.Core.Compression
                 htab[hval] = ip++;
 
                 /* assuming literal copy */
-                output[outOffset + op++] = (byte)(MAX_COPY - 1);
+                output[outOffset + op++] = MAX_COPY - 1;
 
                 continue;
 
@@ -475,7 +475,7 @@ namespace DotRecast.Core.Compression
                 if (copy == MAX_COPY)
                 {
                     copy = 0;
-                    output[outOffset + op++] = (byte)(MAX_COPY - 1);
+                    output[outOffset + op++] = MAX_COPY - 1;
                 }
             }
 

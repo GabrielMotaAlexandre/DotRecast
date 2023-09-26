@@ -451,9 +451,9 @@ namespace DotRecast.Recast
             float inverseCellHeight = 1.0f / heightfield.ch;
             for (int triIndex = 0; triIndex < numTris; ++triIndex)
             {
-                int v0 = (triIndex * 3 + 0);
-                int v1 = (triIndex * 3 + 1);
-                int v2 = (triIndex * 3 + 2);
+                int v0 = triIndex * 3 + 0;
+                int v1 = triIndex * 3 + 1;
+                int v2 = triIndex * 3 + 2;
                 RasterizeTri(verts, v0, v1, v2, areaIds[triIndex], heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs,
                     inverseCellSize, inverseCellHeight, flagMergeThreshold);
             }

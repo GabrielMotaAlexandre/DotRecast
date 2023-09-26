@@ -179,9 +179,9 @@ namespace DotRecast.Recast.Toolset.Tools
         {
             float radius = 0.4f + (float)random.NextDouble() * 4f;
             Vector3 a = new(
-                (1f - 2 * (float)random.NextDouble()),
+                1f - 2 * (float)random.NextDouble(),
                 0.01f + (float)random.NextDouble(),
-                (1f - 2 * (float)random.NextDouble())
+                1f - 2 * (float)random.NextDouble()
             );
             a.Normalize();
             float len = 1f + (float)random.NextDouble() * 20f;
@@ -202,8 +202,8 @@ namespace DotRecast.Recast.Toolset.Tools
                 0.5f + (float)random.NextDouble() * 6f,
                 0.5f + (float)random.NextDouble() * 6f
             );
-            Vector3 forward = new((1f - 2 * (float)random.NextDouble()), 0, (1f - 2 * (float)random.NextDouble()));
-            Vector3 up = new((1f - 2 * (float)random.NextDouble()), 0.01f + (float)random.NextDouble(), (1f - 2 * (float)random.NextDouble()));
+            Vector3 forward = new(1f - 2 * (float)random.NextDouble(), 0, 1f - 2 * (float)random.NextDouble());
+            Vector3 up = new(1f - 2 * (float)random.NextDouble(), 0.01f + (float)random.NextDouble(), 1f - 2 * (float)random.NextDouble());
             Vector3[] halfEdges = Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(up, forward, extent);
             var collider = new DtBoxCollider(p, halfEdges, SampleAreaModifications.SAMPLE_POLYAREA_TYPE_WATER, walkableClimb);
             var gizmo = RcGizmoFactory.Box(p, halfEdges);
@@ -232,7 +232,7 @@ namespace DotRecast.Recast.Toolset.Tools
             Vector3 baseExtent = new(5, 3, 8);
             Vector3 baseCenter = new(p.X, p.Y + 3, p.Z);
             Vector3 baseUp = new(0, 1, 0);
-            Vector3 forward = new((1f - 2 * (float)random.NextDouble()), 0, (1f - 2 * (float)random.NextDouble()));
+            Vector3 forward = new(1f - 2 * (float)random.NextDouble(), 0, 1f - 2 * (float)random.NextDouble());
             forward.Normalize();
             Vector3 side = Vector3.Cross(forward, baseUp);
             DtBoxCollider @base = new(baseCenter, Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(baseUp, forward, baseExtent),

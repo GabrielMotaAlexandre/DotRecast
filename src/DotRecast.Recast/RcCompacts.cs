@@ -92,7 +92,7 @@ namespace DotRecast.Recast
                         if (s.area != RC_NULL_AREA)
                         {
                             int bot = s.smax;
-                            int top = s.next != null ? (int)s.next.smin : MAX_HEIGHT;
+                            int top = s.next != null ? s.next.smin : MAX_HEIGHT;
                             chf.spans[idx].y = Math.Clamp(bot, 0, MAX_HEIGHT);
                             chf.spans[idx].h = Math.Clamp(top - bot, 0, MAX_HEIGHT);
                             chf.areas[idx] = s.area;
