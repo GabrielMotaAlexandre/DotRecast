@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast;
 
@@ -53,7 +54,7 @@ namespace DotRecast.Detour.Dynamic.Io
         public bool useTiles;
         public int tileSizeX;
         public int tileSizeZ;
-        public RcVec3f rotation = new RcVec3f();
+        public Vector3 rotation = new Vector3();
         public float[] bounds = new float[6];
         public readonly List<DtVoxelTile> tiles = new List<DtVoxelTile>();
 
@@ -109,12 +110,12 @@ namespace DotRecast.Detour.Dynamic.Io
             foreach (RcBuilderResult r in results)
             {
                 f.tiles.Add(new DtVoxelTile(r.tileX, r.tileZ, r.GetSolidHeightfield()));
-                f.bounds[0] = Math.Min(f.bounds[0], r.GetSolidHeightfield().bmin.x);
-                f.bounds[1] = Math.Min(f.bounds[1], r.GetSolidHeightfield().bmin.y);
-                f.bounds[2] = Math.Min(f.bounds[2], r.GetSolidHeightfield().bmin.z);
-                f.bounds[3] = Math.Max(f.bounds[3], r.GetSolidHeightfield().bmax.x);
-                f.bounds[4] = Math.Max(f.bounds[4], r.GetSolidHeightfield().bmax.y);
-                f.bounds[5] = Math.Max(f.bounds[5], r.GetSolidHeightfield().bmax.z);
+                f.bounds[0] = Math.Min(f.bounds[0], r.GetSolidHeightfield().bmin.X);
+                f.bounds[1] = Math.Min(f.bounds[1], r.GetSolidHeightfield().bmin.Y);
+                f.bounds[2] = Math.Min(f.bounds[2], r.GetSolidHeightfield().bmin.Z);
+                f.bounds[3] = Math.Max(f.bounds[3], r.GetSolidHeightfield().bmax.X);
+                f.bounds[4] = Math.Max(f.bounds[4], r.GetSolidHeightfield().bmax.Y);
+                f.bounds[5] = Math.Max(f.bounds[5], r.GetSolidHeightfield().bmax.Z);
             }
 
             return f;
@@ -154,12 +155,12 @@ namespace DotRecast.Detour.Dynamic.Io
             {
                 RcHeightfield heightfield = vt.Heightfield();
                 f.tiles.Add(new DtVoxelTile(vt.tileX, vt.tileZ, heightfield));
-                f.bounds[0] = Math.Min(f.bounds[0], vt.boundsMin.x);
-                f.bounds[1] = Math.Min(f.bounds[1], vt.boundsMin.y);
-                f.bounds[2] = Math.Min(f.bounds[2], vt.boundsMin.z);
-                f.bounds[3] = Math.Max(f.bounds[3], vt.boundsMax.x);
-                f.bounds[4] = Math.Max(f.bounds[4], vt.boundsMax.y);
-                f.bounds[5] = Math.Max(f.bounds[5], vt.boundsMax.z);
+                f.bounds[0] = Math.Min(f.bounds[0], vt.boundsMin.X);
+                f.bounds[1] = Math.Min(f.bounds[1], vt.boundsMin.Y);
+                f.bounds[2] = Math.Min(f.bounds[2], vt.boundsMin.Z);
+                f.bounds[3] = Math.Max(f.bounds[3], vt.boundsMax.X);
+                f.bounds[4] = Math.Max(f.bounds[4], vt.boundsMax.Y);
+                f.bounds[5] = Math.Max(f.bounds[5], vt.boundsMax.Z);
             }
 
             return f;

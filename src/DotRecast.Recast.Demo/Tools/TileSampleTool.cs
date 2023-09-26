@@ -1,5 +1,5 @@
 ﻿using System;
-using DotRecast.Core;
+using System.Numerics;
 using DotRecast.Recast.Demo.Draw;
 using DotRecast.Recast.Toolset;
 using DotRecast.Recast.Toolset.Builder;
@@ -18,7 +18,7 @@ public class TileSampleTool : ISampleTool
     private readonly RcTileTool _tool;
 
     private bool _hitPosSet;
-    private RcVec3f _hitPos;
+    private Vector3 _hitPos;
 
     public TileSampleTool()
     {
@@ -59,11 +59,11 @@ public class TileSampleTool : ISampleTool
             var s = settings.agentRadius;
 
             float ts = settings.tileSize * settings.cellSize;
-            int tx = (int)((_hitPos.x - bmin[0]) / ts);
-            int ty = (int)((_hitPos.z - bmin[2]) / ts);
+            int tx = (int)((_hitPos.X - bmin[0]) / ts);
+            int ty = (int)((_hitPos.Z - bmin[2]) / ts);
 
-            RcVec3f lastBuiltTileBmin = RcVec3f.Zero;
-            RcVec3f lastBuiltTileBmax = RcVec3f.Zero;
+            Vector3 lastBuiltTileBmin = Vector3.Zero;
+            Vector3 lastBuiltTileBmax = Vector3.Zero;
 
             lastBuiltTileBmin[0] = bmin[0] + tx * ts;
             lastBuiltTileBmin[1] = bmin[1];
@@ -73,10 +73,10 @@ public class TileSampleTool : ISampleTool
             lastBuiltTileBmax[1] = bmax[1];
             lastBuiltTileBmax[2] = bmin[2] + (ty + 1) * ts;
 
-            dd.DebugDrawCross(_hitPos.x, _hitPos.y + 0.1f, _hitPos.z, s, DuRGBA(0, 0, 0, 128), 2.0f);
+            dd.DebugDrawCross(_hitPos.X, _hitPos.Y + 0.1f, _hitPos.Z, s, DuRGBA(0, 0, 0, 128), 2.0f);
             dd.DebugDrawBoxWire(
-                lastBuiltTileBmin.x, lastBuiltTileBmin.y, lastBuiltTileBmin.z,
-                lastBuiltTileBmax.x, lastBuiltTileBmax.y, lastBuiltTileBmax.z,
+                lastBuiltTileBmin.X, lastBuiltTileBmin.Y, lastBuiltTileBmin.Z,
+                lastBuiltTileBmax.X, lastBuiltTileBmax.Y, lastBuiltTileBmax.Z,
                 DuRGBA(255, 255, 255, 64), 1.0f);
 
             // 표기
@@ -98,7 +98,7 @@ public class TileSampleTool : ISampleTool
     }
 
 
-    public void HandleClick(RcVec3f s, RcVec3f p, bool shift)
+    public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
         _hitPosSet = true;
         _hitPos = p;
@@ -130,7 +130,7 @@ public class TileSampleTool : ISampleTool
     {
     }
 
-    public void HandleClickRay(RcVec3f start, RcVec3f direction, bool shift)
+    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
     {
     }
 }

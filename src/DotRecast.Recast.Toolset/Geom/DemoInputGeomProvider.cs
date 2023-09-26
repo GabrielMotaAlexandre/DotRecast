@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast.Geom;
 
@@ -30,8 +31,8 @@ namespace DotRecast.Recast.Toolset.Geom
         public readonly float[] vertices;
         public readonly int[] faces;
         public readonly float[] normals;
-        private readonly RcVec3f bmin;
-        private readonly RcVec3f bmax;
+        private readonly Vector3 bmin;
+        private readonly Vector3 bmax;
 
         private readonly List<RcConvexVolume> _convexVolumes = new List<RcConvexVolume>();
         private readonly List<RcOffMeshConnection> _offMeshConnections = new List<RcOffMeshConnection>();
@@ -55,10 +56,10 @@ namespace DotRecast.Recast.Toolset.Geom
             this.faces = faces;
             normals = new float[faces.Length];
             CalculateNormals();
-            bmin = RcVec3f.Zero;
-            bmax = RcVec3f.Zero;
-            RcVec3f.Copy(ref bmin, vertices, 0);
-            RcVec3f.Copy(ref bmax, vertices, 0);
+            bmin = Vector3.Zero;
+            bmax = Vector3.Zero;
+            Vector3Extensions.Copy(ref bmin, vertices, 0);
+            Vector3Extensions.Copy(ref bmax, vertices, 0);
             for (int i = 1; i < vertices.Length / 3; i++)
             {
                 bmin.Min(vertices, i * 3);
@@ -73,12 +74,12 @@ namespace DotRecast.Recast.Toolset.Geom
             return _mesh;
         }
 
-        public RcVec3f GetMeshBoundsMin()
+        public Vector3 GetMeshBoundsMin()
         {
             return bmin;
         }
 
-        public RcVec3f GetMeshBoundsMax()
+        public Vector3 GetMeshBoundsMax()
         {
             return bmax;
         }
@@ -90,17 +91,17 @@ namespace DotRecast.Recast.Toolset.Geom
                 int v0 = faces[i] * 3;
                 int v1 = faces[i + 1] * 3;
                 int v2 = faces[i + 2] * 3;
-                RcVec3f e0 = new RcVec3f();
-                RcVec3f e1 = new RcVec3f();
+                Vector3 e0 = new Vector3();
+                Vector3 e1 = new Vector3();
                 for (int j = 0; j < 3; ++j)
                 {
                     e0[j] = vertices[v1 + j] - vertices[v0 + j];
                     e1[j] = vertices[v2 + j] - vertices[v0 + j];
                 }
 
-                normals[i] = e0.y * e1.z - e0.z * e1.y;
-                normals[i + 1] = e0.z * e1.x - e0.x * e1.z;
-                normals[i + 2] = e0.x * e1.y - e0.y * e1.x;
+                normals[i] = e0.Y * e1.Z - e0.Z * e1.Y;
+                normals[i + 1] = e0.Z * e1.X - e0.X * e1.Z;
+                normals[i + 2] = e0.X * e1.Y - e0.Y * e1.X;
                 float d = (float)Math.Sqrt(normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]);
                 if (d > 0)
                 {
@@ -127,7 +128,7 @@ namespace DotRecast.Recast.Toolset.Geom
             return _offMeshConnections;
         }
 
-        public void AddOffMeshConnection(RcVec3f start, RcVec3f end, float radius, bool bidir, int area, int flags)
+        public void AddOffMeshConnection(Vector3 start, Vector3 end, float radius, bool bidir, int area, int flags)
         {
             _offMeshConnections.Add(new RcOffMeshConnection(start, end, radius, bidir, area, flags));
         }
@@ -138,7 +139,7 @@ namespace DotRecast.Recast.Toolset.Geom
             _offMeshConnections.RemoveAll(filter); // TODO : 확인 필요
         }
 
-        public bool RaycastMesh(RcVec3f src, RcVec3f dst, out float tmin)
+        public bool RaycastMesh(Vector3 src, Vector3 dst, out float tmin)
         {
             tmin = 1.0f;
 
@@ -150,10 +151,10 @@ namespace DotRecast.Recast.Toolset.Geom
 
             float[] p = new float[2];
             float[] q = new float[2];
-            p[0] = src.x + (dst.x - src.x) * btmin;
-            p[1] = src.z + (dst.z - src.z) * btmin;
-            q[0] = src.x + (dst.x - src.x) * btmax;
-            q[1] = src.z + (dst.z - src.z) * btmax;
+            p[0] = src.X + (dst.X - src.X) * btmin;
+            p[1] = src.Z + (dst.Z - src.Z) * btmin;
+            q[0] = src.X + (dst.X - src.X) * btmax;
+            q[1] = src.Z + (dst.Z - src.Z) * btmax;
 
             List<RcChunkyTriMeshNode> chunks = _mesh.chunkyTriMesh.GetChunksOverlappingSegment(p, q);
             if (0 == chunks.Count)
@@ -168,17 +169,17 @@ namespace DotRecast.Recast.Toolset.Geom
                 int[] tris = chunk.tris;
                 for (int j = 0; j < chunk.tris.Length; j += 3)
                 {
-                    RcVec3f v1 = RcVec3f.Of(
+                    Vector3 v1 = new Vector3(
                         vertices[tris[j] * 3],
                         vertices[tris[j] * 3 + 1],
                         vertices[tris[j] * 3 + 2]
                     );
-                    RcVec3f v2 = RcVec3f.Of(
+                    Vector3 v2 = new Vector3(
                         vertices[tris[j + 1] * 3],
                         vertices[tris[j + 1] * 3 + 1],
                         vertices[tris[j + 1] * 3 + 2]
                     );
-                    RcVec3f v3 = RcVec3f.Of(
+                    Vector3 v3 = new Vector3(
                         vertices[tris[j + 2] * 3],
                         vertices[tris[j + 2] * 3 + 1],
                         vertices[tris[j + 2] * 3 + 2]

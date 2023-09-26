@@ -1,5 +1,5 @@
 using System;
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour.Extras.Jumplink
 {
@@ -12,13 +12,13 @@ namespace DotRecast.Detour.Extras.Jumplink
             this.jumpHeight = jumpHeight;
         }
 
-        public override RcVec3f Apply(RcVec3f start, RcVec3f end, float u)
+        public override Vector3 Apply(Vector3 start, Vector3 end, float u)
         {
-            return new RcVec3f
+            return new Vector3
             {
-                x = Lerp(start.x, end.x, u), 
-                y = InterpolateHeight(start.y, end.y, u),
-                z = Lerp(start.z, end.z, u)
+                X = Lerp(start.X, end.X, u), 
+                Y = InterpolateHeight(start.Y, end.Y, u),
+                Z = Lerp(start.Z, end.Z, u)
             };
         }
 

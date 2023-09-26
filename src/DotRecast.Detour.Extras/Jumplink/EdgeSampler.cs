@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour.Extras.Jumplink
 {
@@ -9,18 +9,18 @@ namespace DotRecast.Detour.Extras.Jumplink
         public readonly List<GroundSegment> end = new List<GroundSegment>();
         public readonly Trajectory trajectory;
 
-        public readonly RcVec3f ax = new RcVec3f();
-        public readonly RcVec3f ay = new RcVec3f();
-        public readonly RcVec3f az = new RcVec3f();
+        public readonly Vector3 ax = new Vector3();
+        public readonly Vector3 ay = new Vector3();
+        public readonly Vector3 az = new Vector3();
 
         public EdgeSampler(JumpEdge edge, Trajectory trajectory)
         {
             this.trajectory = trajectory;
-            ax = edge.sq.Subtract(edge.sp);
+            ax = edge.sq - (edge.sp);
             ax.Normalize();
-            az.Set(ax.z, 0, -ax.x);
+            az = new Vector3(ax.Z, 0, -ax.X);
             az.Normalize();
-            ay.Set(0, 1, 0);
+            ay = new Vector3(0, 1, 0);
         }
     }
 }

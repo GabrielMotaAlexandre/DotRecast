@@ -19,7 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 using DotRecast.Detour;
 using DotRecast.Recast.Toolset.Builder;
 using DotRecast.Recast.Toolset.Geom;
@@ -80,8 +80,8 @@ public class NavMeshRenderer
         if (geom != null)
         {
             int gw = 0, gh = 0;
-            RcVec3f bmin = geom.GetMeshBoundsMin();
-            RcVec3f bmax = geom.GetMeshBoundsMax();
+            Vector3 bmin = geom.GetMeshBoundsMin();
+            Vector3 bmax = geom.GetMeshBoundsMax();
             CalcGridSize(bmin, bmax, settings.cellSize, out gw, out gh);
             int tw = (gw + settings.tileSize - 1) / settings.tileSize;
             int th = (gh + settings.tileSize - 1) / settings.tileSize;
@@ -210,12 +210,12 @@ public class NavMeshRenderer
     private void DrawGeomBounds(DemoInputGeomProvider geom)
     {
         // Draw bounds
-        RcVec3f bmin = geom.GetMeshBoundsMin();
-        RcVec3f bmax = geom.GetMeshBoundsMax();
-        _debugDraw.DebugDrawBoxWire(bmin.x, bmin.y, bmin.z, bmax.x, bmax.y, bmax.z,
+        Vector3 bmin = geom.GetMeshBoundsMin();
+        Vector3 bmax = geom.GetMeshBoundsMax();
+        _debugDraw.DebugDrawBoxWire(bmin.X, bmin.Y, bmin.Z, bmax.X, bmax.Y, bmax.Z,
             DebugDraw.DuRGBA(255, 255, 255, 128), 1.0f);
         _debugDraw.Begin(DebugDrawPrimitives.POINTS, 5.0f);
-        _debugDraw.Vertex(bmin.x, bmin.y, bmin.z, DebugDraw.DuRGBA(255, 255, 255, 128));
+        _debugDraw.Vertex(bmin.X, bmin.Y, bmin.Z, DebugDraw.DuRGBA(255, 255, 255, 128));
         _debugDraw.End();
     }
 
@@ -260,20 +260,20 @@ public class NavMeshRenderer
             int col = DebugDraw.DuTransCol(DebugDraw.AreaToCol(vol.areaMod.GetMaskedValue()), 32);
             for (int j = 0, k = vol.verts.Length - 3; j < vol.verts.Length; k = j, j += 3)
             {
-                var va = RcVec3f.Of(vol.verts[k], vol.verts[k + 1], vol.verts[k + 2]);
-                var vb = RcVec3f.Of(vol.verts[j], vol.verts[j + 1], vol.verts[j + 2]);
+                var va = new Vector3(vol.verts[k], vol.verts[k + 1], vol.verts[k + 2]);
+                var vb = new Vector3(vol.verts[j], vol.verts[j + 1], vol.verts[j + 2]);
 
                 _debugDraw.Vertex(vol.verts[0], vol.hmax, vol.verts[2], col);
-                _debugDraw.Vertex(vb.x, vol.hmax, vb.z, col);
-                _debugDraw.Vertex(va.x, vol.hmax, va.z, col);
+                _debugDraw.Vertex(vb.X, vol.hmax, vb.Z, col);
+                _debugDraw.Vertex(va.X, vol.hmax, va.Z, col);
 
-                _debugDraw.Vertex(va.x, vol.hmin, va.z, DebugDraw.DuDarkenCol(col));
-                _debugDraw.Vertex(va.x, vol.hmax, va.z, col);
-                _debugDraw.Vertex(vb.x, vol.hmax, vb.z, col);
+                _debugDraw.Vertex(va.X, vol.hmin, va.Z, DebugDraw.DuDarkenCol(col));
+                _debugDraw.Vertex(va.X, vol.hmax, va.Z, col);
+                _debugDraw.Vertex(vb.X, vol.hmax, vb.Z, col);
 
-                _debugDraw.Vertex(va.x, vol.hmin, va.z, DebugDraw.DuDarkenCol(col));
-                _debugDraw.Vertex(vb.x, vol.hmax, vb.z, col);
-                _debugDraw.Vertex(vb.x, vol.hmin, vb.z, DebugDraw.DuDarkenCol(col));
+                _debugDraw.Vertex(va.X, vol.hmin, va.Z, DebugDraw.DuDarkenCol(col));
+                _debugDraw.Vertex(vb.X, vol.hmax, vb.Z, col);
+                _debugDraw.Vertex(vb.X, vol.hmin, vb.Z, DebugDraw.DuDarkenCol(col));
             }
         }
 
@@ -285,14 +285,14 @@ public class NavMeshRenderer
             int col = DebugDraw.DuTransCol(DebugDraw.AreaToCol(vol.areaMod.GetMaskedValue()), 220);
             for (int j = 0, k = vol.verts.Length - 3; j < vol.verts.Length; k = j, j += 3)
             {
-                var va = RcVec3f.Of(vol.verts[k], vol.verts[k + 1], vol.verts[k + 2]);
-                var vb = RcVec3f.Of(vol.verts[j], vol.verts[j + 1], vol.verts[j + 2]);
-                _debugDraw.Vertex(va.x, vol.hmin, va.z, DebugDraw.DuDarkenCol(col));
-                _debugDraw.Vertex(vb.x, vol.hmin, vb.z, DebugDraw.DuDarkenCol(col));
-                _debugDraw.Vertex(va.x, vol.hmax, va.z, col);
-                _debugDraw.Vertex(vb.x, vol.hmax, vb.z, col);
-                _debugDraw.Vertex(va.x, vol.hmin, va.z, DebugDraw.DuDarkenCol(col));
-                _debugDraw.Vertex(va.x, vol.hmax, va.z, col);
+                var va = new Vector3(vol.verts[k], vol.verts[k + 1], vol.verts[k + 2]);
+                var vb = new Vector3(vol.verts[j], vol.verts[j + 1], vol.verts[j + 2]);
+                _debugDraw.Vertex(va.X, vol.hmin, va.Z, DebugDraw.DuDarkenCol(col));
+                _debugDraw.Vertex(vb.X, vol.hmin, vb.Z, DebugDraw.DuDarkenCol(col));
+                _debugDraw.Vertex(va.X, vol.hmax, va.Z, col);
+                _debugDraw.Vertex(vb.X, vol.hmax, vb.Z, col);
+                _debugDraw.Vertex(va.X, vol.hmin, va.Z, DebugDraw.DuDarkenCol(col));
+                _debugDraw.Vertex(va.X, vol.hmax, va.Z, col);
             }
         }
 

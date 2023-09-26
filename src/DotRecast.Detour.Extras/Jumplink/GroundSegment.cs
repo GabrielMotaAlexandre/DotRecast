@@ -1,11 +1,11 @@
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour.Extras.Jumplink
 {
     public class GroundSegment
     {
-        public RcVec3f p = new RcVec3f();
-        public RcVec3f q = new RcVec3f();
+        public Vector3 p = new Vector3();
+        public Vector3 q = new Vector3();
         public GroundSample[] gsamples;
         public float height;
     }

@@ -19,7 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
-using DotRecast.Core;
+using System.Numerics;
 using DotRecast.Recast.Demo.Draw;
 using DotRecast.Recast.Toolset;
 using DotRecast.Recast.Toolset.Geom;
@@ -40,7 +40,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
 
     private int _bidir;
     private bool _hasStartPt;
-    private RcVec3f _startPt;
+    private Vector3 _startPt;
 
     public OffMeshConnectionSampleTool()
     {
@@ -62,7 +62,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
 
         if (_hasStartPt)
         {
-            dd.DebugDrawCross(_startPt.x, _startPt.y + 0.1f, _startPt.z, s, DuRGBA(0, 0, 0, 128), 2.0f);
+            dd.DebugDrawCross(_startPt.X, _startPt.Y + 0.1f, _startPt.Z, s, DuRGBA(0, 0, 0, 128), 2.0f);
         }
 
         DemoInputGeomProvider geom = _sample.GetInputGeom();
@@ -88,7 +88,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
         // ..
     }
 
-    public void HandleClick(RcVec3f s, RcVec3f p, bool shift)
+    public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
         DemoInputGeomProvider geom = _sample.GetInputGeom();
         if (geom == null)
@@ -124,7 +124,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
         // TODO Auto-generated method stub
     }
 
-    public void HandleClickRay(RcVec3f start, RcVec3f direction, bool shift)
+    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
     {
     }
 }

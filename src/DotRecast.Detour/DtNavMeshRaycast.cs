@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Detour
@@ -26,7 +27,7 @@ namespace DotRecast.Detour
  */
     public static class DtNavMeshRaycast
     {
-        public static bool Raycast(DtNavMesh mesh, RcVec3f src, RcVec3f dst, out float hitTime)
+        public static bool Raycast(DtNavMesh mesh, Vector3 src, Vector3 dst, out float hitTime)
         {
             hitTime = 0.0f;
             for (int t = 0; t < mesh.GetMaxTiles(); ++t)
@@ -44,7 +45,7 @@ namespace DotRecast.Detour
             return false;
         }
 
-        private static bool Raycast(DtMeshTile tile, RcVec3f sp, RcVec3f sq, out float hitTime)
+        private static bool Raycast(DtMeshTile tile, Vector3 sp, Vector3 sq, out float hitTime)
         {
             hitTime = 0.0f;
             for (int i = 0; i < tile.data.header.polyCount; ++i)
@@ -59,7 +60,7 @@ namespace DotRecast.Detour
 
                 if (pd != null)
                 {
-                    RcVec3f[] verts = new RcVec3f[3];
+                    Vector3[] verts = new Vector3[3];
                     for (int j = 0; j < pd.triCount; ++j)
                     {
                         int t = (pd.triBase + j) * 4;
@@ -68,15 +69,15 @@ namespace DotRecast.Detour
                             int v = tile.data.detailTris[t + k];
                             if (v < p.vertCount)
                             {
-                                verts[k].x = tile.data.verts[p.verts[v] * 3];
-                                verts[k].y = tile.data.verts[p.verts[v] * 3 + 1];
-                                verts[k].z = tile.data.verts[p.verts[v] * 3 + 2];
+                                verts[k].X = tile.data.verts[p.verts[v] * 3];
+                                verts[k].Y = tile.data.verts[p.verts[v] * 3 + 1];
+                                verts[k].Z = tile.data.verts[p.verts[v] * 3 + 2];
                             }
                             else
                             {
-                                verts[k].x = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3];
-                                verts[k].y = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 1];
-                                verts[k].z = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 2];
+                                verts[k].X = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3];
+                                verts[k].Y = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 1];
+                                verts[k].Z = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 2];
                             }
                         }
 

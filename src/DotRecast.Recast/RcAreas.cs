@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Recast
@@ -351,12 +352,12 @@ namespace DotRecast.Recast
             int zStride = xSize; // For readability
 
             // Find the footprint of the box area in grid cell coordinates. 
-            int minX = (int)((boxMinBounds[0] - compactHeightfield.bmin.x) / compactHeightfield.cs);
-            int minY = (int)((boxMinBounds[1] - compactHeightfield.bmin.y) / compactHeightfield.ch);
-            int minZ = (int)((boxMinBounds[2] - compactHeightfield.bmin.z) / compactHeightfield.cs);
-            int maxX = (int)((boxMaxBounds[0] - compactHeightfield.bmin.x) / compactHeightfield.cs);
-            int maxY = (int)((boxMaxBounds[1] - compactHeightfield.bmin.y) / compactHeightfield.ch);
-            int maxZ = (int)((boxMaxBounds[2] - compactHeightfield.bmin.z) / compactHeightfield.cs);
+            int minX = (int)((boxMinBounds[0] - compactHeightfield.bmin.X) / compactHeightfield.cs);
+            int minY = (int)((boxMinBounds[1] - compactHeightfield.bmin.Y) / compactHeightfield.ch);
+            int minZ = (int)((boxMinBounds[2] - compactHeightfield.bmin.Z) / compactHeightfield.cs);
+            int maxX = (int)((boxMaxBounds[0] - compactHeightfield.bmin.X) / compactHeightfield.cs);
+            int maxY = (int)((boxMaxBounds[1] - compactHeightfield.bmin.Y) / compactHeightfield.ch);
+            int maxZ = (int)((boxMaxBounds[2] - compactHeightfield.bmin.Z) / compactHeightfield.cs);
 
             if (maxX < 0)
             {
@@ -455,26 +456,26 @@ namespace DotRecast.Recast
             int zStride = xSize; // For readability
 
             // Compute the bounding box of the polygon
-            RcVec3f bmin = new RcVec3f();
-            RcVec3f bmax = new RcVec3f();
-            RcVec3f.Copy(ref bmin, verts, 0);
-            RcVec3f.Copy(ref bmax, verts, 0);
+            Vector3 bmin = new Vector3();
+            Vector3 bmax = new Vector3();
+            Vector3Extensions.Copy(ref bmin, verts, 0);
+            Vector3Extensions.Copy(ref bmax, verts, 0);
             for (int i = 3; i < verts.Length; i += 3)
             {
                 bmin.Min(verts, i);
                 bmax.Max(verts, i);
             }
 
-            bmin.y = minY;
-            bmax.y = maxY;
+            bmin.Y = minY;
+            bmax.Y = maxY;
 
             // Compute the grid footprint of the polygon 
-            int minx = (int)((bmin.x - compactHeightfield.bmin.x) / compactHeightfield.cs);
-            int miny = (int)((bmin.y - compactHeightfield.bmin.y) / compactHeightfield.ch);
-            int minz = (int)((bmin.z - compactHeightfield.bmin.z) / compactHeightfield.cs);
-            int maxx = (int)((bmax.x - compactHeightfield.bmin.x) / compactHeightfield.cs);
-            int maxy = (int)((bmax.y - compactHeightfield.bmin.y) / compactHeightfield.ch);
-            int maxz = (int)((bmax.z - compactHeightfield.bmin.z) / compactHeightfield.cs);
+            int minx = (int)((bmin.X - compactHeightfield.bmin.X) / compactHeightfield.cs);
+            int miny = (int)((bmin.Y - compactHeightfield.bmin.Y) / compactHeightfield.ch);
+            int minz = (int)((bmin.Z - compactHeightfield.bmin.Z) / compactHeightfield.cs);
+            int maxx = (int)((bmax.X - compactHeightfield.bmin.X) / compactHeightfield.cs);
+            int maxy = (int)((bmax.Y - compactHeightfield.bmin.Y) / compactHeightfield.ch);
+            int maxz = (int)((bmax.Z - compactHeightfield.bmin.Z) / compactHeightfield.cs);
 
             // Early-out if the polygon lies entirely outside the grid.
             if (maxx < 0)
@@ -539,10 +540,10 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        RcVec3f point = new RcVec3f(
-                            compactHeightfield.bmin.x + (x + 0.5f) * compactHeightfield.cs,
+                        Vector3 point = new Vector3(
+                            compactHeightfield.bmin.X + (x + 0.5f) * compactHeightfield.cs,
                             0,
-                            compactHeightfield.bmin.z + (z + 0.5f) * compactHeightfield.cs
+                            compactHeightfield.bmin.Z + (z + 0.5f) * compactHeightfield.cs
                         );
 
                         if (PointInPoly(verts, point))
@@ -577,25 +578,25 @@ namespace DotRecast.Recast
             int zStride = xSize; // For readability
 
             // Compute the bounding box of the cylinder
-            RcVec3f cylinderBBMin = new RcVec3f(
+            Vector3 cylinderBBMin = new Vector3(
                 position[0] - radius,
                 position[1],
                 position[2] - radius
             );
 
-            RcVec3f cylinderBBMax = new RcVec3f(
+            Vector3 cylinderBBMax = new Vector3(
                 position[0] + radius,
                 position[1] + height,
                 position[2] + radius
             );
 
             // Compute the grid footprint of the cylinder
-            int minx = (int)((cylinderBBMin.x - compactHeightfield.bmin.x) / compactHeightfield.cs);
-            int miny = (int)((cylinderBBMin.y - compactHeightfield.bmin.y) / compactHeightfield.ch);
-            int minz = (int)((cylinderBBMin.z - compactHeightfield.bmin.z) / compactHeightfield.cs);
-            int maxx = (int)((cylinderBBMax.x - compactHeightfield.bmin.x) / compactHeightfield.cs);
-            int maxy = (int)((cylinderBBMax.y - compactHeightfield.bmin.y) / compactHeightfield.ch);
-            int maxz = (int)((cylinderBBMax.z - compactHeightfield.bmin.z) / compactHeightfield.cs);
+            int minx = (int)((cylinderBBMin.X - compactHeightfield.bmin.X) / compactHeightfield.cs);
+            int miny = (int)((cylinderBBMin.Y - compactHeightfield.bmin.Y) / compactHeightfield.ch);
+            int minz = (int)((cylinderBBMin.Z - compactHeightfield.bmin.Z) / compactHeightfield.cs);
+            int maxx = (int)((cylinderBBMax.X - compactHeightfield.bmin.X) / compactHeightfield.cs);
+            int maxy = (int)((cylinderBBMax.Y - compactHeightfield.bmin.Y) / compactHeightfield.ch);
+            int maxz = (int)((cylinderBBMax.Z - compactHeightfield.bmin.Z) / compactHeightfield.cs);
 
             // Early-out if the cylinder is completely outside the grid bounds.
             if (maxx < 0)
@@ -679,7 +680,7 @@ namespace DotRecast.Recast
             }
         }
 
-        // public static bool PointInPoly(float[] verts, RcVec3f p)
+        // public static bool PointInPoly(float[] verts, Vector3 p)
         // {
         //     bool c = false;
         //     int i, j;
@@ -703,19 +704,19 @@ namespace DotRecast.Recast
         /// @param[in]	verts		The polygon vertices
         /// @param[in]	point		The point to check
         /// @returns true if the point lies within the polygon, false otherwise.
-        public static bool PointInPoly(float[] verts, RcVec3f point)
+        public static bool PointInPoly(float[] verts, Vector3 point)
         {
             bool inPoly = false;
             for (int i = 0, j = verts.Length / 3 - 1; i < verts.Length / 3; j = i++)
             {
-                RcVec3f vi = RcVec3f.Of(verts[i * 3], verts[i * 3 + 1], verts[i * 3 + 2]);
-                RcVec3f vj = RcVec3f.Of(verts[j * 3], verts[j * 3 + 1], verts[j * 3 + 2]);
-                if (vi.z > point.z == vj.z > point.z)
+                Vector3 vi = new Vector3(verts[i * 3], verts[i * 3 + 1], verts[i * 3 + 2]);
+                Vector3 vj = new Vector3(verts[j * 3], verts[j * 3 + 1], verts[j * 3 + 2]);
+                if (vi.Z > point.Z == vj.Z > point.Z)
                 {
                     continue;
                 }
 
-                if (point.x >= (vj.x - vi.x) * (point.z - vi.z) / (vj.z - vi.z) + vi.x)
+                if (point.X >= (vj.X - vi.X) * (point.Z - vi.Z) / (vj.Z - vi.Z) + vi.X)
                 {
                     continue;
                 }
@@ -753,32 +754,32 @@ namespace DotRecast.Recast
                 int vertIndexB = vertIndex;
                 int vertIndexC = (vertIndex + 1) % numVerts;
 
-                RcVec3f vertA = RcVec3f.Of(verts, vertIndexA * 3);
-                RcVec3f vertB = RcVec3f.Of(verts, vertIndexB * 3);
-                RcVec3f vertC = RcVec3f.Of(verts, vertIndexC * 3);
+                Vector3 vertA = Vector3Extensions.Of(verts, vertIndexA * 3);
+                Vector3 vertB = Vector3Extensions.Of(verts, vertIndexB * 3);
+                Vector3 vertC = Vector3Extensions.Of(verts, vertIndexC * 3);
 
                 // From A to B on the x/z plane
-                RcVec3f prevSegmentDir = vertB.Subtract(vertA);
-                prevSegmentDir.y = 0; // Squash onto x/z plane
+                Vector3 prevSegmentDir = vertB - (vertA);
+                prevSegmentDir.Y = 0; // Squash onto x/z plane
                 prevSegmentDir.SafeNormalize();
 
                 // From B to C on the x/z plane
-                RcVec3f currSegmentDir = vertC.Subtract(vertB);
-                currSegmentDir.y = 0; // Squash onto x/z plane
+                Vector3 currSegmentDir = vertC - (vertB);
+                currSegmentDir.Y = 0; // Squash onto x/z plane
                 currSegmentDir.SafeNormalize();
 
                 // The y component of the cross product of the two normalized segment directions.
                 // The X and Z components of the cross product are both zero because the two
                 // segment direction vectors fall within the x/z plane.
-                float cross = currSegmentDir.x * prevSegmentDir.z - prevSegmentDir.x * currSegmentDir.z;
+                float cross = currSegmentDir.X * prevSegmentDir.Z - prevSegmentDir.X * currSegmentDir.Z;
 
                 // CCW perpendicular vector to AB.  The segment normal.
-                float prevSegmentNormX = -prevSegmentDir.z;
-                float prevSegmentNormZ = prevSegmentDir.x;
+                float prevSegmentNormX = -prevSegmentDir.Z;
+                float prevSegmentNormZ = prevSegmentDir.X;
 
                 // CCW perpendicular vector to BC.  The segment normal.
-                float currSegmentNormX = -currSegmentDir.z;
-                float currSegmentNormZ = currSegmentDir.x;
+                float currSegmentNormX = -currSegmentDir.Z;
+                float currSegmentNormZ = currSegmentDir.X;
 
                 // Average the two segment normals to get the proportional miter offset for B.
                 // This isn't normalized because it's defining the distance and direction the corner will need to be
@@ -792,7 +793,7 @@ namespace DotRecast.Recast
                 bool bevel = cornerMiterSqMag * MITER_LIMIT * MITER_LIMIT < 1.0f;
 
                 // Scale the corner miter so it's proportional to how much the corner should be offset compared to the edges.
-                if (cornerMiterSqMag > RcVec3f.EPSILON)
+                if (cornerMiterSqMag > Vector3Extensions.EPSILON)
                 {
                     float scale = 1.0f / cornerMiterSqMag;
                     cornerMiterX *= scale;
@@ -808,16 +809,16 @@ namespace DotRecast.Recast
 
                     // Generate two bevel vertices at a distances from B proportional to the angle between the two segments.
                     // Move each bevel vertex out proportional to the given offset.
-                    float d = (1.0f - (prevSegmentDir.x * currSegmentDir.x + prevSegmentDir.z * currSegmentDir.z)) * 0.5f;
+                    float d = (1.0f - (prevSegmentDir.X * currSegmentDir.X + prevSegmentDir.Z * currSegmentDir.Z)) * 0.5f;
 
-                    outVerts[numOutVerts * 3 + 0] = vertB.x + (-prevSegmentNormX + prevSegmentDir.x * d) * offset;
-                    outVerts[numOutVerts * 3 + 1] = vertB.y;
-                    outVerts[numOutVerts * 3 + 2] = vertB.z + (-prevSegmentNormZ + prevSegmentDir.z * d) * offset;
+                    outVerts[numOutVerts * 3 + 0] = vertB.X + (-prevSegmentNormX + prevSegmentDir.X * d) * offset;
+                    outVerts[numOutVerts * 3 + 1] = vertB.Y;
+                    outVerts[numOutVerts * 3 + 2] = vertB.Z + (-prevSegmentNormZ + prevSegmentDir.Z * d) * offset;
                     numOutVerts++;
 
-                    outVerts[numOutVerts * 3 + 0] = vertB.x + (-currSegmentNormX - currSegmentDir.x * d) * offset;
-                    outVerts[numOutVerts * 3 + 1] = vertB.y;
-                    outVerts[numOutVerts * 3 + 2] = vertB.z + (-currSegmentNormZ - currSegmentDir.z * d) * offset;
+                    outVerts[numOutVerts * 3 + 0] = vertB.X + (-currSegmentNormX - currSegmentDir.X * d) * offset;
+                    outVerts[numOutVerts * 3 + 1] = vertB.Y;
+                    outVerts[numOutVerts * 3 + 2] = vertB.Z + (-currSegmentNormZ - currSegmentDir.Z * d) * offset;
                     numOutVerts++;
                 }
                 else
@@ -828,9 +829,9 @@ namespace DotRecast.Recast
                     }
 
                     // Move B along the miter direction by the specified offset.
-                    outVerts[numOutVerts * 3 + 0] = vertB.x - cornerMiterX * offset;
-                    outVerts[numOutVerts * 3 + 1] = vertB.y;
-                    outVerts[numOutVerts * 3 + 2] = vertB.z - cornerMiterZ * offset;
+                    outVerts[numOutVerts * 3 + 0] = vertB.X - cornerMiterX * offset;
+                    outVerts[numOutVerts * 3 + 1] = vertB.Y;
+                    outVerts[numOutVerts * 3 + 2] = vertB.Z - cornerMiterZ * offset;
                     numOutVerts++;
                 }
             }

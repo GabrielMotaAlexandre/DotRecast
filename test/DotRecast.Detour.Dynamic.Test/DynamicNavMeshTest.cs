@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Threading.Tasks;
 using DotRecast.Core;
 using DotRecast.Detour.Dynamic.Colliders;
@@ -12,10 +13,10 @@ namespace DotRecast.Detour.Dynamic.Test;
 [Parallelizable]
 public class DynamicNavMeshTest
 {
-    private static readonly RcVec3f START_POS = RcVec3f.Of(70.87453f, 0.0010070801f, 86.69021f);
-    private static readonly RcVec3f END_POS = RcVec3f.Of(-50.22061f, 0.0010070801f, -70.761444f);
-    private static readonly RcVec3f EXTENT = RcVec3f.Of(0.1f, 0.1f, 0.1f);
-    private static readonly RcVec3f SPHERE_POS = RcVec3f.Of(45.381645f, 0.0010070801f, 52.68981f);
+    private static readonly Vector3 START_POS = new Vector3(70.87453f, 0.0010070801f, 86.69021f);
+    private static readonly Vector3 END_POS = new Vector3(-50.22061f, 0.0010070801f, -70.761444f);
+    private static readonly Vector3 EXTENT = new Vector3(0.1f, 0.1f, 0.1f);
+    private static readonly Vector3 SPHERE_POS = new Vector3(45.381645f, 0.0010070801f, 52.68981f);
 
 
     [Test]

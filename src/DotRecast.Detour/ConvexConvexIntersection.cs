@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour
 {
@@ -36,10 +36,10 @@ namespace DotRecast.Detour
             float[] inters = new float[Math.Max(m, n) * 3 * 3];
             int ii = 0;
             /* Initialize variables. */
-            RcVec3f a = new RcVec3f();
-            RcVec3f b = new RcVec3f();
-            RcVec3f a1 = new RcVec3f();
-            RcVec3f b1 = new RcVec3f();
+            Vector3 a = new Vector3();
+            Vector3 b = new Vector3();
+            Vector3 a1 = new Vector3();
+            Vector3 b1 = new Vector3();
 
             int aa = 0;
             int ba = 0;
@@ -48,8 +48,8 @@ namespace DotRecast.Detour
 
             InFlag f = InFlag.Unknown;
             bool FirstPoint = true;
-            RcVec3f ip = new RcVec3f();
-            RcVec3f iq = new RcVec3f();
+            Vector3 ip = new Vector3();
+            Vector3 iq = new Vector3();
 
             do
             {
@@ -58,10 +58,10 @@ namespace DotRecast.Detour
                 a1.Set(p, 3 * ((ai + n - 1) % n)); // prev a
                 b1.Set(q, 3 * ((bi + m - 1) % m)); // prev b
 
-                RcVec3f A = a.Subtract(a1);
-                RcVec3f B = b.Subtract(b1);
+                Vector3 A = a - (a1);
+                Vector3 B = b - (b1);
 
-                float cross = B.x * A.z - A.x * B.z; // TriArea2D({0, 0}, A, B);
+                float cross = B.X * A.Z - A.X * B.Z; // TriArea2D({0, 0}, A, B);
                 float aHB = DtUtils.TriArea2D(b1, b, a);
                 float bHA = DtUtils.TriArea2D(a1, a, b);
                 if (Math.Abs(cross) < EPSILON)
@@ -196,24 +196,24 @@ namespace DotRecast.Detour
             return ii + 3;
         }
 
-        private static int AddVertex(float[] inters, int ii, RcVec3f p)
+        private static int AddVertex(float[] inters, int ii, Vector3 p)
         {
             if (ii > 0)
             {
-                if (inters[ii - 3] == p.x && inters[ii - 2] == p.y && inters[ii - 1] == p.z)
+                if (inters[ii - 3] == p.X && inters[ii - 2] == p.Y && inters[ii - 1] == p.Z)
                 {
                     return ii;
                 }
 
-                if (inters[0] == p.x && inters[1] == p.y && inters[2] == p.z)
+                if (inters[0] == p.X && inters[1] == p.Y && inters[2] == p.Z)
                 {
                     return ii;
                 }
             }
 
-            inters[ii] = p.x;
-            inters[ii + 1] = p.y;
-            inters[ii + 2] = p.z;
+            inters[ii] = p.X;
+            inters[ii + 1] = p.Y;
+            inters[ii + 2] = p.Z;
             return ii + 3;
         }
 
@@ -232,15 +232,15 @@ namespace DotRecast.Detour
             return inflag;
         }
 
-        private static Intersection SegSegInt(RcVec3f a, RcVec3f b, RcVec3f c, RcVec3f d, ref RcVec3f p, ref RcVec3f q)
+        private static Intersection SegSegInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, ref Vector3 p, ref Vector3 q)
         {
             if (DtUtils.IntersectSegSeg2D(a, b, c, d, out var s, out var t))
             {
                 if (s >= 0.0f && s <= 1.0f && t >= 0.0f && t <= 1.0f)
                 {
-                    p.x = a.x + (b.x - a.x) * s;
-                    p.y = a.y + (b.y - a.y) * s;
-                    p.z = a.z + (b.z - a.z) * s;
+                    p.X = a.X + (b.X - a.X) * s;
+                    p.Y = a.Y + (b.Y - a.Y) * s;
+                    p.Z = a.Z + (b.Z - a.Z) * s;
                     return Intersection.Single;
                 }
             }
@@ -248,7 +248,7 @@ namespace DotRecast.Detour
             return Intersection.None;
         }
 
-        private static Intersection ParallelInt(RcVec3f a, RcVec3f b, RcVec3f c, RcVec3f d, ref RcVec3f p, ref RcVec3f q)
+        private static Intersection ParallelInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, ref Vector3 p, ref Vector3 q)
         {
             if (Between(a, b, c) && Between(a, b, d))
             {
@@ -295,15 +295,15 @@ namespace DotRecast.Detour
             return Intersection.None;
         }
 
-        private static bool Between(RcVec3f a, RcVec3f b, RcVec3f c)
+        private static bool Between(Vector3 a, Vector3 b, Vector3 c)
         {
-            if (Math.Abs(a.x - b.x) > Math.Abs(a.z - b.z))
+            if (Math.Abs(a.X - b.X) > Math.Abs(a.Z - b.Z))
             {
-                return ((a.x <= c.x) && (c.x <= b.x)) || ((a.x >= c.x) && (c.x >= b.x));
+                return ((a.X <= c.X) && (c.X <= b.X)) || ((a.X >= c.X) && (c.X >= b.X));
             }
             else
             {
-                return ((a.z <= c.z) && (c.z <= b.z)) || ((a.z >= c.z) && (c.z >= b.z));
+                return ((a.Z <= c.Z) && (c.Z <= b.Z)) || ((a.Z >= c.Z) && (c.Z >= b.Z));
             }
         }
     }

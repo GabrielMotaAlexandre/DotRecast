@@ -16,8 +16,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-using DotRecast.Core;
-
+using System.Numerics;
 using NUnit.Framework;
 
 namespace DotRecast.Detour.Test;
@@ -38,10 +37,10 @@ public class FindNearestPolyTest : AbstractDetourTest
     public void TestFindNearestPoly()
     {
         IDtQueryFilter filter = new DtQueryDefaultFilter();
-        RcVec3f extents = RcVec3f.Of(2, 4, 2);
+        Vector3 extents = new Vector3(2, 4, 2);
         for (int i = 0; i < startRefs.Length; i++)
         {
-            RcVec3f startPos = startPoss[i];
+            Vector3 startPos = startPoss[i];
             var status = query.FindNearestPoly(startPos, extents, filter, out var nearestRef, out var nearestPt, out var _);
             Assert.That(status.Succeeded(), Is.True);
             Assert.That(nearestRef, Is.EqualTo(POLY_REFS[i]));
@@ -56,10 +55,10 @@ public class FindNearestPolyTest : AbstractDetourTest
     [Test]
     public void ShouldReturnStartPosWhenNoPolyIsValid()
     {
-        RcVec3f extents = RcVec3f.Of(2, 4, 2);
+        Vector3 extents = new Vector3(2, 4, 2);
         for (int i = 0; i < startRefs.Length; i++)
         {
-            RcVec3f startPos = startPoss[i];
+            Vector3 startPos = startPoss[i];
             var status = query.FindNearestPoly(startPos, extents, DtQueryEmptyFilter.Shared, out var nearestRef, out var nearestPt, out var _);
             Assert.That(status.Succeeded(), Is.True);
             Assert.That(nearestRef, Is.EqualTo(0L));

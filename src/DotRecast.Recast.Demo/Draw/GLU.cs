@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Recast.Demo.Draw;
@@ -64,7 +65,7 @@ public static class GLU
         matrix.M44 = 0.0f;
     }
 
-    public static int GlhUnProjectf(float winx, float winy, float winz, float[] modelview, float[] projection, int[] viewport, ref RcVec3f objectCoordinate)
+    public static int GlhUnProjectf(float winx, float winy, float winz, float[] modelview, float[] projection, int[] viewport, ref Vector3 objectCoordinate)
     {
         // Transformation matrices
         float[] m = new float[16], A = new float[16];
@@ -85,9 +86,9 @@ public static class GLU
         if (@out[3] == 0.0)
             return 0;
         @out[3] = 1.0f / @out[3];
-        objectCoordinate.x = @out[0] * @out[3];
-        objectCoordinate.y = @out[1] * @out[3];
-        objectCoordinate.z = @out[2] * @out[3];
+        objectCoordinate.X = @out[0] * @out[3];
+        objectCoordinate.Y = @out[1] * @out[3];
+        objectCoordinate.Z = @out[2] * @out[3];
         return 1;
     }
 

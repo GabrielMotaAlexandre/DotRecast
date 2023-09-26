@@ -1,5 +1,5 @@
-﻿using System;
-using DotRecast.Core;
+using System;
+using System.Numerics;
 
 namespace DotRecast.Detour
 {
@@ -31,13 +31,13 @@ namespace DotRecast.Detour
             return temp;
         }
 
-        public float[] Apply(float[] verts, RcVec3f center, float radius)
+        public float[] Apply(float[] verts, Vector3 center, float radius)
         {
             float radiusSqr = radius * radius;
             int outsideVertex = -1;
             for (int pv = 0; pv < verts.Length; pv += 3)
             {
-                if (RcVec3f.Dist2DSqr(center, verts, pv) > radiusSqr)
+                if (Vector3Extensions.Dist2DSqr(center, verts, pv) > radiusSqr)
                 {
                     outsideVertex = pv;
                     break;
@@ -62,14 +62,14 @@ namespace DotRecast.Detour
         }
 
 
-        private float[] Circle(RcVec3f center, float radius)
+        private float[] Circle(Vector3 center, float radius)
         {
             float[] circle = new float[12 * 3];
             for (int i = 0; i < CIRCLE_SEGMENTS * 3; i += 3)
             {
-                circle[i] = UnitCircle[i] * radius + center.x;
-                circle[i + 1] = center.y;
-                circle[i + 2] = UnitCircle[i + 2] * radius + center.z;
+                circle[i] = UnitCircle[i] * radius + center.X;
+                circle[i + 1] = center.Y;
+                circle[i + 2] = UnitCircle[i + 2] * radius + center.Z;
             }
 
             return circle;

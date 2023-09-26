@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 */
 
 using System.IO.Compression;
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Detour.Extras.Unity.Astar
@@ -35,14 +36,14 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                 int endNode = indexToNode[buffer.GetInt()];
                 int connectedNode1 = buffer.GetInt();
                 int connectedNode2 = buffer.GetInt();
-                RcVec3f clamped1 = new RcVec3f();
-                clamped1.x = buffer.GetFloat();
-                clamped1.y = buffer.GetFloat();
-                clamped1.z = buffer.GetFloat();
-                RcVec3f clamped2 = new RcVec3f();
-                clamped2.x = buffer.GetFloat();
-                clamped2.y = buffer.GetFloat();
-                clamped2.z = buffer.GetFloat();
+                Vector3 clamped1 = new Vector3();
+                clamped1.X = buffer.GetFloat();
+                clamped1.Y = buffer.GetFloat();
+                clamped1.Z = buffer.GetFloat();
+                Vector3 clamped2 = new Vector3();
+                clamped2.X = buffer.GetFloat();
+                clamped2.Y = buffer.GetFloat();
+                clamped2.Z = buffer.GetFloat();
                 bool postScanCalled = buffer.Get() != 0;
                 links[i] = new NodeLink2(linkID, startNode, endNode, clamped1, clamped2);
             }

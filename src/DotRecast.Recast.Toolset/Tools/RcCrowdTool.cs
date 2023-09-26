@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour;
 using DotRecast.Detour.Crowd;
@@ -16,7 +17,7 @@ namespace DotRecast.Recast.Toolset.Tools
         private long crowdUpdateTime;
         private readonly Dictionary<long, RcCrowdAgentTrail> _trails;
         private long _moveTargetRef;
-        private RcVec3f _moveTargetPos;
+        private Vector3 _moveTargetPos;
 
         public RcCrowdTool()
         {
@@ -52,7 +53,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return _moveTargetRef;
         }
 
-        public RcVec3f GetMoveTargetPos()
+        public Vector3 GetMoveTargetPos()
         {
             return _moveTargetPos;
         }
@@ -150,9 +151,9 @@ namespace DotRecast.Recast.Toolset.Tools
                 RcCrowdAgentTrail trail = _trails[ag.idx];
                 // Update agent movement trail.
                 trail.htrail = (trail.htrail + 1) % RcCrowdAgentTrail.AGENT_MAX_TRAIL;
-                trail.trail[trail.htrail * 3] = ag.npos.x;
-                trail.trail[trail.htrail * 3 + 1] = ag.npos.y;
-                trail.trail[trail.htrail * 3 + 2] = ag.npos.z;
+                trail.trail[trail.htrail * 3] = ag.npos.X;
+                trail.trail[trail.htrail * 3 + 1] = ag.npos.Y;
+                trail.trail[trail.htrail * 3 + 2] = ag.npos.Z;
             }
 
             _agentDebug.vod.NormalizeSamples();
@@ -170,7 +171,7 @@ namespace DotRecast.Recast.Toolset.Tools
             }
         }
 
-        public void AddAgent(RcVec3f p, float agentRadius, float agentHeight, float agentMaxAcceleration, float agentMaxSpeed)
+        public void AddAgent(Vector3 p, float agentRadius, float agentHeight, float agentMaxAcceleration, float agentMaxSpeed)
         {
             DtCrowdAgentParams ap = CreateAgentParams(agentRadius, agentHeight, agentMaxAcceleration, agentMaxSpeed);
             DtCrowdAgent ag = crowd.AddAgent(p, ap);
@@ -188,9 +189,9 @@ namespace DotRecast.Recast.Toolset.Tools
 
                 for (int i = 0; i < RcCrowdAgentTrail.AGENT_MAX_TRAIL; ++i)
                 {
-                    trail.trail[i * 3] = p.x;
-                    trail.trail[i * 3 + 1] = p.y;
-                    trail.trail[i * 3 + 2] = p.z;
+                    trail.trail[i * 3] = p.X;
+                    trail.trail[i * 3 + 1] = p.Y;
+                    trail.trail[i * 3 + 2] = p.Z;
                 }
 
                 trail.htrail = 0;
@@ -212,15 +213,15 @@ namespace DotRecast.Recast.Toolset.Tools
             return ap;
         }
 
-        public DtCrowdAgent HitTestAgents(RcVec3f s, RcVec3f p)
+        public DtCrowdAgent HitTestAgents(Vector3 s, Vector3 p)
         {
             DtCrowdAgent isel = null;
             float tsel = float.MaxValue;
 
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                RcVec3f bmin = new RcVec3f();
-                RcVec3f bmax = new RcVec3f();
+                Vector3 bmin = new Vector3();
+                Vector3 bmax = new Vector3();
                 GetAgentBounds(ag, ref bmin, ref bmax);
                 if (Intersections.IsectSegAABB(s, p, bmin, bmax, out var tmin, out var tmax))
                 {
@@ -235,20 +236,20 @@ namespace DotRecast.Recast.Toolset.Tools
             return isel;
         }
 
-        private void GetAgentBounds(DtCrowdAgent ag, ref RcVec3f bmin, ref RcVec3f bmax)
+        private void GetAgentBounds(DtCrowdAgent ag, ref Vector3 bmin, ref Vector3 bmax)
         {
-            RcVec3f p = ag.npos;
+            Vector3 p = ag.npos;
             float r = ag.option.radius;
             float h = ag.option.height;
-            bmin.x = p.x - r;
-            bmin.y = p.y;
-            bmin.z = p.z - r;
-            bmax.x = p.x + r;
-            bmax.y = p.y + h;
-            bmax.z = p.z + r;
+            bmin.X = p.X - r;
+            bmin.Y = p.Y;
+            bmin.Z = p.Z - r;
+            bmax.X = p.X + r;
+            bmax.Y = p.Y + h;
+            bmax.Z = p.Z + r;
         }
 
-        public void SetMoveTarget(RcVec3f p, bool adjust)
+        public void SetMoveTarget(Vector3 p, bool adjust)
         {
             if (crowd == null)
                 return;
@@ -256,21 +257,21 @@ namespace DotRecast.Recast.Toolset.Tools
             // Find nearest point on navmesh and set move request to that location.
             DtNavMeshQuery navquery = crowd.GetNavMeshQuery();
             IDtQueryFilter filter = crowd.GetFilter(0);
-            RcVec3f halfExtents = crowd.GetQueryExtents();
+            Vector3 halfExtents = crowd.GetQueryExtents();
 
             if (adjust)
             {
                 // Request velocity
                 if (_agentDebug.agent != null)
                 {
-                    RcVec3f vel = CalcVel(_agentDebug.agent.npos, p, _agentDebug.agent.option.maxSpeed);
+                    Vector3 vel = CalcVel(_agentDebug.agent.npos, p, _agentDebug.agent.option.maxSpeed);
                     crowd.RequestMoveVelocity(_agentDebug.agent, vel);
                 }
                 else
                 {
                     foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
                     {
-                        RcVec3f vel = CalcVel(ag.npos, p, ag.option.maxSpeed);
+                        Vector3 vel = CalcVel(ag.npos, p, ag.option.maxSpeed);
                         crowd.RequestMoveVelocity(ag, vel);
                     }
                 }
@@ -292,12 +293,12 @@ namespace DotRecast.Recast.Toolset.Tools
             }
         }
 
-        private RcVec3f CalcVel(RcVec3f pos, RcVec3f tgt, float speed)
+        private Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
         {
-            RcVec3f vel = tgt.Subtract(pos);
-            vel.y = 0.0f;
+            Vector3 vel = tgt - (pos);
+            vel.Y = 0.0f;
             vel.Normalize();
-            return vel.Scale(speed);
+            return vel * (speed);
         }
 
         public long GetCrowdUpdateTime()

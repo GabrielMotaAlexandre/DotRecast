@@ -1,5 +1,5 @@
-﻿using System;
-using DotRecast.Core;
+using System;
+using System.Numerics;
 using DotRecast.Recast.Geom;
 using DotRecast.Recast.Toolset.Builder;
 
@@ -16,7 +16,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return "Off-Mesh Links";
         }
 
-        public void Add(IInputGeomProvider geom, RcNavMeshBuildSettings settings, RcVec3f start, RcVec3f end, bool bidir)
+        public void Add(IInputGeomProvider geom, RcNavMeshBuildSettings settings, Vector3 start, Vector3 end, bool bidir)
         {
             if (null == geom)
                 return;
@@ -26,7 +26,7 @@ namespace DotRecast.Recast.Toolset.Tools
             geom.AddOffMeshConnection(start, end, settings.agentRadius, bidir, area, flags);
         }
 
-        public void Remove(IInputGeomProvider geom, RcNavMeshBuildSettings settings, RcVec3f p)
+        public void Remove(IInputGeomProvider geom, RcNavMeshBuildSettings settings, Vector3 p)
         {
             // Delete
             // Find nearest link end-point
@@ -34,7 +34,7 @@ namespace DotRecast.Recast.Toolset.Tools
             RcOffMeshConnection nearestConnection = null;
             foreach (RcOffMeshConnection offMeshCon in geom.GetOffMeshConnections())
             {
-                float d = Math.Min(RcVec3f.DistSqr(p, offMeshCon.verts, 0), RcVec3f.DistSqr(p, offMeshCon.verts, 3));
+                float d = Math.Min(Vector3.DistanceSquared(p, new Vector3(offMeshCon.verts[0], offMeshCon.verts[1], offMeshCon.verts[2])), Vector3.DistanceSquared(p, new Vector3(offMeshCon.verts[3], offMeshCon.verts[4], offMeshCon.verts[5])));
                 if (d < nearestDist && Math.Sqrt(d) < settings.agentRadius)
                 {
                     nearestDist = d;

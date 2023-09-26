@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Recast
 {
@@ -32,10 +32,10 @@ namespace DotRecast.Recast
         public readonly int height;
 
         /** The minimum bounds in world space. [(x, y, z)] */
-        public readonly RcVec3f bmin;
+        public readonly Vector3 bmin;
 
         /** The maximum bounds in world space. [(x, y, z)] */
-        public RcVec3f bmax;
+        public Vector3 bmax;
 
         /** The size of each cell. (On the xz-plane.) */
         public readonly float cs;
@@ -49,7 +49,7 @@ namespace DotRecast.Recast
         /** Border size in cell units */
         public readonly int borderSize;
 
-        public RcHeightfield(int width, int height, RcVec3f bmin, RcVec3f bmax, float cs, float ch, int borderSize)
+        public RcHeightfield(int width, int height, Vector3 bmin, Vector3 bmax, float cs, float ch, int borderSize)
         {
             this.width = width;
             this.height = height;

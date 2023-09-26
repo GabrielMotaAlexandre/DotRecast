@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 
 using NUnit.Framework;
 
@@ -39,22 +39,22 @@ public class AbstractCrowdTest
 
     protected readonly long[] endRefs = { 281474976710721L, 281474976710767L, 281474976710758L, 281474976710731L, 281474976710772L };
 
-    protected readonly RcVec3f[] startPoss =
+    protected readonly Vector3[] startPoss =
     {
-        RcVec3f.Of(22.60652f, 10.197294f, -45.918674f),
-        RcVec3f.Of(22.331268f, 10.197294f, -1.0401875f),
-        RcVec3f.Of(18.694363f, 15.803535f, -73.090416f),
-        RcVec3f.Of(0.7453353f, 10.197294f, -5.94005f),
-        RcVec3f.Of(-20.651257f, 5.904126f, -13.712508f),
+        new Vector3(22.60652f, 10.197294f, -45.918674f),
+        new Vector3(22.331268f, 10.197294f, -1.0401875f),
+        new Vector3(18.694363f, 15.803535f, -73.090416f),
+        new Vector3(0.7453353f, 10.197294f, -5.94005f),
+        new Vector3(-20.651257f, 5.904126f, -13.712508f),
     };
 
-    protected readonly RcVec3f[] endPoss =
+    protected readonly Vector3[] endPoss =
     {
-        RcVec3f.Of(6.4576626f, 10.197294f, -18.33406f),
-        RcVec3f.Of(-5.8023443f, 0.19729415f, 3.008419f),
-        RcVec3f.Of(38.423977f, 10.197294f, -0.116066754f),
-        RcVec3f.Of(0.8635526f, 10.197294f, -10.31032f),
-        RcVec3f.Of(18.784092f, 10.197294f, 3.0543678f),
+        new Vector3(6.4576626f, 10.197294f, -18.33406f),
+        new Vector3(-5.8023443f, 0.19729415f, 3.008419f),
+        new Vector3(38.423977f, 10.197294f, -0.116066754f),
+        new Vector3(0.8635526f, 10.197294f, -10.31032f),
+        new Vector3(18.784092f, 10.197294f, 3.0543678f),
     };
 
     protected DtMeshData nmd;
@@ -113,31 +113,31 @@ public class AbstractCrowdTest
         return ap;
     }
 
-    protected void AddAgentGrid(int size, float distance, int updateFlags, int obstacleAvoidanceType, RcVec3f startPos)
+    protected void AddAgentGrid(int size, float distance, int updateFlags, int obstacleAvoidanceType, Vector3 startPos)
     {
         DtCrowdAgentParams ap = GetAgentParams(updateFlags, obstacleAvoidanceType);
         for (int i = 0; i < size; i++)
         {
             for (int j = 0; j < size; j++)
             {
-                RcVec3f pos = new RcVec3f();
-                pos.x = startPos.x + i * distance;
-                pos.y = startPos.y;
-                pos.z = startPos.z + j * distance;
+                Vector3 pos = new Vector3();
+                pos.X = startPos.X + i * distance;
+                pos.Y = startPos.Y;
+                pos.Z = startPos.Z + j * distance;
                 agents.Add(crowd.AddAgent(pos, ap));
             }
         }
     }
 
-    protected void SetMoveTarget(RcVec3f pos, bool adjust)
+    protected void SetMoveTarget(Vector3 pos, bool adjust)
     {
-        RcVec3f ext = crowd.GetQueryExtents();
+        Vector3 ext = crowd.GetQueryExtents();
         IDtQueryFilter filter = crowd.GetFilter(0);
         if (adjust)
         {
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                RcVec3f vel = CalcVel(ag.npos, pos, ag.option.maxSpeed);
+                Vector3 vel = CalcVel(ag.npos, pos, ag.option.maxSpeed);
                 crowd.RequestMoveVelocity(ag, vel);
             }
         }
@@ -151,12 +151,12 @@ public class AbstractCrowdTest
         }
     }
 
-    protected RcVec3f CalcVel(RcVec3f pos, RcVec3f tgt, float speed)
+    protected Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
     {
-        RcVec3f vel = tgt.Subtract(pos);
-        vel.y = 0.0f;
+        Vector3 vel = tgt - (pos);
+        vel.Y = 0.0f;
         vel.Normalize();
-        vel = vel.Scale(speed);
+        vel = vel * (speed);
         return vel;
     }
 
@@ -166,8 +166,8 @@ public class AbstractCrowdTest
         foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
         {
             Console.WriteLine(ag.state + ", " + ag.targetState);
-            Console.WriteLine(ag.npos.x + ", " + ag.npos.y + ", " + ag.npos.z);
-            Console.WriteLine(ag.nvel.x + ", " + ag.nvel.y + ", " + ag.nvel.z);
+            Console.WriteLine(ag.npos.X + ", " + ag.npos.Y + ", " + ag.npos.Z);
+            Console.WriteLine(ag.nvel.X + ", " + ag.nvel.Y + ", " + ag.nvel.Z);
         }
     }
 }

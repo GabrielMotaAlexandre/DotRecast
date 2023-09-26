@@ -19,12 +19,13 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
 
 namespace DotRecast.Detour.Crowd
 {
-    
+
 
     public class DtObstacleAvoidanceQuery
     {
@@ -72,7 +73,7 @@ namespace DotRecast.Detour.Crowd
             m_nsegments = 0;
         }
 
-        public void AddCircle(RcVec3f pos, float rad, RcVec3f vel, RcVec3f dvel)
+        public void AddCircle(Vector3 pos, float rad, Vector3 vel, Vector3 dvel)
         {
             if (m_ncircles >= m_maxCircles)
                 return;
@@ -84,7 +85,7 @@ namespace DotRecast.Detour.Crowd
             cir.dvel = dvel;
         }
 
-        public void AddSegment(RcVec3f p, RcVec3f q)
+        public void AddSegment(Vector3 p, Vector3 q)
         {
             if (m_nsegments >= m_maxSegments)
                 return;
@@ -114,7 +115,7 @@ namespace DotRecast.Detour.Crowd
             return m_segments[i];
         }
 
-        private void Prepare(RcVec3f pos, RcVec3f dvel)
+        private void Prepare(Vector3 pos, Vector3 dvel)
         {
             // Prepare obstacles
             for (int i = 0; i < m_ncircles; ++i)
@@ -122,25 +123,25 @@ namespace DotRecast.Detour.Crowd
                 DtObstacleCircle cir = m_circles[i];
 
                 // Side
-                RcVec3f pa = pos;
-                RcVec3f pb = cir.p;
+                Vector3 pa = pos;
+                Vector3 pb = cir.p;
 
-                RcVec3f orig = new RcVec3f();
-                RcVec3f dv = new RcVec3f();
-                cir.dp = pb.Subtract(pa);
+                Vector3 orig = new Vector3();
+                Vector3 dv = new Vector3();
+                cir.dp = pb - (pa);
                 cir.dp.Normalize();
-                dv = cir.dvel.Subtract(dvel);
+                dv = cir.dvel - (dvel);
 
                 float a = DtUtils.TriArea2D(orig, cir.dp, dv);
                 if (a < 0.01f)
                 {
-                    cir.np.x = -cir.dp.z;
-                    cir.np.z = cir.dp.x;
+                    cir.np.X = -cir.dp.Z;
+                    cir.np.Z = cir.dp.X;
                 }
                 else
                 {
-                    cir.np.x = cir.dp.z;
-                    cir.np.z = -cir.dp.x;
+                    cir.np.X = cir.dp.Z;
+                    cir.np.Z = -cir.dp.X;
                 }
             }
 
@@ -155,14 +156,14 @@ namespace DotRecast.Detour.Crowd
             }
         }
 
-        private bool SweepCircleCircle(RcVec3f c0, float r0, RcVec3f v, RcVec3f c1, float r1, out float tmin, out float tmax)
+        private bool SweepCircleCircle(Vector3 c0, float r0, Vector3 v, Vector3 c1, float r1, out float tmin, out float tmax)
         {
             const float EPS = 0.0001f;
 
             tmin = 0;
             tmax = 0;
 
-            RcVec3f s = c1.Subtract(c0);
+            Vector3 s = c1 - (c0);
             float r = r0 + r1;
             float c = s.Dot2D(s) - r * r;
             float a = v.Dot2D(v);
@@ -184,20 +185,20 @@ namespace DotRecast.Detour.Crowd
             return true;
         }
 
-        private bool IsectRaySeg(RcVec3f ap, RcVec3f u, RcVec3f bp, RcVec3f bq, ref float t)
+        private bool IsectRaySeg(Vector3 ap, Vector3 u, Vector3 bp, Vector3 bq, ref float t)
         {
-            RcVec3f v = bq.Subtract(bp);
-            RcVec3f w = ap.Subtract(bp);
-            float d = RcVec3f.Perp2D(u, v);
+            Vector3 v = bq - (bp);
+            Vector3 w = ap - (bp);
+            float d = Vector3Extensions.Perp2D(u, v);
             if (Math.Abs(d) < 1e-6f)
                 return false;
 
             d = 1.0f / d;
-            t = RcVec3f.Perp2D(v, w) * d;
+            t = Vector3Extensions.Perp2D(v, w) * d;
             if (t < 0 || t > 1)
                 return false;
 
-            float s = RcVec3f.Perp2D(u, w) * d;
+            float s = Vector3Extensions.Perp2D(u, w) * d;
             if (s < 0 || s > 1)
                 return false;
 
@@ -214,12 +215,12 @@ namespace DotRecast.Detour.Crowd
      * @param minPenalty
      *            threshold penalty for early out
      */
-        private float ProcessSample(RcVec3f vcand, float cs, RcVec3f pos, float rad, RcVec3f vel, RcVec3f dvel,
+        private float ProcessSample(Vector3 vcand, float cs, Vector3 pos, float rad, Vector3 vel, Vector3 dvel,
             float minPenalty, DtObstacleAvoidanceDebugData debug)
         {
             // penalty for straying away from the desired and current velocities
-            float vpen = m_params.weightDesVel * (RcVec3f.Dist2D(vcand, dvel) * m_invVmax);
-            float vcpen = m_params.weightCurVel * (RcVec3f.Dist2D(vcand, vel) * m_invVmax);
+            float vpen = m_params.weightDesVel * (Vector3Extensions.Dist2D(vcand, dvel) * m_invVmax);
+            float vcpen = m_params.weightCurVel * (Vector3Extensions.Dist2D(vcand, vel) * m_invVmax);
 
             // find the threshold hit time to bail out based on the early out penalty
             // (see how the penalty is calculated below to understand)
@@ -238,9 +239,9 @@ namespace DotRecast.Detour.Crowd
                 DtObstacleCircle cir = m_circles[i];
 
                 // RVO
-                RcVec3f vab = vcand.Scale(2);
-                vab = vab.Subtract(vel);
-                vab = vab.Subtract(cir.vel);
+                Vector3 vab = vcand*(2);
+                vab = vab - (vel);
+                vab = vab - (cir.vel);
 
                 // Side
                 side += Math.Clamp(Math.Min(cir.dp.Dot2D(vab) * 0.5f + 0.5f, cir.np.Dot2D(vab) * 2), 0.0f, 1.0f);
@@ -276,10 +277,10 @@ namespace DotRecast.Detour.Crowd
                 if (seg.touch)
                 {
                     // Special case when the agent is very close to the segment.
-                    RcVec3f sdir = seg.q.Subtract(seg.p);
-                    RcVec3f snorm = new RcVec3f();
-                    snorm.x = -sdir.z;
-                    snorm.z = sdir.x;
+                    Vector3 sdir = seg.q - (seg.p);
+                    Vector3 snorm = new Vector3();
+                    snorm.X = -sdir.Z;
+                    snorm.Z = sdir.X;
                     // If the velocity is pointing towards the segment, no collision.
                     if (snorm.Dot2D(vcand) < 0.0f)
                         continue;
@@ -319,7 +320,7 @@ namespace DotRecast.Detour.Crowd
             return penalty;
         }
 
-        public int SampleVelocityGrid(RcVec3f pos, float rad, float vmax, RcVec3f vel, RcVec3f dvel, out RcVec3f nvel,
+        public int SampleVelocityGrid(Vector3 pos, float rad, float vmax, Vector3 vel, Vector3 dvel, out Vector3 nvel,
             DtObstacleAvoidanceParams option, DtObstacleAvoidanceDebugData debug)
         {
             Prepare(pos, dvel);
@@ -328,13 +329,13 @@ namespace DotRecast.Detour.Crowd
             m_vmax = vmax;
             m_invVmax = vmax > 0 ? 1.0f / vmax : float.MaxValue;
 
-            nvel = RcVec3f.Zero;
+            nvel = Vector3.Zero;
 
             if (debug != null)
                 debug.Reset();
 
-            float cvx = dvel.x * m_params.velBias;
-            float cvz = dvel.z * m_params.velBias;
+            float cvx = dvel.X * m_params.velBias;
+            float cvz = dvel.Z * m_params.velBias;
             float cs = vmax * 2 * (1 - m_params.velBias) / (m_params.gridSize - 1);
             float half = (m_params.gridSize - 1) * cs * 0.5f;
 
@@ -345,8 +346,8 @@ namespace DotRecast.Detour.Crowd
             {
                 for (int x = 0; x < m_params.gridSize; ++x)
                 {
-                    RcVec3f vcand = RcVec3f.Of(cvx + x * cs - half, 0f, cvz + y * cs - half);
-                    if (RcMath.Sqr(vcand.x) + RcMath.Sqr(vcand.z) > RcMath.Sqr(vmax + cs / 2))
+                    Vector3 vcand = new Vector3(cvx + x * cs - half, 0f, cvz + y * cs - half);
+                    if (RcMath.Sqr(vcand.X) + RcMath.Sqr(vcand.Z) > RcMath.Sqr(vmax + cs / 2))
                         continue;
 
                     float penalty = ProcessSample(vcand, cs, pos, rad, vel, dvel, minPenalty, debug);
@@ -374,20 +375,20 @@ namespace DotRecast.Detour.Crowd
         }
 
         // vector normalization that ignores the y-component.
-        RcVec3f DtRotate2D(float[] v, float ang)
+        Vector3 DtRotate2D(float[] v, float ang)
         {
-            RcVec3f dest = new RcVec3f();
+            Vector3 dest = new Vector3();
             float c = (float)Math.Cos(ang);
             float s = (float)Math.Sin(ang);
-            dest.x = v[0] * c - v[2] * s;
-            dest.z = v[0] * s + v[2] * c;
-            dest.y = v[1];
+            dest.X = v[0] * c - v[2] * s;
+            dest.Z = v[0] * s + v[2] * c;
+            dest.Y = v[1];
             return dest;
         }
 
         static readonly float DT_PI = 3.14159265f;
 
-        public int SampleVelocityAdaptive(RcVec3f pos, float rad, float vmax, RcVec3f vel, RcVec3f dvel, out RcVec3f nvel,
+        public int SampleVelocityAdaptive(Vector3 pos, float rad, float vmax, Vector3 vel, Vector3 dvel, out Vector3 nvel,
             DtObstacleAvoidanceParams option,
             DtObstacleAvoidanceDebugData debug)
         {
@@ -397,7 +398,7 @@ namespace DotRecast.Detour.Crowd
             m_vmax = vmax;
             m_invVmax = vmax > 0 ? 1.0f / vmax : float.MaxValue;
 
-            nvel = RcVec3f.Zero;
+            nvel = Vector3.Zero;
 
             if (debug != null)
                 debug.Reset();
@@ -418,14 +419,14 @@ namespace DotRecast.Detour.Crowd
 
             // desired direction
             float[] ddir = new float[6];
-            ddir[0] = dvel.x;
-            ddir[1] = dvel.y;
-            ddir[2] = dvel.z;
+            ddir[0] = dvel.X;
+            ddir[1] = dvel.Y;
+            ddir[2] = dvel.Z;
             DtNormalize2D(ddir);
-            RcVec3f rotated = DtRotate2D(ddir, da * 0.5f); // rotated by da/2
-            ddir[3] = rotated.x;
-            ddir[4] = rotated.y;
-            ddir[5] = rotated.z;
+            Vector3 rotated = DtRotate2D(ddir, da * 0.5f); // rotated by da/2
+            ddir[3] = rotated.X;
+            ddir[4] = rotated.Y;
+            ddir[5] = rotated.Z;
 
             // Always add sample at zero
             pat[npat * 2 + 0] = 0;
@@ -465,18 +466,18 @@ namespace DotRecast.Detour.Crowd
 
             // Start sampling.
             float cr = vmax * (1.0f - m_params.velBias);
-            RcVec3f res = RcVec3f.Of(dvel.x * m_params.velBias, 0, dvel.z * m_params.velBias);
+            Vector3 res = new Vector3(dvel.X * m_params.velBias, 0, dvel.Z * m_params.velBias);
             int ns = 0;
             for (int k = 0; k < depth; ++k)
             {
                 float minPenalty = float.MaxValue;
-                RcVec3f bvel = new RcVec3f();
-                bvel = RcVec3f.Zero;
+                Vector3 bvel = new Vector3();
+                bvel = Vector3.Zero;
 
                 for (int i = 0; i < npat; ++i)
                 {
-                    RcVec3f vcand = RcVec3f.Of(res.x + pat[i * 2 + 0] * cr, 0f, res.z + pat[i * 2 + 1] * cr);
-                    if (RcMath.Sqr(vcand.x) + RcMath.Sqr(vcand.z) > RcMath.Sqr(vmax + 0.001f))
+                    Vector3 vcand = new Vector3(res.X + pat[i * 2 + 0] * cr, 0f, res.Z + pat[i * 2 + 1] * cr);
+                    if (RcMath.Sqr(vcand.X) + RcMath.Sqr(vcand.Z) > RcMath.Sqr(vmax + 0.001f))
                         continue;
 
                     float penalty = ProcessSample(vcand, cr / 10, pos, rad, vel, dvel, minPenalty, debug);

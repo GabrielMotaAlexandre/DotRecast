@@ -18,6 +18,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast;
 
@@ -25,17 +26,17 @@ namespace DotRecast.Detour.Dynamic.Colliders
 {
     public class DtBoxCollider : DtCollider
     {
-        private readonly RcVec3f center;
-        private readonly RcVec3f[] halfEdges;
+        private readonly Vector3 center;
+        private readonly Vector3[] halfEdges;
 
-        public DtBoxCollider(RcVec3f center, RcVec3f[] halfEdges, int area, float flagMergeThreshold) :
+        public DtBoxCollider(Vector3 center, Vector3[] halfEdges, int area, float flagMergeThreshold) :
             base(area, flagMergeThreshold, Bounds(center, halfEdges))
         {
             this.center = center;
             this.halfEdges = halfEdges;
         }
 
-        private static float[] Bounds(RcVec3f center, RcVec3f[] halfEdges)
+        private static float[] Bounds(Vector3 center, Vector3[] halfEdges)
         {
             float[] bounds = new float[]
             {
@@ -47,9 +48,9 @@ namespace DotRecast.Detour.Dynamic.Colliders
                 float s0 = (i & 1) != 0 ? 1f : -1f;
                 float s1 = (i & 2) != 0 ? 1f : -1f;
                 float s2 = (i & 4) != 0 ? 1f : -1f;
-                float vx = center.x + s0 * halfEdges[0].x + s1 * halfEdges[1].x + s2 * halfEdges[2].x;
-                float vy = center.y + s0 * halfEdges[0].y + s1 * halfEdges[1].y + s2 * halfEdges[2].y;
-                float vz = center.z + s0 * halfEdges[0].z + s1 * halfEdges[1].z + s2 * halfEdges[2].z;
+                float vx = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
+                float vy = center.Y + s0 * halfEdges[0].Y + s1 * halfEdges[1].Y + s2 * halfEdges[2].Y;
+                float vz = center.Z + s0 * halfEdges[0].Z + s1 * halfEdges[1].Z + s2 * halfEdges[2].Z;
                 bounds[0] = Math.Min(bounds[0], vx);
                 bounds[1] = Math.Min(bounds[1], vy);
                 bounds[2] = Math.Min(bounds[2], vz);
@@ -67,28 +68,28 @@ namespace DotRecast.Detour.Dynamic.Colliders
                 hf, center, halfEdges, area, (int)Math.Floor(flagMergeThreshold / hf.ch), telemetry);
         }
 
-        public static RcVec3f[] GetHalfEdges(RcVec3f up, RcVec3f forward, RcVec3f extent)
+        public static Vector3[] GetHalfEdges(Vector3 up, Vector3 forward, Vector3 extent)
         {
-            RcVec3f[] halfEdges =
+            Vector3[] halfEdges =
             {
-                RcVec3f.Zero,
-                RcVec3f.Of(up.x, up.y, up.z),
-                RcVec3f.Zero
+                Vector3.Zero,
+                new Vector3(up.X, up.Y, up.Z),
+                Vector3.Zero
             };
-            RcVec3f.Normalize(ref halfEdges[1]);
-            RcVec3f.Cross(ref halfEdges[0], up, forward);
-            RcVec3f.Normalize(ref halfEdges[0]);
-            RcVec3f.Cross(ref halfEdges[2], halfEdges[0], up);
-            RcVec3f.Normalize(ref halfEdges[2]);
-            halfEdges[0].x *= extent.x;
-            halfEdges[0].y *= extent.x;
-            halfEdges[0].z *= extent.x;
-            halfEdges[1].x *= extent.y;
-            halfEdges[1].y *= extent.y;
-            halfEdges[1].z *= extent.y;
-            halfEdges[2].x *= extent.z;
-            halfEdges[2].y *= extent.z;
-            halfEdges[2].z *= extent.z;
+            Vector3Extensions.Normalize(ref halfEdges[1]);
+            Vector3Extensions.Cross(ref halfEdges[0], up, forward);
+            Vector3Extensions.Normalize(ref halfEdges[0]);
+            Vector3Extensions.Cross(ref halfEdges[2], halfEdges[0], up);
+            Vector3Extensions.Normalize(ref halfEdges[2]);
+            halfEdges[0].X *= extent.X;
+            halfEdges[0].Y *= extent.X;
+            halfEdges[0].Z *= extent.X;
+            halfEdges[1].X *= extent.Y;
+            halfEdges[1].Y *= extent.Y;
+            halfEdges[1].Z *= extent.Y;
+            halfEdges[2].X *= extent.Z;
+            halfEdges[2].Y *= extent.Z;
+            halfEdges[2].Z *= extent.Z;
             return halfEdges;
         }
     }

@@ -16,7 +16,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-using DotRecast.Core;
+using System.Numerics;
 using DotRecast.Detour.Extras.Jumplink;
 using DotRecast.Recast.Demo.Draw;
 using DotRecast.Recast.Toolset;
@@ -245,14 +245,14 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     dd.End();
 
                     dd.Begin(LINES, 1.0f);
-                    dd.Vertex(link.start.p.x, link.start.p.y, link.start.p.z, colb);
-                    dd.Vertex(link.start.p.x, link.start.p.y + r, link.start.p.z, colb);
-                    dd.Vertex(link.start.p.x, link.start.p.y + r, link.start.p.z, colb);
-                    dd.Vertex(link.start.q.x, link.start.q.y + r, link.start.q.z, colb);
-                    dd.Vertex(link.start.q.x, link.start.q.y + r, link.start.q.z, colb);
-                    dd.Vertex(link.start.q.x, link.start.q.y, link.start.q.z, colb);
-                    dd.Vertex(link.start.q.x, link.start.q.y, link.start.q.z, colb);
-                    dd.Vertex(link.start.p.x, link.start.p.y, link.start.p.z, colb);
+                    dd.Vertex(link.start.p.X, link.start.p.Y, link.start.p.Z, colb);
+                    dd.Vertex(link.start.p.X, link.start.p.Y + r, link.start.p.Z, colb);
+                    dd.Vertex(link.start.p.X, link.start.p.Y + r, link.start.p.Z, colb);
+                    dd.Vertex(link.start.q.X, link.start.q.Y + r, link.start.q.Z, colb);
+                    dd.Vertex(link.start.q.X, link.start.q.Y + r, link.start.q.Z, colb);
+                    dd.Vertex(link.start.q.X, link.start.q.Y, link.start.q.Z, colb);
+                    dd.Vertex(link.start.q.X, link.start.q.Y, link.start.q.Z, colb);
+                    dd.Vertex(link.start.p.X, link.start.p.Y, link.start.p.Z, colb);
                     dd.End();
 
                     GroundSegment end = link.end;
@@ -264,14 +264,14 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     dd.End();
 
                     dd.Begin(LINES, 1.0f);
-                    dd.Vertex(end.p.x, end.p.y, end.p.z, colb);
-                    dd.Vertex(end.p.x, end.p.y + r, end.p.z, colb);
-                    dd.Vertex(end.p.x, end.p.y + r, end.p.z, colb);
-                    dd.Vertex(end.q.x, end.q.y + r, end.q.z, colb);
-                    dd.Vertex(end.q.x, end.q.y + r, end.q.z, colb);
-                    dd.Vertex(end.q.x, end.q.y, end.q.z, colb);
-                    dd.Vertex(end.q.x, end.q.y, end.q.z, colb);
-                    dd.Vertex(end.p.x, end.p.y, end.p.z, colb);
+                    dd.Vertex(end.p.X, end.p.Y, end.p.Z, colb);
+                    dd.Vertex(end.p.X, end.p.Y + r, end.p.Z, colb);
+                    dd.Vertex(end.p.X, end.p.Y + r, end.p.Z, colb);
+                    dd.Vertex(end.q.X, end.q.Y + r, end.q.Z, colb);
+                    dd.Vertex(end.q.X, end.q.Y + r, end.q.Z, colb);
+                    dd.Vertex(end.q.X, end.q.Y, end.q.Z, colb);
+                    dd.Vertex(end.q.X, end.q.Y, end.q.Z, colb);
+                    dd.Vertex(end.p.X, end.p.Y, end.p.Z, colb);
                     dd.End();
 
                     dd.Begin(LINES, 4.0f);
@@ -302,7 +302,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     {
                         GroundSample s = link.start.gsamples[i];
                         float u = i / (float)(link.start.gsamples.Length - 1);
-                        RcVec3f spt = RcVec3f.Lerp(link.start.p, link.start.q, u);
+                        Vector3 spt = Vector3.Lerp(link.start.p, link.start.q, u);
                         int col = DuRGBA(48, 16, 16, 255); // DuRGBA(255,(s->flags & 4)?255:0,0,255);
                         float off = 0.1f;
                         if (!s.validHeight)
@@ -311,7 +311,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                             col = DuRGBA(220, 32, 32, 255);
                         }
 
-                        spt.y = s.p.y + off;
+                        spt.Y = s.p.Y + off;
                         dd.Vertex(spt, col);
                     }
 
@@ -322,7 +322,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     {
                         GroundSample s = link.start.gsamples[i];
                         float u = i / (float)(link.start.gsamples.Length - 1);
-                        RcVec3f spt = RcVec3f.Lerp(link.start.p, link.start.q, u);
+                        Vector3 spt = Vector3.Lerp(link.start.p, link.start.q, u);
                         int col = DuRGBA(255, 255, 255, 255);
                         float off = 0;
                         if (s.validHeight)
@@ -330,7 +330,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                             off = 0.1f;
                         }
 
-                        spt.y = s.p.y + off;
+                        spt.Y = s.p.Y + off;
                         dd.Vertex(spt, col);
                     }
 
@@ -342,7 +342,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                         {
                             GroundSample s = end.gsamples[i];
                             float u = i / (float)(end.gsamples.Length - 1);
-                            RcVec3f spt = RcVec3f.Lerp(end.p, end.q, u);
+                            Vector3 spt = Vector3.Lerp(end.p, end.q, u);
                             int col = DuRGBA(48, 16, 16, 255); // DuRGBA(255,(s->flags & 4)?255:0,0,255);
                             float off = 0.1f;
                             if (!s.validHeight)
@@ -351,7 +351,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                                 col = DuRGBA(220, 32, 32, 255);
                             }
 
-                            spt.y = s.p.y + off;
+                            spt.Y = s.p.Y + off;
                             dd.Vertex(spt, col);
                         }
 
@@ -361,7 +361,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                         {
                             GroundSample s = end.gsamples[i];
                             float u = i / (float)(end.gsamples.Length - 1);
-                            RcVec3f spt = RcVec3f.Lerp(end.p, end.q, u);
+                            Vector3 spt = Vector3.Lerp(end.p, end.q, u);
                             int col = DuRGBA(255, 255, 255, 255);
                             float off = 0;
                             if (s.validHeight)
@@ -369,7 +369,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                                 off = 0.1f;
                             }
 
-                            spt.y = s.p.y + off;
+                            spt.Y = s.p.Y + off;
                             dd.Vertex(spt, col);
                         }
 
@@ -399,12 +399,12 @@ public class JumpLinkBuilderSampleTool : ISampleTool
     }
 
 
-    public void HandleClick(RcVec3f s, RcVec3f p, bool shift)
+    public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
     }
 
 
-    private void DrawTrajectory(RecastDebugDraw dd, JumpLink link, RcVec3f pa, RcVec3f pb, Trajectory tra, int cola)
+    private void DrawTrajectory(RecastDebugDraw dd, JumpLink link, Vector3 pa, Vector3 pb, Trajectory tra, int cola)
     {
     }
 
@@ -413,7 +413,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
     }
 
 
-    public void HandleClickRay(RcVec3f start, RcVec3f direction, bool shift)
+    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
     {
     }
 }

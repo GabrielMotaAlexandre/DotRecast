@@ -82,16 +82,17 @@ public class RecastDemo : IRecastDemoChannel
 
     private bool _mouseOverMenu;
     private bool pan;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "<Pending>")]
     private bool movedDuringPan;
     private bool rotate;
     private bool movedDuringRotate;
     private float scrollZoom;
     private readonly float[] origMousePos = new float[2];
     private readonly float[] origCameraEulers = new float[2];
-    private RcVec3f origCameraPos = new RcVec3f();
+    private Vector3 origCameraPos = new Vector3();
 
     private readonly float[] cameraEulers = { 45, -45 };
-    private RcVec3f cameraPos = RcVec3f.Of(0, 0, 0);
+    private Vector3 cameraPos = new Vector3(0, 0, 0);
 
 
     private float[] projectionMatrix = new float[16];
@@ -107,7 +108,7 @@ public class RecastDemo : IRecastDemoChannel
 
     private int[] viewport;
     private bool markerPositionSet;
-    private RcVec3f markerPosition = new RcVec3f();
+    private Vector3 markerPosition = new Vector3();
 
     private RcToolsetView toolset;
     private RcSettingsView settingsView;
@@ -147,9 +148,9 @@ public class RecastDemo : IRecastDemoChannel
         }
 
         var modelviewMatrix = dd.ViewMatrix(cameraPos, cameraEulers);
-        cameraPos.x += scrollZoom * 2.0f * modelviewMatrix.M13;
-        cameraPos.y += scrollZoom * 2.0f * modelviewMatrix.M23;
-        cameraPos.z += scrollZoom * 2.0f * modelviewMatrix.M33;
+        cameraPos.X += scrollZoom * 2.0f * modelviewMatrix.M13;
+        cameraPos.Y += scrollZoom * 2.0f * modelviewMatrix.M23;
+        cameraPos.Z += scrollZoom * 2.0f * modelviewMatrix.M33;
         scrollZoom = 0;
     }
 
@@ -174,13 +175,13 @@ public class RecastDemo : IRecastDemoChannel
             var modelviewMatrix = dd.ViewMatrix(cameraPos, cameraEulers);
             cameraPos = origCameraPos;
 
-            cameraPos.x -= 0.1f * dx * modelviewMatrix.M11;
-            cameraPos.y -= 0.1f * dx * modelviewMatrix.M21;
-            cameraPos.z -= 0.1f * dx * modelviewMatrix.M31;
+            cameraPos.X -= 0.1f * dx * modelviewMatrix.M11;
+            cameraPos.Y -= 0.1f * dx * modelviewMatrix.M21;
+            cameraPos.Z -= 0.1f * dx * modelviewMatrix.M31;
 
-            cameraPos.x += 0.1f * dy * modelviewMatrix.M12;
-            cameraPos.y += 0.1f * dy * modelviewMatrix.M22;
-            cameraPos.z += 0.1f * dy * modelviewMatrix.M32;
+            cameraPos.X += 0.1f * dy * modelviewMatrix.M12;
+            cameraPos.Y += 0.1f * dy * modelviewMatrix.M22;
+            cameraPos.Z += 0.1f * dy * modelviewMatrix.M32;
             if (dx * dx + dy * dy > 3 * 3)
             {
                 movedDuringPan = true;
@@ -214,9 +215,9 @@ public class RecastDemo : IRecastDemoChannel
                     movedDuringPan = false;
                     origMousePos[0] = mousePos[0];
                     origMousePos[1] = mousePos[1];
-                    origCameraPos.x = cameraPos.x;
-                    origCameraPos.y = cameraPos.y;
-                    origCameraPos.z = cameraPos.z;
+                    origCameraPos.X = cameraPos.X;
+                    origCameraPos.Y = cameraPos.Y;
+                    origCameraPos.Z = cameraPos.Z;
                 }
             }
         }
@@ -449,8 +450,8 @@ public class RecastDemo : IRecastDemoChannel
         if (_sample.GetInputGeom() != null)
         {
             var settings = _sample.GetSettings();
-            RcVec3f bmin = _sample.GetInputGeom().GetMeshBoundsMin();
-            RcVec3f bmax = _sample.GetInputGeom().GetMeshBoundsMax();
+            Vector3 bmin = _sample.GetInputGeom().GetMeshBoundsMin();
+            Vector3 bmax = _sample.GetInputGeom().GetMeshBoundsMax();
             RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out var gw, out var gh);
             settingsView.SetVoxels(gw, gh);
             settingsView.SetTiles(tileNavMeshBuilder.GetTiles(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
@@ -471,15 +472,15 @@ public class RecastDemo : IRecastDemoChannel
         double movey = (_moveBack - _moveFront) * keySpeed * dt + scrollZoom * 2.0f;
         scrollZoom = 0;
 
-        cameraPos.x += (float)(movex * modelviewMatrix[0]);
-        cameraPos.y += (float)(movex * modelviewMatrix[4]);
-        cameraPos.z += (float)(movex * modelviewMatrix[8]);
+        cameraPos.X += (float)(movex * modelviewMatrix[0]);
+        cameraPos.Y += (float)(movex * modelviewMatrix[4]);
+        cameraPos.Z += (float)(movex * modelviewMatrix[8]);
 
-        cameraPos.x += (float)(movey * modelviewMatrix[2]);
-        cameraPos.y += (float)(movey * modelviewMatrix[6]);
-        cameraPos.z += (float)(movey * modelviewMatrix[10]);
+        cameraPos.X += (float)(movey * modelviewMatrix[2]);
+        cameraPos.Y += (float)(movey * modelviewMatrix[6]);
+        cameraPos.Z += (float)(movey * modelviewMatrix[10]);
 
-        cameraPos.y += (float)((_moveUp - _moveDown) * keySpeed * dt);
+        cameraPos.Y += (float)((_moveUp - _moveDown) * keySpeed * dt);
 
         long time = RcFrequency.Ticks;
         prevFrameTime = time;
@@ -508,8 +509,8 @@ public class RecastDemo : IRecastDemoChannel
         {
             processHitTest = false;
 
-            RcVec3f rayStart = new RcVec3f();
-            RcVec3f rayEnd = new RcVec3f();
+            Vector3 rayStart = new Vector3();
+            Vector3 rayEnd = new Vector3();
 
             GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 0.0f, modelviewMatrix, projectionMatrix, viewport, ref rayStart);
             GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 1.0f, modelviewMatrix, projectionMatrix, viewport, ref rayEnd);
@@ -524,8 +525,8 @@ public class RecastDemo : IRecastDemoChannel
         if (_sample.IsChanged())
         {
             bool hasBound = false;
-            RcVec3f bminN = RcVec3f.Zero;
-            RcVec3f bmaxN = RcVec3f.Zero;
+            Vector3 bminN = Vector3.Zero;
+            Vector3 bmaxN = Vector3.Zero;
             if (_sample.GetInputGeom() != null)
             {
                 bminN = _sample.GetInputGeom().GetMeshBoundsMin();
@@ -545,20 +546,20 @@ public class RecastDemo : IRecastDemoChannel
                     {
                         if (!hasBound)
                         {
-                            bminN = RcVec3f.Of(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
-                            bmaxN = RcVec3f.Of(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+                            bminN = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+                            bmaxN = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
                         }
 
-                        bminN = RcVec3f.Of(
-                            Math.Min(bminN.x, result.GetSolidHeightfield().bmin.x),
-                            Math.Min(bminN.y, result.GetSolidHeightfield().bmin.y),
-                            Math.Min(bminN.z, result.GetSolidHeightfield().bmin.z)
+                        bminN = new Vector3(
+                            Math.Min(bminN.X, result.GetSolidHeightfield().bmin.X),
+                            Math.Min(bminN.Y, result.GetSolidHeightfield().bmin.Y),
+                            Math.Min(bminN.Z, result.GetSolidHeightfield().bmin.Z)
                         );
 
-                        bmaxN = RcVec3f.Of(
-                            Math.Max(bmaxN.x, result.GetSolidHeightfield().bmax.x),
-                            Math.Max(bmaxN.y, result.GetSolidHeightfield().bmax.y),
-                            Math.Max(bmaxN.z, result.GetSolidHeightfield().bmax.z)
+                        bmaxN = new Vector3(
+                            Math.Max(bmaxN.X, result.GetSolidHeightfield().bmax.X),
+                            Math.Max(bmaxN.Y, result.GetSolidHeightfield().bmax.Y),
+                            Math.Max(bmaxN.Z, result.GetSolidHeightfield().bmax.Z)
                         );
 
                         hasBound = true;
@@ -568,13 +569,13 @@ public class RecastDemo : IRecastDemoChannel
 
             if (hasBound)
             {
-                RcVec3f bmin = bminN;
-                RcVec3f bmax = bmaxN;
+                Vector3 bmin = bminN;
+                Vector3 bmax = bmaxN;
 
-                camr = (float)(Math.Sqrt(RcMath.Sqr(bmax.x - bmin.x) + RcMath.Sqr(bmax.y - bmin.y) + RcMath.Sqr(bmax.z - bmin.z)) / 2);
-                cameraPos.x = (bmax.x + bmin.x) / 2 + camr;
-                cameraPos.y = (bmax.y + bmin.y) / 2 + camr;
-                cameraPos.z = (bmax.z + bmin.z) / 2 + camr;
+                camr = (float)(Math.Sqrt(RcMath.Sqr(bmax.X - bmin.X) + RcMath.Sqr(bmax.Y - bmin.Y) + RcMath.Sqr(bmax.Z - bmin.Z)) / 2);
+                cameraPos.X = (bmax.X + bmin.X) / 2 + camr;
+                cameraPos.Y = (bmax.Y + bmin.Y) / 2 + camr;
+                cameraPos.Z = (bmax.Z + bmin.Z) / 2 + camr;
                 camr *= 5;
                 cameraEulers[0] = 45;
                 cameraEulers[1] = -45;
@@ -787,12 +788,12 @@ public class RecastDemo : IRecastDemoChannel
             hit = RcPolyMeshRaycast.Raycast(_sample.GetRecastResults(), rayStart, rayEnd, out hitTime);
         }
 
-        RcVec3f rayDir = RcVec3f.Of(rayEnd.x - rayStart.x, rayEnd.y - rayStart.y, rayEnd.z - rayStart.z);
+        Vector3 rayDir = new Vector3(rayEnd.X - rayStart.X, rayEnd.Y - rayStart.Y, rayEnd.Z - rayStart.Z);
         ISampleTool raySampleTool = toolset.GetTool();
         rayDir.Normalize();
         if (raySampleTool != null)
         {
-            Logger.Information($"click ray - tool({raySampleTool.GetTool().GetName()}) rayStart({rayStart.x:0.#},{rayStart.y:0.#},{rayStart.z:0.#}) pos({rayDir.x:0.#},{rayDir.y:0.#},{rayDir.z:0.#}) shift({processHitTestShift})");
+            Logger.Information($"click ray - tool({raySampleTool.GetTool().GetName()}) rayStart({rayStart.X:0.#},{rayStart.Y:0.#},{rayStart.Z:0.#}) pos({rayDir.X:0.#},{rayDir.Y:0.#},{rayDir.Z:0.#}) shift({processHitTestShift})");
             raySampleTool.HandleClickRay(rayStart, rayDir, processHitTestShift);
         }
 
@@ -802,19 +803,19 @@ public class RecastDemo : IRecastDemoChannel
             {
                 // Marker
                 markerPositionSet = true;
-                markerPosition.x = rayStart.x + (rayEnd.x - rayStart.x) * hitTime;
-                markerPosition.y = rayStart.y + (rayEnd.y - rayStart.y) * hitTime;
-                markerPosition.z = rayStart.z + (rayEnd.z - rayStart.z) * hitTime;
+                markerPosition.X = rayStart.X + (rayEnd.X - rayStart.X) * hitTime;
+                markerPosition.Y = rayStart.Y + (rayEnd.Y - rayStart.Y) * hitTime;
+                markerPosition.Z = rayStart.Z + (rayEnd.Z - rayStart.Z) * hitTime;
             }
             else
             {
-                RcVec3f pos = new RcVec3f();
-                pos.x = rayStart.x + (rayEnd.x - rayStart.x) * hitTime;
-                pos.y = rayStart.y + (rayEnd.y - rayStart.y) * hitTime;
-                pos.z = rayStart.z + (rayEnd.z - rayStart.z) * hitTime;
+                Vector3 pos = new Vector3();
+                pos.X = rayStart.X + (rayEnd.X - rayStart.X) * hitTime;
+                pos.Y = rayStart.Y + (rayEnd.Y - rayStart.Y) * hitTime;
+                pos.Z = rayStart.Z + (rayEnd.Z - rayStart.Z) * hitTime;
                 if (raySampleTool != null)
                 {
-                    Logger.Information($"click - tool({raySampleTool.GetTool().GetName()}) rayStart({rayStart.x:0.#},{rayStart.y:0.#},{rayStart.z:0.#}) pos({pos.x:0.#},{pos.y:0.#},{pos.z:0.#}) shift({processHitTestShift})");
+                    Logger.Information($"click - tool({raySampleTool.GetTool().GetName()}) rayStart({rayStart.X:0.#},{rayStart.Y:0.#},{rayStart.Z:0.#}) pos({pos.X:0.#},{pos.Y:0.#},{pos.Z:0.#}) shift({processHitTestShift})");
                     raySampleTool.HandleClick(rayStart, pos, processHitTestShift);
                 }
             }

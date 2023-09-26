@@ -19,11 +19,11 @@ freely, subject to the following restrictions:
 */
 
 using System;
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour.Crowd.Tracking
 {
-    
+
 
     public class DtObstacleAvoidanceDebugData
     {
@@ -80,13 +80,13 @@ namespace DotRecast.Detour.Crowd.Tracking
             NormalizeArray(m_tpen, m_nsamples);
         }
 
-        public void AddSample(RcVec3f vel, float ssize, float pen, float vpen, float vcpen, float spen, float tpen)
+        public void AddSample(Vector3 vel, float ssize, float pen, float vpen, float vcpen, float spen, float tpen)
         {
             if (m_nsamples >= m_maxSamples)
                 return;
-            m_vel[m_nsamples * 3] = vel.x;
-            m_vel[m_nsamples * 3 + 1] = vel.y;
-            m_vel[m_nsamples * 3 + 2] = vel.z;
+            m_vel[m_nsamples * 3] = vel.X;
+            m_vel[m_nsamples * 3 + 1] = vel.Y;
+            m_vel[m_nsamples * 3 + 2] = vel.Z;
             m_ssize[m_nsamples] = ssize;
             m_pen[m_nsamples] = pen;
             m_vpen[m_nsamples] = vpen;
@@ -101,12 +101,12 @@ namespace DotRecast.Detour.Crowd.Tracking
             return m_nsamples;
         }
 
-        public RcVec3f GetSampleVelocity(int i)
+        public Vector3 GetSampleVelocity(int i)
         {
-            RcVec3f vel = new RcVec3f();
-            vel.x = m_vel[i * 3];
-            vel.y = m_vel[i * 3 + 1];
-            vel.z = m_vel[i * 3 + 2];
+            Vector3 vel = new Vector3();
+            vel.X = m_vel[i * 3];
+            vel.Y = m_vel[i * 3 + 1];
+            vel.Z = m_vel[i * 3 + 2];
             return vel;
         }
 

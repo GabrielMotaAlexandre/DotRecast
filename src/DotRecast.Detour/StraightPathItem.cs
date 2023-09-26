@@ -18,18 +18,18 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour
 {
     //TODO: (PP) Add comments
     public readonly struct StraightPathItem
     {
-        public readonly RcVec3f pos;
+        public readonly Vector3 pos;
         public readonly int flags;
         public readonly long refs;
 
-        public StraightPathItem(RcVec3f pos, int flags, long refs)
+        public StraightPathItem(Vector3 pos, int flags, long refs)
         {
             this.pos = pos;
             this.flags = flags;

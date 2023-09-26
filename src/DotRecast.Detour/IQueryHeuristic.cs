@@ -17,12 +17,12 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour
 {
     public interface IQueryHeuristic
     {
-        float GetCost(RcVec3f neighbourPos, RcVec3f endPos);
+        float GetCost(Vector3 neighbourPos, Vector3 endPos);
     }
 }

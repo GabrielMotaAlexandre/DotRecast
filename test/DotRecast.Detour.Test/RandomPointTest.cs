@@ -18,6 +18,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using DotRecast.Core;
 
 using NUnit.Framework;
@@ -50,10 +51,10 @@ public class RandomPointTest : AbstractDetourTest
                 bmax[1] = j == 0 ? tile.data.verts[v + 2] : Math.Max(bmax[1], tile.data.verts[v + 2]);
             }
 
-            Assert.That(randomPt.x >= bmin[0], Is.True);
-            Assert.That(randomPt.x <= bmax[0], Is.True);
-            Assert.That(randomPt.z >= bmin[1], Is.True);
-            Assert.That(randomPt.z <= bmax[1], Is.True);
+            Assert.That(randomPt.X >= bmin[0], Is.True);
+            Assert.That(randomPt.X <= bmax[0], Is.True);
+            Assert.That(randomPt.Z >= bmin[1], Is.True);
+            Assert.That(randomPt.Z <= bmax[1], Is.True);
         }
     }
 
@@ -84,10 +85,10 @@ public class RandomPointTest : AbstractDetourTest
                 bmax[1] = j == 0 ? tile.data.verts[v + 2] : Math.Max(bmax[1], tile.data.verts[v + 2]);
             }
 
-            Assert.That(randomPt.x >= bmin[0], Is.True);
-            Assert.That(randomPt.x <= bmax[0], Is.True);
-            Assert.That(randomPt.z >= bmin[1], Is.True);
-            Assert.That(randomPt.z <= bmax[1], Is.True);
+            Assert.That(randomPt.X >= bmin[0], Is.True);
+            Assert.That(randomPt.X <= bmax[0], Is.True);
+            Assert.That(randomPt.Z >= bmin[1], Is.True);
+            Assert.That(randomPt.Z <= bmax[1], Is.True);
         }
     }
 
@@ -103,7 +104,7 @@ public class RandomPointTest : AbstractDetourTest
             var status = query.FindRandomPointWithinCircle(randomRef, randomPt, radius, filter, f, out var nextRandomRef, out var nextRandomPt);
             Assert.That(status.Failed(), Is.False);
 
-            float distance = RcVec3f.Dist2D(randomPt, nextRandomPt);
+            float distance = Vector3Extensions.Dist2D(randomPt, nextRandomPt);
             Assert.That(distance <= radius, Is.True);
 
             randomRef = nextRandomRef;

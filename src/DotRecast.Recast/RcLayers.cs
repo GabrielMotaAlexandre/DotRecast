@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Recast
@@ -409,12 +410,12 @@ namespace DotRecast.Recast
             int lh = h - borderSize * 2;
 
             // Build contracted bbox for layers.
-            RcVec3f bmin = chf.bmin;
-            RcVec3f bmax = chf.bmax;
-            bmin.x += borderSize * chf.cs;
-            bmin.z += borderSize * chf.cs;
-            bmax.x -= borderSize * chf.cs;
-            bmax.z -= borderSize * chf.cs;
+            Vector3 bmin = chf.bmin;
+            Vector3 bmax = chf.bmax;
+            bmin.X += borderSize * chf.cs;
+            bmin.Z += borderSize * chf.cs;
+            bmax.X -= borderSize * chf.cs;
+            bmax.Z -= borderSize * chf.cs;
 
             RcHeightfieldLayerSet lset = new RcHeightfieldLayerSet();
             lset.layers = new RcHeightfieldLayer[layerId];
@@ -456,8 +457,8 @@ namespace DotRecast.Recast
                 // Adjust the bbox to fit the heightfield.
                 layer.bmin = bmin;
                 layer.bmax = bmax;
-                layer.bmin.y = bmin.y + hmin * chf.ch;
-                layer.bmax.y = bmin.y + hmax * chf.ch;
+                layer.bmin.Y = bmin.Y + hmin * chf.ch;
+                layer.bmax.Y = bmin.Y + hmax * chf.ch;
                 layer.hmin = hmin;
                 layer.hmax = hmax;
 

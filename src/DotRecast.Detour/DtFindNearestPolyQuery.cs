@@ -1,18 +1,18 @@
 using System;
-using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Detour
 {
     public class DtFindNearestPolyQuery : IDtPolyQuery
     {
         private readonly DtNavMeshQuery _query;
-        private readonly RcVec3f _center;
+        private readonly Vector3 _center;
         private long _nearestRef;
-        private RcVec3f _nearestPt;
+        private Vector3 _nearestPt;
         private bool _overPoly;
         private float _nearestDistanceSqr;
 
-        public DtFindNearestPolyQuery(DtNavMeshQuery query, RcVec3f center)
+        public DtFindNearestPolyQuery(DtNavMeshQuery query, Vector3 center)
         {
             this._query = query;
             this._center = center;
@@ -28,15 +28,15 @@ namespace DotRecast.Detour
             // If a point is directly over a polygon and closer than
             // climb height, favor that instead of straight line nearest point.
             float d = 0;
-            RcVec3f diff = _center.Subtract(closestPtPoly);
+            Vector3 diff = _center - (closestPtPoly);
             if (posOverPoly)
             {
-                d = Math.Abs(diff.y) - tile.data.header.walkableClimb;
+                d = Math.Abs(diff.Y) - tile.data.header.walkableClimb;
                 d = d > 0 ? d * d : 0;
             }
             else
             {
-                d = RcVec3f.LenSqr(diff);
+                d = (diff).LengthSquared();
             }
 
             if (d < _nearestDistanceSqr)
@@ -53,7 +53,7 @@ namespace DotRecast.Detour
             return _nearestRef;
         }
 
-        public RcVec3f NearestPt()
+        public Vector3 NearestPt()
         {
             return _nearestPt;
         }

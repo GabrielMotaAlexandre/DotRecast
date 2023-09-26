@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour.TileCache.Io;
 
@@ -345,7 +346,7 @@ namespace DotRecast.Detour.TileCache
         }
 
         // Cylinder obstacle
-        public long AddObstacle(RcVec3f pos, float radius, float height)
+        public long AddObstacle(Vector3 pos, float radius, float height)
         {
             DtTileCacheObstacle ob = AllocObstacle();
             ob.type = DtTileCacheObstacleType.CYLINDER;
@@ -358,7 +359,7 @@ namespace DotRecast.Detour.TileCache
         }
 
         // Aabb obstacle
-        public long AddBoxObstacle(RcVec3f bmin, RcVec3f bmax)
+        public long AddBoxObstacle(Vector3 bmin, Vector3 bmax)
         {
             DtTileCacheObstacle ob = AllocObstacle();
             ob.type = DtTileCacheObstacleType.BOX;
@@ -370,7 +371,7 @@ namespace DotRecast.Detour.TileCache
         }
 
         // Box obstacle: can be rotated in Y
-        public long AddBoxObstacle(RcVec3f center, RcVec3f extents, float yRadians)
+        public long AddBoxObstacle(Vector3 center, Vector3 extents, float yRadians)
         {
             DtTileCacheObstacle ob = AllocObstacle();
             ob.type = DtTileCacheObstacleType.ORIENTED_BOX;
@@ -436,15 +437,15 @@ namespace DotRecast.Detour.TileCache
             return m_obstacles[i];
         }
 
-        private List<long> QueryTiles(RcVec3f bmin, RcVec3f bmax)
+        private List<long> QueryTiles(Vector3 bmin, Vector3 bmax)
         {
             List<long> results = new List<long>();
             float tw = m_params.width * m_params.cs;
             float th = m_params.height * m_params.cs;
-            int tx0 = (int)Math.Floor((bmin.x - m_params.orig.x) / tw);
-            int tx1 = (int)Math.Floor((bmax.x - m_params.orig.x) / tw);
-            int ty0 = (int)Math.Floor((bmin.z - m_params.orig.z) / th);
-            int ty1 = (int)Math.Floor((bmax.z - m_params.orig.z) / th);
+            int tx0 = (int)Math.Floor((bmin.X - m_params.orig.X) / tw);
+            int tx1 = (int)Math.Floor((bmax.X - m_params.orig.X) / tw);
+            int ty0 = (int)Math.Floor((bmin.Z - m_params.orig.Z) / th);
+            int ty1 = (int)Math.Floor((bmax.Z - m_params.orig.Z) / th);
             for (int ty = ty0; ty <= ty1; ++ty)
             {
                 for (int tx = tx0; tx <= tx1; ++tx)
@@ -453,8 +454,8 @@ namespace DotRecast.Detour.TileCache
                     foreach (long i in tiles)
                     {
                         DtCompressedTile tile = m_tiles[DecodeTileIdTile(i)];
-                        RcVec3f tbmin = new RcVec3f();
-                        RcVec3f tbmax = new RcVec3f();
+                        Vector3 tbmin = new Vector3();
+                        Vector3 tbmax = new Vector3();
                         CalcTightTileBounds(tile.header, ref tbmin, ref tbmax);
                         if (DtUtils.OverlapBounds(bmin, bmax, tbmin, tbmax))
                         {
@@ -497,8 +498,8 @@ namespace DotRecast.Detour.TileCache
                     if (req.action == DtObstacleRequestAction.REQUEST_ADD)
                     {
                         // Find touched tiles.
-                        RcVec3f bmin = new RcVec3f();
-                        RcVec3f bmax = new RcVec3f();
+                        Vector3 bmin = new Vector3();
+                        Vector3 bmax = new Vector3();
                         GetObstacleBounds(ob, ref bmin, ref bmax);
                         ob.touched = QueryTiles(bmin, bmax);
                         // Add tiles to update list.
@@ -679,27 +680,27 @@ namespace DotRecast.Detour.TileCache
             return layer;
         }
 
-        void CalcTightTileBounds(DtTileCacheLayerHeader header, ref RcVec3f bmin, ref RcVec3f bmax)
+        void CalcTightTileBounds(DtTileCacheLayerHeader header, ref Vector3 bmin, ref Vector3 bmax)
         {
             float cs = m_params.cs;
-            bmin.x = header.bmin.x + header.minx * cs;
-            bmin.y = header.bmin.y;
-            bmin.z = header.bmin.z + header.miny * cs;
-            bmax.x = header.bmin.x + (header.maxx + 1) * cs;
-            bmax.y = header.bmax.y;
-            bmax.z = header.bmin.z + (header.maxy + 1) * cs;
+            bmin.X = header.bmin.X + header.minx * cs;
+            bmin.Y = header.bmin.Y;
+            bmin.Z = header.bmin.Z + header.miny * cs;
+            bmax.X = header.bmin.X + (header.maxx + 1) * cs;
+            bmax.Y = header.bmax.Y;
+            bmax.Z = header.bmin.Z + (header.maxy + 1) * cs;
         }
 
-        public void GetObstacleBounds(DtTileCacheObstacle ob, ref RcVec3f bmin, ref RcVec3f bmax)
+        public void GetObstacleBounds(DtTileCacheObstacle ob, ref Vector3 bmin, ref Vector3 bmax)
         {
             if (ob.type == DtTileCacheObstacleType.CYLINDER)
             {
-                bmin.x = ob.pos.x - ob.radius;
-                bmin.y = ob.pos.y;
-                bmin.z = ob.pos.z - ob.radius;
-                bmax.x = ob.pos.x + ob.radius;
-                bmax.y = ob.pos.y + ob.height;
-                bmax.z = ob.pos.z + ob.radius;
+                bmin.X = ob.pos.X - ob.radius;
+                bmin.Y = ob.pos.Y;
+                bmin.Z = ob.pos.Z - ob.radius;
+                bmax.X = ob.pos.X + ob.radius;
+                bmax.Y = ob.pos.Y + ob.height;
+                bmax.Z = ob.pos.Z + ob.radius;
             }
             else if (ob.type == DtTileCacheObstacleType.BOX)
             {
@@ -708,13 +709,13 @@ namespace DotRecast.Detour.TileCache
             }
             else if (ob.type == DtTileCacheObstacleType.ORIENTED_BOX)
             {
-                float maxr = 1.41f * Math.Max(ob.extents.x, ob.extents.z);
-                bmin.x = ob.center.x - maxr;
-                bmax.x = ob.center.x + maxr;
-                bmin.y = ob.center.y - ob.extents.y;
-                bmax.y = ob.center.y + ob.extents.y;
-                bmin.z = ob.center.z - maxr;
-                bmax.z = ob.center.z + maxr;
+                float maxr = 1.41f * Math.Max(ob.extents.X, ob.extents.Z);
+                bmin.X = ob.center.X - maxr;
+                bmax.X = ob.center.X + maxr;
+                bmin.Y = ob.center.Y - ob.extents.Y;
+                bmax.Y = ob.center.Y + ob.extents.Y;
+                bmin.Z = ob.center.Z - maxr;
+                bmax.Z = ob.center.Z + maxr;
             }
         }
 

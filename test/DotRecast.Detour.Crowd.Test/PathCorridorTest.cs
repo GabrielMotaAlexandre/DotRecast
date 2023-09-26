@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 
 using Moq;
 using NUnit.Framework;
@@ -34,27 +34,27 @@ public class PathCorridorTest
     [SetUp]
     public void SetUp()
     {
-        corridor.Reset(0, RcVec3f.Of(10, 20, 30));
+        corridor.Reset(0, new Vector3(10, 20, 30));
     }
 
     [Test]
     public void ShouldKeepOriginalPathInFindCornersWhenNothingCanBePruned()
     {
         List<StraightPathItem> straightPath = new();
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(11, 20, 30.00001f), 0, 0));
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(12, 20, 30.00002f), 0, 0));
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(11f, 21, 32f), 0, 0));
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(11f, 21, 32f), 0, 0));
+        straightPath.Add(new StraightPathItem(new Vector3(11, 20, 30.00001f), 0, 0));
+        straightPath.Add(new StraightPathItem(new Vector3(12, 20, 30.00002f), 0, 0));
+        straightPath.Add(new StraightPathItem(new Vector3(11f, 21, 32f), 0, 0));
+        straightPath.Add(new StraightPathItem(new Vector3(11f, 21, 32f), 0, 0));
         var mockQuery = new Mock<DtNavMeshQuery>(It.IsAny<DtNavMesh>());
         mockQuery.Setup(q => q.FindStraightPath(
-                It.IsAny<RcVec3f>(),
-                It.IsAny<RcVec3f>(),
+                It.IsAny<Vector3>(),
+                It.IsAny<Vector3>(),
                 It.IsAny<List<long>>(),
                 ref It.Ref<List<StraightPathItem>>.IsAny,
                 It.IsAny<int>(),
                 It.IsAny<int>())
             )
-            .Callback((RcVec3f startPos, RcVec3f endPos, List<long> path,
+            .Callback((Vector3 startPos, Vector3 endPos, List<long> path,
                 ref List<StraightPathItem> refStraightPath, int maxStraightPath, int options) =>
             {
                 refStraightPath = straightPath;
@@ -71,21 +71,21 @@ public class PathCorridorTest
     public void ShouldPrunePathInFindCorners()
     {
         List<StraightPathItem> straightPath = new();
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(10, 20, 30.00001f), 0, 0)); // too close
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(10, 20, 30.00002f), 0, 0)); // too close
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(11f, 21, 32f), 0, 0));
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(12f, 22, 33f), DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION, 0)); // offmesh
-        straightPath.Add(new StraightPathItem(RcVec3f.Of(11f, 21, 32f), DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION, 0)); // offmesh
+        straightPath.Add(new StraightPathItem(new Vector3(10, 20, 30.00001f), 0, 0)); // too close
+        straightPath.Add(new StraightPathItem(new Vector3(10, 20, 30.00002f), 0, 0)); // too close
+        straightPath.Add(new StraightPathItem(new Vector3(11f, 21, 32f), 0, 0));
+        straightPath.Add(new StraightPathItem(new Vector3(12f, 22, 33f), DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION, 0)); // offmesh
+        straightPath.Add(new StraightPathItem(new Vector3(11f, 21, 32f), DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION, 0)); // offmesh
 
         var mockQuery = new Mock<DtNavMeshQuery>(It.IsAny<DtNavMesh>());
         mockQuery.Setup(q => q.FindStraightPath(
-                It.IsAny<RcVec3f>(),
-                It.IsAny<RcVec3f>(),
+                It.IsAny<Vector3>(),
+                It.IsAny<Vector3>(),
                 It.IsAny<List<long>>(),
                 ref It.Ref<List<StraightPathItem>>.IsAny,
                 It.IsAny<int>(),
                 It.IsAny<int>())
-            ).Callback((RcVec3f startPos, RcVec3f endPos, List<long> path,
+            ).Callback((Vector3 startPos, Vector3 endPos, List<long> path,
                 ref List<StraightPathItem> refStraightPath, int maxStraightPath, int options) =>
             {
                 refStraightPath = straightPath;

@@ -272,7 +272,7 @@ public class Crowd4Test : AbstractCrowdTest
         new[] { 4.896369f, 10.197294f, -35.184120f, -2.896978f, 0.000000f, 1.964057f },
         new[] { 4.367188f, 10.197294f, -34.833569f, -2.910470f, 0.000000f, 1.944008f },
         new[] { 3.807542f, 10.197294f, -34.472218f, -2.906039f, 0.000000f, 1.950624f },
-        new[] { 3.238266f, 10.197294f, -34.064877f, -2.846376f, 0.000000f, 2.036700f },
+        new[] { 3.238266f, 10.197294f, -34.064877f, -2.846376f, 0.000000f, 2.036688f },
         new[] { 2.917057f, 10.197294f, -33.455391f, -1.420109f, 0.000000f, 3.198952f },
         new[] { 2.645415f, 10.197294f, -32.810249f, -1.358214f, 0.000000f, 3.225718f },
         new[] { 2.373772f, 10.197294f, -32.165104f, -1.358212f, 0.000000f, 3.225718f },
@@ -317,12 +317,12 @@ public class Crowd4Test : AbstractCrowdTest
         {
             crowd.Update(1 / 5f, null);
             DtCrowdAgent ag = agents[2];
-            Assert.That(ag.npos.x, Is.EqualTo(EXPECTED_A1Q2TVTA[i][0]).Within(0.001f), $"{i}");
-            Assert.That(ag.npos.y, Is.EqualTo(EXPECTED_A1Q2TVTA[i][1]).Within(0.001f), $"{i}");
-            Assert.That(ag.npos.z, Is.EqualTo(EXPECTED_A1Q2TVTA[i][2]).Within(0.001f), $"{i}");
-            Assert.That(ag.nvel.x, Is.EqualTo(EXPECTED_A1Q2TVTA[i][3]).Within(0.001f), $"{i}");
-            Assert.That(ag.nvel.y, Is.EqualTo(EXPECTED_A1Q2TVTA[i][4]).Within(0.001f), $"{i}");
-            Assert.That(ag.nvel.z, Is.EqualTo(EXPECTED_A1Q2TVTA[i][5]).Within(0.001f), $"{i}");
+            Assert.That(ag.npos.X, Is.EqualTo(EXPECTED_A1Q2TVTA[i][0]).Within(0.001f), $"{i}");
+            Assert.That(ag.npos.Y, Is.EqualTo(EXPECTED_A1Q2TVTA[i][1]).Within(0.001f), $"{i}");
+            Assert.That(ag.npos.Z, Is.EqualTo(EXPECTED_A1Q2TVTA[i][2]).Within(0.001f), $"{i}");
+            Assert.That(ag.nvel.X, Is.EqualTo(EXPECTED_A1Q2TVTA[i][3]).Within(0.001f), $"{i}");
+            Assert.That(ag.nvel.Y, Is.EqualTo(EXPECTED_A1Q2TVTA[i][4]).Within(0.001f), $"{i}");
+            Assert.That(ag.nvel.Z, Is.EqualTo(EXPECTED_A1Q2TVTA[i][5]).Within(0.001f), $"{i}");
         }
     }
 
@@ -339,12 +339,12 @@ public class Crowd4Test : AbstractCrowdTest
         {
             crowd.Update(1 / 5f, null);
             DtCrowdAgent ag = agents[2];
-            Assert.That(ag.npos.x, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][0]).Within(0.001f), $"{i}");
-            Assert.That(ag.npos.y, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][1]).Within(0.001f), $"{i}");
-            Assert.That(ag.npos.z, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][2]).Within(0.001f), $"{i}");
-            Assert.That(ag.nvel.x, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][3]).Within(0.001f), $"{i}");
-            Assert.That(ag.nvel.y, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][4]).Within(0.001f), $"{i}");
-            Assert.That(ag.nvel.z, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][5]).Within(0.001f), $"{i}");
+            Assert.That(ag.npos.X, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][0]).Within(0.001f), $"{i}");
+            Assert.That(ag.npos.Y, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][1]).Within(0.001f), $"{i}");
+            Assert.That(ag.npos.Z, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][2]).Within(0.001f), $"{i}");
+            Assert.That(ag.nvel.X, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][3]).Within(0.001f), $"{i}");
+            Assert.That(ag.nvel.Y, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][4]).Within(0.001f), $"{i}");
+            Assert.That(ag.nvel.Z, Is.EqualTo(EXPECTED_A1Q2TVTAS[i][5]).Within(0.001f), $"{i}");
         }
     }
 
@@ -359,12 +359,12 @@ public class Crowd4Test : AbstractCrowdTest
         {
             crowd.Update(1 / 5f, null);
             DtCrowdAgent ag = agents[2];
-            Assert.That(ag.npos.x, Is.EqualTo(EXPECTED_A1Q2T[i][0]).Within(0.00001f), $"{i} - {ag.npos.x} {EXPECTED_A1Q2T[i][0]}");
-            Assert.That(ag.npos.y, Is.EqualTo(EXPECTED_A1Q2T[i][1]).Within(0.00001f), $"{i} - {ag.npos.y} {EXPECTED_A1Q2T[i][1]}");
-            Assert.That(ag.npos.z, Is.EqualTo(EXPECTED_A1Q2T[i][2]).Within(0.00001f), $"{i} - {ag.npos.z} {EXPECTED_A1Q2T[i][2]}");
-            Assert.That(ag.nvel.x, Is.EqualTo(EXPECTED_A1Q2T[i][3]).Within(0.00001f), $"{i} - {ag.nvel.x} {EXPECTED_A1Q2T[i][3]}");
-            Assert.That(ag.nvel.y, Is.EqualTo(EXPECTED_A1Q2T[i][4]).Within(0.00001f), $"{i} - {ag.nvel.y} {EXPECTED_A1Q2T[i][4]}");
-            Assert.That(ag.nvel.z, Is.EqualTo(EXPECTED_A1Q2T[i][5]).Within(0.00001f), $"{i} - {ag.nvel.z} {EXPECTED_A1Q2T[i][5]}");
+            Assert.That(ag.npos.X, Is.EqualTo(EXPECTED_A1Q2T[i][0]).Within(0.00001f), $"{i} - {ag.npos.X} {EXPECTED_A1Q2T[i][0]}");
+            Assert.That(ag.npos.Y, Is.EqualTo(EXPECTED_A1Q2T[i][1]).Within(0.00001f), $"{i} - {ag.npos.Y} {EXPECTED_A1Q2T[i][1]}");
+            Assert.That(ag.npos.Z, Is.EqualTo(EXPECTED_A1Q2T[i][2]).Within(0.00001f), $"{i} - {ag.npos.Z} {EXPECTED_A1Q2T[i][2]}");
+            Assert.That(ag.nvel.X, Is.EqualTo(EXPECTED_A1Q2T[i][3]).Within(0.00001f), $"{i} - {ag.nvel.X} {EXPECTED_A1Q2T[i][3]}");
+            Assert.That(ag.nvel.Y, Is.EqualTo(EXPECTED_A1Q2T[i][4]).Within(0.00001f), $"{i} - {ag.nvel.Y} {EXPECTED_A1Q2T[i][4]}");
+            Assert.That(ag.nvel.Z, Is.EqualTo(EXPECTED_A1Q2T[i][5]).Within(0.00001f), $"{i} - {ag.nvel.Z} {EXPECTED_A1Q2T[i][5]}");
         }
     }
 }

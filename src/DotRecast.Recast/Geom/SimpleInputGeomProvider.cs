@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Recast.Geom
@@ -29,8 +30,8 @@ namespace DotRecast.Recast.Geom
         public readonly float[] vertices;
         public readonly int[] faces;
         public readonly float[] normals;
-        private RcVec3f bmin;
-        private RcVec3f bmax;
+        private Vector3 bmin;
+        private Vector3 bmax;
 
         private readonly List<RcConvexVolume> volumes = new List<RcConvexVolume>();
         private readonly RcTriMesh _mesh;
@@ -75,10 +76,10 @@ namespace DotRecast.Recast.Geom
             this.faces = faces;
             normals = new float[faces.Length];
             CalculateNormals();
-            bmin = RcVec3f.Zero;
-            bmax = RcVec3f.Zero;
-            RcVec3f.Copy(ref bmin, vertices, 0);
-            RcVec3f.Copy(ref bmax, vertices, 0);
+            bmin = Vector3.Zero;
+            bmax = Vector3.Zero;
+            Vector3Extensions.Copy(ref bmin, vertices, 0);
+            Vector3Extensions.Copy(ref bmax, vertices, 0);
             for (int i = 1; i < vertices.Length / 3; i++)
             {
                 bmin.Min(vertices, i * 3);
@@ -93,12 +94,12 @@ namespace DotRecast.Recast.Geom
             return _mesh;
         }
 
-        public RcVec3f GetMeshBoundsMin()
+        public Vector3 GetMeshBoundsMin()
         {
             return bmin;
         }
 
-        public RcVec3f GetMeshBoundsMax()
+        public Vector3 GetMeshBoundsMax()
         {
             return bmax;
         }
@@ -132,7 +133,7 @@ namespace DotRecast.Recast.Geom
             throw new NotImplementedException();
         }
 
-        public void AddOffMeshConnection(RcVec3f start, RcVec3f end, float radius, bool bidir, int area, int flags)
+        public void AddOffMeshConnection(Vector3 start, Vector3 end, float radius, bool bidir, int area, int flags)
         {
             throw new NotImplementedException();
         }
@@ -150,19 +151,19 @@ namespace DotRecast.Recast.Geom
                 int v1 = faces[i + 1] * 3;
                 int v2 = faces[i + 2] * 3;
 
-                var e0 = new RcVec3f();
-                var e1 = new RcVec3f();
-                e0.x = vertices[v1 + 0] - vertices[v0 + 0];
-                e0.y = vertices[v1 + 1] - vertices[v0 + 1];
-                e0.z = vertices[v1 + 2] - vertices[v0 + 2];
+                var e0 = new Vector3();
+                var e1 = new Vector3();
+                e0.X = vertices[v1 + 0] - vertices[v0 + 0];
+                e0.Y = vertices[v1 + 1] - vertices[v0 + 1];
+                e0.Z = vertices[v1 + 2] - vertices[v0 + 2];
 
-                e1.x = vertices[v2 + 0] - vertices[v0 + 0];
-                e1.y = vertices[v2 + 1] - vertices[v0 + 1];
-                e1.z = vertices[v2 + 2] - vertices[v0 + 2];
+                e1.X = vertices[v2 + 0] - vertices[v0 + 0];
+                e1.Y = vertices[v2 + 1] - vertices[v0 + 1];
+                e1.Z = vertices[v2 + 2] - vertices[v0 + 2];
 
-                normals[i] = e0.y * e1.z - e0.z * e1.y;
-                normals[i + 1] = e0.z * e1.x - e0.x * e1.z;
-                normals[i + 2] = e0.x * e1.y - e0.y * e1.x;
+                normals[i] = e0.Y * e1.Z - e0.Z * e1.Y;
+                normals[i + 1] = e0.Z * e1.X - e0.X * e1.Z;
+                normals[i + 2] = e0.X * e1.Y - e0.Y * e1.X;
                 float d = (float)Math.Sqrt(normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]);
                 if (d > 0)
                 {

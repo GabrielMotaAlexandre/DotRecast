@@ -20,7 +20,6 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotRecast.Core;
 using DotRecast.Detour;
 using DotRecast.Detour.Crowd;
 using DotRecast.Recast.Toolset.Builder;
@@ -30,6 +29,7 @@ using DotRecast.Recast.Toolset.Tools;
 using ImGuiNET;
 using Serilog;
 using static DotRecast.Recast.Demo.Draw.DebugDraw;
+using System.Numerics;
 
 namespace DotRecast.Recast.Demo.Tools;
 
@@ -133,8 +133,8 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
                 float radius = ag.option.radius;
-                RcVec3f pos = ag.npos;
-                dd.DebugDrawCircle(pos.x, pos.y, pos.z, radius, DuRGBA(0, 0, 0, 32), 2.0f);
+                Vector3 pos = ag.npos;
+                dd.DebugDrawCircle(pos.X, pos.Y, pos.Z, radius, DuRGBA(0, 0, 0, 32), 2.0f);
             }
 
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
@@ -143,7 +143,7 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
 
                 float height = ag.option.height;
                 float radius = ag.option.radius;
-                RcVec3f pos = ag.npos;
+                Vector3 pos = ag.npos;
 
                 int col = DuRGBA(220, 220, 220, 128);
                 if (crowAgentData.type == RcCrowdAgentType.TRAVELLER)
@@ -166,8 +166,8 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
                 else if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                     col = DuLerpCol(col, DuRGBA(64, 255, 0, 128), 128);
 
-                dd.DebugDrawCylinder(pos.x - radius, pos.y + radius * 0.1f, pos.z - radius, pos.x + radius, pos.y + height,
-                    pos.z + radius, col);
+                dd.DebugDrawCylinder(pos.X - radius, pos.Y + radius * 0.1f, pos.Z - radius, pos.X + radius, pos.Y + height,
+                    pos.Z + radius, col);
             }
         }
 
@@ -198,7 +198,7 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
     }
 
 
-    public void HandleClick(RcVec3f s, RcVec3f p, bool shift)
+    public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
         //throw new NotImplementedException();
     }
@@ -209,7 +209,7 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
         _tool.Update(dt);
     }
 
-    public void HandleClickRay(RcVec3f start, RcVec3f direction, bool shift)
+    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
     {
         //throw new NotImplementedException();
     }

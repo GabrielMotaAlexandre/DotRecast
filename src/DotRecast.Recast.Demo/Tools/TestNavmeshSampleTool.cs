@@ -10,6 +10,7 @@ using ImGuiNET;
 using Serilog;
 using static DotRecast.Recast.Demo.Draw.DebugDraw;
 using static DotRecast.Recast.Demo.Draw.DebugDrawPrimitives;
+using System.Numerics;
 
 namespace DotRecast.Recast.Demo.Tools;
 
@@ -41,18 +42,18 @@ public class TestNavmeshSampleTool : ISampleTool
     // 
     private bool m_sposSet;
     private long m_startRef;
-    private RcVec3f m_spos;
+    private Vector3 m_spos;
 
     private bool m_eposSet;
     private long m_endRef;
-    private RcVec3f m_epos;
+    private Vector3 m_epos;
 
     private readonly DtQueryDefaultFilter m_filter;
-    private readonly RcVec3f m_polyPickExt = RcVec3f.Of(2, 4, 2);
+    private readonly Vector3 m_polyPickExt = new Vector3(2, 4, 2);
 
     // for hit
-    private RcVec3f m_hitPos;
-    private RcVec3f m_hitNormal;
+    private Vector3 m_hitPos;
+    private Vector3 m_hitNormal;
     private bool m_hitResult;
 
     private float m_distanceToWall;
@@ -60,12 +61,12 @@ public class TestNavmeshSampleTool : ISampleTool
     private List<long> m_polys;
     private List<long> m_parent;
     private float m_neighbourhoodRadius;
-    private RcVec3f[] m_queryPoly = new RcVec3f[4];
-    private List<RcVec3f> m_smoothPath;
+    private Vector3[] m_queryPoly = new Vector3[4];
+    private List<Vector3> m_smoothPath;
     private DtStatus m_pathFindStatus = DtStatus.DT_FAILURE;
 
     // for mode RANDOM_POINTS_IN_CIRCLE
-    private List<RcVec3f> _randomPoints = new();
+    private List<Vector3> _randomPoints = new();
 
     public TestNavmeshSampleTool()
     {
@@ -223,7 +224,7 @@ public class TestNavmeshSampleTool : ISampleTool
                 dd.Begin(LINES, 3.0f);
                 for (int i = 0; i < m_smoothPath.Count; ++i)
                 {
-                    dd.Vertex(m_smoothPath[i].x, m_smoothPath[i].y + 0.1f, m_smoothPath[i].z, spathCol);
+                    dd.Vertex(m_smoothPath[i].X, m_smoothPath[i].Y + 0.1f, m_smoothPath[i].Z, spathCol);
                 }
 
                 dd.End();
@@ -297,8 +298,8 @@ public class TestNavmeshSampleTool : ISampleTool
                         col = spathCol;
                     }
 
-                    dd.Vertex(straightPathItem.pos.x, straightPathItem.pos.y + 0.4f, straightPathItem.pos.z, col);
-                    dd.Vertex(straightPathItem2.pos.x, straightPathItem2.pos.y + 0.4f, straightPathItem2.pos.z, col);
+                    dd.Vertex(straightPathItem.pos.X, straightPathItem.pos.Y + 0.4f, straightPathItem.pos.Z, col);
+                    dd.Vertex(straightPathItem2.pos.X, straightPathItem2.pos.Y + 0.4f, straightPathItem2.pos.Z, col);
                 }
 
                 dd.End();
@@ -324,7 +325,7 @@ public class TestNavmeshSampleTool : ISampleTool
                         col = spathCol;
                     }
 
-                    dd.Vertex(straightPathItem.pos.x, straightPathItem.pos.y + 0.4f, straightPathItem.pos.z, col);
+                    dd.Vertex(straightPathItem.pos.X, straightPathItem.pos.Y + 0.4f, straightPathItem.pos.Z, col);
                 }
 
                 dd.End();
@@ -352,8 +353,8 @@ public class TestNavmeshSampleTool : ISampleTool
                 {
                     StraightPathItem straightPathItem = m_straightPath[i];
                     StraightPathItem straightPathItem2 = m_straightPath[i + 1];
-                    dd.Vertex(straightPathItem.pos.x, straightPathItem.pos.y + 0.4f, straightPathItem.pos.z, spathCol);
-                    dd.Vertex(straightPathItem2.pos.x, straightPathItem2.pos.y + 0.4f, straightPathItem2.pos.z, spathCol);
+                    dd.Vertex(straightPathItem.pos.X, straightPathItem.pos.Y + 0.4f, straightPathItem.pos.Z, spathCol);
+                    dd.Vertex(straightPathItem2.pos.X, straightPathItem2.pos.Y + 0.4f, straightPathItem2.pos.Z, spathCol);
                 }
 
                 dd.End();
@@ -361,7 +362,7 @@ public class TestNavmeshSampleTool : ISampleTool
                 for (int i = 0; i < m_straightPath.Count; ++i)
                 {
                     StraightPathItem straightPathItem = m_straightPath[i];
-                    dd.Vertex(straightPathItem.pos.x, straightPathItem.pos.y + 0.4f, straightPathItem.pos.z, spathCol);
+                    dd.Vertex(straightPathItem.pos.X, straightPathItem.pos.Y + 0.4f, straightPathItem.pos.Z, spathCol);
                 }
 
                 dd.End();
@@ -370,8 +371,8 @@ public class TestNavmeshSampleTool : ISampleTool
                 {
                     int hitCol = DuRGBA(0, 0, 0, 128);
                     dd.Begin(LINES, 2.0f);
-                    dd.Vertex(m_hitPos.x, m_hitPos.y + 0.4f, m_hitPos.z, hitCol);
-                    dd.Vertex(m_hitPos.x + m_hitNormal.x * agentRadius, m_hitPos.y + 0.4f + m_hitNormal.y * agentRadius, m_hitPos.z + m_hitNormal.z * agentRadius, hitCol);
+                    dd.Vertex(m_hitPos.X, m_hitPos.Y + 0.4f, m_hitPos.Z, hitCol);
+                    dd.Vertex(m_hitPos.X + m_hitNormal.X * agentRadius, m_hitPos.Y + 0.4f + m_hitNormal.Y * agentRadius, m_hitPos.Z + m_hitNormal.Z * agentRadius, hitCol);
                     dd.End();
                 }
 
@@ -382,16 +383,16 @@ public class TestNavmeshSampleTool : ISampleTool
         {
             dd.DebugDrawNavMeshPoly(m_navMesh, m_startRef, startCol);
             dd.DepthMask(false);
-            if (m_spos != RcVec3f.Zero)
+            if (m_spos != Vector3.Zero)
             {
-                dd.DebugDrawCircle(m_spos.x, m_spos.y + agentHeight / 2, m_spos.z, m_distanceToWall, DuRGBA(64, 16, 0, 220), 2.0f);
+                dd.DebugDrawCircle(m_spos.X, m_spos.Y + agentHeight / 2, m_spos.Z, m_distanceToWall, DuRGBA(64, 16, 0, 220), 2.0f);
             }
 
-            if (m_hitPos != RcVec3f.Zero)
+            if (m_hitPos != Vector3.Zero)
             {
                 dd.Begin(LINES, 3.0f);
-                dd.Vertex(m_hitPos.x, m_hitPos.y + 0.02f, m_hitPos.z, DuRGBA(0, 0, 0, 192));
-                dd.Vertex(m_hitPos.x, m_hitPos.y + agentHeight, m_hitPos.z, DuRGBA(0, 0, 0, 192));
+                dd.Vertex(m_hitPos.X, m_hitPos.Y + 0.02f, m_hitPos.Z, DuRGBA(0, 0, 0, 192));
+                dd.Vertex(m_hitPos.X, m_hitPos.Y + agentHeight, m_hitPos.Z, DuRGBA(0, 0, 0, 192));
                 dd.End();
             }
 
@@ -408,9 +409,9 @@ public class TestNavmeshSampleTool : ISampleTool
                     if (m_parent[i] != 0)
                     {
                         dd.DepthMask(false);
-                        RcVec3f p0 = m_navMesh.GetPolyCenter(m_parent[i]);
-                        RcVec3f p1 = m_navMesh.GetPolyCenter(m_polys[i]);
-                        dd.DebugDrawArc(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z, 0.25f, 0.0f, 0.4f, DuRGBA(0, 0, 0, 128), 2.0f);
+                        Vector3 p0 = m_navMesh.GetPolyCenter(m_parent[i]);
+                        Vector3 p1 = m_navMesh.GetPolyCenter(m_polys[i]);
+                        dd.DebugDrawArc(p0.X, p0.Y, p0.Z, p1.X, p1.Y, p1.Z, 0.25f, 0.0f, 0.4f, DuRGBA(0, 0, 0, 128), 2.0f);
                         dd.DepthMask(true);
                     }
 
@@ -421,10 +422,10 @@ public class TestNavmeshSampleTool : ISampleTool
             if (m_sposSet && m_eposSet)
             {
                 dd.DepthMask(false);
-                float dx = m_epos.x - m_spos.x;
-                float dz = m_epos.z - m_spos.z;
+                float dx = m_epos.X - m_spos.X;
+                float dz = m_epos.Z - m_spos.Z;
                 float dist = (float)Math.Sqrt(dx * dx + dz * dz);
-                dd.DebugDrawCircle(m_spos.x, m_spos.y + agentHeight / 2, m_spos.z, dist, DuRGBA(64, 16, 0, 220), 2.0f);
+                dd.DebugDrawCircle(m_spos.X, m_spos.Y + agentHeight / 2, m_spos.Z, dist, DuRGBA(64, 16, 0, 220), 2.0f);
                 dd.DepthMask(true);
             }
         }
@@ -439,9 +440,9 @@ public class TestNavmeshSampleTool : ISampleTool
                     if (m_parent[i] != 0)
                     {
                         dd.DepthMask(false);
-                        RcVec3f p0 = m_navMesh.GetPolyCenter(m_parent[i]);
-                        RcVec3f p1 = m_navMesh.GetPolyCenter(m_polys[i]);
-                        dd.DebugDrawArc(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z, 0.25f, 0.0f, 0.4f, DuRGBA(0, 0, 0, 128), 2.0f);
+                        Vector3 p0 = m_navMesh.GetPolyCenter(m_parent[i]);
+                        Vector3 p1 = m_navMesh.GetPolyCenter(m_polys[i]);
+                        dd.DebugDrawArc(p0.X, p0.Y, p0.Z, p1.X, p1.Y, p1.Z, 0.25f, 0.0f, 0.4f, DuRGBA(0, 0, 0, 128), 2.0f);
                         dd.DepthMask(true);
                     }
 
@@ -456,8 +457,8 @@ public class TestNavmeshSampleTool : ISampleTool
                 dd.Begin(LINES, 2.0f);
                 for (int i = 0, j = 3; i < 4; j = i++)
                 {
-                    dd.Vertex(m_queryPoly[j].x, m_queryPoly[j].y, m_queryPoly[j].z, col);
-                    dd.Vertex(m_queryPoly[i].x, m_queryPoly[i].y, m_queryPoly[i].z, col);
+                    dd.Vertex(m_queryPoly[j].X, m_queryPoly[j].Y, m_queryPoly[j].Z, col);
+                    dd.Vertex(m_queryPoly[i].X, m_queryPoly[i].Y, m_queryPoly[i].Z, col);
                 }
 
                 dd.End();
@@ -478,9 +479,9 @@ public class TestNavmeshSampleTool : ISampleTool
                     if (m_parent[i] != 0)
                     {
                         dd.DepthMask(false);
-                        RcVec3f p0 = m_navMesh.GetPolyCenter(m_parent[i]);
-                        RcVec3f p1 = m_navMesh.GetPolyCenter(m_polys[i]);
-                        dd.DebugDrawArc(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z, 0.25f, 0.0f, 0.4f, DuRGBA(0, 0, 0, 128), 2.0f);
+                        Vector3 p0 = m_navMesh.GetPolyCenter(m_parent[i]);
+                        Vector3 p1 = m_navMesh.GetPolyCenter(m_polys[i]);
+                        dd.DebugDrawArc(p0.X, p0.Y, p0.Z, p1.X, p1.Y, p1.Z, 0.25f, 0.0f, 0.4f, DuRGBA(0, 0, 0, 128), 2.0f);
                         dd.DepthMask(true);
                     }
 
@@ -506,17 +507,17 @@ public class TestNavmeshSampleTool : ISampleTool
                                     continue;
                                 }
 
-                                RcVec3f delta = s3.Subtract(s.vmin);
-                                RcVec3f p0 = RcVec3f.Mad(s.vmin, delta, 0.5f);
-                                RcVec3f norm = RcVec3f.Of(delta.z, 0, -delta.x);
+                                Vector3 delta = s3 - (s.vmin);
+                                Vector3 p0 = Vector3Extensions.Mad(s.vmin, delta, 0.5f);
+                                Vector3 norm = new Vector3(delta.Z, 0, -delta.X);
                                 norm.Normalize();
-                                RcVec3f p1 = RcVec3f.Mad(p0, norm, agentRadius * 0.5f);
+                                Vector3 p1 = Vector3Extensions.Mad(p0, norm, agentRadius * 0.5f);
                                 // Skip backfacing segments.
                                 if (segmentRefs[j] != 0)
                                 {
                                     int col = DuRGBA(255, 255, 255, 32);
-                                    dd.Vertex(s.vmin.x, s.vmin.y + agentClimb, s.vmin.z, col);
-                                    dd.Vertex(s.vmax.x, s.vmax.y + agentClimb, s.vmax.z, col);
+                                    dd.Vertex(s.vmin.X, s.vmin.Y + agentClimb, s.vmin.Z, col);
+                                    dd.Vertex(s.vmax.X, s.vmax.Y + agentClimb, s.vmax.Z, col);
                                 }
                                 else
                                 {
@@ -526,11 +527,11 @@ public class TestNavmeshSampleTool : ISampleTool
                                         col = DuRGBA(96, 32, 16, 192);
                                     }
 
-                                    dd.Vertex(p0.x, p0.y + agentClimb, p0.z, col);
-                                    dd.Vertex(p1.x, p1.y + agentClimb, p1.z, col);
+                                    dd.Vertex(p0.X, p0.Y + agentClimb, p0.Z, col);
+                                    dd.Vertex(p1.X, p1.Y + agentClimb, p1.Z, col);
 
-                                    dd.Vertex(s.vmin.x, s.vmin.y + agentClimb, s.vmin.z, col);
-                                    dd.Vertex(s.vmax.x, s.vmax.y + agentClimb, s.vmax.z, col);
+                                    dd.Vertex(s.vmin.X, s.vmin.Y + agentClimb, s.vmin.Z, col);
+                                    dd.Vertex(s.vmax.X, s.vmax.Y + agentClimb, s.vmax.Z, col);
                                 }
                             }
 
@@ -544,7 +545,7 @@ public class TestNavmeshSampleTool : ISampleTool
                 if (m_sposSet)
                 {
                     dd.DepthMask(false);
-                    dd.DebugDrawCircle(m_spos.x, m_spos.y + agentHeight / 2, m_spos.z, m_neighbourhoodRadius, DuRGBA(64, 16, 0, 220), 2.0f);
+                    dd.DebugDrawCircle(m_spos.X, m_spos.Y + agentHeight / 2, m_spos.Z, m_neighbourhoodRadius, DuRGBA(64, 16, 0, 220), 2.0f);
                     dd.DepthMask(true);
                 }
             }
@@ -554,19 +555,19 @@ public class TestNavmeshSampleTool : ISampleTool
             dd.DepthMask(false);
             dd.Begin(POINTS, 4.0f);
             int col = DuRGBA(64, 16, 0, 220);
-            foreach (RcVec3f point in _randomPoints)
+            foreach (Vector3 point in _randomPoints)
             {
-                dd.Vertex(point.x, point.y + 0.1f, point.z, col);
+                dd.Vertex(point.X, point.Y + 0.1f, point.Z, col);
             }
 
             dd.End();
             if (m_sposSet && m_eposSet)
             {
                 dd.DepthMask(false);
-                float dx = m_epos.x - m_spos.x;
-                float dz = m_epos.z - m_spos.z;
+                float dx = m_epos.X - m_spos.X;
+                float dz = m_epos.Z - m_spos.Z;
                 float dist = (float)Math.Sqrt(dx * dx + dz * dz);
-                dd.DebugDrawCircle(m_spos.x, m_spos.y + agentHeight / 2, m_spos.z, dist, DuRGBA(64, 16, 0, 220), 2.0f);
+                dd.DebugDrawCircle(m_spos.X, m_spos.Y + agentHeight / 2, m_spos.Z, dist, DuRGBA(64, 16, 0, 220), 2.0f);
                 dd.DepthMask(true);
             }
 
@@ -574,7 +575,7 @@ public class TestNavmeshSampleTool : ISampleTool
         }
     }
 
-    private void DrawAgent(RecastDebugDraw dd, RcVec3f pos, int col)
+    private void DrawAgent(RecastDebugDraw dd, Vector3 pos, int col)
     {
         var settings = _sample.GetSettings();
         float r = settings.agentRadius;
@@ -582,16 +583,16 @@ public class TestNavmeshSampleTool : ISampleTool
         float c = settings.agentMaxClimb;
         dd.DepthMask(false);
         // Agent dimensions.
-        dd.DebugDrawCylinderWire(pos.x - r, pos.y + 0.02f, pos.z - r, pos.x + r, pos.y + h, pos.z + r, col, 2.0f);
-        dd.DebugDrawCircle(pos.x, pos.y + c, pos.z, r, DuRGBA(0, 0, 0, 64), 1.0f);
+        dd.DebugDrawCylinderWire(pos.X - r, pos.Y + 0.02f, pos.Z - r, pos.X + r, pos.Y + h, pos.Z + r, col, 2.0f);
+        dd.DebugDrawCircle(pos.X, pos.Y + c, pos.Z, r, DuRGBA(0, 0, 0, 64), 1.0f);
         int colb = DuRGBA(0, 0, 0, 196);
         dd.Begin(LINES);
-        dd.Vertex(pos.x, pos.y - c, pos.z, colb);
-        dd.Vertex(pos.x, pos.y + c, pos.z, colb);
-        dd.Vertex(pos.x - r / 2, pos.y + 0.02f, pos.z, colb);
-        dd.Vertex(pos.x + r / 2, pos.y + 0.02f, pos.z, colb);
-        dd.Vertex(pos.x, pos.y + 0.02f, pos.z - r / 2, colb);
-        dd.Vertex(pos.x, pos.y + 0.02f, pos.z + r / 2, colb);
+        dd.Vertex(pos.X, pos.Y - c, pos.Z, colb);
+        dd.Vertex(pos.X, pos.Y + c, pos.Z, colb);
+        dd.Vertex(pos.X - r / 2, pos.Y + 0.02f, pos.Z, colb);
+        dd.Vertex(pos.X + r / 2, pos.Y + 0.02f, pos.Z, colb);
+        dd.Vertex(pos.X, pos.Y + 0.02f, pos.Z - r / 2, colb);
+        dd.Vertex(pos.X, pos.Y + 0.02f, pos.Z + r / 2, colb);
         dd.End();
         dd.DepthMask(true);
     }
@@ -612,7 +613,7 @@ public class TestNavmeshSampleTool : ISampleTool
     }
 
 
-    public void HandleClick(RcVec3f s, RcVec3f p, bool shift)
+    public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
         if (shift)
         {
@@ -715,7 +716,7 @@ public class TestNavmeshSampleTool : ISampleTool
         }
     }
 
-    public void HandleClickRay(RcVec3f start, RcVec3f direction, bool shift)
+    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
     {
     }
 }

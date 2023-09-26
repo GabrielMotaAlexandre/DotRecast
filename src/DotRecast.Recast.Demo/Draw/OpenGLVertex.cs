@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using DotRecast.Core;
 
@@ -26,8 +27,8 @@ public struct OpenGLVertex
     [FieldOffset(20)]
     private readonly int color;
 
-    public OpenGLVertex(RcVec3f pos, RcVec2f uv, int color) :
-        this(pos.x, pos.y, pos.z, uv.x, uv.y, color)
+    public OpenGLVertex(Vector3 pos, RcVec2f uv, int color) :
+        this(pos.X, pos.Y, pos.Z, uv.x, uv.y, color)
     {
     }
 
@@ -36,8 +37,8 @@ public struct OpenGLVertex
     {
     }
 
-    public OpenGLVertex(RcVec3f pos, int color) :
-        this(pos.x, pos.y, pos.z, 0f, 0f, color)
+    public OpenGLVertex(Vector3 pos, int color) :
+        this(pos.X, pos.Y, pos.Z, 0f, 0f, color)
     {
     }
 

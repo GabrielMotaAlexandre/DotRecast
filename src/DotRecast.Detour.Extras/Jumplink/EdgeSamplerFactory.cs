@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using DotRecast.Core;
 
 namespace DotRecast.Detour.Extras.Jumplink
@@ -29,7 +30,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         {
             EdgeSampler es = new EdgeSampler(edge, new JumpTrajectory(acfg.jumpHeight));
             es.start.height = acfg.agentClimb * 2;
-            RcVec3f offset = new RcVec3f();
+            Vector3 offset = new Vector3();
             Trans2d(ref offset, es.az, es.ay, new RcVec2f { x = acfg.startDistance, y = -acfg.agentClimb, });
             Vadd(ref es.start.p, edge.sp, offset);
             Vadd(ref es.start.q, edge.sq, offset);
@@ -57,7 +58,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         {
             EdgeSampler es = new EdgeSampler(edge, new ClimbTrajectory());
             es.start.height = acfg.agentClimb * 2;
-            RcVec3f offset = new RcVec3f();
+            Vector3 offset = new Vector3();
             Trans2d(ref offset, es.az, es.ay, new RcVec2f() { x = acfg.startDistance, y = -acfg.agentClimb });
             Vadd(ref es.start.p, edge.sp, offset);
             Vadd(ref es.start.q, edge.sq, offset);
@@ -78,11 +79,11 @@ namespace DotRecast.Detour.Extras.Jumplink
             dest[2] = v1[2] + v2[2];
         }
         
-        private void Vadd(ref RcVec3f dest, RcVec3f v1, RcVec3f v2)
+        private void Vadd(ref Vector3 dest, Vector3 v1, Vector3 v2)
         {
-            dest.x = v1.x + v2.x;
-            dest.y = v1.y + v2.y;
-            dest.z = v1.z + v2.z;
+            dest.X = v1.X + v2.X;
+            dest.Y = v1.Y + v2.Y;
+            dest.Z = v1.Z + v2.Z;
         }
 
 
@@ -93,11 +94,11 @@ namespace DotRecast.Detour.Extras.Jumplink
             dst[2] = ax[2] * pt[0] + ay[2] * pt[1];
         }
         
-        private void Trans2d(ref RcVec3f dst, RcVec3f ax, RcVec3f ay, RcVec2f pt)
+        private void Trans2d(ref Vector3 dst, Vector3 ax, Vector3 ay, RcVec2f pt)
         {
-            dst.x = ax.x * pt.x + ay.x * pt.y;
-            dst.y = ax.y * pt.x + ay.y * pt.y;
-            dst.z = ax.z * pt.x + ay.z * pt.y;
+            dst.X = ax.X * pt.x + ay.X * pt.y;
+            dst.Y = ax.Y * pt.x + ay.Y * pt.y;
+            dst.Z = ax.Z * pt.x + ay.Z * pt.y;
         }
 
     }

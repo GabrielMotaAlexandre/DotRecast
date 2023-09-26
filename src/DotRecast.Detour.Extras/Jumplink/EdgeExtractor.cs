@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 using DotRecast.Recast;
 using static DotRecast.Recast.RcConstants;
 
@@ -13,7 +13,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             List<JumpEdge> edges = new List<JumpEdge>();
             if (mesh != null)
             {
-                RcVec3f orig = mesh.bmin;
+                Vector3 orig = mesh.bmin;
                 float cs = mesh.cs;
                 float ch = mesh.ch;
                 for (int i = 0; i < mesh.npolys; i++)
@@ -58,12 +58,12 @@ namespace DotRecast.Detour.Extras.Jumplink
                                 int va = mesh.polys[p + j] * 3;
                                 int vb = mesh.polys[p + nj] * 3;
                                 JumpEdge e = new JumpEdge();
-                                e.sp.x = orig.x + mesh.verts[vb] * cs;
-                                e.sp.y = orig.y + mesh.verts[vb + 1] * ch;
-                                e.sp.z = orig.z + mesh.verts[vb + 2] * cs;
-                                e.sq.x = orig.x + mesh.verts[va] * cs;
-                                e.sq.y = orig.y + mesh.verts[va + 1] * ch;
-                                e.sq.z = orig.z + mesh.verts[va + 2] * cs;
+                                e.sp.X = orig.X + mesh.verts[vb] * cs;
+                                e.sp.Y = orig.Y + mesh.verts[vb + 1] * ch;
+                                e.sp.Z = orig.Z + mesh.verts[vb + 2] * cs;
+                                e.sq.X = orig.X + mesh.verts[va] * cs;
+                                e.sq.Y = orig.Y + mesh.verts[va + 1] * ch;
+                                e.sq.Z = orig.Z + mesh.verts[va + 2] * cs;
                                 edges.Add(e);
                             }
                         }

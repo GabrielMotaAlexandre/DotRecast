@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 using DotRecast.Detour.Extras.Jumplink;
 using DotRecast.Recast.Geom;
 using DotRecast.Recast.Toolset.Builder;
@@ -111,12 +111,12 @@ namespace DotRecast.Recast.Toolset.Tools
         {
             int area = SampleAreaModifications.SAMPLE_POLYAREA_TYPE_JUMP_AUTO;
             int flags = SampleAreaModifications.SAMPLE_POLYFLAGS_JUMP;
-            RcVec3f prev = new RcVec3f();
+            Vector3 prev = new Vector3();
             for (int i = 0; i < link.startSamples.Length; i++)
             {
-                RcVec3f p = link.startSamples[i].p;
-                RcVec3f q = link.endSamples[i].p;
-                if (i == 0 || RcVec3f.Dist2D(prev, p) > agentRadius)
+                Vector3 p = link.startSamples[i].p;
+                Vector3 q = link.endSamples[i].p;
+                if (i == 0 || Vector3Extensions.Dist2D(prev, p) > agentRadius)
                 {
                     geom.AddOffMeshConnection(p, q, agentRadius, false, area, flags);
                     prev = p;

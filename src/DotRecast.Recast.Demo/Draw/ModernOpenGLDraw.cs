@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Silk.NET.OpenGL;
 using DotRecast.Core;
+using System.Numerics;
 
 namespace DotRecast.Recast.Demo.Draw;
 
@@ -285,13 +286,13 @@ public class ModernOpenGLDraw : IOpenGLDraw
         vertices.Add(new OpenGLVertex(pos, color));
     }
 
-    public void Vertex(RcVec3f pos, int color)
+    public void Vertex(Vector3 pos, int color)
     {
         vertices.Add(new OpenGLVertex(pos, color));
     }
 
 
-    public void Vertex(RcVec3f pos, int color, RcVec2f uv)
+    public void Vertex(Vector3 pos, int color, RcVec2f uv)
     {
         vertices.Add(new OpenGLVertex(pos, uv, color));
     }

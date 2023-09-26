@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour;
 using DotRecast.Recast.Geom;
@@ -72,8 +73,8 @@ namespace DotRecast.Recast.Toolset.Tools
                 return false;
             }
 
-            RcVec3f bmin = geom.GetMeshBoundsMin();
-            RcVec3f bmax = geom.GetMeshBoundsMax();
+            Vector3 bmin = geom.GetMeshBoundsMin();
+            Vector3 bmax = geom.GetMeshBoundsMax();
 
             RcConfig cfg = new RcConfig(
                 true, settings.tileSize, settings.tileSize,
@@ -110,7 +111,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return true;
         }
 
-        public bool BuildTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, RcVec3f pos, out long tileBuildTicks, out int tileTriCount, out int tileMemUsage)
+        public bool BuildTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos, out long tileBuildTicks, out int tileTriCount, out int tileMemUsage)
         {
             tileBuildTicks = 0;
             tileTriCount = 0;
@@ -121,16 +122,16 @@ namespace DotRecast.Recast.Toolset.Tools
 
             float ts = settings.tileSize * settings.cellSize;
 
-            RcVec3f bmin = geom.GetMeshBoundsMin();
-            RcVec3f bmax = geom.GetMeshBoundsMax();
+            Vector3 bmin = geom.GetMeshBoundsMin();
+            Vector3 bmax = geom.GetMeshBoundsMax();
 
-            int tx = (int)((pos.x - bmin[0]) / ts);
-            int ty = (int)((pos.z - bmin[2]) / ts);
+            int tx = (int)((pos.X - bmin[0]) / ts);
+            int ty = (int)((pos.Z - bmin[2]) / ts);
 
             return BuildTile(geom, settings, navMesh, tx, ty, out tileBuildTicks, out tileTriCount, out tileMemUsage);
         }
 
-        public bool RemoveTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, RcVec3f pos)
+        public bool RemoveTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos)
         {
             if (null == settings || null == geom || navMesh == null)
                 return false;
@@ -139,8 +140,8 @@ namespace DotRecast.Recast.Toolset.Tools
 
             var bmin = geom.GetMeshBoundsMin();
 
-            int tx = (int)((pos.x - bmin[0]) / ts);
-            int ty = (int)((pos.z - bmin[2]) / ts);
+            int tx = (int)((pos.X - bmin[0]) / ts);
+            int ty = (int)((pos.Z - bmin[2]) / ts);
 
             var tileRef = navMesh.GetTileRefAt(tx, ty, 0);
             navMesh.RemoveTile(tileRef);

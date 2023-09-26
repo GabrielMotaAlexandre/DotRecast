@@ -17,7 +17,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Collections.Generic;
-using DotRecast.Core;
+using System.Numerics;
 
 using NUnit.Framework;
 
@@ -74,8 +74,8 @@ public class MoveAlongSurfaceTest : AbstractDetourTest
         for (int i = 0; i < startRefs.Length; i++)
         {
             long startRef = startRefs[i];
-            RcVec3f startPos = startPoss[i];
-            RcVec3f endPos = endPoss[i];
+            Vector3 startPos = startPoss[i];
+            Vector3 endPos = endPoss[i];
             var status = query.MoveAlongSurface(startRef, startPos, endPos, filter, out var result, ref visited);
             Assert.That(status.Succeeded(), Is.True);
             

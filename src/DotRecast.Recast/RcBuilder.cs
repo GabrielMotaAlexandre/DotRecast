@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using DotRecast.Core;
@@ -46,8 +47,8 @@ namespace DotRecast.Recast
 
         public List<RcBuilderResult> BuildTiles(IInputGeomProvider geom, RcConfig cfg, TaskFactory taskFactory)
         {
-            RcVec3f bmin = geom.GetMeshBoundsMin();
-            RcVec3f bmax = geom.GetMeshBoundsMax();
+            Vector3 bmin = geom.GetMeshBoundsMin();
+            Vector3 bmax = geom.GetMeshBoundsMax();
             CalcTileCount(bmin, bmax, cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
             List<RcBuilderResult> results = new List<RcBuilderResult>();
             if (null != taskFactory)
@@ -65,8 +66,8 @@ namespace DotRecast.Recast
 
         public Task BuildTilesAsync(IInputGeomProvider geom, RcConfig cfg, int threads, List<RcBuilderResult> results, TaskFactory taskFactory, CancellationToken cancellationToken)
         {
-            RcVec3f bmin = geom.GetMeshBoundsMin();
-            RcVec3f bmax = geom.GetMeshBoundsMax();
+            Vector3 bmin = geom.GetMeshBoundsMin();
+            Vector3 bmax = geom.GetMeshBoundsMax();
             CalcTileCount(bmin, bmax, cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
             Task task;
             if (1 < threads)
@@ -81,7 +82,7 @@ namespace DotRecast.Recast
             return task;
         }
 
-        private Task BuildSingleThreadAsync(IInputGeomProvider geom, RcConfig cfg, RcVec3f bmin, RcVec3f bmax,
+        private Task BuildSingleThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
             int tw, int th, List<RcBuilderResult> results)
         {
             RcAtomicInteger counter = new RcAtomicInteger(0);
@@ -96,7 +97,7 @@ namespace DotRecast.Recast
             return Task.CompletedTask;
         }
 
-        private Task BuildMultiThreadAsync(IInputGeomProvider geom, RcConfig cfg, RcVec3f bmin, RcVec3f bmax,
+        private Task BuildMultiThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
             int tw, int th, List<RcBuilderResult> results, TaskFactory taskFactory, CancellationToken cancellationToken)
         {
             RcAtomicInteger counter = new RcAtomicInteger(0);
@@ -146,7 +147,7 @@ namespace DotRecast.Recast
             return Task.WhenAll(tasks.ToArray());
         }
 
-        public RcBuilderResult BuildTile(IInputGeomProvider geom, RcConfig cfg, RcVec3f bmin, RcVec3f bmax, int tx,
+        public RcBuilderResult BuildTile(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax, int tx,
             int ty, RcAtomicInteger counter, int total)
         {
             RcBuilderResult result = Build(geom, new RcBuilderConfig(cfg, bmin, bmax, tx, ty));

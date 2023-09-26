@@ -18,6 +18,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast;
 
@@ -25,11 +26,11 @@ namespace DotRecast.Detour.Dynamic.Colliders
 {
     public class DtCapsuleCollider : DtCollider
     {
-        private readonly RcVec3f start;
-        private readonly RcVec3f end;
+        private readonly Vector3 start;
+        private readonly Vector3 end;
         private readonly float radius;
 
-        public DtCapsuleCollider(RcVec3f start, RcVec3f end, float radius, int area, float flagMergeThreshold)
+        public DtCapsuleCollider(Vector3 start, Vector3 end, float radius, int area, float flagMergeThreshold)
             : base(area, flagMergeThreshold, Bounds(start, end, radius))
         {
             this.start = start;
@@ -42,13 +43,13 @@ namespace DotRecast.Detour.Dynamic.Colliders
             RcFilledVolumeRasterization.RasterizeCapsule(hf, start, end, radius, area, (int)Math.Floor(flagMergeThreshold / hf.ch), telemetry);
         }
 
-        private static float[] Bounds(RcVec3f start, RcVec3f end, float radius)
+        private static float[] Bounds(Vector3 start, Vector3 end, float radius)
         {
             return new float[]
             {
-                Math.Min(start.x, end.x) - radius, Math.Min(start.y, end.y) - radius,
-                Math.Min(start.z, end.z) - radius, Math.Max(start.x, end.x) + radius, Math.Max(start.y, end.y) + radius,
-                Math.Max(start.z, end.z) + radius
+                Math.Min(start.X, end.X) - radius, Math.Min(start.Y, end.Y) - radius,
+                Math.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
+                Math.Max(start.Z, end.Z) + radius
             };
         }
     }

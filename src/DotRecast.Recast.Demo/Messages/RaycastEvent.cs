@@ -1,9 +1,9 @@
-﻿using DotRecast.Core;
+﻿using System.Numerics;
 
 namespace DotRecast.Recast.Demo.Messages;
 
 public class RaycastEvent : IRecastDemoMessage
 {
-    public required RcVec3f Start { get; init; }
-    public required RcVec3f End { get; init; }
+    public required Vector3 Start { get; init; }
+    public required Vector3 End { get; init; }
 }
