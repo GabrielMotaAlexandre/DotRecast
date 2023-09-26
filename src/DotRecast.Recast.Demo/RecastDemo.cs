@@ -156,8 +156,8 @@ public class RecastDemo : IRecastDemoChannel
 
     public void OnMouseMoved(IMouse mouse, Vector2 position)
     {
-        mousePos[0] = (float)position.X;
-        mousePos[1] = (float)position.Y;
+        mousePos[0] = position.X;
+        mousePos[1] = position.Y;
         int dx = (int)(mousePos[0] - origMousePos[0]);
         int dy = (int)(mousePos[1] - origMousePos[1]);
         if (rotate)
@@ -427,8 +427,8 @@ public class RecastDemo : IRecastDemoChannel
             var tempMoveAccel = keyboard.IsKeyPressed(Key.ShiftLeft) || keyboard.IsKeyPressed(Key.ShiftRight) ? 1.0f : -1f;
             var tempControl = keyboard.IsKeyPressed(Key.ControlLeft) || keyboard.IsKeyPressed(Key.ControlRight);
 
-            _modState |= tempControl ? (int)KeyModState.Control : (int)KeyModState.None;
-            _modState |= 0 < tempMoveAccel ? (int)KeyModState.Shift : (int)KeyModState.None;
+            _modState |= tempControl ? KeyModState.Control : KeyModState.None;
+            _modState |= 0 < tempMoveAccel ? KeyModState.Shift : KeyModState.None;
 
             //Logger.Information($"{_modState}");
             _moveFront = Math.Clamp(_moveFront + tempMoveFront * dt * 4.0f, 0, 2.0f);
@@ -599,7 +599,7 @@ public class RecastDemo : IRecastDemoChannel
     {
         // Clear the screen
         dd.Clear();
-        dd.ProjectionMatrix(50f, (float)width / (float)height, 1.0f, camr).CopyTo(projectionMatrix);
+        dd.ProjectionMatrix(50f, width / (float)height, 1.0f, camr).CopyTo(projectionMatrix);
         dd.ViewMatrix(cameraPos, cameraEulers).CopyTo(modelviewMatrix);
 
         dd.Fog(camr * 0.1f, camr * 1.25f);

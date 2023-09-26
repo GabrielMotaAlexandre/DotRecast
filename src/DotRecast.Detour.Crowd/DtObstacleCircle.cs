@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -9,10 +9,10 @@ namespace DotRecast.Detour.Crowd
         public Vector3 p = new();
 
         /** Velocity of the obstacle */
-        public Vector3 vel = new();
+        public Vector2 vel = new();
 
         /** Velocity of the obstacle */
-        public Vector3 dvel = new();
+        public Vector2 dvel = new();
 
         /** Radius of the obstacle */
         public float rad;

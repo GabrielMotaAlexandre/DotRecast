@@ -396,16 +396,16 @@ public class CrowdSampleTool : ISampleTool
                 dd.Begin(QUADS);
                 for (int j = 0; j < vod.GetSampleCount(); ++j)
                 {
-                    Vector3 p = vod.GetSampleVelocity(j);
+                    Vector2 p = vod.GetSampleVelocity(j);
                     float sr = vod.GetSampleSize(j);
                     float pen = vod.GetSamplePenalty(j);
                     float pen2 = vod.GetSamplePreferredSidePenalty(j);
                     int col = DuLerpCol(DuRGBA(255, 255, 255, 220), DuRGBA(128, 96, 0, 220), (int)(pen * 255));
                     col = DuLerpCol(col, DuRGBA(128, 0, 0, 220), (int)(pen2 * 128));
-                    dd.Vertex(dx + p.X - sr, dy, dz + p.Z - sr, col);
-                    dd.Vertex(dx + p.X - sr, dy, dz + p.Z + sr, col);
-                    dd.Vertex(dx + p.X + sr, dy, dz + p.Z + sr, col);
-                    dd.Vertex(dx + p.X + sr, dy, dz + p.Z - sr, col);
+                    dd.Vertex(dx + p.X - sr, dy, dz + p.Y - sr, col);
+                    dd.Vertex(dx + p.X - sr, dy, dz + p.Y + sr, col);
+                    dd.Vertex(dx + p.X + sr, dy, dz + p.Y + sr, col);
+                    dd.Vertex(dx + p.X + sr, dy, dz + p.Y - sr, col);
                 }
 
                 dd.End();
@@ -418,8 +418,8 @@ public class CrowdSampleTool : ISampleTool
             float radius = ag.option.radius;
             float height = ag.option.height;
             Vector3 pos = ag.npos;
-            Vector3 vel = ag.vel;
-            Vector3 dvel = ag.dvel;
+            Vector2 vel = ag.vel;
+            Vector2 dvel = ag.dvel;
 
             int col = DuRGBA(220, 220, 220, 192);
             if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
@@ -434,10 +434,10 @@ public class CrowdSampleTool : ISampleTool
 
             dd.DebugDrawCircle(pos.X, pos.Y + height, pos.Z, radius, col, 2.0f);
 
-            dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + dvel.X, pos.Y + height + dvel.Y, pos.Z + dvel.Z,
+            dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + dvel.X, pos.Y + height, pos.Z + dvel.Y,
                 0.0f, 0.4f, DuRGBA(0, 192, 255, 192), agentDebug.agent == ag ? 2.0f : 1.0f);
 
-            dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + vel.X, pos.Y + height + vel.Y, pos.Z + vel.Z, 0.0f,
+            dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + vel.X, pos.Y + height, pos.Z + vel.Y, 0.0f,
                 0.4f, DuRGBA(0, 0, 0, 160), 2.0f);
         }
 

@@ -21,7 +21,10 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Wasm;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -66,6 +69,9 @@ namespace DotRecast.Detour.Crowd
             int iminy = (int)Math.Floor(miny * _invCellSize);
             int imaxx = (int)Math.Floor(maxx * _invCellSize);
             int imaxy = (int)Math.Floor(maxy * _invCellSize);
+            //var imin = Vector.ConvertToInt32(Vector.Floor((min * _invCellSize).AsVector128().AsVector()));
+            //var imax = Vector.ConvertToInt32(Vector.Floor((max * _invCellSize).AsVector128().AsVector()));
+
 
             for (int y = iminy; y <= imaxy; ++y)
             {
@@ -84,8 +90,9 @@ namespace DotRecast.Detour.Crowd
         }
 
         // 해당 셀 사이즈의 크기로 x ~ y 영역을 찾아, 군집 에이전트를 가져오는 코드
-        public int QueryItems(float minx, float miny, float maxx, float maxy, ref HashSet<DtCrowdAgent> result)
+        public HashSet<DtCrowdAgent> QueryItems(float minx, float miny, float maxx, float maxy)
         {
+            var result = new HashSet<DtCrowdAgent>();
             int iminx = (int)Math.Floor(minx * _invCellSize);
             int iminy = (int)Math.Floor(miny * _invCellSize);
             int imaxx = (int)Math.Floor(maxx * _invCellSize);
@@ -105,8 +112,7 @@ namespace DotRecast.Detour.Crowd
                     }
                 }
             }
-
-            return result.Count;
+            return result;
         }
 
         public IEnumerable<(long, int)> GetItemCounts()

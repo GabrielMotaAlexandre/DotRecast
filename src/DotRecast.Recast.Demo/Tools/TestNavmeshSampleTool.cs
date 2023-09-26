@@ -508,7 +508,7 @@ public class TestNavmeshSampleTool : ISampleTool
                                     continue;
                                 }
 
-                                Vector3 delta = s3 - (s.vmin);
+                                Vector3 delta = s3 - s.vmin;
                                 Vector3 p0 = Vector3Extensions.Mad(s.vmin, delta, 0.5f);
                                 Vector3 norm = new(delta.Z, 0, -delta.X);
                                 norm.Normalize();

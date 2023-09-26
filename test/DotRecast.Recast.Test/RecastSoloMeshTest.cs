@@ -300,7 +300,7 @@ public class RecastSoloMeshTest
                         break;
                     }
 
-                    fw.Write((v + 1) + " ");
+                    fw.Write(v + 1 + " ");
                 }
 
                 fw.Write("\n");

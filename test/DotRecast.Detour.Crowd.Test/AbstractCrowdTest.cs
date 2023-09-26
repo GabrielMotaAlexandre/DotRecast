@@ -165,10 +165,10 @@ public class AbstractCrowdTest
 
     protected static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
     {
-        Vector3 vel = tgt - (pos);
+        Vector3 vel = tgt - pos;
         vel.Y = 0.0f;
         vel.Normalize();
-        vel *= (speed);
+        vel *= speed;
         return vel;
     }
 
@@ -178,8 +178,8 @@ public class AbstractCrowdTest
         foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
         {
             Console.WriteLine(ag.state + ", " + ag.targetState);
-            Console.WriteLine(ag.npos.X + ", " + ag.npos.Y + ", " + ag.npos.Z);
-            Console.WriteLine(ag.nvel.X + ", " + ag.nvel.Y + ", " + ag.nvel.Z);
+            Console.WriteLine(ag.npos.X + ", " + ag.npos.Y);
+            Console.WriteLine(ag.nvel.X + ", " + ag.nvel.Y);
         }
     }
 }

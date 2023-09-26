@@ -404,6 +404,8 @@ public class DebugDraw
 
     public void DebugDrawCylinder(float minx, float miny, float minz, float maxx, float maxy, float maxz, int col)
     {
+        // todo
+        return;
         Begin(DebugDrawPrimitives.TRIS);
         AppendCylinder(minx, miny, minz, maxx, maxy, maxz, col);
         End();

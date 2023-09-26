@@ -58,17 +58,17 @@ namespace DotRecast.Detour.Crowd
         public Vector3 disp = new();
 
         /// < A temporary value used to accumulate agent displacement during iterative
-        /// collision resolution. [(x, y, z)]
-        public Vector3 dvel = new();
+        /// collision resolution. [(x, y)]
+        public Vector2 dvel = new();
 
         /// < The desired velocity of the agent. Based on the current path, calculated
         /// from
-        /// scratch each frame. [(x, y, z)]
-        public Vector3 nvel = new();
+        /// scratch each frame. [(x, y)]
+        public Vector2 nvel = new();
 
         /// < The desired velocity adjusted by obstacle avoidance, calculated from scratch each
-        /// frame. [(x, y, z)]
-        public Vector3 vel = new();
+        /// frame. [(x, y)]
+        public Vector2 vel = new();
 
         /// < The actual velocity of the agent. The change from nvel -> vel is
         /// constrained by max acceleration. [(x, y, z)]
@@ -113,17 +113,17 @@ namespace DotRecast.Detour.Crowd
         {
             // Fake dynamic constraint.
             float maxDelta = option.maxAcceleration * dt;
-            Vector3 dv = nvel - (vel);
+            var dv = nvel - vel;
             float ds = dv.Length();
             if (ds > maxDelta)
-                dv *= (maxDelta / ds);
-            vel += (dv);
+                dv *= maxDelta / ds;
+            vel += dv;
 
             // Integrate
             if (vel.Length() > 0.0001f)
-                npos = Vector3Extensions.Mad(npos, vel, dt);
+                npos = Vector3Extensions.Mad(npos, vel.AsVector3(), dt);
             else
-                vel = Vector3.Zero;
+                vel = Vector2.Zero;
         }
 
         public bool OverOffmeshConnection(float radius)
@@ -157,46 +157,37 @@ namespace DotRecast.Detour.Crowd
             return range;
         }
 
-        public Vector3 CalcSmoothSteerDirection()
+        public Vector2 CalcSmoothSteerDirection()
         {
-            Vector3 dir = new();
-            if (0 < corners.Count)
+            if (corners.Count == 0)
             {
-                int ip0 = 0;
-                int ip1 = Math.Min(1, corners.Count - 1);
-                var p0 = corners[ip0].pos;
-                var p1 = corners[ip1].pos;
-
-                var dir0 = p0 - (npos);
-                var dir1 = p1 - (npos);
-                dir0.Y = 0;
-                dir1.Y = 0;
-
-                float len0 = dir0.Length();
-                float len1 = dir1.Length();
-                if (len1 > 0.001f)
-                    dir1 *= (1.0f / len1);
-
-                dir.X = dir0.X - dir1.X * len0 * 0.5f;
-                dir.Y = 0;
-                dir.Z = dir0.Z - dir1.Z * len0 * 0.5f;
-                dir.Normalize();
+                return Vector2.Zero;
             }
 
-            return dir;
+            int ip0 = 0;
+            int ip1 = Math.Min(1, corners.Count - 1);
+            var p0 = corners[ip0].pos;
+            var p1 = corners[ip1].pos;
+
+            var dir0 = (p0 - npos).AsVector2XZ();
+            var dir1 = (p1 - npos).AsVector2XZ();
+
+            float len0 = dir0.Length();
+            float len1 = dir1.Length();
+            if (len1 > 0.001f)
+                dir1 *= 1.0f / len1;
+
+            return Vector2.Normalize(dir0 - dir1 * (len0 * 0.5f));
         }
 
-        public Vector3 CalcStraightSteerDirection()
+        public Vector2 CalcStraightSteerDirection()
         {
-            Vector3 dir = new();
-            if (0 < corners.Count)
+            if (corners.Count == 0)
             {
-                dir = corners[0].pos - (npos);
-                dir.Y = 0;
-                dir.Normalize();
+                return Vector2.Zero;
             }
 
-            return dir;
+            return Vector2.Normalize((corners[0].pos - npos).AsVector2XZ());
         }
 
         public void SetTarget(long refs, Vector3 pos)

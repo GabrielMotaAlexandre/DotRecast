@@ -867,7 +867,7 @@ public class RecastDebugDraw : DebugDraw
                 for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
                 {
                     RcCompactSpan s = chf.spans[i];
-                    float fy = chf.bmin.Y + (s.y) * ch;
+                    float fy = chf.bmin.Y + s.y * ch;
                     int color;
                     if (s.reg != 0)
                     {

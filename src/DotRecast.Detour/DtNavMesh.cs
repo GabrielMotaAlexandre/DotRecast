@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.Intrinsics;
+using System.Threading;
 using DotRecast.Core;
 
 namespace DotRecast.Detour
@@ -54,7 +56,6 @@ namespace DotRecast.Detour
 
         private readonly DtNavMeshParams m_params;
 
-        /// < Current initialization params. TODO: do not store this info twice.
         private readonly Vector3 m_orig;
 
         /// < Origin of the tile (0,0)
@@ -251,8 +252,13 @@ namespace DotRecast.Detour
      */
         public void CalcTileLoc(Vector3 pos, out int tx, out int ty)
         {
-            tx = (int)Math.Floor((pos.X - m_orig.X) / m_tileWidth);
-            ty = (int)Math.Floor((pos.Z - m_orig.Z) / m_tileHeight);
+            var aa = (pos - m_params.orig) / m_tileWidth;
+
+            var t = Vector.ConvertToInt32(Vector.Floor(aa.AsVector128().AsVector()));
+            tx = t.GetElement(0);
+            ty = t.GetElement(1);
+            //tx = (int)Math.Floor((pos.X - m_params.orig.X) / m_tileWidth);
+            //ty = (int)Math.Floor((pos.Z - m_params.orig.Z) / m_tileHeight);
         }
 
         /// Gets the tile and polygon for the specified polygon reference.

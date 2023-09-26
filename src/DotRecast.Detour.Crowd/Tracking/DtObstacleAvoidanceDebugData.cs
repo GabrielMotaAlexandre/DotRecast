@@ -40,7 +40,7 @@ namespace DotRecast.Detour.Crowd.Tracking
         public DtObstacleAvoidanceDebugData(int maxSamples)
         {
             m_maxSamples = maxSamples;
-            m_vel = new float[3 * m_maxSamples];
+            m_vel = new float[2 * m_maxSamples];
             m_pen = new float[m_maxSamples];
             m_ssize = new float[m_maxSamples];
             m_vpen = new float[m_maxSamples];
@@ -80,13 +80,12 @@ namespace DotRecast.Detour.Crowd.Tracking
             NormalizeArray(m_tpen, m_nsamples);
         }
 
-        public void AddSample(Vector3 vel, float ssize, float pen, float vpen, float vcpen, float spen, float tpen)
+        public void AddSample(Vector2 vel, float ssize, float pen, float vpen, float vcpen, float spen, float tpen)
         {
             if (m_nsamples >= m_maxSamples)
                 return;
-            m_vel[m_nsamples * 3] = vel.X;
-            m_vel[m_nsamples * 3 + 1] = vel.Y;
-            m_vel[m_nsamples * 3 + 2] = vel.Z;
+            m_vel[m_nsamples * 2] = vel.X;
+            m_vel[m_nsamples * 2 + 2] = vel.Y;
             m_ssize[m_nsamples] = ssize;
             m_pen[m_nsamples] = pen;
             m_vpen[m_nsamples] = vpen;
@@ -101,13 +100,12 @@ namespace DotRecast.Detour.Crowd.Tracking
             return m_nsamples;
         }
 
-        public Vector3 GetSampleVelocity(int i)
+        public Vector2 GetSampleVelocity(int i)
         {
-            Vector3 vel = new()
+            Vector2 vel = new()
             {
-                X = m_vel[i * 3],
-                Y = m_vel[i * 3 + 1],
-                Z = m_vel[i * 3 + 2]
+                X = m_vel[i * 2],
+                Y = m_vel[i * 2 + 2]
             };
             return vel;
         }

@@ -192,7 +192,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
             {
                 for (int j = 0; j < link.nspine - 1; ++j)
                 {
-                    int u = (j * 255) / link.nspine;
+                    int u = j * 255 / link.nspine;
                     int col = DuTransCol(DuLerpCol(col0, col1, u), 128);
                     dd.Vertex(link.spine1[j * 3], link.spine1[j * 3 + 1], link.spine1[j * 3 + 2], col);
                     dd.Vertex(link.spine1[(j + 1) * 3], link.spine1[(j + 1) * 3 + 1], link.spine1[(j + 1) * 3 + 2], col);

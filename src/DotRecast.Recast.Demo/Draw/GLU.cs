@@ -61,7 +61,7 @@ public static class GLU
         matrix.M34 = -1.0f;
         matrix.M41 = 0.0f;
         matrix.M42 = 0.0f;
-        matrix.M43 = (-temp * zfar) / temp4;
+        matrix.M43 = -temp * zfar / temp4;
         matrix.M44 = 0.0f;
     }
 
@@ -348,11 +348,11 @@ public static class GLU
 
     static float MAT(float[] m, int r, int c)
     {
-        return m[(c) * 4 + (r)];
+        return m[c * 4 + r];
     }
 
     static void MAT(float[] m, int r, int c, float v)
     {
-        m[(c) * 4 + (r)] = v;
+        m[c * 4 + r] = v;
     }
 }
