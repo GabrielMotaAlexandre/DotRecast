@@ -60,7 +60,8 @@ public class FindLocalNeighbourhoodTest : AbstractDetourTest
             Vector3 startPos = startPoss[i];
             var refs = new List<long>();
             var parentRefs = new List<long>();
-            var status = query.FindLocalNeighbourhood(startRefs[i], startPos, 3.5f, filter, ref refs, ref parentRefs);
+
+            _ = query.FindLocalNeighbourhood(startRefs[i], startPos, 3.5f, filter, ref refs, ref parentRefs);
             Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
             for (int v = 0; v < REFS[i].Length; v++)
             {

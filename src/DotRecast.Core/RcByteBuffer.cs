@@ -6,7 +6,7 @@ namespace DotRecast.Core
     public class RcByteBuffer
     {
         private RcByteOrder _order;
-        private byte[] _bytes;
+        private readonly byte[] _bytes;
         private int _position;
 
         public RcByteBuffer(byte[] bytes)
@@ -120,7 +120,7 @@ namespace DotRecast.Core
             }
         }
 
-        public void PutFloat(float v)
+        public static void PutFloat(float v)
         {
             // if (_order == ByteOrder.BIG_ENDIAN)
             // {
@@ -134,7 +134,7 @@ namespace DotRecast.Core
             // ?
         }
 
-        public void PutInt(int v)
+        public static void PutInt(int v)
         {
             // ?
         }

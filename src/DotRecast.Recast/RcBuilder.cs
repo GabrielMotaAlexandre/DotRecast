@@ -50,7 +50,7 @@ namespace DotRecast.Recast
             Vector3 bmin = geom.GetMeshBoundsMin();
             Vector3 bmax = geom.GetMeshBoundsMax();
             CalcTileCount(bmin, bmax, cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
-            List<RcBuilderResult> results = new List<RcBuilderResult>();
+            List<RcBuilderResult> results = new();
             if (null != taskFactory)
             {
                 BuildMultiThreadAsync(geom, cfg, bmin, bmax, tw, th, results, taskFactory, default);
@@ -85,7 +85,7 @@ namespace DotRecast.Recast
         private Task BuildSingleThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
             int tw, int th, List<RcBuilderResult> results)
         {
-            RcAtomicInteger counter = new RcAtomicInteger(0);
+            RcAtomicInteger counter = new(0);
             for (int y = 0; y < th; ++y)
             {
                 for (int x = 0; x < tw; ++x)
@@ -100,9 +100,9 @@ namespace DotRecast.Recast
         private Task BuildMultiThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
             int tw, int th, List<RcBuilderResult> results, TaskFactory taskFactory, CancellationToken cancellationToken)
         {
-            RcAtomicInteger counter = new RcAtomicInteger(0);
-            CountdownEvent latch = new CountdownEvent(tw * th);
-            List<Task> tasks = new List<Task>();
+            RcAtomicInteger counter = new(0);
+            CountdownEvent latch = new(tw * th);
+            List<Task> tasks = new();
 
             for (int x = 0; x < tw; ++x)
             {
@@ -151,10 +151,7 @@ namespace DotRecast.Recast
             int ty, RcAtomicInteger counter, int total)
         {
             RcBuilderResult result = Build(geom, new RcBuilderConfig(cfg, bmin, bmax, tx, ty));
-            if (_progressListener != null)
-            {
-                _progressListener.OnProgress(counter.IncrementAndGet(), total);
-            }
+            _progressListener?.OnProgress(counter.IncrementAndGet(), total);
 
             return result;
         }
@@ -162,7 +159,7 @@ namespace DotRecast.Recast
         public RcBuilderResult Build(IInputGeomProvider geom, RcBuilderConfig builderCfg)
         {
             RcConfig cfg = builderCfg.cfg;
-            RcTelemetry ctx = new RcTelemetry();
+            RcTelemetry ctx = new();
             //
             // Step 1. Rasterize input polygon soup.
             //
@@ -170,7 +167,7 @@ namespace DotRecast.Recast
             return Build(builderCfg.tileX, builderCfg.tileZ, geom, cfg, solid, ctx);
         }
 
-        public RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, RcConfig cfg, RcHeightfield solid, RcTelemetry ctx)
+        public static RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, RcConfig cfg, RcHeightfield solid, RcTelemetry ctx)
         {
             FilterHeightfield(solid, cfg, ctx);
             RcCompactHeightfield chf = BuildCompactHeightfield(geom, cfg, ctx, solid);
@@ -259,7 +256,7 @@ namespace DotRecast.Recast
         /*
          * Step 2. Filter walkable surfaces.
          */
-        private void FilterHeightfield(RcHeightfield solid, RcConfig cfg, RcTelemetry ctx)
+        private static void FilterHeightfield(RcHeightfield solid, RcConfig cfg, RcTelemetry ctx)
         {
             // Once all geometry is rasterized, we do initial pass of filtering to
             // remove unwanted overhangs caused by the conservative rasterization
@@ -283,7 +280,7 @@ namespace DotRecast.Recast
         /*
          * Step 3. Partition walkable surface to simple regions.
          */
-        private RcCompactHeightfield BuildCompactHeightfield(IInputGeomProvider geom, RcConfig cfg, RcTelemetry ctx, RcHeightfield solid)
+        private static RcCompactHeightfield BuildCompactHeightfield(IInputGeomProvider geom, RcConfig cfg, RcTelemetry ctx, RcHeightfield solid)
         {
             // Compact the heightfield so that it is faster to handle from now on.
             // This will result more cache coherent data as well as the neighbours
@@ -304,9 +301,9 @@ namespace DotRecast.Recast
             return chf;
         }
 
-        public RcHeightfieldLayerSet BuildLayers(IInputGeomProvider geom, RcBuilderConfig builderCfg)
+        public static RcHeightfieldLayerSet BuildLayers(IInputGeomProvider geom, RcBuilderConfig builderCfg)
         {
-            RcTelemetry ctx = new RcTelemetry();
+            RcTelemetry ctx = new();
             RcHeightfield solid = RcVoxelizations.BuildSolidHeightfield(geom, builderCfg, ctx);
             FilterHeightfield(solid, builderCfg.cfg, ctx);
             RcCompactHeightfield chf = BuildCompactHeightfield(geom, builderCfg.cfg, ctx, solid);

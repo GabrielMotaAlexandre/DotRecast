@@ -28,10 +28,10 @@ namespace DotRecast.Detour.Extras.Unity.Astar
  */
     public class UnityAStarPathfindingImporter
     {
-        private readonly UnityAStarPathfindingReader reader = new UnityAStarPathfindingReader();
-        private readonly BVTreeCreator bvTreeCreator = new BVTreeCreator();
-        private readonly LinkBuilder linkCreator = new LinkBuilder();
-        private readonly OffMeshLinkCreator offMeshLinkCreator = new OffMeshLinkCreator();
+        private readonly UnityAStarPathfindingReader reader = new();
+        private readonly BVTreeCreator bvTreeCreator = new();
+        private readonly LinkBuilder linkCreator = new();
+        private readonly OffMeshLinkCreator offMeshLinkCreator = new();
 
         public DtNavMesh[] Load(FileStream zipFile)
         {
@@ -53,20 +53,22 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                 }
 
                 // Build BV tree
-                bvTreeCreator.Build(graphMeshData);
+                BVTreeCreator.Build(graphMeshData);
                 // Create links between nodes (both internal and portals between tiles)
-                linkCreator.Build(nodeOffset, graphMeshData, connections);
+                LinkBuilder.Build(nodeOffset, graphMeshData, connections);
                 // Finally, process all the off-mesh links that can be actually converted to detour data
-                offMeshLinkCreator.Build(graphMeshData, nodeLinks2, nodeOffset);
-                DtNavMeshParams option = new DtNavMeshParams();
-                option.maxTiles = graphMeshData.tiles.Length;
-                option.maxPolys = 32768;
-                option.tileWidth = graphMeta.tileSizeX * graphMeta.cellSize;
-                option.tileHeight = graphMeta.tileSizeZ * graphMeta.cellSize;
+                OffMeshLinkCreator.Build(graphMeshData, nodeLinks2, nodeOffset);
+                DtNavMeshParams option = new()
+                {
+                    maxTiles = graphMeshData.tiles.Length,
+                    maxPolys = 32768,
+                    tileWidth = graphMeta.tileSizeX * graphMeta.cellSize,
+                    tileHeight = graphMeta.tileSizeZ * graphMeta.cellSize
+                };
                 option.orig.X = -0.5f * graphMeta.forcedBoundsSize.x + graphMeta.forcedBoundsCenter.x;
                 option.orig.Y = -0.5f * graphMeta.forcedBoundsSize.y + graphMeta.forcedBoundsCenter.y;
                 option.orig.Z = -0.5f * graphMeta.forcedBoundsSize.z + graphMeta.forcedBoundsCenter.z;
-                DtNavMesh mesh = new DtNavMesh(option, 3);
+                DtNavMesh mesh = new(option, 3);
                 foreach (DtMeshData t in graphMeshData.tiles)
                 {
                     mesh.AddTile(t, 0, 0);

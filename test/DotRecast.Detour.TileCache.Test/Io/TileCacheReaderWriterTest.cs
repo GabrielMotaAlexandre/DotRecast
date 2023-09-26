@@ -32,8 +32,8 @@ namespace DotRecast.Detour.TileCache.Test.Io;
 [Parallelizable]
 public class TileCacheReaderWriterTest : AbstractTileCacheTest
 {
-    private readonly DtTileCacheReader reader = new DtTileCacheReader(DtTileCacheCompressorFactory.Shared);
-    private readonly DtTileCacheWriter writer = new DtTileCacheWriter(DtTileCacheCompressorFactory.Shared);
+    private readonly DtTileCacheReader reader = new(DtTileCacheCompressorFactory.Shared);
+    private readonly DtTileCacheWriter writer = new(DtTileCacheCompressorFactory.Shared);
 
     [Test]
     public void TestFastLz()
@@ -52,7 +52,7 @@ public class TileCacheReaderWriterTest : AbstractTileCacheTest
     private void TestDungeon(bool cCompatibility)
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
-        TestTileLayerBuilder layerBuilder = new TestTileLayerBuilder(geom);
+        TestTileLayerBuilder layerBuilder = new(geom);
         List<byte[]> layers = layerBuilder.Build(RcByteOrder.LITTLE_ENDIAN, cCompatibility, 1);
         DtTileCache tc = GetTileCache(geom, RcByteOrder.LITTLE_ENDIAN, cCompatibility);
         foreach (byte[] layer in layers)

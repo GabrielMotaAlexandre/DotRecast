@@ -32,34 +32,34 @@ namespace DotRecast.Detour.Extras.Unity.Astar
         private const string GRAPH_DATA_FILE_NAME_PATTERN = "graph{0}_extra.binary";
         private const string GRAPH_CONNECTION_FILE_NAME_PATTERN = "graph{0}_references.binary";
         private const int MAX_VERTS_PER_POLY = 3;
-        private readonly MetaReader metaReader = new MetaReader();
-        private readonly NodeIndexReader nodeIndexReader = new NodeIndexReader();
-        private readonly GraphMetaReader graphMetaReader = new GraphMetaReader();
-        private readonly GraphMeshDataReader graphDataReader = new GraphMeshDataReader();
-        private readonly GraphConnectionReader graphConnectionReader = new GraphConnectionReader();
-        private readonly NodeLink2Reader nodeLink2Reader = new NodeLink2Reader();
+        private readonly MetaReader metaReader = new();
+        private readonly NodeIndexReader nodeIndexReader = new();
+        private readonly GraphMetaReader graphMetaReader = new();
+        private readonly GraphMeshDataReader graphDataReader = new();
+        private readonly GraphConnectionReader graphConnectionReader = new();
+        private readonly NodeLink2Reader nodeLink2Reader = new();
 
         public GraphData Read(FileStream zipFile)
         {
-            using ZipArchive file = new ZipArchive(zipFile);
+            using ZipArchive file = new(zipFile);
             // Read meta file and check version and graph type
-            Meta meta = metaReader.Read(file, META_FILE_NAME);
+            Meta meta = MetaReader.Read(file, META_FILE_NAME);
             // Read index to node mapping
-            int[] indexToNode = nodeIndexReader.Read(file, NODE_INDEX_FILE_NAME);
+            int[] indexToNode = NodeIndexReader.Read(file, NODE_INDEX_FILE_NAME);
             // Read NodeLink2 data (off-mesh links)
-            NodeLink2[] nodeLinks2 = nodeLink2Reader.Read(file, NODE_LINK_2_FILE_NAME, indexToNode);
+            NodeLink2[] nodeLinks2 = NodeLink2Reader.Read(file, NODE_LINK_2_FILE_NAME, indexToNode);
             // Read graph by graph
-            List<GraphMeta> metaList = new List<GraphMeta>();
-            List<GraphMeshData> meshDataList = new List<GraphMeshData>();
-            List<List<int[]>> connectionsList = new List<List<int[]>>();
+            List<GraphMeta> metaList = new();
+            List<GraphMeshData> meshDataList = new();
+            List<List<int[]>> connectionsList = new();
             for (int graphIndex = 0; graphIndex < meta.graphs; graphIndex++)
             {
-                GraphMeta graphMeta = graphMetaReader.Read(file, string.Format(GRAPH_META_FILE_NAME_PATTERN, graphIndex));
+                GraphMeta graphMeta = GraphMetaReader.Read(file, string.Format(GRAPH_META_FILE_NAME_PATTERN, graphIndex));
                 // First graph mesh data - vertices and polygons
-                GraphMeshData graphData = graphDataReader.Read(file,
+                GraphMeshData graphData = GraphMeshDataReader.Read(file,
                     string.Format(GRAPH_DATA_FILE_NAME_PATTERN, graphIndex), graphMeta, MAX_VERTS_PER_POLY);
                 // Then graph connection data - links between nodes located in both the same tile and other tiles
-                List<int[]> connections = graphConnectionReader.Read(file,
+                List<int[]> connections = GraphConnectionReader.Read(file,
                     string.Format(GRAPH_CONNECTION_FILE_NAME_PATTERN, graphIndex), meta, indexToNode);
                 metaList.Add(graphMeta);
                 meshDataList.Add(graphData);

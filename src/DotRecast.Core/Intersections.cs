@@ -83,10 +83,12 @@ namespace DotRecast.Core
         {
             const float EPS = 1e-6f;
 
-            Vector3 d = new Vector3();
-            d.X = sq.X - sp.X;
-            d.Y = sq.Y - sp.Y;
-            d.Z = sq.Z - sp.Z;
+            Vector3 d = new()
+            {
+                X = sq.X - sp.X,
+                Y = sq.Y - sp.Y,
+                Z = sq.Z - sp.Z
+            };
             tmin = 0.0f;
             tmax = float.MaxValue;
 

@@ -37,8 +37,6 @@ namespace DotRecast.Recast.Demo.Tools;
 
 public class CrowdSampleTool : ISampleTool
 {
-    private static readonly ILogger Logger = Log.ForContext<CrowdSampleTool>();
-
     private DemoSample _sample;
     private readonly RcCrowdTool _tool;
 
@@ -47,7 +45,8 @@ public class CrowdSampleTool : ISampleTool
     private RcCrowdToolMode m_mode = RcCrowdToolMode.CREATE;
     private int m_modeIdx = RcCrowdToolMode.CREATE.Idx;
 
-    private int _expandSelectedDebugDraw = 1;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+    private readonly int _expandSelectedDebugDraw = 1;
     private bool _showCorners = true;
     private bool _showCollisionSegments = true;
     private bool _showPath = true;
@@ -57,7 +56,7 @@ public class CrowdSampleTool : ISampleTool
 
     private bool _showGrid = false;
     private bool _showNodes = true;
-    private bool _showDetailAll = true;
+    private readonly bool _showDetailAll = true;
 
     public CrowdSampleTool()
     {
@@ -185,7 +184,7 @@ public class CrowdSampleTool : ISampleTool
             float gridy = -float.MaxValue;
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                Vector3 pos = ag.corridor.GetPos();
+                Vector3 pos = ag.corridor.Pos;
                 gridy = Math.Max(gridy, pos.Y);
             }
 
@@ -220,9 +219,8 @@ public class CrowdSampleTool : ISampleTool
             Vector3 pos = ag.npos;
 
             dd.Begin(LINES, 3.0f);
-            Vector3 prev = new Vector3();
+            Vector3 prev = pos;
             float preva = 1;
-            prev = pos;
             for (int j = 0; j < RcCrowdAgentTrail.AGENT_MAX_TRAIL - 1; ++j)
             {
                 int idx = (trail.htrail + RcCrowdAgentTrail.AGENT_MAX_TRAIL - j) % RcCrowdAgentTrail.AGENT_MAX_TRAIL;
@@ -259,10 +257,10 @@ public class CrowdSampleTool : ISampleTool
                         dd.Vertex(vb.X, vb.Y + radius, vb.Z, DuRGBA(128, 0, 0, 192));
                     }
 
-                    if ((ag.corners[ag.corners.Count - 1].flags
+                    if ((ag.corners[^1].flags
                          & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
                     {
-                        Vector3 v = ag.corners[ag.corners.Count - 1].pos;
+                        Vector3 v = ag.corners[^1].pos;
                         dd.Vertex(v.X, v.Y, v.Z, DuRGBA(192, 0, 0, 192));
                         dd.Vertex(v.X, v.Y + radius * 2, v.Z, DuRGBA(192, 0, 0, 192));
                     }
@@ -458,7 +456,7 @@ public class CrowdSampleTool : ISampleTool
 
     public void OnSampleChanged()
     {
-        var geom = _sample.GetInputGeom();
+        _ = _sample.GetInputGeom();
         var settings = _sample.GetSettings();
         var navMesh = _sample.GetNavMesh();
 
@@ -513,7 +511,8 @@ public class CrowdSampleTool : ISampleTool
             {
                 IDtQueryFilter filter = new DtQueryDefaultFilter();
                 Vector3 halfExtents = crowd.GetQueryExtents();
-                navquery.FindNearestPoly(p, halfExtents, filter, out var refs, out var nearestPt, out var _);
+
+                navquery.FindNearestPoly(p, halfExtents, filter, out var refs, out _, out _);
                 if (refs != 0)
                 {
                     var status = nav.GetPolyFlags(refs, out var f);

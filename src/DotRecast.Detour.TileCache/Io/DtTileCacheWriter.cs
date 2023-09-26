@@ -27,8 +27,8 @@ namespace DotRecast.Detour.TileCache.Io
 {
     public class DtTileCacheWriter : DtWriter
     {
-        private readonly DtNavMeshParamWriter paramWriter = new DtNavMeshParamWriter();
-        private readonly DtTileCacheBuilder builder = new DtTileCacheBuilder();
+        private readonly DtNavMeshParamWriter paramWriter = new();
+        private readonly DtTileCacheBuilder builder = new();
         private readonly IDtTileCacheCompressorFactory _compFactory;
         
         public DtTileCacheWriter(IDtTileCacheCompressorFactory compFactory)
@@ -61,10 +61,10 @@ namespace DotRecast.Detour.TileCache.Io
                 if (tile == null || tile.data == null)
                     continue;
                 Write(stream, (int)cache.GetTileRef(tile), order);
-                byte[] data = tile.data;
+                _ = tile.data;
                 DtTileCacheLayer layer = cache.DecompressTile(tile);
                 var comp = _compFactory.Create(cCompatibility ? 0 : 1);
-                data = builder.CompressTileCacheLayer(comp, layer, order, cCompatibility);
+                byte[] data = DtTileCacheBuilder.CompressTileCacheLayer(comp, layer, order, cCompatibility);
                 Write(stream, data.Length, order);
                 stream.Write(data);
             }

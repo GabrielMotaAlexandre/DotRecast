@@ -54,7 +54,7 @@ public class RcCanvas
     }
 
 
-    private void SetupClipboard(long window)
+    private static void SetupClipboard(long window)
     {
         // ctx.Clip().copy((handle, text, len) => {
         //     if (len == 0) {
@@ -76,12 +76,12 @@ public class RcCanvas
         // });
     }
 
-    public void InputBegin()
+    public static void InputBegin()
     {
         //Nk_input_begin(ctx);
     }
 
-    public void InputEnd(IWindow win)
+    public static void InputEnd(IWindow win)
     {
         // NkMouse mouse = ctx.Input().Mouse();
         // if (mouse.Grab()) {

@@ -68,8 +68,8 @@ public class RecastDemo : IRecastDemoChannel
     private float timeAcc = 0;
     private float camr = 1000;
 
-    private readonly SoloNavMeshBuilder soloNavMeshBuilder = new SoloNavMeshBuilder();
-    private readonly TileNavMeshBuilder tileNavMeshBuilder = new TileNavMeshBuilder();
+    private readonly SoloNavMeshBuilder soloNavMeshBuilder = new();
+    private readonly TileNavMeshBuilder tileNavMeshBuilder = new();
 
     private string _lastGeomFileName;
     private DemoSample _sample;
@@ -89,14 +89,14 @@ public class RecastDemo : IRecastDemoChannel
     private float scrollZoom;
     private readonly float[] origMousePos = new float[2];
     private readonly float[] origCameraEulers = new float[2];
-    private Vector3 origCameraPos = new Vector3();
+    private Vector3 origCameraPos = new();
 
     private readonly float[] cameraEulers = { 45, -45 };
-    private Vector3 cameraPos = new Vector3(0, 0, 0);
+    private Vector3 cameraPos = new(0, 0, 0);
 
 
-    private float[] projectionMatrix = new float[16];
-    private float[] modelviewMatrix = new float[16];
+    private readonly float[] projectionMatrix = new float[16];
+    private readonly float[] modelviewMatrix = new float[16];
 
     private float _moveFront;
     private float _moveLeft;
@@ -107,14 +107,14 @@ public class RecastDemo : IRecastDemoChannel
     private float _moveAccel;
 
     private int[] viewport;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
     private bool markerPositionSet;
-    private Vector3 markerPosition = new Vector3();
+    private Vector3 markerPosition = new();
 
     private RcToolsetView toolset;
     private RcSettingsView settingsView;
     private RcLogView logView;
 
-    private long prevFrameTime;
     private RecastDebugDraw dd;
     private readonly Queue<IRecastDemoMessage> _messages;
 
@@ -310,13 +310,13 @@ public class RecastDemo : IRecastDemoChannel
             DtNavMesh mesh = null;
             if (filename.EndsWith(".zip"))
             {
-                UnityAStarPathfindingImporter importer = new UnityAStarPathfindingImporter();
+                UnityAStarPathfindingImporter importer = new();
                 mesh = importer.Load(file)[0];
             }
             else
             {
                 using var br = new BinaryReader(file);
-                DtMeshSetReader reader = new DtMeshSetReader();
+                DtMeshSetReader reader = new();
                 mesh = reader.Read(br, 6);
             }
 
@@ -404,7 +404,7 @@ public class RecastDemo : IRecastDemoChannel
         var workingDirectory = Directory.GetCurrentDirectory();
         Logger.Information($"Working directory - {workingDirectory}");
         Logger.Information($"ImGui.Net version - {ImGui.GetVersion()}");
-        Logger.Information($"Dotnet - {Environment.Version.ToString()} culture({currentCulture.Name})");
+        Logger.Information($"Dotnet - {Environment.Version} culture({currentCulture.Name})");
         Logger.Information($"OS Version - {Environment.OSVersion} {bitness}");
         Logger.Information($"{vendor} {rendererGl}");
         Logger.Information($"gl version - {version}");
@@ -454,9 +454,9 @@ public class RecastDemo : IRecastDemoChannel
             Vector3 bmax = _sample.GetInputGeom().GetMeshBoundsMax();
             RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out var gw, out var gh);
             settingsView.SetVoxels(gw, gh);
-            settingsView.SetTiles(tileNavMeshBuilder.GetTiles(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
-            settingsView.SetMaxTiles(tileNavMeshBuilder.GetMaxTiles(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
-            settingsView.SetMaxPolys(tileNavMeshBuilder.GetMaxPolysPerTile(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
+            settingsView.SetTiles(TileNavMeshBuilder.GetTiles(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
+            settingsView.SetMaxTiles(TileNavMeshBuilder.GetMaxTiles(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
+            settingsView.SetMaxPolys(TileNavMeshBuilder.GetMaxPolysPerTile(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));
         }
 
         UpdateKeyboard((float)dt);
@@ -482,9 +482,6 @@ public class RecastDemo : IRecastDemoChannel
 
         cameraPos.Y += (float)((_moveUp - _moveDown) * keySpeed * dt);
 
-        long time = RcFrequency.Ticks;
-        prevFrameTime = time;
-
         // Update sample simulation.
         float SIM_RATE = 20;
         float DELTA_TIME = 1.0f / SIM_RATE;
@@ -496,10 +493,7 @@ public class RecastDemo : IRecastDemoChannel
             if (simIter < 5 && _sample != null)
             {
                 var tool = toolset.GetTool();
-                if (null != tool)
-                {
-                    tool.HandleUpdate(DELTA_TIME);
-                }
+                tool?.HandleUpdate(DELTA_TIME);
             }
 
             simIter++;
@@ -509,8 +503,8 @@ public class RecastDemo : IRecastDemoChannel
         {
             processHitTest = false;
 
-            Vector3 rayStart = new Vector3();
-            Vector3 rayEnd = new Vector3();
+            Vector3 rayStart = new();
+            Vector3 rayEnd = new();
 
             GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 0.0f, modelviewMatrix, projectionMatrix, viewport, ref rayStart);
             GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 1.0f, modelviewMatrix, projectionMatrix, viewport, ref rayEnd);
@@ -612,10 +606,7 @@ public class RecastDemo : IRecastDemoChannel
         renderer.Render(_sample, settingsView.GetDrawMode());
 
         ISampleTool sampleTool = toolset.GetTool();
-        if (sampleTool != null)
-        {
-            sampleTool.HandleRender(renderer);
-        }
+        sampleTool?.HandleRender(renderer);
 
         dd.Fog(false);
 
@@ -752,7 +743,7 @@ public class RecastDemo : IRecastDemoChannel
 
         try
         {
-            using FileStream fs = new FileStream(args.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using FileStream fs = new(args.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             LoadNavMesh(fs, args.FilePath);
         }
         catch (Exception e)
@@ -788,7 +779,7 @@ public class RecastDemo : IRecastDemoChannel
             hit = RcPolyMeshRaycast.Raycast(_sample.GetRecastResults(), rayStart, rayEnd, out hitTime);
         }
 
-        Vector3 rayDir = new Vector3(rayEnd.X - rayStart.X, rayEnd.Y - rayStart.Y, rayEnd.Z - rayStart.Z);
+        Vector3 rayDir = new(rayEnd.X - rayStart.X, rayEnd.Y - rayStart.Y, rayEnd.Z - rayStart.Z);
         ISampleTool raySampleTool = toolset.GetTool();
         rayDir.Normalize();
         if (raySampleTool != null)
@@ -809,10 +800,12 @@ public class RecastDemo : IRecastDemoChannel
             }
             else
             {
-                Vector3 pos = new Vector3();
-                pos.X = rayStart.X + (rayEnd.X - rayStart.X) * hitTime;
-                pos.Y = rayStart.Y + (rayEnd.Y - rayStart.Y) * hitTime;
-                pos.Z = rayStart.Z + (rayEnd.Z - rayStart.Z) * hitTime;
+                Vector3 pos = new()
+                {
+                    X = rayStart.X + (rayEnd.X - rayStart.X) * hitTime,
+                    Y = rayStart.Y + (rayEnd.Y - rayStart.Y) * hitTime,
+                    Z = rayStart.Z + (rayEnd.Z - rayStart.Z) * hitTime
+                };
                 if (raySampleTool != null)
                 {
                     Logger.Information($"click - tool({raySampleTool.GetTool().GetName()}) rayStart({rayStart.X:0.#},{rayStart.Y:0.#},{rayStart.Z:0.#}) pos({pos.X:0.#},{pos.Y:0.#},{pos.Z:0.#}) shift({processHitTestShift})");

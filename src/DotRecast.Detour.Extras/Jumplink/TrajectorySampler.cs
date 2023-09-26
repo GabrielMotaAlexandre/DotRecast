@@ -50,7 +50,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             return true;
         }
 
-        private bool CheckHeightfieldCollision(RcHeightfield solid, float x, float ymin, float ymax, float z)
+        private static bool CheckHeightfieldCollision(RcHeightfield solid, float x, float ymin, float ymax, float z)
         {
             int w = solid.width;
             int h = solid.height;
@@ -86,7 +86,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             return false;
         }
 
-        private bool OverlapRange(float amin, float amax, float bmin, float bmax)
+        private static bool OverlapRange(float amin, float amax, float bmin, float bmax)
         {
             return (amin > bmax || amax < bmin) ? false : true;
         }

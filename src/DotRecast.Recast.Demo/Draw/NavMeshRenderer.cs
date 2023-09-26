@@ -79,10 +79,9 @@ public class NavMeshRenderer
 
         if (geom != null)
         {
-            int gw = 0, gh = 0;
             Vector3 bmin = geom.GetMeshBoundsMin();
             Vector3 bmax = geom.GetMeshBoundsMax();
-            CalcGridSize(bmin, bmax, settings.cellSize, out gw, out gh);
+            CalcGridSize(bmin, bmax, settings.cellSize, out int gw, out int gh);
             int tw = (gw + settings.tileSize - 1) / settings.tileSize;
             int th = (gh + settings.tileSize - 1) / settings.tileSize;
             float s = settings.tileSize * settings.cellSize;

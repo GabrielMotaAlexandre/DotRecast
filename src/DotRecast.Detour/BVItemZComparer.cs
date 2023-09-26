@@ -4,7 +4,7 @@ namespace DotRecast.Detour
 {
     public class BVItemZComparer : IComparer<BVItem>
     {
-        public static readonly BVItemZComparer Shared = new BVItemZComparer();
+        public static readonly BVItemZComparer Shared = new();
 
         private BVItemZComparer()
         {

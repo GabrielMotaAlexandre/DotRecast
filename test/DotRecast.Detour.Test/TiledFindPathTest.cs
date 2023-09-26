@@ -56,7 +56,7 @@ public class TiledFindPathTest
         query = new DtNavMeshQuery(navmesh);
     }
 
-    protected DtNavMesh CreateNavMesh()
+    protected static DtNavMesh CreateNavMesh()
     {
         return new TestTiledNavMeshBuilder().GetNavMesh();
     }

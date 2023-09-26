@@ -36,7 +36,7 @@ public class VoxelQueryTest
 {
     private const int TILE_WIDTH = 100;
     private const int TILE_DEPTH = 90;
-    private static readonly Vector3 ORIGIN = new Vector3(50, 10, 40);
+    private static readonly Vector3 ORIGIN = new(50, 10, 40);
 
 
     [Test]
@@ -57,9 +57,9 @@ public class VoxelQueryTest
                 captorZ.Add(z);
             });
 
-        DtVoxelQuery query = new DtVoxelQuery(ORIGIN, TILE_WIDTH, TILE_DEPTH, hfProvider.Object);
-        Vector3 start = new Vector3(120, 10, 365);
-        Vector3 end = new Vector3(320, 10, 57);
+        DtVoxelQuery query = new(ORIGIN, TILE_WIDTH, TILE_DEPTH, hfProvider.Object);
+        Vector3 start = new(120, 10, 365);
+        Vector3 end = new(320, 10, 57);
 
         // When
         query.Raycast(start, end, out var hit);
@@ -74,9 +74,10 @@ public class VoxelQueryTest
     {
         DtDynamicNavMesh mesh = CreateDynaMesh();
         DtVoxelQuery query = mesh.VoxelQuery();
-        Vector3 start = new Vector3(7.4f, 0.5f, -64.8f);
-        Vector3 end = new Vector3(31.2f, 0.5f, -75.3f);
-        bool isHit = query.Raycast(start, end, out var hit);
+        Vector3 start = new(7.4f, 0.5f, -64.8f);
+        Vector3 end = new(31.2f, 0.5f, -75.3f);
+
+        bool isHit = query.Raycast(start, end, out _);
         Assert.That(isHit, Is.EqualTo(false));
     }
 
@@ -85,21 +86,21 @@ public class VoxelQueryTest
     {
         DtDynamicNavMesh mesh = CreateDynaMesh();
         DtVoxelQuery query = mesh.VoxelQuery();
-        Vector3 start = new Vector3(32.3f, 0.5f, 47.9f);
-        Vector3 end = new Vector3(-31.2f, 0.5f, -29.8f);
+        Vector3 start = new(32.3f, 0.5f, 47.9f);
+        Vector3 end = new(-31.2f, 0.5f, -29.8f);
         bool isHit = query.Raycast(start, end, out var hit);
         Assert.That(isHit, Is.EqualTo(true));
         Assert.That(hit, Is.EqualTo(0.5263836f).Within(1e-7f));
     }
 
-    private DtDynamicNavMesh CreateDynaMesh()
+    private static DtDynamicNavMesh CreateDynaMesh()
     {
         var bytes = RcResources.Load("test_tiles.voxels");
         using var ms = new MemoryStream(bytes);
         using var br = new BinaryReader(ms);
 
         // load voxels from file
-        DtVoxelFileReader reader = new DtVoxelFileReader(DtVoxelTileLZ4ForTestCompressor.Shared);
+        DtVoxelFileReader reader = new(DtVoxelTileLZ4ForTestCompressor.Shared);
         DtVoxelFile f = reader.Read(br);
         // create dynamic navmesh
         var mesh = new DtDynamicNavMesh(f);

@@ -88,7 +88,7 @@ public class GetPolyWallSegmentsTest : AbstractDetourTest
         IDtQueryFilter filter = new DtQueryDefaultFilter();
         for (int i = 0; i < startRefs.Length; i++)
         {
-            var result = query.GetPolyWallSegments(startRefs[i], true, filter, ref segmentVerts, ref segmentRefs);
+            _ = query.GetPolyWallSegments(startRefs[i], true, filter, ref segmentVerts, ref segmentRefs);
             Assert.That(segmentVerts.Count, Is.EqualTo(VERTICES[i].Length));
             Assert.That(segmentRefs.Count, Is.EqualTo(REFS[i].Length));
             for (int v = 0; v < VERTICES[i].Length / 6; v++)

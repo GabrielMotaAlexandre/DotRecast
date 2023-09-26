@@ -54,9 +54,9 @@ namespace DotRecast.Detour.Dynamic.Io
         public bool useTiles;
         public int tileSizeX;
         public int tileSizeZ;
-        public Vector3 rotation = new Vector3();
+        public Vector3 rotation = new();
         public float[] bounds = new float[6];
-        public readonly List<DtVoxelTile> tiles = new List<DtVoxelTile>();
+        public readonly List<DtVoxelTile> tiles = new();
 
         public void AddTile(DtVoxelTile tile)
         {
@@ -80,32 +80,34 @@ namespace DotRecast.Detour.Dynamic.Io
 
         public static DtVoxelFile From(RcConfig config, List<RcBuilderResult> results)
         {
-            DtVoxelFile f = new DtVoxelFile();
-            f.version = 1;
-            f.partition = config.Partition;
-            f.filterLowHangingObstacles = config.FilterLowHangingObstacles;
-            f.filterLedgeSpans = config.FilterLedgeSpans;
-            f.filterWalkableLowHeightSpans = config.FilterWalkableLowHeightSpans;
-            f.walkableRadius = config.WalkableRadiusWorld;
-            f.walkableHeight = config.WalkableHeightWorld;
-            f.walkableClimb = config.WalkableClimbWorld;
-            f.walkableSlopeAngle = config.WalkableSlopeAngle;
-            f.cellSize = config.Cs;
-            f.maxSimplificationError = config.MaxSimplificationError;
-            f.maxEdgeLen = config.MaxEdgeLenWorld;
-            f.minRegionArea = config.MinRegionAreaWorld;
-            f.regionMergeArea = config.MergeRegionAreaWorld;
-            f.vertsPerPoly = config.MaxVertsPerPoly;
-            f.buildMeshDetail = config.BuildMeshDetail;
-            f.detailSampleDistance = config.DetailSampleDist;
-            f.detailSampleMaxError = config.DetailSampleMaxError;
-            f.useTiles = config.UseTiles;
-            f.tileSizeX = config.TileSizeX;
-            f.tileSizeZ = config.TileSizeZ;
-            f.bounds = new float[]
+            DtVoxelFile f = new()
+            {
+                version = 1,
+                partition = config.Partition,
+                filterLowHangingObstacles = config.FilterLowHangingObstacles,
+                filterLedgeSpans = config.FilterLedgeSpans,
+                filterWalkableLowHeightSpans = config.FilterWalkableLowHeightSpans,
+                walkableRadius = config.WalkableRadiusWorld,
+                walkableHeight = config.WalkableHeightWorld,
+                walkableClimb = config.WalkableClimbWorld,
+                walkableSlopeAngle = config.WalkableSlopeAngle,
+                cellSize = config.Cs,
+                maxSimplificationError = config.MaxSimplificationError,
+                maxEdgeLen = config.MaxEdgeLenWorld,
+                minRegionArea = config.MinRegionAreaWorld,
+                regionMergeArea = config.MergeRegionAreaWorld,
+                vertsPerPoly = config.MaxVertsPerPoly,
+                buildMeshDetail = config.BuildMeshDetail,
+                detailSampleDistance = config.DetailSampleDist,
+                detailSampleMaxError = config.DetailSampleMaxError,
+                useTiles = config.UseTiles,
+                tileSizeX = config.TileSizeX,
+                tileSizeZ = config.TileSizeZ,
+                bounds = new float[]
             {
                 float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity,
                 float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity
+            }
             };
             foreach (RcBuilderResult r in results)
             {
@@ -123,8 +125,10 @@ namespace DotRecast.Detour.Dynamic.Io
 
         public static DtVoxelFile From(DtDynamicNavMesh mesh)
         {
-            DtVoxelFile f = new DtVoxelFile();
-            f.version = 1;
+            DtVoxelFile f = new()
+            {
+                version = 1
+            };
             DtDynamicNavMeshConfig config = mesh.config;
             f.partition = config.partition;
             f.filterLowHangingObstacles = config.filterLowHangingObstacles;

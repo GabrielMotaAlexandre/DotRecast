@@ -74,7 +74,7 @@ namespace DotRecast.Detour.Dynamic.Io
 
         private RcHeightfield HeightfieldBE()
         {
-            RcHeightfield hf = new RcHeightfield(width, depth, boundsMin, boundsMax, cellSize, cellHeight, borderSize);
+            RcHeightfield hf = new(width, depth, boundsMin, boundsMax, cellSize, cellHeight, borderSize);
             int position = 0;
             for (int z = 0, pz = 0; z < depth; z++, pz += width)
             {
@@ -85,8 +85,10 @@ namespace DotRecast.Detour.Dynamic.Io
                     position += 2;
                     for (int s = 0; s < spanCount; s++)
                     {
-                        RcSpan span = new RcSpan();
-                        span.smin = RcByteUtils.GetIntBE(spanData, position);
+                        RcSpan span = new()
+                        {
+                            smin = RcByteUtils.GetIntBE(spanData, position)
+                        };
                         position += 4;
                         span.smax = RcByteUtils.GetIntBE(spanData, position);
                         position += 4;
@@ -111,7 +113,7 @@ namespace DotRecast.Detour.Dynamic.Io
 
         private RcHeightfield HeightfieldLE()
         {
-            RcHeightfield hf = new RcHeightfield(width, depth, boundsMin, boundsMax, cellSize, cellHeight, borderSize);
+            RcHeightfield hf = new(width, depth, boundsMin, boundsMax, cellSize, cellHeight, borderSize);
             int position = 0;
             for (int z = 0, pz = 0; z < depth; z++, pz += width)
             {
@@ -122,8 +124,10 @@ namespace DotRecast.Detour.Dynamic.Io
                     position += 2;
                     for (int s = 0; s < spanCount; s++)
                     {
-                        RcSpan span = new RcSpan();
-                        span.smin = RcByteUtils.GetIntLE(spanData, position);
+                        RcSpan span = new()
+                        {
+                            smin = RcByteUtils.GetIntLE(spanData, position)
+                        };
                         position += 4;
                         span.smax = RcByteUtils.GetIntLE(spanData, position);
                         position += 4;
@@ -146,7 +150,7 @@ namespace DotRecast.Detour.Dynamic.Io
             return hf;
         }
 
-        private byte[] SerializeSpans(RcHeightfield heightfield, RcByteOrder order)
+        private static byte[] SerializeSpans(RcHeightfield heightfield, RcByteOrder order)
         {
             int[] counts = new int[heightfield.width * heightfield.height];
             int totalCount = 0;
@@ -185,7 +189,7 @@ namespace DotRecast.Detour.Dynamic.Io
             return data;
         }
 
-        private byte[] ToByteArray(RcByteBuffer buf, int width, int height, RcByteOrder order)
+        private static byte[] ToByteArray(RcByteBuffer buf, int width, int height, RcByteOrder order)
         {
             byte[] data;
             if (buf.Order() == order)

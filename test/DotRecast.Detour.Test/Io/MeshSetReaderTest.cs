@@ -27,7 +27,7 @@ namespace DotRecast.Detour.Test.Io;
 [Parallelizable]
 public class MeshSetReaderTest
 {
-    private readonly DtMeshSetReader reader = new DtMeshSetReader();
+    private readonly DtMeshSetReader reader = new();
 
     [Test]
     public void TestNavmesh()

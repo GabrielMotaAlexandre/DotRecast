@@ -86,49 +86,51 @@ namespace DotRecast.Detour.TileCache
 
         protected virtual RcHeightfieldLayerSet BuildHeightfieldLayerSet(IInputGeomProvider geom, RcConfig cfg, int tx, int ty)
         {
-            RcBuilder rcBuilder = new RcBuilder();
+            RcBuilder rcBuilder = new();
             Vector3 bmin = geom.GetMeshBoundsMin();
             Vector3 bmax = geom.GetMeshBoundsMax();
-            RcBuilderConfig builderCfg = new RcBuilderConfig(cfg, bmin, bmax, tx, ty);
-            RcHeightfieldLayerSet lset = rcBuilder.BuildLayers(geom, builderCfg);
+            RcBuilderConfig builderCfg = new(cfg, bmin, bmax, tx, ty);
+            RcHeightfieldLayerSet lset = RcBuilder.BuildLayers(geom, builderCfg);
             return lset;
         }
 
         protected virtual DtTileCacheLayerBuildResult BuildTileCacheLayer(IInputGeomProvider geom, RcConfig cfg, int tx, int ty, DtTileCacheStorageParams storageParams)
         {
             RcHeightfieldLayerSet lset = BuildHeightfieldLayerSet(geom, cfg, tx, ty);
-            List<byte[]> result = new List<byte[]>();
+            List<byte[]> result = new();
             if (lset != null)
             {
-                DtTileCacheBuilder builder = new DtTileCacheBuilder();
+                _ = new DtTileCacheBuilder();
                 for (int i = 0; i < lset.layers.Length; ++i)
                 {
                     RcHeightfieldLayer layer = lset.layers[i];
 
                     // Store header
-                    DtTileCacheLayerHeader header = new DtTileCacheLayerHeader();
-                    header.magic = DtTileCacheLayerHeader.DT_TILECACHE_MAGIC;
-                    header.version = DtTileCacheLayerHeader.DT_TILECACHE_VERSION;
+                    DtTileCacheLayerHeader header = new()
+                    {
+                        magic = DtTileCacheLayerHeader.DT_TILECACHE_MAGIC,
+                        version = DtTileCacheLayerHeader.DT_TILECACHE_VERSION,
 
-                    // Tile layer location in the navmesh.
-                    header.tx = tx;
-                    header.ty = ty;
-                    header.tlayer = i;
-                    header.bmin = layer.bmin;
-                    header.bmax = layer.bmax;
+                        // Tile layer location in the navmesh.
+                        tx = tx,
+                        ty = ty,
+                        tlayer = i,
+                        bmin = layer.bmin,
+                        bmax = layer.bmax,
 
-                    // Tile info.
-                    header.width = layer.width;
-                    header.height = layer.height;
-                    header.minx = layer.minx;
-                    header.maxx = layer.maxx;
-                    header.miny = layer.miny;
-                    header.maxy = layer.maxy;
-                    header.hmin = layer.hmin;
-                    header.hmax = layer.hmax;
+                        // Tile info.
+                        width = layer.width,
+                        height = layer.height,
+                        minx = layer.minx,
+                        maxx = layer.maxx,
+                        miny = layer.miny,
+                        maxy = layer.maxy,
+                        hmin = layer.hmin,
+                        hmax = layer.hmax
+                    };
 
                     var comp = _compFactory.Create(storageParams.Compatibility ? 0 : 1);
-                    var bytes = builder.CompressTileCacheLayer(header, layer.heights, layer.areas, layer.cons, storageParams.Order, storageParams.Compatibility, comp);
+                    var bytes = DtTileCacheBuilder.CompressTileCacheLayer(header, layer.heights, layer.areas, layer.cons, storageParams.Order, storageParams.Compatibility, comp);
                     result.Add(bytes);
                 }
             }

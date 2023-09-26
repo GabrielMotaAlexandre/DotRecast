@@ -33,7 +33,7 @@ namespace DotRecast.Detour.TileCache.Io
             Write(stream, header.tx, order);
             Write(stream, header.ty, order);
             Write(stream, header.tlayer, order);
-            
+
             Write(stream, header.bmin.X, order);
             Write(stream, header.bmin.Y, order);
             Write(stream, header.bmin.Z, order);

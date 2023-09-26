@@ -13,10 +13,10 @@ namespace DotRecast.Detour.Dynamic.Test;
 [Parallelizable]
 public class DynamicNavMeshTest
 {
-    private static readonly Vector3 START_POS = new Vector3(70.87453f, 0.0010070801f, 86.69021f);
-    private static readonly Vector3 END_POS = new Vector3(-50.22061f, 0.0010070801f, -70.761444f);
-    private static readonly Vector3 EXTENT = new Vector3(0.1f, 0.1f, 0.1f);
-    private static readonly Vector3 SPHERE_POS = new Vector3(45.381645f, 0.0010070801f, 52.68981f);
+    private static readonly Vector3 START_POS = new(70.87453f, 0.0010070801f, 86.69021f);
+    private static readonly Vector3 END_POS = new(-50.22061f, 0.0010070801f, -70.761444f);
+    private static readonly Vector3 EXTENT = new(0.1f, 0.1f, 0.1f);
+    private static readonly Vector3 SPHERE_POS = new(45.381645f, 0.0010070801f, 52.68981f);
 
 
     [Test]
@@ -27,17 +27,17 @@ public class DynamicNavMeshTest
         using var br = new BinaryReader(ms);
 
         // load voxels from file
-        DtVoxelFileReader reader = new DtVoxelFileReader(DtVoxelTileLZ4ForTestCompressor.Shared);
+        DtVoxelFileReader reader = new(DtVoxelTileLZ4ForTestCompressor.Shared);
         DtVoxelFile f = reader.Read(br);
         // create dynamic navmesh
-        DtDynamicNavMesh mesh = new DtDynamicNavMesh(f);
+        DtDynamicNavMesh mesh = new(f);
         // build navmesh asynchronously using multiple threads
         Task<bool> future = mesh.Build(Task.Factory);
         // wait for build to complete
         bool _ = future.Result;
 
         // create new query
-        DtNavMeshQuery query = new DtNavMeshQuery(mesh.NavMesh());
+        DtNavMeshQuery query = new(mesh.NavMesh());
         IDtQueryFilter filter = new DtQueryDefaultFilter();
 
         // find path

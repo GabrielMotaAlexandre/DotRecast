@@ -25,11 +25,13 @@ namespace DotRecast.Detour.TileCache.Io
 {
     public class DtTileCacheLayerHeaderReader
     {
-        public DtTileCacheLayerHeader Read(RcByteBuffer data, bool cCompatibility)
+        public static DtTileCacheLayerHeader Read(RcByteBuffer data, bool cCompatibility)
         {
-            DtTileCacheLayerHeader header = new DtTileCacheLayerHeader();
-            header.magic = data.GetInt();
-            header.version = data.GetInt();
+            DtTileCacheLayerHeader header = new()
+            {
+                magic = data.GetInt(),
+                version = data.GetInt()
+            };
 
             if (header.magic != DtTileCacheLayerHeader.DT_TILECACHE_MAGIC)
                 throw new IOException("Invalid magic");

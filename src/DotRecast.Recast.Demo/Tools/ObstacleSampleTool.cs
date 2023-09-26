@@ -69,7 +69,7 @@ public class ObstacleSampleTool : ISampleTool
 
             Vector3 bmin = Vector3.Zero;
             Vector3 bmax = Vector3.Zero;
-            tc.GetObstacleBounds(ob, ref bmin, ref bmax);
+            DtTileCache.GetObstacleBounds(ob, ref bmin, ref bmax);
 
             int col = 0;
             if (ob.state == DtObstacleState.DT_OBSTACLE_PROCESSING)
@@ -115,8 +115,7 @@ public class ObstacleSampleTool : ISampleTool
     public void HandleUpdate(float dt)
     {
         var tc = _tool.GetTileCache();
-        if (null != tc)
-            tc.Update();
+        tc?.Update();
     }
 
     public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)

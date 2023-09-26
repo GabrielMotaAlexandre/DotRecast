@@ -38,7 +38,7 @@ namespace DotRecast.Detour
         public int[] polyLinks;
 
         /** The tile links. */
-        public readonly List<DtLink> links = new List<DtLink>();
+        public readonly List<DtLink> links = new();
 
         /** Index to the next free link. */
         public int linksFreeList = DtNavMesh.DT_NULL_LINK; // FIXME: Remove

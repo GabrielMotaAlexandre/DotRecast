@@ -32,7 +32,7 @@ public class MeshDataReaderWriterTest
     [SetUp]
     public void SetUp()
     {
-        RecastTestMeshBuilder rcBuilder = new RecastTestMeshBuilder();
+        RecastTestMeshBuilder rcBuilder = new();
         meshData = rcBuilder.GetMeshData();
     }
 
@@ -65,12 +65,12 @@ public class MeshDataReaderWriterTest
         using var ms = new MemoryStream();
         using var bw = new BinaryWriter(ms);
 
-        DtMeshDataWriter writer = new DtMeshDataWriter();
+        DtMeshDataWriter writer = new();
         writer.Write(bw, meshData, order, cCompatibility);
         ms.Seek(0, SeekOrigin.Begin);
 
         using var br = new BinaryReader(ms);
-        DtMeshDataReader reader = new DtMeshDataReader();
+        DtMeshDataReader reader = new();
         DtMeshData readData = reader.Read(br, VERTS_PER_POLYGON);
 
         Assert.That(readData.header.vertCount, Is.EqualTo(meshData.header.vertCount));

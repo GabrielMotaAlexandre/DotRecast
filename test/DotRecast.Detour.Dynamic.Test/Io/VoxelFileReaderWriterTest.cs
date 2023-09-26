@@ -87,14 +87,14 @@ public class VoxelFileReaderWriterTest
         Assert.That(f.tiles[0].boundsMax, Is.EqualTo(new Vector3(-78.75f, 5.0f, -78.75f)));
     }
 
-    private DtVoxelFile ReadWriteRead(BinaryReader bis, bool compression)
+    private static DtVoxelFile ReadWriteRead(BinaryReader bis, bool compression)
     {
-        DtVoxelFileReader reader = new DtVoxelFileReader(DtVoxelTileLZ4ForTestCompressor.Shared);
+        DtVoxelFileReader reader = new(DtVoxelTileLZ4ForTestCompressor.Shared);
         DtVoxelFile f = reader.Read(bis);
 
         using var msw = new MemoryStream();
         using var bw = new BinaryWriter(msw);
-        DtVoxelFileWriter writer = new DtVoxelFileWriter(DtVoxelTileLZ4ForTestCompressor.Shared);
+        DtVoxelFileWriter writer = new(DtVoxelTileLZ4ForTestCompressor.Shared);
         writer.Write(bw, f, compression);
 
         using var msr = new MemoryStream(msw.ToArray());

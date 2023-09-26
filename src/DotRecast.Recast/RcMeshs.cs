@@ -60,7 +60,7 @@ namespace DotRecast.Recast
                         : polys[t + j + 1];
                     if (v0 < v1)
                     {
-                        RcEdge edge = new RcEdge();
+                        RcEdge edge = new();
                         edges[edgeCount] = edge;
                         edge.vert[0] = v0;
                         edge.vert[1] = v1;
@@ -633,9 +633,7 @@ namespace DotRecast.Recast
                         int a = mesh.polys[p + j], b = mesh.polys[p + k];
                         if (b == rem)
                         {
-                            int temp = a;
-                            a = b;
-                            b = temp;
+                            (b, a) = (a, b);
                         }
 
                         // Check if the edge exists
@@ -852,7 +850,7 @@ namespace DotRecast.Recast
             if (ntris < 0)
             {
                 ntris = -ntris;
-                ctx.Warn("removeVertex: Triangulate() returned bad results.");
+                RcTelemetry.Warn("removeVertex: Triangulate() returned bad results.");
             }
 
             // Merge the hole triangles back to polygons.
@@ -971,13 +969,15 @@ namespace DotRecast.Recast
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_POLYMESH);
 
-            RcPolyMesh mesh = new RcPolyMesh();
-            mesh.bmin = cset.bmin;
-            mesh.bmax = cset.bmax;
-            mesh.cs = cset.cs;
-            mesh.ch = cset.ch;
-            mesh.borderSize = cset.borderSize;
-            mesh.maxEdgeError = cset.maxError;
+            RcPolyMesh mesh = new()
+            {
+                bmin = cset.bmin,
+                bmax = cset.bmax,
+                cs = cset.cs,
+                ch = cset.ch,
+                borderSize = cset.borderSize,
+                maxEdgeError = cset.maxError
+            };
 
             int maxVertices = 0;
             int maxTris = 0;
@@ -1037,7 +1037,7 @@ namespace DotRecast.Recast
                 if (ntris <= 0)
                 {
                     // Bad triangulation, should not happen.
-                    ctx.Warn("buildPolyMesh: Bad triangulation Contour " + i + ".");
+                    RcTelemetry.Warn("buildPolyMesh: Bad triangulation Contour " + i + ".");
                     ntris = -ntris;
                 }
 
@@ -1219,12 +1219,14 @@ namespace DotRecast.Recast
 
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_MERGE_POLYMESH);
 
-            RcPolyMesh mesh = new RcPolyMesh();
-            mesh.nvp = meshes[0].nvp;
-            mesh.cs = meshes[0].cs;
-            mesh.ch = meshes[0].ch;
-            mesh.bmin = meshes[0].bmin;
-            mesh.bmax = meshes[0].bmax;
+            RcPolyMesh mesh = new()
+            {
+                nvp = meshes[0].nvp,
+                cs = meshes[0].cs,
+                ch = meshes[0].ch,
+                bmin = meshes[0].bmin,
+                bmax = meshes[0].bmax
+            };
 
             int maxVerts = 0;
             int maxPolys = 0;
@@ -1342,20 +1344,21 @@ namespace DotRecast.Recast
 
         public static RcPolyMesh CopyPolyMesh(RcTelemetry ctx, RcPolyMesh src)
         {
-            RcPolyMesh dst = new RcPolyMesh();
+            RcPolyMesh dst = new()
+            {
+                nverts = src.nverts,
+                npolys = src.npolys,
+                maxpolys = src.npolys,
+                nvp = src.nvp,
+                bmin = src.bmin,
+                bmax = src.bmax,
+                cs = src.cs,
+                ch = src.ch,
+                borderSize = src.borderSize,
+                maxEdgeError = src.maxEdgeError,
 
-            dst.nverts = src.nverts;
-            dst.npolys = src.npolys;
-            dst.maxpolys = src.npolys;
-            dst.nvp = src.nvp;
-            dst.bmin = src.bmin;
-            dst.bmax = src.bmax;
-            dst.cs = src.cs;
-            dst.ch = src.ch;
-            dst.borderSize = src.borderSize;
-            dst.maxEdgeError = src.maxEdgeError;
-
-            dst.verts = new int[src.nverts * 3];
+                verts = new int[src.nverts * 3]
+            };
             Array.Copy(src.verts, 0, dst.verts, 0, dst.verts.Length);
             dst.polys = new int[src.npolys * 2 * src.nvp];
             Array.Copy(src.polys, 0, dst.polys, 0, dst.polys.Length);

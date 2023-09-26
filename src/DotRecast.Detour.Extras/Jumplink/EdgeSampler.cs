@@ -5,13 +5,13 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     public class EdgeSampler
     {
-        public readonly GroundSegment start = new GroundSegment();
-        public readonly List<GroundSegment> end = new List<GroundSegment>();
+        public readonly GroundSegment start = new();
+        public readonly List<GroundSegment> end = new();
         public readonly Trajectory trajectory;
 
-        public readonly Vector3 ax = new Vector3();
-        public readonly Vector3 ay = new Vector3();
-        public readonly Vector3 az = new Vector3();
+        public readonly Vector3 ax = new();
+        public readonly Vector3 ay = new();
+        public readonly Vector3 az = new();
 
         public EdgeSampler(JumpEdge edge, Trajectory trajectory)
         {

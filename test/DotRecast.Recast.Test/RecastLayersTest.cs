@@ -146,8 +146,8 @@ public class RecastLayersTest
     private RcHeightfieldLayerSet Build(string filename, int x, int y)
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile(filename);
-        RcBuilder builder = new RcBuilder();
-        RcConfig cfg = new RcConfig(true, m_tileSize, m_tileSize,
+        RcBuilder builder = new();
+        RcConfig cfg = new(true, m_tileSize, m_tileSize,
             RcConfig.CalcBorder(m_agentRadius, m_cellSize),
             RcPartitionType.OfValue(m_partitionType),
             m_cellSize, m_cellHeight,
@@ -158,8 +158,8 @@ public class RecastLayersTest
             m_detailSampleDist, m_detailSampleMaxError,
             true, true, true,
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilderConfig bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), x, y);
-        RcHeightfieldLayerSet lset = builder.BuildLayers(geom, bcfg);
+        RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), x, y);
+        RcHeightfieldLayerSet lset = RcBuilder.BuildLayers(geom, bcfg);
         return lset;
     }
 }

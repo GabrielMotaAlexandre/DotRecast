@@ -126,11 +126,11 @@ namespace DotRecast.Detour.Crowd
                 Vector3 pa = pos;
                 Vector3 pb = cir.p;
 
-                Vector3 orig = new Vector3();
-                Vector3 dv = new Vector3();
+                Vector3 orig = new();
+                _ = new Vector3();
                 cir.dp = pb - (pa);
                 cir.dp.Normalize();
-                dv = cir.dvel - (dvel);
+                Vector3 dv = cir.dvel - (dvel);
 
                 float a = DtUtils.TriArea2D(orig, cir.dp, dv);
                 if (a < 0.01f)
@@ -151,12 +151,13 @@ namespace DotRecast.Detour.Crowd
 
                 // Precalc if the agent is really close to the segment.
                 float r = 0.01f;
-                var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out var t);
+
+                var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
                 seg.touch = distSqr < RcMath.Sqr(r);
             }
         }
 
-        private bool SweepCircleCircle(Vector3 c0, float r0, Vector3 v, Vector3 c1, float r1, out float tmin, out float tmax)
+        private static bool SweepCircleCircle(Vector3 c0, float r0, Vector3 v, Vector3 c1, float r1, out float tmin, out float tmax)
         {
             const float EPS = 0.0001f;
 
@@ -185,7 +186,7 @@ namespace DotRecast.Detour.Crowd
             return true;
         }
 
-        private bool IsectRaySeg(Vector3 ap, Vector3 u, Vector3 bp, Vector3 bq, ref float t)
+        private static bool IsectRaySeg(Vector3 ap, Vector3 u, Vector3 bp, Vector3 bq, ref float t)
         {
             Vector3 v = bq - (bp);
             Vector3 w = ap - (bp);
@@ -240,8 +241,8 @@ namespace DotRecast.Detour.Crowd
 
                 // RVO
                 Vector3 vab = vcand*(2);
-                vab = vab - (vel);
-                vab = vab - (cir.vel);
+                vab -= (vel);
+                vab -= (cir.vel);
 
                 // Side
                 side += Math.Clamp(Math.Min(cir.dp.Dot2D(vab) * 0.5f + 0.5f, cir.np.Dot2D(vab) * 2), 0.0f, 1.0f);
@@ -278,9 +279,11 @@ namespace DotRecast.Detour.Crowd
                 {
                     // Special case when the agent is very close to the segment.
                     Vector3 sdir = seg.q - (seg.p);
-                    Vector3 snorm = new Vector3();
-                    snorm.X = -sdir.Z;
-                    snorm.Z = sdir.X;
+                    Vector3 snorm = new()
+                    {
+                        X = -sdir.Z,
+                        Z = sdir.X
+                    };
                     // If the velocity is pointing towards the segment, no collision.
                     if (snorm.Dot2D(vcand) < 0.0f)
                         continue;
@@ -314,8 +317,7 @@ namespace DotRecast.Detour.Crowd
 
             float penalty = vpen + vcpen + spen + tpen;
             // Store different penalties for debug viewing
-            if (debug != null)
-                debug.AddSample(vcand, cs, penalty, vpen, vcpen, spen, tpen);
+            debug?.AddSample(vcand, cs, penalty, vpen, vcpen, spen, tpen);
 
             return penalty;
         }
@@ -331,8 +333,7 @@ namespace DotRecast.Detour.Crowd
 
             nvel = Vector3.Zero;
 
-            if (debug != null)
-                debug.Reset();
+            debug?.Reset();
 
             float cvx = dvel.X * m_params.velBias;
             float cvz = dvel.Z * m_params.velBias;
@@ -346,7 +347,7 @@ namespace DotRecast.Detour.Crowd
             {
                 for (int x = 0; x < m_params.gridSize; ++x)
                 {
-                    Vector3 vcand = new Vector3(cvx + x * cs - half, 0f, cvz + y * cs - half);
+                    Vector3 vcand = new(cvx + x * cs - half, 0f, cvz + y * cs - half);
                     if (RcMath.Sqr(vcand.X) + RcMath.Sqr(vcand.Z) > RcMath.Sqr(vmax + cs / 2))
                         continue;
 
@@ -364,7 +365,7 @@ namespace DotRecast.Detour.Crowd
         }
 
         // vector normalization that ignores the y-component.
-        void DtNormalize2D(float[] v)
+        static void DtNormalize2D(float[] v)
         {
             float d = (float)Math.Sqrt(v[0] * v[0] + v[2] * v[2]);
             if (d == 0)
@@ -375,9 +376,9 @@ namespace DotRecast.Detour.Crowd
         }
 
         // vector normalization that ignores the y-component.
-        Vector3 DtRotate2D(float[] v, float ang)
+        static Vector3 DtRotate2D(float[] v, float ang)
         {
-            Vector3 dest = new Vector3();
+            Vector3 dest = new();
             float c = (float)Math.Cos(ang);
             float s = (float)Math.Sin(ang);
             dest.X = v[0] * c - v[2] * s;
@@ -398,10 +399,9 @@ namespace DotRecast.Detour.Crowd
             m_vmax = vmax;
             m_invVmax = vmax > 0 ? 1.0f / vmax : float.MaxValue;
 
-            nvel = Vector3.Zero;
+            _ = Vector3.Zero;
 
-            if (debug != null)
-                debug.Reset();
+            debug?.Reset();
 
             // Build sampling pattern aligned to desired velocity.
             float[] pat = new float[(DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2];
@@ -466,17 +466,17 @@ namespace DotRecast.Detour.Crowd
 
             // Start sampling.
             float cr = vmax * (1.0f - m_params.velBias);
-            Vector3 res = new Vector3(dvel.X * m_params.velBias, 0, dvel.Z * m_params.velBias);
+            Vector3 res = new(dvel.X * m_params.velBias, 0, dvel.Z * m_params.velBias);
             int ns = 0;
             for (int k = 0; k < depth; ++k)
             {
                 float minPenalty = float.MaxValue;
-                Vector3 bvel = new Vector3();
-                bvel = Vector3.Zero;
+                _ = new Vector3();
+                Vector3 bvel = Vector3.Zero;
 
                 for (int i = 0; i < npat; ++i)
                 {
-                    Vector3 vcand = new Vector3(res.X + pat[i * 2 + 0] * cr, 0f, res.Z + pat[i * 2 + 1] * cr);
+                    Vector3 vcand = new(res.X + pat[i * 2 + 0] * cr, 0f, res.Z + pat[i * 2 + 1] * cr);
                     if (RcMath.Sqr(vcand.X) + RcMath.Sqr(vcand.Z) > RcMath.Sqr(vmax + 0.001f))
                         continue;
 

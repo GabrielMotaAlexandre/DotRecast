@@ -75,11 +75,13 @@ namespace DotRecast.Recast
         {
             int idx = x + y * heightfield.width;
 
-            RcSpan s = new RcSpan();
-            s.smin = spanMin;
-            s.smax = spanMax;
-            s.area = areaId;
-            s.next = null;
+            RcSpan s = new()
+            {
+                smin = spanMin,
+                smax = spanMax,
+                area = areaId,
+                next = null
+            };
 
             // Empty cell, add the first span.
             if (heightfield.spans[idx] == null)
@@ -236,8 +238,8 @@ namespace DotRecast.Recast
             float cellSize, float inverseCellSize, float inverseCellHeight,
             int flagMergeThreshold)
         {
-            Vector3 tmin = new Vector3();
-            Vector3 tmax = new Vector3();
+            Vector3 tmin = new();
+            Vector3 tmax = new();
             float by = heightfieldBBMax.Y - heightfieldBBMin.Y;
 
             // Calculate the bounding box of the triangle.
@@ -272,13 +274,13 @@ namespace DotRecast.Recast
             Vector3Extensions.Copy(buf, 0, verts, v0 * 3);
             Vector3Extensions.Copy(buf, 3, verts, v1 * 3);
             Vector3Extensions.Copy(buf, 6, verts, v2 * 3);
-            int nvRow, nvIn = 3;
+            int nvIn = 3;
 
             for (int z = z0; z <= z1; ++z)
             {
                 // Clip polygon to row. Store the remaining polygon as well
                 float cellZ = heightfieldBBMin.Z + z * cellSize;
-                DividePoly(buf, @in, nvIn, inRow, out nvRow, p1, out nvIn, cellZ + cellSize, 2);
+                DividePoly(buf, @in, nvIn, inRow, out int nvRow, p1, out nvIn, cellZ + cellSize, 2);
                 (@in, p1) = (p1, @in);
 
                 if (nvRow < 3)
@@ -308,12 +310,12 @@ namespace DotRecast.Recast
                 x0 = Math.Clamp(x0, -1, w - 1);
                 x1 = Math.Clamp(x1, 0, w - 1);
 
-                int nv, nv2 = nvRow;
+                int nv2 = nvRow;
                 for (int x = x0; x <= x1; ++x)
                 {
                     // Clip polygon to column. store the remaining polygon as well
                     float cx = heightfieldBBMin.X + x * cellSize;
-                    DividePoly(buf, inRow, nv2, p1, out nv, p2, out nv2, cx + cellSize, 0);
+                    DividePoly(buf, inRow, nv2, p1, out int nv, p2, out nv2, cx + cellSize, 0);
                     (inRow, p2) = (p2, inRow);
 
                     if (nv < 3)

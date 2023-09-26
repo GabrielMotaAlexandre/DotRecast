@@ -47,7 +47,7 @@ public class RecastTileMeshTest
     private const int m_vertsPerPoly = 6;
     private const float m_detailSampleDist = 6.0f;
     private const float m_detailSampleMaxError = 1.0f;
-    private RcPartition m_partitionType = RcPartition.WATERSHED;
+    private readonly RcPartition m_partitionType = RcPartition.WATERSHED;
     private const int m_tileSize = 32;
 
     [Test]
@@ -59,8 +59,8 @@ public class RecastTileMeshTest
     public void TestBuild(string filename)
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile(filename);
-        RcBuilder builder = new RcBuilder();
-        RcConfig cfg = new RcConfig(
+        RcBuilder builder = new();
+        RcConfig cfg = new(
             true, m_tileSize, m_tileSize, RcConfig.CalcBorder(m_agentRadius, m_cellSize),
             m_partitionType,
             m_cellSize, m_cellHeight,
@@ -71,7 +71,7 @@ public class RecastTileMeshTest
             m_detailSampleDist, m_detailSampleMaxError,
             true, true, true,
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilderConfig bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 7, 8);
+        RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 7, 8);
         RcBuilderResult rcResult = builder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(1));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(5));
@@ -101,8 +101,8 @@ public class RecastTileMeshTest
     public void TestPerformance()
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
-        RcBuilder builder = new RcBuilder();
-        RcConfig cfg = new RcConfig(
+        RcBuilder builder = new();
+        RcConfig cfg = new(
             true, m_tileSize, m_tileSize,
             RcConfig.CalcBorder(m_agentRadius, m_cellSize),
             m_partitionType,
@@ -137,11 +137,12 @@ public class RecastTileMeshTest
         Console.WriteLine(" Time MT : " + (t3 - t2) / TimeSpan.TicksPerMillisecond);
     }
 
-    private void Build(IInputGeomProvider geom, RcBuilder builder, RcConfig cfg, int threads, bool validate)
+    private static void Build(IInputGeomProvider geom, RcBuilder builder, RcConfig cfg, int threads, bool validate)
     {
-        CancellationTokenSource cts = new CancellationTokenSource();
+        CancellationTokenSource cts = new();
         List<RcBuilderResult> tiles = new();
-        var task = builder.BuildTilesAsync(geom, cfg, threads, tiles, Task.Factory, cts.Token);
+
+        _ = builder.BuildTilesAsync(geom, cfg, threads, tiles, Task.Factory, cts.Token);
         if (validate)
         {
             RcBuilderResult rcResult = GetTile(tiles, 7, 8);
@@ -175,7 +176,7 @@ public class RecastTileMeshTest
         }
     }
 
-    private RcBuilderResult GetTile(List<RcBuilderResult> tiles, int x, int z)
+    private static RcBuilderResult GetTile(List<RcBuilderResult> tiles, int x, int z)
     {
         return tiles.FirstOrDefault(tile => tile.tileX == x && tile.tileZ == z);
     }

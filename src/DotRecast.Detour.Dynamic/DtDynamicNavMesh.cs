@@ -34,29 +34,31 @@ namespace DotRecast.Detour.Dynamic
         public const int MAX_VERTS_PER_POLY = 6;
         public readonly DtDynamicNavMeshConfig config;
         private readonly RcBuilder builder;
-        private readonly Dictionary<long, DtDynamicTile> _tiles = new Dictionary<long, DtDynamicTile>();
+        private readonly Dictionary<long, DtDynamicTile> _tiles = new();
         private readonly RcTelemetry telemetry;
         private readonly DtNavMeshParams navMeshParams;
-        private readonly BlockingCollection<IDtDaynmicTileJob> updateQueue = new BlockingCollection<IDtDaynmicTileJob>();
-        private readonly RcAtomicLong currentColliderId = new RcAtomicLong(0);
+        private readonly BlockingCollection<IDtDaynmicTileJob> updateQueue = new();
+        private readonly RcAtomicLong currentColliderId = new(0);
         private DtNavMesh _navMesh;
         private bool dirty = true;
 
         public DtDynamicNavMesh(DtVoxelFile voxelFile)
         {
-            config = new DtDynamicNavMeshConfig(voxelFile.useTiles, voxelFile.tileSizeX, voxelFile.tileSizeZ, voxelFile.cellSize);
-            config.walkableHeight = voxelFile.walkableHeight;
-            config.walkableRadius = voxelFile.walkableRadius;
-            config.walkableClimb = voxelFile.walkableClimb;
-            config.walkableSlopeAngle = voxelFile.walkableSlopeAngle;
-            config.maxSimplificationError = voxelFile.maxSimplificationError;
-            config.maxEdgeLen = voxelFile.maxEdgeLen;
-            config.minRegionArea = voxelFile.minRegionArea;
-            config.regionMergeArea = voxelFile.regionMergeArea;
-            config.vertsPerPoly = voxelFile.vertsPerPoly;
-            config.buildDetailMesh = voxelFile.buildMeshDetail;
-            config.detailSampleDistance = voxelFile.detailSampleDistance;
-            config.detailSampleMaxError = voxelFile.detailSampleMaxError;
+            config = new DtDynamicNavMeshConfig(voxelFile.useTiles, voxelFile.tileSizeX, voxelFile.tileSizeZ, voxelFile.cellSize)
+            {
+                walkableHeight = voxelFile.walkableHeight,
+                walkableRadius = voxelFile.walkableRadius,
+                walkableClimb = voxelFile.walkableClimb,
+                walkableSlopeAngle = voxelFile.walkableSlopeAngle,
+                maxSimplificationError = voxelFile.maxSimplificationError,
+                maxEdgeLen = voxelFile.maxEdgeLen,
+                minRegionArea = voxelFile.minRegionArea,
+                regionMergeArea = voxelFile.regionMergeArea,
+                vertsPerPoly = voxelFile.vertsPerPoly,
+                buildDetailMesh = voxelFile.buildMeshDetail,
+                detailSampleDistance = voxelFile.detailSampleDistance,
+                detailSampleMaxError = voxelFile.detailSampleMaxError
+            };
             builder = new RcBuilder();
             navMeshParams = new DtNavMeshParams();
             navMeshParams.orig.X = voxelFile.bounds[0];
@@ -142,7 +144,7 @@ namespace DotRecast.Detour.Dynamic
 
         private List<IDtDaynmicTileJob> ConsumeQueue()
         {
-            List<IDtDaynmicTileJob> items = new List<IDtDaynmicTileJob>();
+            List<IDtDaynmicTileJob> items = new();
             while (updateQueue.TryTake(out var item))
             {
                 items.Add(item);
@@ -151,7 +153,7 @@ namespace DotRecast.Detour.Dynamic
             return items;
         }
 
-        private void Process(IDtDaynmicTileJob item)
+        private static void Process(IDtDaynmicTileJob item)
         {
             foreach (var tile in item.AffectedTiles())
             {
@@ -193,7 +195,7 @@ namespace DotRecast.Detour.Dynamic
             int minz = (int)Math.Floor((bounds[2] - navMeshParams.orig.Z) / navMeshParams.tileHeight);
             int maxx = (int)Math.Floor((bounds[3] - navMeshParams.orig.X) / navMeshParams.tileWidth);
             int maxz = (int)Math.Floor((bounds[5] - navMeshParams.orig.Z) / navMeshParams.tileHeight);
-            List<DtDynamicTile> tiles = new List<DtDynamicTile>();
+            List<DtDynamicTile> tiles = new();
             for (int z = minz; z <= maxz; ++z)
             {
                 for (int x = minx; x <= maxx; ++x)
@@ -216,16 +218,18 @@ namespace DotRecast.Detour.Dynamic
 
         private void Rebuild(DtDynamicTile tile)
         {
-            DtNavMeshCreateParams option = new DtNavMeshCreateParams();
-            option.walkableHeight = config.walkableHeight;
-            dirty = dirty | tile.Build(builder, config, telemetry);
+            DtNavMeshCreateParams option = new()
+            {
+                walkableHeight = config.walkableHeight
+            };
+            dirty |= tile.Build(builder, config, telemetry);
         }
 
         private bool UpdateNavMesh()
         {
             if (dirty)
             {
-                DtNavMesh navMesh = new DtNavMesh(navMeshParams, MAX_VERTS_PER_POLY);
+                DtNavMesh navMesh = new(navMeshParams, MAX_VERTS_PER_POLY);
                 foreach (var t in _tiles.Values)
                     t.AddTo(navMesh);
 
@@ -244,7 +248,7 @@ namespace DotRecast.Detour.Dynamic
                 : null;
         }
 
-        private long LookupKey(long x, long z)
+        private static long LookupKey(long x, long z)
         {
             return (z << 32) | x;
         }

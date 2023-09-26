@@ -24,7 +24,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     public class NodeLink2Reader : ZipBinaryReader
     {
-        public NodeLink2[] Read(ZipArchive file, string filename, int[] indexToNode)
+        public static NodeLink2[] Read(ZipArchive file, string filename, int[] indexToNode)
         {
             RcByteBuffer buffer = ToByteBuffer(file, filename);
             int linkCount = buffer.GetInt();
@@ -34,17 +34,24 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                 long linkID = buffer.GetLong();
                 int startNode = indexToNode[buffer.GetInt()];
                 int endNode = indexToNode[buffer.GetInt()];
-                int connectedNode1 = buffer.GetInt();
-                int connectedNode2 = buffer.GetInt();
-                Vector3 clamped1 = new Vector3();
-                clamped1.X = buffer.GetFloat();
-                clamped1.Y = buffer.GetFloat();
-                clamped1.Z = buffer.GetFloat();
-                Vector3 clamped2 = new Vector3();
-                clamped2.X = buffer.GetFloat();
-                clamped2.Y = buffer.GetFloat();
-                clamped2.Z = buffer.GetFloat();
-                bool postScanCalled = buffer.Get() != 0;
+
+                _ = buffer.GetInt();
+
+                _ = buffer.GetInt();
+                Vector3 clamped1 = new()
+                {
+                    X = buffer.GetFloat(),
+                    Y = buffer.GetFloat(),
+                    Z = buffer.GetFloat()
+                };
+                Vector3 clamped2 = new()
+                {
+                    X = buffer.GetFloat(),
+                    Y = buffer.GetFloat(),
+                    Z = buffer.GetFloat()
+                };
+
+                _ = buffer.Get() != 0;
                 links[i] = new NodeLink2(linkID, startNode, endNode, clamped1, clamped2);
             }
 

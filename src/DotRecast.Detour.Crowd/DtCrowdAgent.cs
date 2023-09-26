@@ -47,28 +47,28 @@ namespace DotRecast.Detour.Crowd
         public float topologyOptTime;
 
         /// The known neighbors of the agent.
-        public List<DtCrowdNeighbour> neis = new List<DtCrowdNeighbour>();
+        public List<DtCrowdNeighbour> neis = new();
 
         /// The desired speed.
         public float desiredSpeed;
 
-        public Vector3 npos = new Vector3();
+        public Vector3 npos = new();
 
         /// < The current agent position. [(x, y, z)]
-        public Vector3 disp = new Vector3();
+        public Vector3 disp = new();
 
         /// < A temporary value used to accumulate agent displacement during iterative
         /// collision resolution. [(x, y, z)]
-        public Vector3 dvel = new Vector3();
+        public Vector3 dvel = new();
 
         /// < The desired velocity of the agent. Based on the current path, calculated
         /// from
         /// scratch each frame. [(x, y, z)]
-        public Vector3 nvel = new Vector3();
+        public Vector3 nvel = new();
 
         /// < The desired velocity adjusted by obstacle avoidance, calculated from scratch each
         /// frame. [(x, y, z)]
-        public Vector3 vel = new Vector3();
+        public Vector3 vel = new();
 
         /// < The actual velocity of the agent. The change from nvel -> vel is
         /// constrained by max acceleration. [(x, y, z)]
@@ -76,7 +76,7 @@ namespace DotRecast.Detour.Crowd
         public DtCrowdAgentParams option;
 
         /// The local path corridor corners for the agent.
-        public List<StraightPathItem> corners = new List<StraightPathItem>();
+        public List<StraightPathItem> corners = new();
 
         public DtMoveRequestState targetState;
 
@@ -84,7 +84,7 @@ namespace DotRecast.Detour.Crowd
         public long targetRef;
 
         /// < Target polyref of the movement request.
-        public Vector3 targetPos = new Vector3();
+        public Vector3 targetPos = new();
 
         /// < Target position of the movement request (or velocity in case of
         /// DT_CROWDAGENT_TARGET_VELOCITY).
@@ -116,8 +116,8 @@ namespace DotRecast.Detour.Crowd
             Vector3 dv = nvel - (vel);
             float ds = dv.Length();
             if (ds > maxDelta)
-                dv = dv * (maxDelta / ds);
-            vel = vel + (dv);
+                dv *= (maxDelta / ds);
+            vel += (dv);
 
             // Integrate
             if (vel.Length() > 0.0001f)
@@ -131,13 +131,13 @@ namespace DotRecast.Detour.Crowd
             if (0 == corners.Count)
                 return false;
 
-            bool offMeshConnection = ((corners[corners.Count - 1].flags
+            bool offMeshConnection = ((corners[^1].flags
                                        & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
                 ? true
                 : false;
             if (offMeshConnection)
             {
-                float distSq = Vector3Extensions.Dist2DSqr(npos, corners[corners.Count - 1].pos);
+                float distSq = Vector3Extensions.Dist2DSqr(npos, corners[^1].pos);
                 if (distSq < radius * radius)
                     return true;
             }
@@ -150,16 +150,16 @@ namespace DotRecast.Detour.Crowd
             if (0 == corners.Count)
                 return range;
 
-            bool endOfPath = ((corners[corners.Count - 1].flags & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0) ? true : false;
+            bool endOfPath = ((corners[^1].flags & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0) ? true : false;
             if (endOfPath)
-                return Math.Min(Vector3Extensions.Dist2D(npos, corners[corners.Count - 1].pos), range);
+                return Math.Min(Vector3Extensions.Dist2D(npos, corners[^1].pos), range);
 
             return range;
         }
 
         public Vector3 CalcSmoothSteerDirection()
         {
-            Vector3 dir = new Vector3();
+            Vector3 dir = new();
             if (0 < corners.Count)
             {
                 int ip0 = 0;
@@ -175,7 +175,7 @@ namespace DotRecast.Detour.Crowd
                 float len0 = dir0.Length();
                 float len1 = dir1.Length();
                 if (len1 > 0.001f)
-                    dir1 = dir1 * (1.0f / len1);
+                    dir1 *= (1.0f / len1);
 
                 dir.X = dir0.X - dir1.X * len0 * 0.5f;
                 dir.Y = 0;
@@ -188,7 +188,7 @@ namespace DotRecast.Detour.Crowd
 
         public Vector3 CalcStraightSteerDirection()
         {
-            Vector3 dir = new Vector3();
+            Vector3 dir = new();
             if (0 < corners.Count)
             {
                 dir = corners[0].pos - (npos);

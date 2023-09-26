@@ -84,7 +84,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             return jumpSegments;
         }
 
-        private void Fill(EdgeSampler es, int[][] sampleGrid, Queue<int[]> queue, float agentClimb, int region)
+        private static void Fill(EdgeSampler es, int[][] sampleGrid, Queue<int[]> queue, float agentClimb, int region)
         {
             while (queue.TryDequeue(out var ij))
             {
@@ -118,7 +118,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             }
         }
 
-        private void AddNeighbour(EdgeSampler es, Queue<int[]> queue, float agentClimb, float h, int i, int j)
+        private static void AddNeighbour(EdgeSampler es, Queue<int[]> queue, float agentClimb, float h, int i, int j)
         {
             GroundSample q = es.end[j].gsamples[i];
             if (q.validTrajectory && Math.Abs(q.p.Y - h) < agentClimb)

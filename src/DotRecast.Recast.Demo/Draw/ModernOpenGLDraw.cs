@@ -8,7 +8,7 @@ namespace DotRecast.Recast.Demo.Draw;
 
 public class ModernOpenGLDraw : IOpenGLDraw
 {
-    private GL _gl;
+    private readonly GL _gl;
     private uint program;
     private int uniformTexture;
     private int uniformProjectionMatrix;
@@ -310,10 +310,7 @@ public class ModernOpenGLDraw : IOpenGLDraw
     public void Texture(GLCheckerTexture g_tex, bool state)
     {
         _texture = state ? g_tex : null;
-        if (_texture != null)
-        {
-            _texture.Bind();
-        }
+        _texture?.Bind();
     }
 
     public void ProjectionMatrix(ref RcMatrix4x4f projectionMatrix)

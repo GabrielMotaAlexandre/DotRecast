@@ -25,7 +25,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     public abstract class ZipBinaryReader
     {
-        protected RcByteBuffer ToByteBuffer(ZipArchive file, string filename)
+        protected static RcByteBuffer ToByteBuffer(ZipArchive file, string filename)
         {
             ZipArchiveEntry graphReferences = file.GetEntry(filename);
             using var entryStream = graphReferences.Open();

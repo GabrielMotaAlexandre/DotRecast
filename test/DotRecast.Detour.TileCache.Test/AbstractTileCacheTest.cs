@@ -45,7 +45,7 @@ public class AbstractTileCacheTest
 
     public DtTileCache GetTileCache(IInputGeomProvider geom, RcByteOrder order, bool cCompatibility)
     {
-        DtTileCacheParams option = new DtTileCacheParams();
+        DtTileCacheParams option = new();
         RcCommons.CalcTileCount(geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), m_cellSize, m_tileSize, m_tileSize, out var tw, out var th);
         option.ch = m_cellHeight;
         option.cs = m_cellSize;
@@ -59,18 +59,20 @@ public class AbstractTileCacheTest
         option.maxTiles = tw * th * EXPECTED_LAYERS_PER_TILE;
         option.maxObstacles = 128;
 
-        DtNavMeshParams navMeshParams = new DtNavMeshParams();
-        navMeshParams.orig = geom.GetMeshBoundsMin();
-        navMeshParams.tileWidth = m_tileSize * m_cellSize;
-        navMeshParams.tileHeight = m_tileSize * m_cellSize;
-        navMeshParams.maxTiles = 256;
-        navMeshParams.maxPolys = 16384;
+        DtNavMeshParams navMeshParams = new()
+        {
+            orig = geom.GetMeshBoundsMin(),
+            tileWidth = m_tileSize * m_cellSize,
+            tileHeight = m_tileSize * m_cellSize,
+            maxTiles = 256,
+            maxPolys = 16384
+        };
 
         var navMesh = new DtNavMesh(navMeshParams, 6);
         var comp = DtTileCacheCompressorFactory.Shared.Create(cCompatibility ? 0 : 1);
         var storageParams = new DtTileCacheStorageParams(order, cCompatibility);
         var process = new TestTileCacheMeshProcess();
-        DtTileCache tc = new DtTileCache(option, storageParams, navMesh, comp, process);
+        DtTileCache tc = new(option, storageParams, navMesh, comp, process);
         return tc;
     }
 }

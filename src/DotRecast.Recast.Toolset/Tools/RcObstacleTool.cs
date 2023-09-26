@@ -49,7 +49,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
             // Generation params.
             var walkableRadius = (int)Math.Ceiling(setting.agentRadius / setting.cellSize); // Reserve enough padding.
-            RcConfig cfg = new RcConfig(
+            RcConfig cfg = new(
                 true, setting.tileSize, setting.tileSize,
                 walkableRadius + 3,
                 RcPartitionType.OfValue(setting.partitioning),
@@ -92,7 +92,7 @@ namespace DotRecast.Recast.Toolset.Tools
                 if (ob.state == DtObstacleState.DT_OBSTACLE_EMPTY)
                     continue;
 
-                _tc.RemoveObstacle(_tc.GetObstacleRef(ob));
+                _tc.RemoveObstacle(DtTileCache.GetObstacleRef(ob));
             }
         }
 
@@ -121,30 +121,34 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public DtTileCache CreateTileCache(IInputGeomProvider geom, RcNavMeshBuildSettings setting, int tw, int th, RcByteOrder order, bool cCompatibility)
         {
-            DtTileCacheParams option = new DtTileCacheParams();
-            option.ch = setting.cellHeight;
-            option.cs = setting.cellSize;
-            option.orig = geom.GetMeshBoundsMin();
-            option.height = setting.tileSize;
-            option.width = setting.tileSize;
-            option.walkableHeight = setting.agentHeight;
-            option.walkableRadius = setting.agentRadius;
-            option.walkableClimb = setting.agentMaxClimb;
-            option.maxSimplificationError = setting.edgeMaxError;
-            option.maxTiles = tw * th * 4; // for test EXPECTED_LAYERS_PER_TILE;
-            option.maxObstacles = 128;
+            DtTileCacheParams option = new()
+            {
+                ch = setting.cellHeight,
+                cs = setting.cellSize,
+                orig = geom.GetMeshBoundsMin(),
+                height = setting.tileSize,
+                width = setting.tileSize,
+                walkableHeight = setting.agentHeight,
+                walkableRadius = setting.agentRadius,
+                walkableClimb = setting.agentMaxClimb,
+                maxSimplificationError = setting.edgeMaxError,
+                maxTiles = tw * th * 4, // for test EXPECTED_LAYERS_PER_TILE;
+                maxObstacles = 128
+            };
 
-            DtNavMeshParams navMeshParams = new DtNavMeshParams();
-            navMeshParams.orig = geom.GetMeshBoundsMin();
-            navMeshParams.tileWidth = setting.tileSize * setting.cellSize;
-            navMeshParams.tileHeight = setting.tileSize * setting.cellSize;
-            navMeshParams.maxTiles = 256; // ..
-            navMeshParams.maxPolys = 16384;
+            DtNavMeshParams navMeshParams = new()
+            {
+                orig = geom.GetMeshBoundsMin(),
+                tileWidth = setting.tileSize * setting.cellSize,
+                tileHeight = setting.tileSize * setting.cellSize,
+                maxTiles = 256, // ..
+                maxPolys = 16384
+            };
 
             var navMesh = new DtNavMesh(navMeshParams, 6);
             var comp = _comp.Create(cCompatibility ? 0 : 1);
             var storageParams = new DtTileCacheStorageParams(order, cCompatibility);
-            DtTileCache tc = new DtTileCache(option, storageParams, navMesh, comp, _proc);
+            DtTileCache tc = new(option, storageParams, navMesh, comp, _proc);
             return tc;
         }
 
@@ -161,9 +165,10 @@ namespace DotRecast.Recast.Toolset.Tools
 
                 Vector3 bmin = Vector3.Zero;
                 Vector3 bmax = Vector3.Zero;
-                _tc.GetObstacleBounds(ob, ref bmin, ref bmax);
+                DtTileCache.GetObstacleBounds(ob, ref bmin, ref bmax);
 
-                if (Intersections.IsectSegAABB(sp, sq, bmin, bmax, out var t0, out var t1))
+
+                if (Intersections.IsectSegAABB(sp, sq, bmin, bmax, out var t0, out _))
                 {
                     if (t0 < tmin)
                     {
@@ -173,7 +178,7 @@ namespace DotRecast.Recast.Toolset.Tools
                 }
             }
 
-            return _tc.GetObstacleRef(obmin);
+            return DtTileCache.GetObstacleRef(obmin);
         }
     }
 }

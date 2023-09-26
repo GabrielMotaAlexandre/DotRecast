@@ -61,7 +61,7 @@ public class TileCacheTest : AbstractTileCacheTest
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
         DtTileCache tc = GetTileCache(geom, order, cCompatibility);
-        TestTileLayerBuilder layerBuilder = new TestTileLayerBuilder(geom);
+        TestTileLayerBuilder layerBuilder = new(geom);
         List<byte[]> layers = layerBuilder.Build(order, cCompatibility, 1);
         int cacheLayerCount = 0;
         int cacheCompressedSize = 0;
@@ -157,7 +157,7 @@ public class TileCacheTest : AbstractTileCacheTest
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("nav_test.obj");
         DtTileCache tc = GetTileCache(geom, order, cCompatibility);
-        TestTileLayerBuilder layerBuilder = new TestTileLayerBuilder(geom);
+        TestTileLayerBuilder layerBuilder = new(geom);
         List<byte[]> layers = layerBuilder.Build(order, cCompatibility, 1);
         int cacheLayerCount = 0;
         int cacheCompressedSize = 0;
@@ -183,7 +183,7 @@ public class TileCacheTest : AbstractTileCacheTest
         bool cCompatibility = false;
 
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
-        TestTileLayerBuilder layerBuilder = new TestTileLayerBuilder(geom);
+        TestTileLayerBuilder layerBuilder = new(geom);
         for (int i = 0; i < 4; i++)
         {
             layerBuilder.Build(order, cCompatibility, 1);

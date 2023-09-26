@@ -28,14 +28,14 @@ namespace DotRecast.Detour.Crowd.Tracking
     public class DtObstacleAvoidanceDebugData
     {
         private int m_nsamples;
-        private int m_maxSamples;
-        private float[] m_vel;
-        private float[] m_ssize;
-        private float[] m_pen;
-        private float[] m_vpen;
-        private float[] m_vcpen;
-        private float[] m_spen;
-        private float[] m_tpen;
+        private readonly int m_maxSamples;
+        private readonly float[] m_vel;
+        private readonly float[] m_ssize;
+        private readonly float[] m_pen;
+        private readonly float[] m_vpen;
+        private readonly float[] m_vcpen;
+        private readonly float[] m_spen;
+        private readonly float[] m_tpen;
 
         public DtObstacleAvoidanceDebugData(int maxSamples)
         {
@@ -54,7 +54,7 @@ namespace DotRecast.Detour.Crowd.Tracking
             m_nsamples = 0;
         }
 
-        void NormalizeArray(float[] arr, int n)
+        static void NormalizeArray(float[] arr, int n)
         {
             // Normalize penaly range.
             float minPen = float.MaxValue;
@@ -103,10 +103,12 @@ namespace DotRecast.Detour.Crowd.Tracking
 
         public Vector3 GetSampleVelocity(int i)
         {
-            Vector3 vel = new Vector3();
-            vel.X = m_vel[i * 3];
-            vel.Y = m_vel[i * 3 + 1];
-            vel.Z = m_vel[i * 3 + 2];
+            Vector3 vel = new()
+            {
+                X = m_vel[i * 3],
+                Y = m_vel[i * 3 + 1],
+                Z = m_vel[i * 3 + 2]
+            };
             return vel;
         }
 

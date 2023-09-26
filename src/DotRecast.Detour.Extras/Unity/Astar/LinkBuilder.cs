@@ -24,7 +24,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
     public class LinkBuilder
     {
         // Process connections and transform them into recast neighbour flags
-        public void Build(int nodeOffset, GraphMeshData graphData, List<int[]> connections)
+        public static void Build(int nodeOffset, GraphMeshData graphData, List<int[]> connections)
         {
             for (int n = 0; n < connections.Count; n++)
             {
@@ -47,7 +47,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
             }
         }
 
-        private void BuildInternalLink(DtMeshData tile, DtPoly node, DtMeshData neighbourTile, DtPoly neighbour)
+        private static void BuildInternalLink(DtMeshData tile, DtPoly node, DtMeshData neighbourTile, DtPoly neighbour)
         {
             int edge = PolyUtils.FindEdge(node, neighbour, tile, neighbourTile);
             if (edge >= 0)
@@ -61,7 +61,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
         }
 
         // In case of external link to other tiles we must find the direction
-        private void BuildExternalLink(DtMeshData tile, DtPoly node, DtMeshData neighbourTile)
+        private static void BuildExternalLink(DtMeshData tile, DtPoly node, DtMeshData neighbourTile)
         {
             if (neighbourTile.header.bmin.X > tile.header.bmin.X)
             {

@@ -383,7 +383,8 @@ public class DynamicUpdateSampleTool : ISampleTool
             if (sposSet && eposSet && dynaMesh != null)
             {
                 long t1 = RcFrequency.Ticks;
-                bool hasHit = _tool.Raycast(spos, epos, out var hitPos, out raycastHitPos);
+
+                bool hasHit = _tool.Raycast(spos, epos, out _, out raycastHitPos);
                 long t2 = RcFrequency.Ticks;
                 raycastTime = (t2 - t1) / TimeSpan.TicksPerMillisecond;
                 raycastHit = hasHit;

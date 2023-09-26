@@ -34,8 +34,8 @@ namespace DotRecast.Recast.Toolset.Geom
         private readonly Vector3 bmin;
         private readonly Vector3 bmax;
 
-        private readonly List<RcConvexVolume> _convexVolumes = new List<RcConvexVolume>();
-        private readonly List<RcOffMeshConnection> _offMeshConnections = new List<RcOffMeshConnection>();
+        private readonly List<RcConvexVolume> _convexVolumes = new();
+        private readonly List<RcOffMeshConnection> _offMeshConnections = new();
         private readonly RcTriMesh _mesh;
 
         public static DemoInputGeomProvider LoadFile(string objFilePath)
@@ -91,8 +91,8 @@ namespace DotRecast.Recast.Toolset.Geom
                 int v0 = faces[i] * 3;
                 int v1 = faces[i + 1] * 3;
                 int v2 = faces[i + 2] * 3;
-                Vector3 e0 = new Vector3();
-                Vector3 e1 = new Vector3();
+                Vector3 e0 = new();
+                Vector3 e1 = new();
                 for (int j = 0; j < 3; ++j)
                 {
                     e0[j] = vertices[v1 + j] - vertices[v0 + j];
@@ -169,17 +169,17 @@ namespace DotRecast.Recast.Toolset.Geom
                 int[] tris = chunk.tris;
                 for (int j = 0; j < chunk.tris.Length; j += 3)
                 {
-                    Vector3 v1 = new Vector3(
+                    Vector3 v1 = new(
                         vertices[tris[j] * 3],
                         vertices[tris[j] * 3 + 1],
                         vertices[tris[j] * 3 + 2]
                     );
-                    Vector3 v2 = new Vector3(
+                    Vector3 v2 = new(
                         vertices[tris[j + 1] * 3],
                         vertices[tris[j + 1] * 3 + 1],
                         vertices[tris[j + 1] * 3 + 2]
                     );
-                    Vector3 v3 = new Vector3(
+                    Vector3 v3 = new(
                         vertices[tris[j + 2] * 3],
                         vertices[tris[j + 2] * 3 + 1],
                         vertices[tris[j + 2] * 3 + 2]
@@ -202,11 +202,13 @@ namespace DotRecast.Recast.Toolset.Geom
 
         public void AddConvexVolume(float[] verts, float minh, float maxh, RcAreaModification areaMod)
         {
-            RcConvexVolume volume = new RcConvexVolume();
-            volume.verts = verts;
-            volume.hmin = minh;
-            volume.hmax = maxh;
-            volume.areaMod = areaMod;
+            RcConvexVolume volume = new()
+            {
+                verts = verts,
+                hmin = minh,
+                hmax = maxh,
+                areaMod = areaMod
+            };
             AddConvexVolume(volume);
         }
 

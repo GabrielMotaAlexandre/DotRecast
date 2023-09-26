@@ -53,7 +53,7 @@ namespace DotRecast.Recast
                 Math.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
                 Math.Max(start.Z, end.Z) + radius
             };
-            Vector3 axis = new Vector3(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
+            Vector3 axis = new(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             RasterizationFilledShape(hf, bounds, area, flagMergeThr,
                 rectangle => IntersectCapsule(rectangle, start, end, axis, radius * radius));
         }
@@ -67,7 +67,7 @@ namespace DotRecast.Recast
                 Math.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
                 Math.Max(start.Z, end.Z) + radius
             };
-            Vector3 axis = new Vector3(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
+            Vector3 axis = new(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             RasterizationFilledShape(hf, bounds, area, flagMergeThr,
                 rectangle => IntersectCylinder(rectangle, start, end, axis, radius * radius));
         }
@@ -306,7 +306,7 @@ namespace DotRecast.Recast
                 {
                     float x = rectangle[(i + 1) & 2];
                     float z = rectangle[(i & 2) + 1];
-                    Vector3 a = new Vector3(x, rectangle[4], z);
+                    Vector3 a = new(x, rectangle[4], z);
                     float dotAxisA = Vector3.Dot(axis, a);
                     float t = (ds - dotAxisA) / axis.Y;
                     rectangleOnStartPlane[i].X = x;
@@ -420,7 +420,7 @@ namespace DotRecast.Recast
         private static float[] RayCylinderIntersection(Vector3 point, Vector3 start, Vector3 axis, float radiusSqr)
         {
             Vector3 d = axis;
-            Vector3 m = new Vector3(point.X - start.X, point.Y - start.Y, point.Z - start.Z);
+            Vector3 m = new(point.X - start.X, point.Y - start.Y, point.Z - start.Z);
             // float[] n = { 0, 1, 0 };
             float md = Vector3.Dot(m, d);
             // float nd = Dot(n, d);

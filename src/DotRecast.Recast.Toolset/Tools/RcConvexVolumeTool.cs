@@ -45,7 +45,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
             // Create
             // If clicked on that last pt, create the shape.
-            if (_pts.Count > 0 && Vector3.DistanceSquared(p, _pts[_pts.Count - 1]) < 0.2f * 0.2f)
+            if (_pts.Count > 0 && Vector3.DistanceSquared(p, _pts[^1]) < 0.2f * 0.2f)
             {
                 pts = new List<Vector3>(_pts);
                 hull = new List<int>(_hull);
@@ -74,7 +74,7 @@ namespace DotRecast.Recast.Toolset.Tools
         }
 
 
-        public RcConvexVolume RemoveByPos(IInputGeomProvider geom, Vector3 pos)
+        public static RcConvexVolume RemoveByPos(IInputGeomProvider geom, Vector3 pos)
         {
             // Delete
             int nearestIndex = -1;
@@ -97,7 +97,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return removal;
         }
 
-        public void Add(IInputGeomProvider geom, RcConvexVolume volume)
+        public static void Add(IInputGeomProvider geom, RcConvexVolume volume)
         {
             geom.AddConvexVolume(volume);
         }
@@ -119,15 +119,14 @@ namespace DotRecast.Recast.Toolset.Tools
                 verts[i * 3 + 2] = pts[hull[i]].Z;
             }
 
-            float minh = float.MaxValue, maxh = 0;
+            float minh = float.MaxValue;
             for (int i = 0; i < hull.Count; ++i)
             {
                 minh = Math.Min(minh, verts[i * 3 + 1]);
             }
 
             minh -= boxDescent;
-            maxh = minh + boxHeight;
-
+            float maxh = minh + boxHeight;
             if (polyOffset > 0.01f)
             {
                 float[] offset = new float[verts.Length * 2];

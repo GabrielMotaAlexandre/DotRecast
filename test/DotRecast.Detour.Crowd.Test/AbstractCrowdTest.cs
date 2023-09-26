@@ -69,42 +69,52 @@ public class AbstractCrowdTest
         nmd = new RecastTestMeshBuilder().GetMeshData();
         navmesh = new DtNavMesh(nmd, 6, 0);
         query = new DtNavMeshQuery(navmesh);
-        DtCrowdConfig config = new DtCrowdConfig(0.6f);
+        DtCrowdConfig config = new(0.6f);
         crowd = new DtCrowd(config, navmesh);
-        DtObstacleAvoidanceParams option = new DtObstacleAvoidanceParams();
-        option.velBias = 0.5f;
-        option.adaptiveDivs = 5;
-        option.adaptiveRings = 2;
-        option.adaptiveDepth = 1;
+        DtObstacleAvoidanceParams option = new()
+        {
+            velBias = 0.5f,
+            adaptiveDivs = 5,
+            adaptiveRings = 2,
+            adaptiveDepth = 1
+        };
         crowd.SetObstacleAvoidanceParams(0, option);
-        option = new DtObstacleAvoidanceParams();
-        option.velBias = 0.5f;
-        option.adaptiveDivs = 5;
-        option.adaptiveRings = 2;
-        option.adaptiveDepth = 2;
+        option = new DtObstacleAvoidanceParams
+        {
+            velBias = 0.5f,
+            adaptiveDivs = 5,
+            adaptiveRings = 2,
+            adaptiveDepth = 2
+        };
         crowd.SetObstacleAvoidanceParams(1, option);
-        option = new DtObstacleAvoidanceParams();
-        option.velBias = 0.5f;
-        option.adaptiveDivs = 7;
-        option.adaptiveRings = 2;
-        option.adaptiveDepth = 3;
+        option = new DtObstacleAvoidanceParams
+        {
+            velBias = 0.5f,
+            adaptiveDivs = 7,
+            adaptiveRings = 2,
+            adaptiveDepth = 3
+        };
         crowd.SetObstacleAvoidanceParams(2, option);
-        option = new DtObstacleAvoidanceParams();
-        option.velBias = 0.5f;
-        option.adaptiveDivs = 7;
-        option.adaptiveRings = 3;
-        option.adaptiveDepth = 3;
+        option = new DtObstacleAvoidanceParams
+        {
+            velBias = 0.5f,
+            adaptiveDivs = 7,
+            adaptiveRings = 3,
+            adaptiveDepth = 3
+        };
         crowd.SetObstacleAvoidanceParams(3, option);
         agents = new();
     }
 
-    protected DtCrowdAgentParams GetAgentParams(int updateFlags, int obstacleAvoidanceType)
+    protected static DtCrowdAgentParams GetAgentParams(int updateFlags, int obstacleAvoidanceType)
     {
-        DtCrowdAgentParams ap = new DtCrowdAgentParams();
-        ap.radius = 0.6f;
-        ap.height = 2f;
-        ap.maxAcceleration = 8.0f;
-        ap.maxSpeed = 3.5f;
+        DtCrowdAgentParams ap = new()
+        {
+            radius = 0.6f,
+            height = 2f,
+            maxAcceleration = 8.0f,
+            maxSpeed = 3.5f
+        };
         ap.collisionQueryRange = ap.radius * 12f;
         ap.pathOptimizationRange = ap.radius * 30f;
         ap.updateFlags = updateFlags;
@@ -120,10 +130,12 @@ public class AbstractCrowdTest
         {
             for (int j = 0; j < size; j++)
             {
-                Vector3 pos = new Vector3();
-                pos.X = startPos.X + i * distance;
-                pos.Y = startPos.Y;
-                pos.Z = startPos.Z + j * distance;
+                Vector3 pos = new()
+                {
+                    X = startPos.X + i * distance,
+                    Y = startPos.Y,
+                    Z = startPos.Z + j * distance
+                };
                 agents.Add(crowd.AddAgent(pos, ap));
             }
         }
@@ -138,7 +150,7 @@ public class AbstractCrowdTest
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
                 Vector3 vel = CalcVel(ag.npos, pos, ag.option.maxSpeed);
-                crowd.RequestMoveVelocity(ag, vel);
+                DtCrowd.RequestMoveVelocity(ag, vel);
             }
         }
         else
@@ -146,17 +158,17 @@ public class AbstractCrowdTest
             query.FindNearestPoly(pos, ext, filter, out var nearestRef, out var nearestPt, out var _);
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                crowd.RequestMoveTarget(ag, nearestRef, nearestPt);
+                DtCrowd.RequestMoveTarget(ag, nearestRef, nearestPt);
             }
         }
     }
 
-    protected Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
+    protected static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
     {
         Vector3 vel = tgt - (pos);
         vel.Y = 0.0f;
         vel.Normalize();
-        vel = vel * (speed);
+        vel *= (speed);
         return vel;
     }
 

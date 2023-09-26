@@ -8,7 +8,7 @@ namespace DotRecast.Detour.Extras.Jumplink
     {
         public delegate bool ComputeNavMeshHeight(Vector3 pt, float cellSize, out float height);
 
-        protected void SampleGround(JumpLinkBuilderConfig acfg, EdgeSampler es, ComputeNavMeshHeight heightFunc)
+        protected static void SampleGround(JumpLinkBuilderConfig acfg, EdgeSampler es, ComputeNavMeshHeight heightFunc)
         {
             float cs = acfg.cellSize;
             float dist = (float)Math.Sqrt(Vector3Extensions.Dist2DSqr(es.start.p, es.start.q));
@@ -23,7 +23,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 
         public abstract void Sample(JumpLinkBuilderConfig acfg, RcBuilderResult result, EdgeSampler es);
 
-        protected void SampleGroundSegment(ComputeNavMeshHeight heightFunc, GroundSegment seg, int nsamples)
+        protected static void SampleGroundSegment(ComputeNavMeshHeight heightFunc, GroundSegment seg, int nsamples)
         {
             seg.gsamples = new GroundSample[nsamples];
 
@@ -31,7 +31,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             {
                 float u = i / (float)(nsamples - 1);
 
-                GroundSample s = new GroundSample();
+                GroundSample s = new();
                 seg.gsamples[i] = s;
                 Vector3 pt = Vector3.Lerp(seg.p, seg.q, u);
                 bool success = heightFunc.Invoke(pt, seg.height, out var height);

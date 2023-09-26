@@ -4,7 +4,7 @@ namespace DotRecast.Detour
 {
     public class DtQueryNoOpFilter : IDtQueryFilter
     {
-        public static readonly DtQueryNoOpFilter Shared = new DtQueryNoOpFilter();
+        public static readonly DtQueryNoOpFilter Shared = new();
 
         private DtQueryNoOpFilter()
         {

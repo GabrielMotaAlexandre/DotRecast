@@ -32,10 +32,10 @@ namespace DotRecast.Detour
         public float t;
 
         /** hitNormal The normal of the nearest wall hit. [(x, y, z)] */
-        public Vector3 hitNormal = new Vector3();
+        public Vector3 hitNormal = new();
 
         /** Visited polygons. */
-        public readonly List<long> path = new List<long>();
+        public readonly List<long> path = new();
 
         /** The cost of the path until hit. */
         public float pathCost;

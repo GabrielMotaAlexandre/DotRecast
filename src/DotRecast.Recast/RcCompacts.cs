@@ -47,7 +47,7 @@ namespace DotRecast.Recast
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_COMPACTHEIGHTFIELD);
 
-            RcCompactHeightfield chf = new RcCompactHeightfield();
+            RcCompactHeightfield chf = new();
             int w = hf.width;
             int h = hf.height;
             int spanCount = GetHeightFieldSpanCount(hf);

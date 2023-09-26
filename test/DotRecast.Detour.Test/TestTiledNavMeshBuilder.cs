@@ -58,16 +58,18 @@ public class TestTiledNavMeshBuilder
         float detailSampleMaxError, int tileSize)
     {
         // Create empty nav mesh
-        DtNavMeshParams navMeshParams = new DtNavMeshParams();
-        navMeshParams.orig = geom.GetMeshBoundsMin();
-        navMeshParams.tileWidth = tileSize * cellSize;
-        navMeshParams.tileHeight = tileSize * cellSize;
-        navMeshParams.maxTiles = 128;
-        navMeshParams.maxPolys = 32768;
+        DtNavMeshParams navMeshParams = new()
+        {
+            orig = geom.GetMeshBoundsMin(),
+            tileWidth = tileSize * cellSize,
+            tileHeight = tileSize * cellSize,
+            maxTiles = 128,
+            maxPolys = 32768
+        };
         navMesh = new DtNavMesh(navMeshParams, 6);
 
         // Build all tiles
-        RcConfig cfg = new RcConfig(true, tileSize, tileSize, RcConfig.CalcBorder(agentRadius, cellSize),
+        RcConfig cfg = new(true, tileSize, tileSize, RcConfig.CalcBorder(agentRadius, cellSize),
             partitionType,
             cellSize, cellHeight,
             agentMaxSlope, agentHeight, agentRadius, agentMaxClimb,
@@ -77,7 +79,7 @@ public class TestTiledNavMeshBuilder
             detailSampleDist, detailSampleMaxError,
             true, true, true,
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilder rcBuilder = new RcBuilder();
+        RcBuilder rcBuilder = new();
         List<RcBuilderResult> rcResult = rcBuilder.BuildTiles(geom, cfg, null);
 
         // Add tiles to nav mesh
@@ -95,14 +97,16 @@ public class TestTiledNavMeshBuilder
                 pmesh.flags[i] = 1;
             }
 
-            DtNavMeshCreateParams option = new DtNavMeshCreateParams();
-            option.verts = pmesh.verts;
-            option.vertCount = pmesh.nverts;
-            option.polys = pmesh.polys;
-            option.polyAreas = pmesh.areas;
-            option.polyFlags = pmesh.flags;
-            option.polyCount = pmesh.npolys;
-            option.nvp = pmesh.nvp;
+            DtNavMeshCreateParams option = new()
+            {
+                verts = pmesh.verts,
+                vertCount = pmesh.nverts,
+                polys = pmesh.polys,
+                polyAreas = pmesh.areas,
+                polyFlags = pmesh.flags,
+                polyCount = pmesh.npolys,
+                nvp = pmesh.nvp
+            };
             RcPolyMeshDetail dmesh = result.GetMeshDetail();
             option.detailMeshes = dmesh.meshes;
             option.detailVerts = dmesh.verts;

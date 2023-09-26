@@ -27,13 +27,13 @@ namespace DotRecast.Recast
     public class RcContourSet
     {
         /** A list of the contours in the set. */
-        public List<RcContour> conts = new List<RcContour>();
+        public List<RcContour> conts = new();
 
         /** The minimum bounds in world space. [(x, y, z)] */
-        public Vector3 bmin = new Vector3();
+        public Vector3 bmin = new();
 
         /** The maximum bounds in world space. [(x, y, z)] */
-        public Vector3 bmax = new Vector3();
+        public Vector3 bmax = new();
 
         /** The size of each cell. (On the xz-plane.) */
         public float cs;

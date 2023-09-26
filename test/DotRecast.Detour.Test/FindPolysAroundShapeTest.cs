@@ -158,7 +158,7 @@ public class FindPolysAroundShapeTest : AbstractDetourTest
         }
     }
 
-    private Vector3[] GetQueryPoly(Vector3 m_spos, Vector3 m_epos)
+    private static Vector3[] GetQueryPoly(Vector3 m_spos, Vector3 m_epos)
     {
         float nx = (m_epos.Z - m_spos.Z) * 0.25f;
         float nz = -(m_epos.X - m_spos.X) * 0.25f;

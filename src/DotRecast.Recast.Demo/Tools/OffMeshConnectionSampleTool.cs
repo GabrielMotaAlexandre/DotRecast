@@ -100,7 +100,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
 
         if (shift)
         {
-            _tool.Remove(geom, settings, p);
+            RcOffMeshConnectionTool.Remove(geom, settings, p);
         }
         else
         {
@@ -112,7 +112,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
             }
             else
             {
-                _tool.Add(geom, settings, _startPt, p, 1 == _bidir);
+                RcOffMeshConnectionTool.Add(geom, settings, _startPt, p, 1 == _bidir);
                 _hasStartPt = false;
             }
         }

@@ -14,41 +14,44 @@ namespace DotRecast.Detour.Extras.Jumplink
             SampleGround(acfg, es, (Vector3 pt, float heightRange, out float height) => GetNavMeshHeight(navMeshQuery, pt, acfg.cellSize, heightRange, out height));
         }
 
-        private DtNavMeshQuery CreateNavMesh(RcBuilderResult r, float agentRadius, float agentHeight, float agentClimb)
+        private static DtNavMeshQuery CreateNavMesh(RcBuilderResult r, float agentRadius, float agentHeight, float agentClimb)
         {
-            DtNavMeshCreateParams option = new DtNavMeshCreateParams();
-            option.verts = r.GetMesh().verts;
-            option.vertCount = r.GetMesh().nverts;
-            option.polys = r.GetMesh().polys;
-            option.polyAreas = r.GetMesh().areas;
-            option.polyFlags = r.GetMesh().flags;
-            option.polyCount = r.GetMesh().npolys;
-            option.nvp = r.GetMesh().nvp;
-            option.detailMeshes = r.GetMeshDetail().meshes;
-            option.detailVerts = r.GetMeshDetail().verts;
-            option.detailVertsCount = r.GetMeshDetail().nverts;
-            option.detailTris = r.GetMeshDetail().tris;
-            option.detailTriCount = r.GetMeshDetail().ntris;
-            option.walkableRadius = agentRadius;
-            option.walkableHeight = agentHeight;
-            option.walkableClimb = agentClimb;
-            option.bmin = r.GetMesh().bmin;
-            option.bmax = r.GetMesh().bmax;
-            option.cs = r.GetMesh().cs;
-            option.ch = r.GetMesh().ch;
-            option.buildBvTree = true;
+            DtNavMeshCreateParams option = new()
+            {
+                verts = r.GetMesh().verts,
+                vertCount = r.GetMesh().nverts,
+                polys = r.GetMesh().polys,
+                polyAreas = r.GetMesh().areas,
+                polyFlags = r.GetMesh().flags,
+                polyCount = r.GetMesh().npolys,
+                nvp = r.GetMesh().nvp,
+                detailMeshes = r.GetMeshDetail().meshes,
+                detailVerts = r.GetMeshDetail().verts,
+                detailVertsCount = r.GetMeshDetail().nverts,
+                detailTris = r.GetMeshDetail().tris,
+                detailTriCount = r.GetMeshDetail().ntris,
+                walkableRadius = agentRadius,
+                walkableHeight = agentHeight,
+                walkableClimb = agentClimb,
+                bmin = r.GetMesh().bmin,
+                bmax = r.GetMesh().bmax,
+                cs = r.GetMesh().cs,
+                ch = r.GetMesh().ch,
+                buildBvTree = true
+            };
             return new DtNavMeshQuery(new DtNavMesh(DtNavMeshBuilder.CreateNavMeshData(option), option.nvp, 0));
         }
 
 
-        private bool GetNavMeshHeight(DtNavMeshQuery navMeshQuery, Vector3 pt, float cs, float heightRange, out float height)
+        private static bool GetNavMeshHeight(DtNavMeshQuery navMeshQuery, Vector3 pt, float cs, float heightRange, out float height)
         {
             height = default;
 
-            Vector3 halfExtents = new Vector3 { X = cs, Y = heightRange, Z = cs };
+            Vector3 halfExtents = new()
+            { X = cs, Y = heightRange, Z = cs };
             float maxHeight = pt.Y + heightRange;
-            RcAtomicBoolean found = new RcAtomicBoolean();
-            RcAtomicFloat minHeight = new RcAtomicFloat(pt.Y);
+            RcAtomicBoolean found = new();
+            RcAtomicFloat minHeight = new(pt.Y);
 
             navMeshQuery.QueryPolygons(pt, halfExtents, DtQueryNoOpFilter.Shared, new PolyQueryInvoker((tile, poly, refs) =>
             {

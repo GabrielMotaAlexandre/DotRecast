@@ -39,9 +39,9 @@ public static class GizmoRenderer
 
     public static int GetColorByNormal(float[] vertices, int v0, int v1, int v2)
     {
-        Vector3 e0 = new Vector3();
-        Vector3 e1 = new Vector3();
-        Vector3 normal = new Vector3();
+        Vector3 e0 = new();
+        Vector3 e1 = new();
+        Vector3 normal = new();
         for (int j = 0; j < 3; ++j)
         {
             e0[j] = vertices[v1 + j] - vertices[v0 + j];

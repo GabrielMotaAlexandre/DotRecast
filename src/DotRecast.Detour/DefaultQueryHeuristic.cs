@@ -24,7 +24,7 @@ namespace DotRecast.Detour
     public class DefaultQueryHeuristic : IQueryHeuristic
     {
         public const float H_SCALE = 0.999f; // Search heuristic scale.
-        public static readonly DefaultQueryHeuristic Default = new DefaultQueryHeuristic(H_SCALE);
+        public static readonly DefaultQueryHeuristic Default = new(H_SCALE);
 
         private readonly float scale;
 

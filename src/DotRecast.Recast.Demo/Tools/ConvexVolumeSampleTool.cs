@@ -85,10 +85,7 @@ public class ConvexVolumeSampleTool : ISampleTool
             _tool.ClearShape();
 
             var geom = _sample.GetInputGeom();
-            if (geom != null)
-            {
-                geom.ClearConvexVolumes();
-            }
+            geom?.ClearConvexVolumes();
         }
     }
 
@@ -100,14 +97,14 @@ public class ConvexVolumeSampleTool : ISampleTool
         var hull = _tool.GetShapeHull();
 
         // Find height extent of the shape.
-        float minh = float.MaxValue, maxh = 0;
+        float minh = float.MaxValue;
         for (int i = 0; i < pts.Count; ++i)
         {
             minh = Math.Min(minh, pts[i].Y);
         }
 
         minh -= _boxDescent;
-        maxh = minh + _boxHeight;
+        float maxh = minh + _boxHeight;
 
         dd.Begin(POINTS, 4.0f);
         for (int i = 0; i < pts.Count; ++i)
@@ -160,14 +157,14 @@ public class ConvexVolumeSampleTool : ISampleTool
         var geom = _sample.GetInputGeom();
         if (shift)
         {
-            _tool.RemoveByPos(geom, p);
+            RcConvexVolumeTool.RemoveByPos(geom, p);
         }
         else
         {
             if (_tool.PlottingShape(p, out var pts, out var hull))
             {
                 var vol = RcConvexVolumeTool.CreateConvexVolume(pts, hull, _areaType, _boxDescent, _boxHeight, _polyOffset);
-                _tool.Add(geom, vol);
+                RcConvexVolumeTool.Add(geom, vol);
             }
         }
     }

@@ -27,7 +27,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
     {
         public const float INT_PRECISION_FACTOR = 1000f;
 
-        public GraphMeshData Read(ZipArchive file, string filename, GraphMeta meta, int maxVertPerPoly)
+        public static GraphMeshData Read(ZipArchive file, string filename, GraphMeta meta, int maxVertPerPoly)
         {
             RcByteBuffer buffer = ToByteBuffer(file, filename);
             int tileXCount = buffer.GetInt();
@@ -51,8 +51,10 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     }
 
                     tiles[tileIndex] = new DtMeshData();
-                    int width = buffer.GetInt();
-                    int depth = buffer.GetInt();
+
+                    _ = buffer.GetInt();
+
+                    _ = buffer.GetInt();
 
                     int trisCount = buffer.GetInt();
                     int[] tris = new int[trisCount];
@@ -84,10 +86,13 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     float ymax = float.NegativeInfinity;
                     for (int i = 0; i < nodes.Length; i++)
                     {
-                        nodes[i] = new DtPoly(i, maxVertPerPoly);
-                        nodes[i].vertCount = 3;
+                        nodes[i] = new DtPoly(i, maxVertPerPoly)
+                        {
+                            vertCount = 3
+                        };
+
                         // XXX: What can we do with the penalty?
-                        int penalty = buffer.GetInt();
+                        _ = buffer.GetInt();
                         nodes[i].flags = buffer.GetInt();
                         nodes[i].verts[0] = buffer.GetInt() & vertMask;
                         nodes[i].verts[1] = buffer.GetInt() & vertMask;
@@ -98,11 +103,13 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                         ymax = Math.Max(ymax, verts[nodes[i].verts[0] * 3 + 1]);
                         ymax = Math.Max(ymax, verts[nodes[i].verts[1] * 3 + 1]);
                         ymax = Math.Max(ymax, verts[nodes[i].verts[2] * 3 + 1]);
-                        detailNodes[i] = new DtPolyDetail();
-                        detailNodes[i].vertBase = 0;
-                        detailNodes[i].vertCount = 0;
-                        detailNodes[i].triBase = i;
-                        detailNodes[i].triCount = 1;
+                        detailNodes[i] = new DtPolyDetail
+                        {
+                            vertBase = 0,
+                            vertCount = 0,
+                            triBase = i,
+                            triCount = 1
+                        };
                         detailTris[4 * i] = 0;
                         detailTris[4 * i + 1] = 1;
                         detailTris[4 * i + 2] = 2;
@@ -116,16 +123,18 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     tiles[tileIndex].detailMeshes = detailNodes;
                     tiles[tileIndex].detailVerts = detailVerts;
                     tiles[tileIndex].detailTris = detailTris;
-                    DtMeshHeader header = new DtMeshHeader();
-                    header.magic = DtMeshHeader.DT_NAVMESH_MAGIC;
-                    header.version = DtMeshHeader.DT_NAVMESH_VERSION;
-                    header.x = x;
-                    header.y = z;
-                    header.polyCount = nodeCount;
-                    header.vertCount = vertsCount;
-                    header.detailMeshCount = nodeCount;
-                    header.detailTriCount = nodeCount;
-                    header.maxLinkCount = nodeCount * 3 * 2; // XXX: Needed by Recast, not needed by recast4j
+                    DtMeshHeader header = new()
+                    {
+                        magic = DtMeshHeader.DT_NAVMESH_MAGIC,
+                        version = DtMeshHeader.DT_NAVMESH_VERSION,
+                        x = x,
+                        y = z,
+                        polyCount = nodeCount,
+                        vertCount = vertsCount,
+                        detailMeshCount = nodeCount,
+                        detailTriCount = nodeCount,
+                        maxLinkCount = nodeCount * 3 * 2 // XXX: Needed by Recast, not needed by recast4j
+                    };
                     header.bmin.X = meta.forcedBoundsCenter.x - 0.5f * meta.forcedBoundsSize.x
                                      + meta.cellSize * meta.tileSizeX * x;
                     header.bmin.Y = ymin;
@@ -159,7 +168,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
         }
 
         // See NavmeshBase.cs: ASTAR_RECAST_LARGER_TILES
-        private int GetVertMask(int vertsCount)
+        private static int GetVertMask(int vertsCount)
         {
             int vertMask = HighestOneBit((uint)vertsCount);
             if (vertMask != vertsCount)

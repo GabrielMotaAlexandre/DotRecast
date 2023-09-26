@@ -36,10 +36,10 @@ namespace DotRecast.Detour
             float[] inters = new float[Math.Max(m, n) * 3 * 3];
             int ii = 0;
             /* Initialize variables. */
-            Vector3 a = new Vector3();
-            Vector3 b = new Vector3();
-            Vector3 a1 = new Vector3();
-            Vector3 b1 = new Vector3();
+            Vector3 a = new();
+            Vector3 b = new();
+            Vector3 a1 = new();
+            Vector3 b1 = new();
 
             int aa = 0;
             int ba = 0;
@@ -48,8 +48,8 @@ namespace DotRecast.Detour
 
             InFlag f = InFlag.Unknown;
             bool FirstPoint = true;
-            Vector3 ip = new Vector3();
-            Vector3 iq = new Vector3();
+            Vector3 ip = new();
+            Vector3 iq = new();
 
             do
             {

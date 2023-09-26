@@ -5,9 +5,9 @@ namespace DotRecast.Detour.TileCache.Io.Compress
 {
     public class DtTileCacheCompressorFactory : IDtTileCacheCompressorFactory
     {
-        public static readonly DtTileCacheCompressorFactory Shared = new DtTileCacheCompressorFactory();
+        public static readonly DtTileCacheCompressorFactory Shared = new();
 
-        private readonly Dictionary<int, IRcCompressor> _compressors = new Dictionary<int, IRcCompressor>();
+        private readonly Dictionary<int, IRcCompressor> _compressors = new();
 
         public bool TryAdd(int type, IRcCompressor compressor)
         {

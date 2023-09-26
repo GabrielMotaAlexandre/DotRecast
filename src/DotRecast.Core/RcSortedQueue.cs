@@ -57,7 +57,7 @@ namespace DotRecast.Core
         public T Peek()
         {
             Balance();
-            return _items[_items.Count - 1];
+            return _items[^1];
         }
 
         public T Dequeue()

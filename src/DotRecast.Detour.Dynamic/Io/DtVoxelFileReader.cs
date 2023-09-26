@@ -36,7 +36,7 @@ namespace DotRecast.Detour.Dynamic.Io
         public DtVoxelFile Read(BinaryReader stream)
         {
             RcByteBuffer buf = IOUtils.ToByteBuffer(stream);
-            DtVoxelFile file = new DtVoxelFile();
+            DtVoxelFile file = new();
             int magic = buf.GetInt();
             if (magic != DtVoxelFile.MAGIC)
             {
@@ -108,14 +108,18 @@ namespace DotRecast.Detour.Dynamic.Io
                 int width = buf.GetInt();
                 int depth = buf.GetInt();
                 int borderSize = buf.GetInt();
-                Vector3 boundsMin = new Vector3();
-                boundsMin.X = buf.GetFloat();
-                boundsMin.Y = buf.GetFloat();
-                boundsMin.Z = buf.GetFloat();
-                Vector3 boundsMax = new Vector3();
-                boundsMax.X = buf.GetFloat();
-                boundsMax.Y = buf.GetFloat();
-                boundsMax.Z = buf.GetFloat();
+                Vector3 boundsMin = new()
+                {
+                    X = buf.GetFloat(),
+                    Y = buf.GetFloat(),
+                    Z = buf.GetFloat()
+                };
+                Vector3 boundsMax = new()
+                {
+                    X = buf.GetFloat(),
+                    Y = buf.GetFloat(),
+                    Z = buf.GetFloat()
+                };
                 if (isExportedFromAstar)
                 {
                     // bounds are local
@@ -137,7 +141,7 @@ namespace DotRecast.Detour.Dynamic.Io
                     bytes = _compressor.Decompress(bytes);
                 }
 
-                RcByteBuffer data = new RcByteBuffer(bytes);
+                RcByteBuffer data = new(bytes);
                 data.Order(buf.Order());
                 file.AddTile(new DtVoxelTile(tileX, tileZ, width, depth, boundsMin, boundsMax, cellSize, cellHeight, borderSize, data));
                 buf.Position(position + voxelSize);

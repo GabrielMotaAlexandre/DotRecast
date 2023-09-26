@@ -49,7 +49,7 @@ public class TestNavmeshSampleTool : ISampleTool
     private Vector3 m_epos;
 
     private readonly DtQueryDefaultFilter m_filter;
-    private readonly Vector3 m_polyPickExt = new Vector3(2, 4, 2);
+    private readonly Vector3 m_polyPickExt = new(2, 4, 2);
 
     // for hit
     private Vector3 m_hitPos;
@@ -500,8 +500,9 @@ public class TestNavmeshSampleTool : ISampleTool
                                 RcSegmentVert s = segmentVerts[j];
                                 var v0 = s.vmin;
                                 var s3 = s.vmax;
+
                                 // Skip too distant segments.
-                                var distSqr = DtUtils.DistancePtSegSqr2D(m_spos, v0, s3, out var tseg);
+                                var distSqr = DtUtils.DistancePtSegSqr2D(m_spos, v0, s3, out _);
                                 if (distSqr > RcMath.Sqr(m_neighbourhoodRadius))
                                 {
                                     continue;
@@ -509,7 +510,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
                                 Vector3 delta = s3 - (s.vmin);
                                 Vector3 p0 = Vector3Extensions.Mad(s.vmin, delta, 0.5f);
-                                Vector3 norm = new Vector3(delta.Z, 0, -delta.X);
+                                Vector3 norm = new(delta.Z, 0, -delta.X);
                                 norm.Normalize();
                                 Vector3 p1 = Vector3Extensions.Mad(p0, norm, agentRadius * 0.5f);
                                 // Skip backfacing segments.
@@ -660,45 +661,45 @@ public class TestNavmeshSampleTool : ISampleTool
 
         if (_mode == RcTestNavmeshToolMode.PATHFIND_FOLLOW)
         {
-            _tool.FindFollowPath(navMesh, navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _enableRaycast,
+            RcTestNavMeshTool.FindFollowPath(navMesh, navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _enableRaycast,
                 ref m_polys, ref m_smoothPath);
         }
         else if (_mode == RcTestNavmeshToolMode.PATHFIND_STRAIGHT)
         {
-            _tool.FindStraightPath(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _enableRaycast,
+            RcTestNavMeshTool.FindStraightPath(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _enableRaycast,
                 ref m_polys, ref m_straightPath, _straightPathOption);
         }
         else if (_mode == RcTestNavmeshToolMode.PATHFIND_SLICED)
         {
             m_polys?.Clear();
             m_straightPath?.Clear();
-            m_pathFindStatus = _tool.InitSlicedFindPath(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _enableRaycast);
+            m_pathFindStatus = RcTestNavMeshTool.InitSlicedFindPath(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _enableRaycast);
         }
         else if (_mode == RcTestNavmeshToolMode.RAYCAST)
         {
-            _tool.Raycast(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter,
+            RcTestNavMeshTool.Raycast(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter,
                 ref m_polys, ref m_straightPath, ref m_hitPos, ref m_hitNormal, ref m_hitResult);
         }
         else if (_mode == RcTestNavmeshToolMode.DISTANCE_TO_WALL)
         {
-            _tool.FindDistanceToWall(navQuery, m_startRef, m_spos, 100.0f, m_filter, ref m_distanceToWall, ref m_hitPos, ref m_hitNormal);
+            RcTestNavMeshTool.FindDistanceToWall(navQuery, m_startRef, m_spos, 100.0f, m_filter, ref m_distanceToWall, ref m_hitPos, ref m_hitNormal);
         }
         else if (_mode == RcTestNavmeshToolMode.FIND_POLYS_IN_CIRCLE)
         {
-            _tool.FindPolysAroundCircle(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, ref m_polys, ref m_parent);
+            RcTestNavMeshTool.FindPolysAroundCircle(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, ref m_polys, ref m_parent);
         }
         else if (_mode == RcTestNavmeshToolMode.FIND_POLYS_IN_SHAPE)
         {
-            _tool.FindPolysAroundShape(navQuery, settings.agentHeight, m_startRef, m_endRef, m_spos, m_epos, m_filter, ref m_polys, ref m_parent, ref m_queryPoly);
+            RcTestNavMeshTool.FindPolysAroundShape(navQuery, settings.agentHeight, m_startRef, m_endRef, m_spos, m_epos, m_filter, ref m_polys, ref m_parent, ref m_queryPoly);
         }
         else if (_mode == RcTestNavmeshToolMode.FIND_LOCAL_NEIGHBOURHOOD)
         {
             m_neighbourhoodRadius = settings.agentRadius * 20.0f;
-            _tool.FindLocalNeighbourhood(navQuery, m_startRef, m_spos, m_neighbourhoodRadius, m_filter, ref m_polys, ref m_parent);
+            RcTestNavMeshTool.FindLocalNeighbourhood(navQuery, m_startRef, m_spos, m_neighbourhoodRadius, m_filter, ref m_polys, ref m_parent);
         }
         else if (_mode == RcTestNavmeshToolMode.RANDOM_POINTS_IN_CIRCLE)
         {
-            _tool.FindRandomPointAroundCircle(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _constrainByCircle, _randomPointCount, ref _randomPoints);
+            RcTestNavMeshTool.FindRandomPointAroundCircle(navQuery, m_startRef, m_endRef, m_spos, m_epos, m_filter, _constrainByCircle, _randomPointCount, ref _randomPoints);
         }
     }
 
@@ -711,7 +712,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
             if (m_pathFindStatus.InProgress())
             {
-                m_pathFindStatus = _tool.UpdateSlicedFindPath(navQuery, 1, m_endRef, m_spos, m_epos, ref m_polys, ref m_straightPath);
+                m_pathFindStatus = RcTestNavMeshTool.UpdateSlicedFindPath(navQuery, 1, m_endRef, m_spos, m_epos, ref m_polys, ref m_straightPath);
             }
         }
     }

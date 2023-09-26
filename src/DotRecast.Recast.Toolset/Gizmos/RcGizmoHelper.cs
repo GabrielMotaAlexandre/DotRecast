@@ -146,7 +146,7 @@ namespace DotRecast.Recast.Toolset.Gizmos
             int ti = GenerateCircleTriangles(segments, triangles, vi, 0, false);
             ti = GenerateRingTriangles(segments, 1, triangles, segments + 1, ti);
             int vertexCount = (segments + 1) * 4;
-            ti = GenerateCircleTriangles(segments, triangles, vertexCount - segments, ti, true);
+            _ = GenerateCircleTriangles(segments, triangles, vertexCount - segments, ti, true);
             return triangles;
         }
 

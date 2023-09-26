@@ -55,7 +55,7 @@ namespace DotRecast.Core
                 .AddAndGet(RcFrequency.Ticks - _timerStart.Value?[label.Name].Read() ?? 0);
         }
 
-        public void Warn(string message)
+        public static void Warn(string message)
         {
             Console.WriteLine(message);
         }

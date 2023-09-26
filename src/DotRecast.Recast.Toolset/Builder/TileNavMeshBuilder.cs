@@ -73,7 +73,7 @@ namespace DotRecast.Recast.Toolset.Builder
             return new NavMeshBuildResult(results, tileNavMesh);
         }
 
-        public List<RcBuilderResult> BuildRecastResult(IInputGeomProvider geom,
+        public static List<RcBuilderResult> BuildRecastResult(IInputGeomProvider geom,
             int tileSize,
             RcPartition partitionType,
             float cellSize, float cellHeight,
@@ -85,7 +85,7 @@ namespace DotRecast.Recast.Toolset.Builder
             bool filterLowHangingObstacles, bool filterLedgeSpans, bool filterWalkableLowHeightSpans)
 
         {
-            RcConfig cfg = new RcConfig(true, tileSize, tileSize,
+            RcConfig cfg = new(true, tileSize, tileSize,
                 RcConfig.CalcBorder(agentRadius, cellSize),
                 partitionType,
                 cellSize, cellHeight,
@@ -96,31 +96,33 @@ namespace DotRecast.Recast.Toolset.Builder
                 detailSampleDist, detailSampleMaxError,
                 filterLowHangingObstacles, filterLedgeSpans, filterWalkableLowHeightSpans,
                 SampleAreaModifications.SAMPLE_AREAMOD_WALKABLE, true);
-            RcBuilder rcBuilder = new RcBuilder();
+            RcBuilder rcBuilder = new();
             return rcBuilder.BuildTiles(geom, cfg, Task.Factory);
         }
 
         public DtNavMesh BuildNavMesh(IInputGeomProvider geom, List<DtMeshData> meshData, float cellSize, int tileSize, int vertsPerPoly)
         {
-            DtNavMeshParams navMeshParams = new DtNavMeshParams();
-            navMeshParams.orig = geom.GetMeshBoundsMin();
-            navMeshParams.tileWidth = tileSize * cellSize;
-            navMeshParams.tileHeight = tileSize * cellSize;
+            DtNavMeshParams navMeshParams = new()
+            {
+                orig = geom.GetMeshBoundsMin(),
+                tileWidth = tileSize * cellSize,
+                tileHeight = tileSize * cellSize,
 
-            // Snprintf(text, 64, "Tiles %d x %d", tw, th);
+                // Snprintf(text, 64, "Tiles %d x %d", tw, th);
 
-            navMeshParams.maxTiles = GetMaxTiles(geom, cellSize, tileSize);
-            navMeshParams.maxPolys = GetMaxPolysPerTile(geom, cellSize, tileSize);
-            DtNavMesh navMesh = new DtNavMesh(navMeshParams, vertsPerPoly);
+                maxTiles = GetMaxTiles(geom, cellSize, tileSize),
+                maxPolys = GetMaxPolysPerTile(geom, cellSize, tileSize)
+            };
+            DtNavMesh navMesh = new(navMeshParams, vertsPerPoly);
             meshData.ForEach(md => navMesh.AddTile(md, 0, 0));
             return navMesh;
         }
 
-        public List<DtMeshData> BuildMeshData(IInputGeomProvider geom, float cellSize, float cellHeight, float agentHeight,
+        public static List<DtMeshData> BuildMeshData(IInputGeomProvider geom, float cellSize, float cellHeight, float agentHeight,
             float agentRadius, float agentMaxClimb, IList<RcBuilderResult> results)
         {
             // Add tiles to nav mesh
-            List<DtMeshData> meshData = new List<DtMeshData>();
+            List<DtMeshData> meshData = new();
             foreach (RcBuilderResult result in results)
             {
                 int x = result.tileX;
@@ -141,19 +143,19 @@ namespace DotRecast.Recast.Toolset.Builder
         }
 
 
-        public int GetMaxTiles(IInputGeomProvider geom, float cellSize, int tileSize)
+        public static int GetMaxTiles(IInputGeomProvider geom, float cellSize, int tileSize)
         {
             int tileBits = GetTileBits(geom, cellSize, tileSize);
             return 1 << tileBits;
         }
 
-        public int GetMaxPolysPerTile(IInputGeomProvider geom, float cellSize, int tileSize)
+        public static int GetMaxPolysPerTile(IInputGeomProvider geom, float cellSize, int tileSize)
         {
             int polyBits = 22 - GetTileBits(geom, cellSize, tileSize);
             return 1 << polyBits;
         }
 
-        private int GetTileBits(IInputGeomProvider geom, float cellSize, int tileSize)
+        private static int GetTileBits(IInputGeomProvider geom, float cellSize, int tileSize)
         {
             RcCommons.CalcGridSize(geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), cellSize, out var gw, out var gh);
             int tw = (gw + tileSize - 1) / tileSize;
@@ -162,7 +164,7 @@ namespace DotRecast.Recast.Toolset.Builder
             return tileBits;
         }
 
-        public int[] GetTiles(DemoInputGeomProvider geom, float cellSize, int tileSize)
+        public static int[] GetTiles(DemoInputGeomProvider geom, float cellSize, int tileSize)
         {
             RcCommons.CalcGridSize(geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), cellSize, out var gw, out var gh);
             int tw = (gw + tileSize - 1) / tileSize;

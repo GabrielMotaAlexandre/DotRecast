@@ -41,13 +41,13 @@ namespace DotRecast.Recast.Toolset.Builder
         public static readonly int SAMPLE_POLYFLAGS_DISABLED = 0x10; // Disabled polygon
         public static readonly int SAMPLE_POLYFLAGS_ALL = 0xffff; // All abilities.
 
-        public static readonly RcAreaModification SAMPLE_AREAMOD_WALKABLE = new RcAreaModification(SAMPLE_POLYAREA_TYPE_WALKABLE);
-        public static readonly RcAreaModification SAMPLE_AREAMOD_GROUND = new RcAreaModification(SAMPLE_POLYAREA_TYPE_GROUND);
-        public static readonly RcAreaModification SAMPLE_AREAMOD_WATER = new RcAreaModification(SAMPLE_POLYAREA_TYPE_WATER);
-        public static readonly RcAreaModification SAMPLE_AREAMOD_ROAD = new RcAreaModification(SAMPLE_POLYAREA_TYPE_ROAD);
-        public static readonly RcAreaModification SAMPLE_AREAMOD_GRASS = new RcAreaModification(SAMPLE_POLYAREA_TYPE_GRASS);
-        public static readonly RcAreaModification SAMPLE_AREAMOD_DOOR = new RcAreaModification(SAMPLE_POLYAREA_TYPE_DOOR);
-        public static readonly RcAreaModification SAMPLE_AREAMOD_JUMP = new RcAreaModification(SAMPLE_POLYAREA_TYPE_JUMP);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_WALKABLE = new(SAMPLE_POLYAREA_TYPE_WALKABLE);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_GROUND = new(SAMPLE_POLYAREA_TYPE_GROUND);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_WATER = new(SAMPLE_POLYAREA_TYPE_WATER);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_ROAD = new(SAMPLE_POLYAREA_TYPE_ROAD);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_GRASS = new(SAMPLE_POLYAREA_TYPE_GRASS);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_DOOR = new(SAMPLE_POLYAREA_TYPE_DOOR);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_JUMP = new(SAMPLE_POLYAREA_TYPE_JUMP);
 
         public static readonly RcImmutableArray<RcAreaModification> Values = RcImmutableArray.Create(
             SAMPLE_AREAMOD_WALKABLE,

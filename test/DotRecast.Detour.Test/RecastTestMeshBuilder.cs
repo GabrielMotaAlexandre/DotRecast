@@ -60,7 +60,7 @@ public class RecastTestMeshBuilder
         int vertsPerPoly,
         float detailSampleDist, float detailSampleMaxError)
     {
-        RcConfig cfg = new RcConfig(
+        RcConfig cfg = new(
             partition,
             cellSize, cellHeight,
             agentMaxSlope, agentHeight, agentRadius, agentMaxClimb,
@@ -70,8 +70,8 @@ public class RecastTestMeshBuilder
             detailSampleDist, detailSampleMaxError,
             true, true, true,
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilderConfig bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax());
-        RcBuilder rcBuilder = new RcBuilder();
+        RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax());
+        RcBuilder rcBuilder = new();
         RcBuilderResult rcResult = rcBuilder.Build(geom, bcfg);
         RcPolyMesh m_pmesh = rcResult.GetMesh();
         for (int i = 0; i < m_pmesh.npolys; ++i)
@@ -80,29 +80,31 @@ public class RecastTestMeshBuilder
         }
 
         RcPolyMeshDetail m_dmesh = rcResult.GetMeshDetail();
-        DtNavMeshCreateParams option = new DtNavMeshCreateParams();
-        option.verts = m_pmesh.verts;
-        option.vertCount = m_pmesh.nverts;
-        option.polys = m_pmesh.polys;
-        option.polyAreas = m_pmesh.areas;
-        option.polyFlags = m_pmesh.flags;
-        option.polyCount = m_pmesh.npolys;
-        option.nvp = m_pmesh.nvp;
-        option.detailMeshes = m_dmesh.meshes;
-        option.detailVerts = m_dmesh.verts;
-        option.detailVertsCount = m_dmesh.nverts;
-        option.detailTris = m_dmesh.tris;
-        option.detailTriCount = m_dmesh.ntris;
-        option.walkableHeight = agentHeight;
-        option.walkableRadius = agentRadius;
-        option.walkableClimb = agentMaxClimb;
-        option.bmin = m_pmesh.bmin;
-        option.bmax = m_pmesh.bmax;
-        option.cs = cellSize;
-        option.ch = cellHeight;
-        option.buildBvTree = true;
+        DtNavMeshCreateParams option = new()
+        {
+            verts = m_pmesh.verts,
+            vertCount = m_pmesh.nverts,
+            polys = m_pmesh.polys,
+            polyAreas = m_pmesh.areas,
+            polyFlags = m_pmesh.flags,
+            polyCount = m_pmesh.npolys,
+            nvp = m_pmesh.nvp,
+            detailMeshes = m_dmesh.meshes,
+            detailVerts = m_dmesh.verts,
+            detailVertsCount = m_dmesh.nverts,
+            detailTris = m_dmesh.tris,
+            detailTriCount = m_dmesh.ntris,
+            walkableHeight = agentHeight,
+            walkableRadius = agentRadius,
+            walkableClimb = agentMaxClimb,
+            bmin = m_pmesh.bmin,
+            bmax = m_pmesh.bmax,
+            cs = cellSize,
+            ch = cellHeight,
+            buildBvTree = true,
 
-        option.offMeshConVerts = new float[6];
+            offMeshConVerts = new float[6]
+        };
         option.offMeshConVerts[0] = 0.1f;
         option.offMeshConVerts[1] = 0.2f;
         option.offMeshConVerts[2] = 0.3f;

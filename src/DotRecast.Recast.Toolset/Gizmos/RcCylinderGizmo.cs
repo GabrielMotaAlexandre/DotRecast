@@ -19,7 +19,7 @@ namespace DotRecast.Recast.Toolset.Gizmos
                 0.5f * (start.X + end.X), 0.5f * (start.Y + end.Y),
                 0.5f * (start.Z + end.Z)
             );
-            Vector3 axis = new Vector3(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
+            Vector3 axis = new(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             Vector3[] normals = new Vector3[3];
             normals[1] = new Vector3(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             Vector3Extensions.Normalize(ref normals[1]);
@@ -28,13 +28,13 @@ namespace DotRecast.Recast.Toolset.Gizmos
             Vector3Extensions.Cross(ref normals[2], normals[0], normals[1]);
             Vector3Extensions.Normalize(ref normals[2]);
             triangles = GenerateCylindricalTriangles();
-            Vector3 trX = new Vector3(normals[0].X, normals[1].X, normals[2].X);
-            Vector3 trY = new Vector3(normals[0].Y, normals[1].Y, normals[2].Y);
-            Vector3 trZ = new Vector3(normals[0].Z, normals[1].Z, normals[2].Z);
+            Vector3 trX = new(normals[0].X, normals[1].X, normals[2].X);
+            Vector3 trY = new(normals[0].Y, normals[1].Y, normals[2].Y);
+            Vector3 trZ = new(normals[0].Z, normals[1].Z, normals[2].Z);
             vertices = GenerateCylindricalVertices();
             float halfLength = 0.5f * axis.Length();
             gradient = new float[vertices.Length / 3];
-            Vector3 v = new Vector3();
+            Vector3 v = new();
             for (int i = 0; i < vertices.Length; i += 3)
             {
                 float offset = (i >= vertices.Length / 2) ? -halfLength : halfLength;
@@ -59,15 +59,15 @@ namespace DotRecast.Recast.Toolset.Gizmos
             }
         }
 
-        private Vector3 GetSideVector(Vector3 axis)
+        private static Vector3 GetSideVector(Vector3 axis)
         {
-            Vector3 side = new Vector3(1, 0, 0);
+            Vector3 side = new(1, 0, 0);
             if (axis.X > 0.8)
             {
                 side = new Vector3(0, 0, 1);
             }
 
-            Vector3 forward = new Vector3();
+            Vector3 forward = new();
             Vector3Extensions.Cross(ref forward, side, axis);
             Vector3Extensions.Cross(ref side, axis, forward);
             Vector3Extensions.Normalize(ref side);

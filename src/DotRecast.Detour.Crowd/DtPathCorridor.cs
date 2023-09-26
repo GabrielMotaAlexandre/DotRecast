@@ -69,8 +69,14 @@ namespace DotRecast.Detour.Crowd
      */
     public class DtPathCorridor
     {
-        private Vector3 m_pos = new Vector3();
-        private Vector3 m_target = new Vector3();
+        private Vector3 m_pos;
+        /**
+* Gets the current position within the corridor. (In the first polygon.)
+*
+* @return The current position within the corridor.
+*/
+        public Vector3 Pos => m_pos;
+        private Vector3 m_target = new();
         private List<long> m_path;
 
 
@@ -233,7 +239,7 @@ namespace DotRecast.Detour.Crowd
             }
 
             var res = new List<long>();
-            navquery.InitSlicedFindPath(m_path[0], m_path[m_path.Count - 1], m_pos, m_target, filter, 0);
+            navquery.InitSlicedFindPath(m_path[0], m_path[^1], m_pos, m_target, filter, 0);
             navquery.UpdateSlicedFindPath(maxIterations, out var _);
             var status = navquery.FinalizeSlicedFindPathPartial(m_path, ref res);
 
@@ -347,7 +353,7 @@ namespace DotRecast.Detour.Crowd
         {
             // Move along navmesh and update new position.
             var visited = new List<long>();
-            var status = navquery.MoveAlongSurface(m_path[m_path.Count - 1], m_target, npos, filter, out var result, ref visited);
+            var status = navquery.MoveAlongSurface(m_path[^1], m_target, npos, filter, out var result, ref visited);
             if (status.Succeeded())
             {
                 m_path = PathUtils.MergeCorridorEndMoved(m_path, visited);
@@ -385,7 +391,7 @@ namespace DotRecast.Detour.Crowd
             m_pos = safePos;
             if (m_path.Count < 3 && m_path.Count > 0)
             {
-                long p = m_path[m_path.Count - 1];
+                long p = m_path[^1];
                 m_path.Clear();
                 m_path.Add(safeRef);
                 m_path.Add(0L);
@@ -427,7 +433,7 @@ namespace DotRecast.Detour.Crowd
             }
 
             // Clamp target pos to last poly
-            navquery.ClosestPointOnPolyBoundary(m_path[m_path.Count - 1], m_target, out m_target);
+            navquery.ClosestPointOnPolyBoundary(m_path[^1], m_target, out m_target);
             return true;
         }
 
@@ -460,16 +466,6 @@ namespace DotRecast.Detour.Crowd
         }
 
         /**
-     * Gets the current position within the corridor. (In the first polygon.)
-     *
-     * @return The current position within the corridor.
-     */
-        public Vector3 GetPos()
-        {
-            return m_pos;
-        }
-
-        /**
      * Gets the current target within the corridor. (In the last polygon.)
      *
      * @return The current target within the corridor.
@@ -496,7 +492,7 @@ namespace DotRecast.Detour.Crowd
      */
         public long GetLastPoly()
         {
-            return 0 == m_path.Count ? 0 : m_path[m_path.Count - 1];
+            return 0 == m_path.Count ? 0 : m_path[^1];
         }
 
         /**

@@ -4,8 +4,7 @@ namespace DotRecast.Core
 {
     public struct RcMatrix4x4f
     {
-        private static readonly RcMatrix4x4f _identity = new RcMatrix4x4f
-        (
+        private static readonly RcMatrix4x4f _identity = new        (
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
@@ -126,23 +125,25 @@ namespace DotRecast.Core
             float m43 = left.M13 * right.M41 + left.M23 * right.M42 + left.M33 * right.M43 + left.M43 * right.M44;
             float m44 = left.M14 * right.M41 + left.M24 * right.M42 + left.M34 * right.M43 + left.M44 * right.M44;
 
-            RcMatrix4x4f dest = new RcMatrix4x4f();
-            dest.M11 = m11;
-            dest.M12 = m12;
-            dest.M13 = m13;
-            dest.M14 = m14;
-            dest.M21 = m21;
-            dest.M22 = m22;
-            dest.M23 = m23;
-            dest.M24 = m24;
-            dest.M31 = m31;
-            dest.M32 = m32;
-            dest.M33 = m33;
-            dest.M34 = m34;
-            dest.M41 = m41;
-            dest.M42 = m42;
-            dest.M43 = m43;
-            dest.M44 = m44;
+            RcMatrix4x4f dest = new()
+            {
+                M11 = m11,
+                M12 = m12,
+                M13 = m13,
+                M14 = m14,
+                M21 = m21,
+                M22 = m22,
+                M23 = m23,
+                M24 = m24,
+                M31 = m31,
+                M32 = m32,
+                M33 = m33,
+                M34 = m34,
+                M41 = m41,
+                M42 = m42,
+                M43 = m43,
+                M44 = m44
+            };
 
             return dest;
         }

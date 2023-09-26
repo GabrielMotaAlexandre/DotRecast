@@ -9,11 +9,11 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     public class JumpLinkBuilder
     {
-        private readonly EdgeExtractor edgeExtractor = new EdgeExtractor();
-        private readonly EdgeSamplerFactory edgeSamplerFactory = new EdgeSamplerFactory();
+        private readonly EdgeExtractor edgeExtractor = new();
+        private readonly EdgeSamplerFactory edgeSamplerFactory = new();
         private readonly IGroundSampler groundSampler = new NavMeshGroundSampler();
-        private readonly TrajectorySampler trajectorySampler = new TrajectorySampler();
-        private readonly JumpSegmentBuilder jumpSegmentBuilder = new JumpSegmentBuilder();
+        private readonly TrajectorySampler trajectorySampler = new();
+        private readonly JumpSegmentBuilder jumpSegmentBuilder = new();
 
         private readonly List<JumpEdge[]> edges;
         private readonly IList<RcBuilderResult> results;
@@ -21,12 +21,12 @@ namespace DotRecast.Detour.Extras.Jumplink
         public JumpLinkBuilder(IList<RcBuilderResult> results)
         {
             this.results = results;
-            edges = results.Select(r => edgeExtractor.ExtractEdges(r.GetMesh())).ToList();
+            edges = results.Select(r => EdgeExtractor.ExtractEdges(r.GetMesh())).ToList();
         }
 
         public List<JumpLink> Build(JumpLinkBuilderConfig acfg, JumpLinkType type)
         {
-            List<JumpLink> links = new List<JumpLink>();
+            List<JumpLink> links = new();
             for (int tile = 0; tile < results.Count; tile++)
             {
                 JumpEdge[] edges = this.edges[tile];
@@ -49,9 +49,9 @@ namespace DotRecast.Detour.Extras.Jumplink
         }
 
 
-        private List<JumpLink> BuildJumpLinks(JumpLinkBuilderConfig acfg, EdgeSampler es, JumpSegment[] jumpSegments)
+        private static List<JumpLink> BuildJumpLinks(JumpLinkBuilderConfig acfg, EdgeSampler es, JumpSegment[] jumpSegments)
         {
-            List<JumpLink> links = new List<JumpLink>();
+            List<JumpLink> links = new();
             foreach (JumpSegment js in jumpSegments)
             {
                 Vector3 sp = es.start.gsamples[js.startSample].p;
@@ -62,7 +62,7 @@ namespace DotRecast.Detour.Extras.Jumplink
                 float d = Math.Min(Vector3Extensions.Dist2DSqr(sp, sq), Vector3Extensions.Dist2DSqr(ep, eq));
                 if (d >= 4 * acfg.agentRadius * acfg.agentRadius)
                 {
-                    JumpLink link = new JumpLink();
+                    JumpLink link = new();
                     links.Add(link);
                     link.startSamples = RcArrayUtils.CopyOf(es.start.gsamples, js.startSample, js.samples);
                     link.endSamples = RcArrayUtils.CopyOf(end.gsamples, js.startSample, js.samples);

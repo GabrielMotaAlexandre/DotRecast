@@ -15,7 +15,7 @@ public class ImFilePicker
 {
     private static readonly ILogger Logger = Log.ForContext<RecastDemo>();
 
-    private static readonly Dictionary<string, ImFilePicker> _filePickers = new Dictionary<string, ImFilePicker>();
+    private static readonly Dictionary<string, ImFilePicker> _filePickers = new();
 
     public string RootFolder;
     public string CurrentFolder;
@@ -41,10 +41,12 @@ public class ImFilePicker
 
         if (!_filePickers.TryGetValue(pickerName, out ImFilePicker fp))
         {
-            fp = new ImFilePicker();
-            fp.RootFolder = startingPath;
-            fp.CurrentFolder = startingPath;
-            fp.OnlyAllowFolders = onlyAllowFolders;
+            fp = new ImFilePicker
+            {
+                RootFolder = startingPath,
+                CurrentFolder = startingPath,
+                OnlyAllowFolders = onlyAllowFolders
+            };
 
             if (searchFilter != null)
             {
@@ -143,7 +145,7 @@ public class ImFilePicker
         return result;
     }
 
-    bool TryGetFileInfo(string fileName, out FileInfo realFile)
+    static bool TryGetFileInfo(string fileName, out FileInfo realFile)
     {
         try
         {

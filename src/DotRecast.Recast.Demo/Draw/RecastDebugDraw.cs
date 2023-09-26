@@ -53,7 +53,7 @@ public class RecastDebugDraw : DebugDraw
         Begin(DebugDrawPrimitives.TRIS);
         for (int i = 0; i < tris.Length; i += 3)
         {
-            Vector3 norm = new Vector3(normals[i], normals[i + 1], normals[i + 2]);
+            Vector3 norm = new(normals[i], normals[i + 1], normals[i + 2]);
 
             int color;
             char a = (char)(220 * (2 + norm.X + norm.Y) / 4);
@@ -66,11 +66,11 @@ public class RecastDebugDraw : DebugDraw
                 color = DuRGBA(a, a, a, 255);
             }
 
-            Vector3 va = new Vector3(verts[tris[i] * 3], verts[tris[i] * 3 + 1], verts[tris[i] * 3 + 2]);
-            Vector3 vb = new Vector3(verts[tris[i + 1] * 3], verts[tris[i + 1] * 3 + 1], verts[tris[i + 1] * 3 + 2]);
-            Vector3 vc = new Vector3(verts[tris[i + 2] * 3], verts[tris[i + 2] * 3 + 1], verts[tris[i + 2] * 3 + 2]);
+            Vector3 va = new(verts[tris[i] * 3], verts[tris[i] * 3 + 1], verts[tris[i] * 3 + 2]);
+            Vector3 vb = new(verts[tris[i + 1] * 3], verts[tris[i + 1] * 3 + 1], verts[tris[i + 1] * 3 + 2]);
+            Vector3 vc = new(verts[tris[i + 2] * 3], verts[tris[i + 2] * 3 + 1], verts[tris[i + 2] * 3 + 2]);
 
-            int ax = 0, ay = 0;
+            int ax = 0;
             if (Math.Abs(norm.Y) > Math.Abs(norm[ax]))
             {
                 ax = 1;
@@ -82,8 +82,7 @@ public class RecastDebugDraw : DebugDraw
             }
 
             ax = (1 << ax) & 3; // +1 mod 3
-            ay = (1 << ax) & 3; // +1 mod 3
-
+            int ay = (1 << ax) & 3;
             uva.x = va[ax] * texScale;
             uva.y = va[ay] * texScale;
             uvb.x = vb[ax] * texScale;
@@ -116,7 +115,7 @@ public class RecastDebugDraw : DebugDraw
 
     private void DrawMeshTile(DtNavMesh mesh, DtNavMeshQuery query, DtMeshTile tile, int flags)
     {
-        long @base = mesh.GetPolyRefBase(tile);
+        long @base = DtNavMesh.GetPolyRefBase(tile);
 
         int tileNum = DtNavMesh.DecodePolyIdTile(@base);
         int tileColor = DuIntToCol(tileNum, 128);
@@ -188,11 +187,11 @@ public class RecastDebugDraw : DebugDraw
                 }
 
                 DtOffMeshConnection con = tile.data.offMeshCons[i - tile.data.header.offMeshBase];
-                Vector3 va = new Vector3(
+                Vector3 va = new(
                     tile.data.verts[p.verts[0] * 3], tile.data.verts[p.verts[0] * 3 + 1],
                     tile.data.verts[p.verts[0] * 3 + 2]
                 );
-                Vector3 vb = new Vector3(
+                Vector3 vb = new(
                     tile.data.verts[p.verts[1] * 3], tile.data.verts[p.verts[1] * 3 + 1],
                     tile.data.verts[p.verts[1] * 3 + 2]
                 );
@@ -571,12 +570,14 @@ public class RecastDebugDraw : DebugDraw
         End();
     }
 
-    private Vector3 GetContourCenter(RcContour cont, Vector3 orig, float cs, float ch)
+    private static Vector3 GetContourCenter(RcContour cont, Vector3 orig, float cs, float ch)
     {
-        Vector3 center = new Vector3();
-        center.X = 0;
-        center.Y = 0;
-        center.Z = 0;
+        Vector3 center = new()
+        {
+            X = 0,
+            Y = 0,
+            Z = 0
+        };
         if (cont.nverts == 0)
         {
             return center;
@@ -600,7 +601,7 @@ public class RecastDebugDraw : DebugDraw
         return center;
     }
 
-    private RcContour FindContourFromSet(RcContourSet cset, int reg)
+    private static RcContour FindContourFromSet(RcContourSet cset, int reg)
     {
         for (int i = 0; i < cset.conts.Count; ++i)
         {
@@ -1258,7 +1259,7 @@ public class RecastDebugDraw : DebugDraw
                 continue;
             }
 
-            long @base = mesh.GetPolyRefBase(tile);
+            long @base = DtNavMesh.GetPolyRefBase(tile);
 
             for (int j = 0; j < tile.data.header.polyCount; ++j)
             {

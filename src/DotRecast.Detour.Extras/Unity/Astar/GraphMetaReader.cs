@@ -24,10 +24,10 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     public class GraphMetaReader
     {
-        public GraphMeta Read(ZipArchive file, string filename)
+        public static GraphMeta Read(ZipArchive file, string filename)
         {
             ZipArchiveEntry entry = file.GetEntry(filename);
-            using StreamReader reader = new StreamReader(entry.Open());
+            using StreamReader reader = new(entry.Open());
 
             // for unity3d
             var json = reader.ReadToEnd();

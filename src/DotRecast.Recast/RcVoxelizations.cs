@@ -30,7 +30,7 @@ namespace DotRecast.Recast
             RcConfig cfg = builderCfg.cfg;
 
             // Allocate voxel heightfield where we rasterize our input data to.
-            RcHeightfield solid = new RcHeightfield(builderCfg.width, builderCfg.height, builderCfg.bmin, builderCfg.bmax, cfg.Cs, cfg.Ch, cfg.BorderSize);
+            RcHeightfield solid = new(builderCfg.width, builderCfg.height, builderCfg.bmin, builderCfg.bmax, cfg.Cs, cfg.Ch, cfg.BorderSize);
 
             // Allocate array that can hold triangle area types.
             // If you have multiple meshes you need to process, allocate

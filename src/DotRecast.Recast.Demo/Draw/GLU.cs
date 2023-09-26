@@ -160,23 +160,17 @@ public static class GLU
         /* choose pivot - or die */
         if (Math.Abs(r3[0]) > Math.Abs(r2[0]))
         {
-            float[] r = r2;
-            r2 = r3;
-            r3 = r;
+            (r3, r2) = (r2, r3);
         }
 
         if (Math.Abs(r2[0]) > Math.Abs(r1[0]))
         {
-            float[] r = r2;
-            r2 = r1;
-            r1 = r;
+            (r1, r2) = (r2, r1);
         }
 
         if (Math.Abs(r1[0]) > Math.Abs(r0[0]))
         {
-            float[] r = r1;
-            r1 = r0;
-            r0 = r;
+            (r0, r1) = (r1, r0);
         }
 
         if (0.0 == r0[0])
@@ -232,16 +226,12 @@ public static class GLU
         /* choose pivot - or die */
         if (Math.Abs(r3[1]) > Math.Abs(r2[1]))
         {
-            float[] r = r2;
-            r2 = r3;
-            r3 = r;
+            (r3, r2) = (r2, r3);
         }
 
         if (Math.Abs(r2[1]) > Math.Abs(r1[1]))
         {
-            float[] r = r2;
-            r2 = r1;
-            r1 = r;
+            (r1, r2) = (r2, r1);
         }
 
         if (0.0 == r1[1])
@@ -284,9 +274,7 @@ public static class GLU
         /* choose pivot - or die */
         if (Math.Abs(r3[2]) > Math.Abs(r2[2]))
         {
-            float[] r = r2;
-            r2 = r3;
-            r3 = r;
+            (r3, r2) = (r2, r3);
         }
 
         if (0.0 == r2[2])

@@ -35,8 +35,8 @@ public class UnityAStarPathfindingImporterTest
     public void Test_v4_0_6()
     {
         DtNavMesh mesh = LoadNavMesh("graph.zip");
-        Vector3 startPos = new Vector3(8.200293f, 2.155071f, -26.176147f);
-        Vector3 endPos = new Vector3(11.971109f, 0.000000f, 8.663261f);
+        Vector3 startPos = new(8.200293f, 2.155071f, -26.176147f);
+        Vector3 endPos = new(11.971109f, 0.000000f, 8.663261f);
         var path = new List<long>();
         var status = FindPath(mesh, startPos, endPos, ref path);
         Assert.That(status, Is.EqualTo(DtStatus.DT_SUCCSESS));
@@ -48,8 +48,8 @@ public class UnityAStarPathfindingImporterTest
     public void Test_v4_1_16()
     {
         DtNavMesh mesh = LoadNavMesh("graph_v4_1_16.zip");
-        Vector3 startPos = new Vector3(22.93f, -2.37f, -5.11f);
-        Vector3 endPos = new Vector3(16.81f, -2.37f, 25.52f);
+        Vector3 startPos = new(22.93f, -2.37f, -5.11f);
+        Vector3 endPos = new(16.81f, -2.37f, 25.52f);
         var path = new List<long>();
         var status = FindPath(mesh, startPos, endPos, ref path);
         Assert.That(status.Succeeded(), Is.True);
@@ -61,7 +61,7 @@ public class UnityAStarPathfindingImporterTest
     public void TestBoundsTree()
     {
         DtNavMesh mesh = LoadNavMesh("test_boundstree.zip");
-        Vector3 position = new Vector3(387.52988f, 19.997f, 368.86282f);
+        Vector3 position = new(387.52988f, 19.997f, 368.86282f);
 
         mesh.CalcTileLoc(position, out var tileX, out var tileY);
         long tileRef = mesh.GetTileRefAt(tileX, tileY, 0);
@@ -80,33 +80,33 @@ public class UnityAStarPathfindingImporterTest
         Assert.That(bvResult.refs, Is.EqualTo(clearResult.refs));
     }
 
-    private DtNavMesh LoadNavMesh(string filename)
+    private static DtNavMesh LoadNavMesh(string filename)
     {
         var filepath = RcDirectory.SearchFile($"resources/{filename}");
         using var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         // Import the graphs
-        UnityAStarPathfindingImporter importer = new UnityAStarPathfindingImporter();
+        UnityAStarPathfindingImporter importer = new();
 
         DtNavMesh[] meshes = importer.Load(fs);
         return meshes[0];
     }
 
-    private DtStatus FindPath(DtNavMesh mesh, Vector3 startPos, Vector3 endPos, ref List<long> path)
+    private static DtStatus FindPath(DtNavMesh mesh, Vector3 startPos, Vector3 endPos, ref List<long> path)
     {
         // Perform a simple pathfinding
-        DtNavMeshQuery query = new DtNavMeshQuery(mesh);
+        DtNavMeshQuery query = new(mesh);
         IDtQueryFilter filter = new DtQueryDefaultFilter();
 
         var polys = GetNearestPolys(mesh, startPos, endPos);
         return query.FindPath(polys[0].refs, polys[1].refs, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
     }
 
-    private DtPolyPoint[] GetNearestPolys(DtNavMesh mesh, params Vector3[] positions)
+    private static DtPolyPoint[] GetNearestPolys(DtNavMesh mesh, params Vector3[] positions)
     {
-        DtNavMeshQuery query = new DtNavMeshQuery(mesh);
+        DtNavMeshQuery query = new(mesh);
         IDtQueryFilter filter = new DtQueryDefaultFilter();
-        Vector3 extents = new Vector3(0.1f, 0.1f, 0.1f);
+        Vector3 extents = new(0.1f, 0.1f, 0.1f);
 
         var results = new DtPolyPoint[positions.Length];
         for (int i = 0; i < results.Length; i++)
@@ -122,7 +122,7 @@ public class UnityAStarPathfindingImporterTest
         return results;
     }
 
-    private void SaveMesh(DtNavMesh mesh, string filePostfix)
+    private static void SaveMesh(DtNavMesh mesh, string filePostfix)
     {
         // Set the flag to RecastDemo work properly
         for (int i = 0; i < mesh.GetTileCount(); i++)
@@ -134,9 +134,10 @@ public class UnityAStarPathfindingImporterTest
         }
 
         // Save the mesh as recast file,
-        DtMeshSetWriter writer = new DtMeshSetWriter();
+        DtMeshSetWriter writer = new();
         string filename = $"all_tiles_navmesh_{filePostfix}.bin";
-        string filepath = Path.Combine("test-output", filename);
+
+        _ = Path.Combine("test-output", filename);
         using var fs = new FileStream(filename, FileMode.Create);
         using var bw = new BinaryWriter(fs);
         writer.Write(bw, mesh, RcByteOrder.LITTLE_ENDIAN, true);

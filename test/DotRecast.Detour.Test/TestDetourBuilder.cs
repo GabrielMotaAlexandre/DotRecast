@@ -23,10 +23,10 @@ namespace DotRecast.Detour.Test;
 
 public class TestDetourBuilder : DetourBuilder
 {
-    public DtMeshData Build(IInputGeomProvider geom, RcBuilderConfig rcConfig, float agentHeight, float agentRadius,
+    public static DtMeshData Build(IInputGeomProvider geom, RcBuilderConfig rcConfig, float agentHeight, float agentRadius,
         float agentMaxClimb, int x, int y, bool applyRecastDemoFlags)
     {
-        RcBuilder rcBuilder = new RcBuilder();
+        RcBuilder rcBuilder = new();
         RcBuilderResult rcResult = rcBuilder.Build(geom, rcConfig);
         RcPolyMesh pmesh = rcResult.GetMesh();
 
@@ -64,17 +64,19 @@ public class TestDetourBuilder : DetourBuilder
         return Build(option, x, y);
     }
 
-    public DtNavMeshCreateParams GetNavMeshCreateParams(RcConfig rcConfig, RcPolyMesh pmesh, RcPolyMeshDetail dmesh,
+    public static DtNavMeshCreateParams GetNavMeshCreateParams(RcConfig rcConfig, RcPolyMesh pmesh, RcPolyMeshDetail dmesh,
         float agentHeight, float agentRadius, float agentMaxClimb)
     {
-        DtNavMeshCreateParams option = new DtNavMeshCreateParams();
-        option.verts = pmesh.verts;
-        option.vertCount = pmesh.nverts;
-        option.polys = pmesh.polys;
-        option.polyAreas = pmesh.areas;
-        option.polyFlags = pmesh.flags;
-        option.polyCount = pmesh.npolys;
-        option.nvp = pmesh.nvp;
+        DtNavMeshCreateParams option = new()
+        {
+            verts = pmesh.verts,
+            vertCount = pmesh.nverts,
+            polys = pmesh.polys,
+            polyAreas = pmesh.areas,
+            polyFlags = pmesh.flags,
+            polyCount = pmesh.npolys,
+            nvp = pmesh.nvp
+        };
         if (dmesh != null)
         {
             option.detailMeshes = dmesh.meshes;

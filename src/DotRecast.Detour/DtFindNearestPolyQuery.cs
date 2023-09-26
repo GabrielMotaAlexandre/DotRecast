@@ -25,10 +25,11 @@ namespace DotRecast.Detour
             // Find nearest polygon amongst the nearby polygons.
             _query.ClosestPointOnPoly(refs, _center, out var closestPtPoly, out var posOverPoly);
 
+            Vector3 diff = _center - (closestPtPoly);
+
             // If a point is directly over a polygon and closer than
             // climb height, favor that instead of straight line nearest point.
-            float d = 0;
-            Vector3 diff = _center - (closestPtPoly);
+            float d;
             if (posOverPoly)
             {
                 d = Math.Abs(diff.Y) - tile.data.header.walkableClimb;

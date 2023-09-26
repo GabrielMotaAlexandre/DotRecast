@@ -22,8 +22,10 @@ namespace DotRecast.Recast.Toolset.Tools
         public RcCrowdTool()
         {
             _agCfg = new DtCrowdAgentConfig();
-            _agentDebug = new DtCrowdAgentDebugInfo();
-            _agentDebug.vod = new DtObstacleAvoidanceDebugData(2048);
+            _agentDebug = new DtCrowdAgentDebugInfo
+            {
+                vod = new DtObstacleAvoidanceDebugData(2048)
+            };
             _trails = new Dictionary<long, RcCrowdAgentTrail>();
         }
 
@@ -60,7 +62,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public void Setup(float agentRadius, DtNavMesh navMesh)
         {
-            DtCrowdConfig config = new DtCrowdConfig(agentRadius);
+            DtCrowdConfig config = new(agentRadius);
             crowd = new DtCrowd(config, navMesh, __ => new DtQueryDefaultFilter(
                 SampleAreaModifications.SAMPLE_POLYFLAGS_ALL,
                 SampleAreaModifications.SAMPLE_POLYFLAGS_DISABLED,
@@ -69,13 +71,14 @@ namespace DotRecast.Recast.Toolset.Tools
 
             // Setup local avoidance option to different qualities.
             // Use mostly default settings, copy from dtCrowd.
-            DtObstacleAvoidanceParams option = new DtObstacleAvoidanceParams(crowd.GetObstacleAvoidanceParams(0));
-
-            // Low (11)
-            option.velBias = 0.5f;
-            option.adaptiveDivs = 5;
-            option.adaptiveRings = 2;
-            option.adaptiveDepth = 1;
+            DtObstacleAvoidanceParams option = new(crowd.GetObstacleAvoidanceParams(0))
+            {
+                // Low (11)
+                velBias = 0.5f,
+                adaptiveDivs = 5,
+                adaptiveRings = 2,
+                adaptiveDepth = 1
+            };
             crowd.SetObstacleAvoidanceParams(0, option);
 
             // Medium (22)
@@ -110,20 +113,22 @@ namespace DotRecast.Recast.Toolset.Tools
 
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                DtCrowdAgentParams agOption = new DtCrowdAgentParams();
-                agOption.radius = ag.option.radius;
-                agOption.height = ag.option.height;
-                agOption.maxAcceleration = ag.option.maxAcceleration;
-                agOption.maxSpeed = ag.option.maxSpeed;
-                agOption.collisionQueryRange = ag.option.collisionQueryRange;
-                agOption.pathOptimizationRange = ag.option.pathOptimizationRange;
-                agOption.obstacleAvoidanceType = ag.option.obstacleAvoidanceType;
-                agOption.queryFilterType = ag.option.queryFilterType;
-                agOption.userData = ag.option.userData;
-                agOption.updateFlags = _agCfg.GetUpdateFlags();
+                DtCrowdAgentParams agOption = new()
+                {
+                    radius = ag.option.radius,
+                    height = ag.option.height,
+                    maxAcceleration = ag.option.maxAcceleration,
+                    maxSpeed = ag.option.maxSpeed,
+                    collisionQueryRange = ag.option.collisionQueryRange,
+                    pathOptimizationRange = ag.option.pathOptimizationRange,
+                    obstacleAvoidanceType = ag.option.obstacleAvoidanceType,
+                    queryFilterType = ag.option.queryFilterType,
+                    userData = ag.option.userData,
+                    updateFlags = _agCfg.GetUpdateFlags()
+                };
                 agOption.obstacleAvoidanceType = _agCfg.obstacleAvoidanceType;
                 agOption.separationWeight = _agCfg.separationWeight;
-                crowd.UpdateAgentParameters(ag, agOption);
+                DtCrowd.UpdateAgentParameters(ag, agOption);
             }
         }
 
@@ -178,7 +183,7 @@ namespace DotRecast.Recast.Toolset.Tools
             if (ag != null)
             {
                 if (_moveTargetRef != 0)
-                    crowd.RequestMoveTarget(ag, _moveTargetRef, _moveTargetPos);
+                    DtCrowd.RequestMoveTarget(ag, _moveTargetRef, _moveTargetPos);
 
                 // Init trail
                 if (!_trails.TryGetValue(ag.idx, out var trail))
@@ -200,11 +205,13 @@ namespace DotRecast.Recast.Toolset.Tools
 
         private DtCrowdAgentParams CreateAgentParams(float agentRadius, float agentHeight, float agentMaxAcceleration, float agentMaxSpeed)
         {
-            DtCrowdAgentParams ap = new DtCrowdAgentParams();
-            ap.radius = agentRadius;
-            ap.height = agentHeight;
-            ap.maxAcceleration = agentMaxAcceleration;
-            ap.maxSpeed = agentMaxSpeed;
+            DtCrowdAgentParams ap = new()
+            {
+                radius = agentRadius,
+                height = agentHeight,
+                maxAcceleration = agentMaxAcceleration,
+                maxSpeed = agentMaxSpeed
+            };
             ap.collisionQueryRange = ap.radius * 12.0f;
             ap.pathOptimizationRange = ap.radius * 30.0f;
             ap.updateFlags = _agCfg.GetUpdateFlags();
@@ -220,8 +227,8 @@ namespace DotRecast.Recast.Toolset.Tools
 
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                Vector3 bmin = new Vector3();
-                Vector3 bmax = new Vector3();
+                Vector3 bmin = new();
+                Vector3 bmax = new();
                 GetAgentBounds(ag, ref bmin, ref bmax);
                 if (Intersections.IsectSegAABB(s, p, bmin, bmax, out var tmin, out var tmax))
                 {
@@ -236,7 +243,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return isel;
         }
 
-        private void GetAgentBounds(DtCrowdAgent ag, ref Vector3 bmin, ref Vector3 bmax)
+        private static void GetAgentBounds(DtCrowdAgent ag, ref Vector3 bmin, ref Vector3 bmax)
         {
             Vector3 p = ag.npos;
             float r = ag.option.radius;
@@ -265,14 +272,14 @@ namespace DotRecast.Recast.Toolset.Tools
                 if (_agentDebug.agent != null)
                 {
                     Vector3 vel = CalcVel(_agentDebug.agent.npos, p, _agentDebug.agent.option.maxSpeed);
-                    crowd.RequestMoveVelocity(_agentDebug.agent, vel);
+                    DtCrowd.RequestMoveVelocity(_agentDebug.agent, vel);
                 }
                 else
                 {
                     foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
                     {
                         Vector3 vel = CalcVel(ag.npos, p, ag.option.maxSpeed);
-                        crowd.RequestMoveVelocity(ag, vel);
+                        DtCrowd.RequestMoveVelocity(ag, vel);
                     }
                 }
             }
@@ -281,19 +288,19 @@ namespace DotRecast.Recast.Toolset.Tools
                 navquery.FindNearestPoly(p, halfExtents, filter, out _moveTargetRef, out _moveTargetPos, out var _);
                 if (_agentDebug.agent != null)
                 {
-                    crowd.RequestMoveTarget(_agentDebug.agent, _moveTargetRef, _moveTargetPos);
+                    DtCrowd.RequestMoveTarget(_agentDebug.agent, _moveTargetRef, _moveTargetPos);
                 }
                 else
                 {
                     foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
                     {
-                        crowd.RequestMoveTarget(ag, _moveTargetRef, _moveTargetPos);
+                        DtCrowd.RequestMoveTarget(ag, _moveTargetRef, _moveTargetPos);
                     }
                 }
             }
         }
 
-        private Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
+        private static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
         {
             Vector3 vel = tgt - (pos);
             vel.Y = 0.0f;

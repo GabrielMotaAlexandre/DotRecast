@@ -181,7 +181,7 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
 
     public void OnSampleChanged()
     {
-        var geom = _sample.GetInputGeom();
+        _ = _sample.GetInputGeom();
         var settings = _sample.GetSettings();
         var navMesh = _sample.GetNavMesh();
 

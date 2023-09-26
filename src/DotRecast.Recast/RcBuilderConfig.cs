@@ -36,10 +36,10 @@ namespace DotRecast.Recast
         public readonly int height;
 
         /** The minimum bounds of the field's AABB. [(x, y, z)] [Units: wu] **/
-        public readonly Vector3 bmin = new Vector3();
+        public readonly Vector3 bmin = new();
 
         /** The maximum bounds of the field's AABB. [(x, y, z)] [Units: wu] **/
-        public readonly Vector3 bmax = new Vector3();
+        public readonly Vector3 bmax = new();
 
         public RcBuilderConfig(RcConfig cfg, Vector3 bmin, Vector3 bmax) : this(cfg, bmin, bmax, 0, 0)
         {

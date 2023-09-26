@@ -25,7 +25,7 @@ namespace DotRecast.Detour.TileCache.Io.Compress
 {
     public class DtTileCacheFastLzCompressor : IRcCompressor
     {
-        public static readonly DtTileCacheFastLzCompressor Shared = new DtTileCacheFastLzCompressor();
+        public static readonly DtTileCacheFastLzCompressor Shared = new();
 
         private DtTileCacheFastLzCompressor()
         {

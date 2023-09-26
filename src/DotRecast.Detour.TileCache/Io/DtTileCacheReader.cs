@@ -27,7 +27,7 @@ namespace DotRecast.Detour.TileCache.Io
 {
     public class DtTileCacheReader
     {
-        private readonly DtNavMeshParamsReader paramReader = new DtNavMeshParamsReader();
+        private readonly DtNavMeshParamsReader paramReader = new();
         private readonly IDtTileCacheCompressorFactory _compFactory;
 
         public DtTileCacheReader(IDtTileCacheCompressorFactory compFactory)
@@ -43,8 +43,10 @@ namespace DotRecast.Detour.TileCache.Io
 
         public DtTileCache Read(RcByteBuffer bb, int maxVertPerPoly, IDtTileCacheMeshProcess meshProcessor)
         {
-            DtTileCacheSetHeader header = new DtTileCacheSetHeader();
-            header.magic = bb.GetInt();
+            DtTileCacheSetHeader header = new()
+            {
+                magic = bb.GetInt()
+            };
             if (header.magic != DtTileCacheSetHeader.TILECACHESET_MAGIC)
             {
                 header.magic = IOUtils.SwapEndianness(header.magic);
@@ -67,12 +69,12 @@ namespace DotRecast.Detour.TileCache.Io
 
             bool cCompatibility = header.version == DtTileCacheSetHeader.TILECACHESET_VERSION;
             header.numTiles = bb.GetInt();
-            header.meshParams = paramReader.Read(bb);
+            header.meshParams = DtNavMeshParamsReader.Read(bb);
             header.cacheParams = ReadCacheParams(bb, cCompatibility);
-            DtNavMesh mesh = new DtNavMesh(header.meshParams, maxVertPerPoly);
+            DtNavMesh mesh = new(header.meshParams, maxVertPerPoly);
             IRcCompressor comp = _compFactory.Create(cCompatibility ? 0 : 1);
-            DtTileCacheStorageParams storageParams = new DtTileCacheStorageParams(bb.Order(), cCompatibility);
-            DtTileCache tc = new DtTileCache(header.cacheParams, storageParams, mesh, comp, meshProcessor);
+            DtTileCacheStorageParams storageParams = new(bb.Order(), cCompatibility);
+            DtTileCache tc = new(header.cacheParams, storageParams, mesh, comp, meshProcessor);
             // Read tiles.
             for (int i = 0; i < header.numTiles; ++i)
             {
@@ -94,9 +96,9 @@ namespace DotRecast.Detour.TileCache.Io
             return tc;
         }
 
-        private DtTileCacheParams ReadCacheParams(RcByteBuffer bb, bool cCompatibility)
+        private static DtTileCacheParams ReadCacheParams(RcByteBuffer bb, bool cCompatibility)
         {
-            DtTileCacheParams option = new DtTileCacheParams();
+            DtTileCacheParams option = new();
 
             option.orig.X = bb.GetFloat();
             option.orig.Y = bb.GetFloat();

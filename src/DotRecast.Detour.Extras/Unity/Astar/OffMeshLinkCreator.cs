@@ -23,7 +23,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     public class OffMeshLinkCreator
     {
-        public void Build(GraphMeshData graphData, NodeLink2[] links, int nodeOffset)
+        public static void Build(GraphMeshData graphData, NodeLink2[] links, int nodeOffset)
         {
             if (links.Length > 0)
             {
@@ -45,14 +45,16 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                         startTile.verts = RcArrayUtils.CopyOf(startTile.verts, startTile.verts.Length + 6);
                         startTile.header.polyCount++;
                         startTile.header.vertCount += 2;
-                        DtOffMeshConnection connection = new DtOffMeshConnection();
-                        connection.poly = poly;
-                        connection.pos = new float[]
+                        DtOffMeshConnection connection = new()
+                        {
+                            poly = poly,
+                            pos = new float[]
                         {
                             l.clamped1.X, l.clamped1.Y, l.clamped1.Z,
                             l.clamped2.X, l.clamped2.Y, l.clamped2.Z
+                        },
+                            rad = 0.1f
                         };
-                        connection.rad = 0.1f;
                         connection.side = startTile == endTile
                             ? 0xFF
                             : DtNavMeshBuilder.ClassifyOffMeshPoint(Vector3Extensions.Of(connection.pos, 3), startTile.header.bmin, startTile.header.bmax);
@@ -66,7 +68,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                             startTile.offMeshCons = RcArrayUtils.CopyOf(startTile.offMeshCons, startTile.offMeshCons.Length + 1);
                         }
 
-                        startTile.offMeshCons[startTile.offMeshCons.Length - 1] = connection;
+                        startTile.offMeshCons[^1] = connection;
                         startTile.header.offMeshConCount++;
                     }
                 }

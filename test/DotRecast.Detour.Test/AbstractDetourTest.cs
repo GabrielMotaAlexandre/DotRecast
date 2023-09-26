@@ -62,7 +62,7 @@ public abstract class AbstractDetourTest
         query = new DtNavMeshQuery(navmesh);
     }
 
-    protected DtNavMesh CreateNavMesh()
+    protected static DtNavMesh CreateNavMesh()
     {
         return new DtNavMesh(new RecastTestMeshBuilder().GetMeshData(), 6, 0);
     }

@@ -76,7 +76,6 @@ namespace DotRecast.Detour
             if (z > maxVal)
             {
                 axis = 2;
-                maxVal = z;
             }
 
             return axis;
@@ -87,7 +86,7 @@ namespace DotRecast.Detour
             int inum = imax - imin;
             int icur = curNode;
 
-            DtBVNode node = new DtBVNode();
+            DtBVNode node = new();
             nodes[curNode++] = node;
 
             if (inum == 1)
@@ -151,7 +150,7 @@ namespace DotRecast.Detour
             BVItem[] items = new BVItem[option.polyCount];
             for (int i = 0; i < option.polyCount; i++)
             {
-                BVItem it = new BVItem();
+                BVItem it = new();
                 items[i] = it;
                 it.i = i;
                 // Calc polygon bounds. Use detail meshes if available.
@@ -159,8 +158,8 @@ namespace DotRecast.Detour
                 {
                     int vb = option.detailMeshes[i * 4 + 0];
                     int ndv = option.detailMeshes[i * 4 + 1];
-                    Vector3 bmin = new Vector3();
-                    Vector3 bmax = new Vector3();
+                    Vector3 bmin = new();
+                    Vector3 bmax = new();
                     int dv = vb * 3;
                     bmin.Set(option.detailVerts, dv);
                     bmax.Set(option.detailVerts, dv);
@@ -310,10 +309,10 @@ namespace DotRecast.Detour
 
                 hmin -= option.walkableClimb;
                 hmax += option.walkableClimb;
-                Vector3 bmin = new Vector3();
-                Vector3 bmax = new Vector3();
-                bmin = option.bmin;
-                bmax = option.bmax;
+                _ = new Vector3();
+                _ = new Vector3();
+                Vector3 bmin = option.bmin;
+                Vector3 bmax = option.bmax;
                 bmin.Y = hmin;
                 bmax.Y = hmax;
 
@@ -374,7 +373,7 @@ namespace DotRecast.Detour
 
             // Find unique detail vertices.
             int uniqueDetailVertCount = 0;
-            int detailTriCount = 0;
+            int detailTriCount;
             if (option.detailMeshes != null)
             {
                 // Has detail mesh, count unique detail vertex count and use input
@@ -417,7 +416,7 @@ namespace DotRecast.Detour
             }
 
             int bvTreeSize = option.buildBvTree ? option.polyCount * 2 : 0;
-            DtMeshHeader header = new DtMeshHeader();
+            DtMeshHeader header = new();
             float[] navVerts = new float[3 * totVertCount];
             DtPoly[] navPolys = new DtPoly[totPolyCount];
             DtPolyDetail[] navDMeshes = new DtPolyDetail[option.polyCount];
@@ -482,7 +481,7 @@ namespace DotRecast.Detour
             int src = 0;
             for (int i = 0; i < option.polyCount; ++i)
             {
-                DtPoly p = new DtPoly(i, nvp);
+                DtPoly p = new(i, nvp);
                 navPolys[i] = p;
                 p.vertCount = 0;
                 p.flags = option.polyFlags[i];
@@ -527,7 +526,7 @@ namespace DotRecast.Detour
                 // Only store connections which start from this tile.
                 if (offMeshConClass[i * 2 + 0] == 0xff)
                 {
-                    DtPoly p = new DtPoly(offMeshPolyBase + n, nvp);
+                    DtPoly p = new(offMeshPolyBase + n, nvp);
                     navPolys[offMeshPolyBase + n] = p;
                     p.vertCount = 2;
                     p.verts[0] = offMeshVertsBase + n * 2;
@@ -549,7 +548,7 @@ namespace DotRecast.Detour
                 int vbase = 0;
                 for (int i = 0; i < option.polyCount; ++i)
                 {
-                    DtPolyDetail dtl = new DtPolyDetail();
+                    DtPolyDetail dtl = new();
                     navDMeshes[i] = dtl;
                     int vb = option.detailMeshes[i * 4 + 0];
                     int ndv = option.detailMeshes[i * 4 + 1];
@@ -576,7 +575,7 @@ namespace DotRecast.Detour
                 int tbase = 0;
                 for (int i = 0; i < option.polyCount; ++i)
                 {
-                    DtPolyDetail dtl = new DtPolyDetail();
+                    DtPolyDetail dtl = new();
                     navDMeshes[i] = dtl;
                     int nv = navPolys[i].vertCount;
                     dtl.vertBase = 0;
@@ -616,7 +615,7 @@ namespace DotRecast.Detour
                 // Only store connections which start from this tile.
                 if (offMeshConClass[i * 2 + 0] == 0xff)
                 {
-                    DtOffMeshConnection con = new DtOffMeshConnection();
+                    DtOffMeshConnection con = new();
                     offMeshCons[n] = con;
                     con.poly = (offMeshPolyBase + n);
                     // Copy connection end-points.
@@ -631,15 +630,17 @@ namespace DotRecast.Detour
                 }
             }
 
-            DtMeshData nmd = new DtMeshData();
-            nmd.header = header;
-            nmd.verts = navVerts;
-            nmd.polys = navPolys;
-            nmd.detailMeshes = navDMeshes;
-            nmd.detailVerts = navDVerts;
-            nmd.detailTris = navDTris;
-            nmd.bvTree = navBvtree;
-            nmd.offMeshCons = offMeshCons;
+            DtMeshData nmd = new()
+            {
+                header = header,
+                verts = navVerts,
+                polys = navPolys,
+                detailMeshes = navDMeshes,
+                detailVerts = navDVerts,
+                detailTris = navDTris,
+                bvTree = navBvtree,
+                offMeshCons = offMeshCons
+            };
             return nmd;
         }
     }

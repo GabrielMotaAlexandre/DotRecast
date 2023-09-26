@@ -125,11 +125,10 @@ namespace DotRecast.Recast
             {
                 if ((flags[i] & (1 << dir)) != 0)
                 {
-                    // Choose the edge corner
-                    bool isBorderVertex = false;
                     bool isAreaBorder = false;
                     int px = x;
-                    int py = GetCornerHeight(x, y, i, dir, chf, out isBorderVertex);
+                    // Choose the edge corner
+                    int py = GetCornerHeight(x, y, i, dir, chf, out bool isBorderVertex);
                     int pz = y;
                     switch (dir)
                     {
@@ -333,12 +332,8 @@ namespace DotRecast.Recast
                     cinc = pn - 1;
                     ci = (bi + cinc) % pn;
                     endi = ai;
-                    int temp = ax;
-                    ax = bx;
-                    bx = temp;
-                    temp = az;
-                    az = bz;
-                    bz = temp;
+                    (bx, ax) = (ax, bx);
+                    (bz, az) = (az, bz);
                 }
 
                 // Tessellate only outer edges or edges between areas.
@@ -694,7 +689,7 @@ namespace DotRecast.Recast
 
                 if (index == -1)
                 {
-                    ctx.Warn("mergeHoles: Failed to find merge points for");
+                    RcTelemetry.Warn("mergeHoles: Failed to find merge points for");
                     continue;
                 }
 
@@ -721,7 +716,7 @@ namespace DotRecast.Recast
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
-            RcContourSet cset = new RcContourSet();
+            RcContourSet cset = new();
 
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS);
 
@@ -786,8 +781,8 @@ namespace DotRecast.Recast
 
             ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_TRACE);
 
-            List<int> verts = new List<int>(256);
-            List<int> simplified = new List<int>(64);
+            List<int> verts = new(256);
+            List<int> simplified = new(64);
 
             for (int y = 0; y < h; ++y)
             {
@@ -823,7 +818,7 @@ namespace DotRecast.Recast
                         // Create contour.
                         if (simplified.Count / 4 >= 3)
                         {
-                            RcContour cont = new RcContour();
+                            RcContour cont = new();
                             cset.conts.Add(cont);
 
                             cont.nverts = simplified.Count / 4;

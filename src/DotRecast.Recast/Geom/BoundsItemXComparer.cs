@@ -4,7 +4,7 @@ namespace DotRecast.Recast.Geom
 {
     public class BoundsItemXComparer : IComparer<BoundsItem>
     {
-        public static readonly BoundsItemXComparer Shared = new BoundsItemXComparer();
+        public static readonly BoundsItemXComparer Shared = new();
 
         private BoundsItemXComparer()
         {

@@ -4,7 +4,7 @@ namespace DotRecast.Detour
 {
     public class DtQueryEmptyFilter : IDtQueryFilter
     {
-        public static readonly DtQueryEmptyFilter Shared = new DtQueryEmptyFilter();
+        public static readonly DtQueryEmptyFilter Shared = new();
 
         private DtQueryEmptyFilter()
         {

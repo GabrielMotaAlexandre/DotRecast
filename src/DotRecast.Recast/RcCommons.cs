@@ -123,7 +123,7 @@ namespace DotRecast.Recast
         {
             int[] areas = new int[nt];
             float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180.0f * Math.PI);
-            Vector3 norm = new Vector3();
+            Vector3 norm = new();
             for (int i = 0; i < nt; ++i)
             {
                 int tri = i * 3;
@@ -138,8 +138,8 @@ namespace DotRecast.Recast
 
         public static void CalcTriNormal(float[] verts, int v0, int v1, int v2, ref Vector3 norm)
         {
-            Vector3 e0 = new Vector3();
-            Vector3 e1 = new Vector3();
+            Vector3 e0 = new();
+            Vector3 e1 = new();
             Vector3Extensions.Sub(ref e0, verts, v1 * 3, v0 * 3);
             Vector3Extensions.Sub(ref e1, verts, v2 * 3, v0 * 3);
             Vector3Extensions.Cross(ref norm, e0, e1);
@@ -159,7 +159,7 @@ namespace DotRecast.Recast
         {
             float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180.0f * Math.PI);
 
-            Vector3 norm = new Vector3();
+            Vector3 norm = new();
 
             for (int i = 0; i < nt; ++i)
             {

@@ -27,10 +27,10 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     public class MetaReader
     {
-        public Meta Read(ZipArchive file, string filename)
+        public static Meta Read(ZipArchive file, string filename)
         {
             ZipArchiveEntry entry = file.GetEntry(filename);
-            using StreamReader reader = new StreamReader(entry.Open());
+            using StreamReader reader = new(entry.Open());
 
 
             var json = reader.ReadToEnd();

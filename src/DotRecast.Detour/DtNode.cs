@@ -34,7 +34,7 @@ namespace DotRecast.Detour
         public readonly int index;
 
         /** Position of the node. */
-        public Vector3 pos = new Vector3();
+        public Vector3 pos = new();
 
         /** Cost of reaching the given node. */
         public float cost;

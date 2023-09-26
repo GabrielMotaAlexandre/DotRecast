@@ -32,14 +32,14 @@ public class RandomPointTest : AbstractDetourTest
     [Test]
     public void TestRandom()
     {
-        FRand f = new FRand(1);
+        FRand f = new(1);
         IDtQueryFilter filter = new DtQueryDefaultFilter();
         for (int i = 0; i < 1000; i++)
         {
             var status = query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
             Assert.That(status.Succeeded(), Is.True);
 
-            status = navmesh.GetTileAndPolyByRef(randomRef, out var tile, out var poly);
+            _ = navmesh.GetTileAndPolyByRef(randomRef, out var tile, out var poly);
             float[] bmin = new float[2];
             float[] bmax = new float[2];
             for (int j = 0; j < poly.vertCount; j++)
@@ -61,7 +61,7 @@ public class RandomPointTest : AbstractDetourTest
     [Test]
     public void TestRandomAroundCircle()
     {
-        FRand f = new FRand(1);
+        FRand f = new(1);
         IDtQueryFilter filter = new DtQueryDefaultFilter();
         query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
         for (int i = 0; i < 1000; i++)
@@ -72,7 +72,7 @@ public class RandomPointTest : AbstractDetourTest
             randomRef = nextRandomRef;
             randomPt = nextRandomPt;
 
-            status = navmesh.GetTileAndPolyByRef(randomRef, out var tile, out var poly);
+            _ = navmesh.GetTileAndPolyByRef(randomRef, out var tile, out var poly);
             
             float[] bmin = new float[2];
             float[] bmax = new float[2];
@@ -95,7 +95,7 @@ public class RandomPointTest : AbstractDetourTest
     [Test]
     public void TestRandomWithinCircle()
     {
-        FRand f = new FRand(1);
+        FRand f = new(1);
         IDtQueryFilter filter = new DtQueryDefaultFilter();
         query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
         float radius = 5f;
@@ -115,7 +115,7 @@ public class RandomPointTest : AbstractDetourTest
     [Test]
     public void TestPerformance()
     {
-        FRand f = new FRand(1);
+        FRand f = new(1);
         IDtQueryFilter filter = new DtQueryDefaultFilter();
         query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
 

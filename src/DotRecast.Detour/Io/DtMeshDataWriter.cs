@@ -74,7 +74,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        private void WritePolys(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
+        private static void WritePolys(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
         {
             for (int i = 0; i < data.header.polyCount; i++)
             {
@@ -99,7 +99,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        private void WritePolyDetails(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
+        private static void WritePolyDetails(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
         {
             for (int i = 0; i < data.header.detailMeshCount; i++)
             {
@@ -114,7 +114,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        private void WriteDTris(BinaryWriter stream, DtMeshData data)
+        private static void WriteDTris(BinaryWriter stream, DtMeshData data)
         {
             for (int i = 0; i < data.header.detailTriCount * 4; i++)
             {
@@ -122,7 +122,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        private void WriteBVTree(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
+        private static void WriteBVTree(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
         {
             for (int i = 0; i < data.header.bvNodeCount; i++)
             {

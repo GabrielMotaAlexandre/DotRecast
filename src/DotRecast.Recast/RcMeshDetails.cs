@@ -28,8 +28,6 @@ namespace DotRecast.Recast
 {
     using static RcCommons;
 
-
-
     public static class RcMeshDetails
     {
         public const int MAX_VERTS = 127;
@@ -39,12 +37,6 @@ namespace DotRecast.Recast
         public const int RC_UNSET_HEIGHT = RcConstants.SPAN_MAX_HEIGHT;
         public const int EV_UNDEF = -1;
         public const int EV_HULL = -2;
-
-
-        private static float Vdot2(float[] a, float[] b)
-        {
-            return a[0] * b[0] + a[2] * b[2];
-        }
 
         private static float Vdot2(Vector3 a, Vector3 b)
         {
@@ -86,22 +78,10 @@ namespace DotRecast.Recast
             return dx * dx + dy * dy;
         }
 
-
-        private static float Vdist2(float[] p, float[] q)
-        {
-            return (float)Math.Sqrt(VdistSq2(p, q));
-        }
-
         private static float Vdist2(Vector3 p, Vector3 q)
         {
             return (float)Math.Sqrt(VdistSq2(p, q));
         }
-
-        private static float Vdist2(float[] p, Vector3 q)
-        {
-            return (float)Math.Sqrt(VdistSq2(p, q));
-        }
-
 
         private static float VdistSq2(float[] p, float[] verts, int q)
         {
@@ -115,12 +95,6 @@ namespace DotRecast.Recast
             float dx = verts[q + 0] - p.X;
             float dy = verts[q + 2] - p.Z;
             return dx * dx + dy * dy;
-        }
-
-
-        private static float Vdist2(float[] p, float[] verts, int q)
-        {
-            return (float)Math.Sqrt(VdistSq2(p, verts, q));
         }
 
         private static float Vdist2(Vector3 p, float[] verts, int q)
@@ -138,15 +112,6 @@ namespace DotRecast.Recast
             return u1 * v2 - v1 * u2;
         }
 
-        private static float Vcross2(float[] p1, float[] p2, float[] p3)
-        {
-            float u1 = p2[0] - p1[0];
-            float v1 = p2[2] - p1[2];
-            float u2 = p3[0] - p1[0];
-            float v2 = p3[2] - p1[2];
-            return u1 * v2 - v1 * u2;
-        }
-
         private static float Vcross2(Vector3 p1, Vector3 p2, Vector3 p3)
         {
             float u1 = p2.X - p1.X;
@@ -161,9 +126,9 @@ namespace DotRecast.Recast
         {
             const float EPS = 1e-6f;
             // Calculate the circle relative to p1, to avoid some precision issues.
-            Vector3 v1 = new Vector3();
-            Vector3 v2 = new Vector3();
-            Vector3 v3 = new Vector3();
+            Vector3 v1 = new();
+            Vector3 v2 = new();
+            Vector3 v3 = new();
             Vector3Extensions.Sub(ref v2, verts, p2, p1);
             Vector3Extensions.Sub(ref v3, verts, p3, p1);
 
@@ -188,9 +153,9 @@ namespace DotRecast.Recast
 
         private static float DistPtTri(Vector3 p, float[] verts, int a, int b, int c)
         {
-            Vector3 v0 = new Vector3();
-            Vector3 v1 = new Vector3();
-            Vector3 v2 = new Vector3();
+            Vector3 v0 = new();
+            Vector3 v1 = new();
+            Vector3 v2 = new();
             Vector3Extensions.Sub(ref v0, verts, c, a);
             Vector3Extensions.Sub(ref v1, verts, b, a);
             Vector3Extensions.Sub(ref v2, p, verts, a);
@@ -539,8 +504,8 @@ namespace DotRecast.Recast
 
             // Find best point on left of edge.
             int pt = npts;
-            Vector3 c = new Vector3();
-            RcAtomicFloat r = new RcAtomicFloat(-1f);
+            Vector3 c = new();
+            RcAtomicFloat r = new(-1f);
             for (int u = 0; u < npts; ++u)
             {
                 if (u == s || u == t)
@@ -634,7 +599,7 @@ namespace DotRecast.Recast
         {
             int nfaces = 0;
             int maxEdges = npts * 10;
-            List<int> edges = new List<int>(64);
+            List<int> edges = new(64);
             for (int i = 0, j = nhull - 1; i < nhull; j = i++)
             {
                 AddEdge(ctx, edges, maxEdges, hull[j], hull[i], EV_HULL, EV_UNDEF);
@@ -712,10 +677,10 @@ namespace DotRecast.Recast
                 {
                     Console.Error.WriteLine("Dangling! " + tris[t] + " " + tris[t + 1] + "  " + tris[t + 2]);
                     // ctx.Log(RC_LOG_WARNING, "delaunayHull: Removing dangling face %d [%d,%d,%d].", i, t.x,t.y,t.z);
-                    tris[t + 0] = tris[tris.Count - 4];
-                    tris[t + 1] = tris[tris.Count - 3];
-                    tris[t + 2] = tris[tris.Count - 2];
-                    tris[t + 3] = tris[tris.Count - 1];
+                    tris[t + 0] = tris[^4];
+                    tris[t + 1] = tris[^3];
+                    tris[t + 2] = tris[^2];
+                    tris[t + 3] = tris[^1];
                     tris.RemoveAt(tris.Count - 1);
                     tris.RemoveAt(tris.Count - 1);
                     tris.RemoveAt(tris.Count - 1);
@@ -837,14 +802,12 @@ namespace DotRecast.Recast
         static int BuildPolyDetail(RcTelemetry ctx, float[] @in, int nin, float sampleDist, float sampleMaxError,
             int heightSearchRadius, RcCompactHeightfield chf, RcHeightPatch hp, float[] verts, List<int> tris)
         {
-            List<int> samples = new List<int>(512);
-
-            int nverts = 0;
+            List<int> samples = new(512);
             float[] edge = new float[(MAX_VERTS_PER_EDGE + 1) * 3];
             int[] hull = new int[MAX_VERTS];
             int nhull = 0;
 
-            nverts = nin;
+            int nverts = nin;
 
             for (int i = 0; i < nin; ++i)
             {
@@ -875,9 +838,7 @@ namespace DotRecast.Recast
                     {
                         if (@in[vj + 2] > @in[vi + 2])
                         {
-                            int temp = vi;
-                            vi = vj;
-                            vj = temp;
+                            (vj, vi) = (vi, vj);
                             swapped = true;
                         }
                     }
@@ -885,9 +846,7 @@ namespace DotRecast.Recast
                     {
                         if (@in[vj + 0] > @in[vi + 0])
                         {
-                            int temp = vi;
-                            vi = vj;
-                            vj = temp;
+                            (vj, vi) = (vi, vj);
                             swapped = true;
                         }
                     }
@@ -1006,8 +965,8 @@ namespace DotRecast.Recast
             if (sampleDist > 0)
             {
                 // Create sample locations in a grid.
-                Vector3 bmin = new Vector3();
-                Vector3 bmax = new Vector3();
+                Vector3 bmin = new();
+                Vector3 bmax = new();
                 Vector3Extensions.Copy(ref bmin, @in, 0);
                 Vector3Extensions.Copy(ref bmax, @in, 0);
                 for (int i = 1; i < nin; ++i)
@@ -1025,10 +984,12 @@ namespace DotRecast.Recast
                 {
                     for (int x = x0; x < x1; ++x)
                     {
-                        Vector3 pt = new Vector3();
-                        pt.X = x * sampleDist;
-                        pt.Y = (bmax.Y + bmin.Y) * 0.5f;
-                        pt.Z = z * sampleDist;
+                        Vector3 pt = new()
+                        {
+                            X = x * sampleDist,
+                            Y = (bmax.Y + bmin.Y) * 0.5f,
+                            Z = z * sampleDist
+                        };
                         // Make sure the samples are not too close to the edges.
                         if (DistToPoly(nin, @in, pt) > -sampleDist / 2)
                         {
@@ -1054,7 +1015,7 @@ namespace DotRecast.Recast
                     }
 
                     // Find sample with most error.
-                    Vector3 bestpt = new Vector3();
+                    Vector3 bestpt = new();
                     float bestd = 0;
                     int besti = -1;
                     for (int i = 0; i < nsamples; ++i)
@@ -1065,12 +1026,14 @@ namespace DotRecast.Recast
                             continue; // skip added.
                         }
 
-                        Vector3 pt = new Vector3();
-                        // The sample location is jittered to get rid of some bad triangulations
-                        // which are cause by symmetrical data from the grid structure.
-                        pt.X = samples[s + 0] * sampleDist + GetJitterX(i) * cs * 0.1f;
-                        pt.Y = samples[s + 1] * chf.ch;
-                        pt.Z = samples[s + 2] * sampleDist + GetJitterY(i) * cs * 0.1f;
+                        Vector3 pt = new()
+                        {
+                            // The sample location is jittered to get rid of some bad triangulations
+                            // which are cause by symmetrical data from the grid structure.
+                            X = samples[s + 0] * sampleDist + GetJitterX(i) * cs * 0.1f,
+                            Y = samples[s + 1] * chf.ch,
+                            Z = samples[s + 2] * sampleDist + GetJitterY(i) * cs * 0.1f
+                        };
                         float d = DistToTriMesh(pt, verts, nverts, tris, tris.Count / 4);
                         if (d < 0)
                         {
@@ -1181,17 +1144,17 @@ namespace DotRecast.Recast
             {
                 if (array.Count < 3)
                 {
-                    ctx.Warn("Walk towards polygon center failed to reach center");
+                    RcTelemetry.Warn("Walk towards polygon center failed to reach center");
                     break;
                 }
 
-                ci = array[array.Count - 1];
+                ci = array[^1];
                 array.RemoveAt(array.Count - 1);
 
-                cy = array[array.Count - 1];
+                cy = array[^1];
                 array.RemoveAt(array.Count - 1);
 
-                cx = array[array.Count - 1];
+                cx = array[^1];
                 array.RemoveAt(array.Count - 1);
 
                 // Check if close to center of the polygon.
@@ -1203,20 +1166,14 @@ namespace DotRecast.Recast
                 // If we are already at the correct X-position, prefer direction
                 // directly towards the center in the Y-axis; otherwise prefer
                 // direction in the X-axis
-                int directDir;
-                if (cx == pcx)
-                {
-                    directDir = GetDirForOffset(0, pcy > cy ? 1 : -1);
-                }
-                else
-                {
-                    directDir = GetDirForOffset(pcx > cx ? 1 : -1, 0);
-                }
+                var aa = cx == pcx;
+                int x = aa ? 0 : pcx > cx ? 1 : -1;
+                int y = aa ? pcy > cy ? 1 : -1 : 0;
+
+                int directDir = GetDirForOffset(x, y);
 
                 // Push the direct dir last so we start with this on next iteration
-                int tmp = dirs[3];
-                dirs[3] = dirs[directDir];
-                dirs[directDir] = tmp;
+                (dirs[directDir], dirs[3]) = (dirs[3], dirs[directDir]);
 
                 RcCompactSpan cs = chf.spans[ci];
 
@@ -1250,9 +1207,7 @@ namespace DotRecast.Recast
                     array.Add(chf.cells[(newX + bs) + (newY + bs) * chf.width].index + GetCon(cs, dir));
                 }
 
-                tmp = dirs[3];
-                dirs[3] = dirs[directDir];
-                dirs[directDir] = tmp;
+                (dirs[directDir], dirs[3]) = (dirs[3], dirs[directDir]);
             }
 
             array.Clear();
@@ -1280,7 +1235,7 @@ namespace DotRecast.Recast
             // Note: Reads to the compact heightfield are offset by border size (bs)
             // since border size offset is already removed from the polymesh vertices.
 
-            List<int> queue = new List<int>(512);
+            List<int> queue = new(512);
             Array.Fill(hp.data, RC_UNSET_HEIGHT, 0, (hp.width * hp.height) - (0));
 
             bool empty = true;
@@ -1435,7 +1390,7 @@ namespace DotRecast.Recast
                 return null;
             }
 
-            RcPolyMeshDetail dmesh = new RcPolyMeshDetail();
+            RcPolyMeshDetail dmesh = new();
             int nvp = mesh.nvp;
             float cs = mesh.cs;
             float ch = mesh.ch;
@@ -1443,9 +1398,9 @@ namespace DotRecast.Recast
             int borderSize = mesh.borderSize;
             int heightSearchRadius = (int)Math.Max(1, Math.Ceiling(mesh.maxEdgeError));
 
-            List<int> tris = new List<int>(512);
+            List<int> tris = new(512);
             float[] verts = new float[256 * 3];
-            RcHeightPatch hp = new RcHeightPatch();
+            RcHeightPatch hp = new();
             int nPolyVerts = 0;
             int maxhw = 0, maxhh = 0;
 
@@ -1621,7 +1576,7 @@ namespace DotRecast.Recast
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_MERGE_POLYMESHDETAIL);
 
-            RcPolyMeshDetail mesh = new RcPolyMeshDetail();
+            RcPolyMeshDetail mesh = new();
 
             int maxVerts = 0;
             int maxTris = 0;

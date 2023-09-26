@@ -27,7 +27,7 @@ namespace DotRecast.Detour.Crowd
     public class DtPathQueue
     {
         private readonly DtCrowdConfig config;
-        private readonly LinkedList<DtPathQuery> queue = new LinkedList<DtPathQuery>();
+        private readonly LinkedList<DtPathQuery> queue = new();
 
         public DtPathQueue(DtCrowdConfig config)
         {
@@ -82,12 +82,14 @@ namespace DotRecast.Detour.Crowd
                 return null;
             }
 
-            DtPathQuery q = new DtPathQuery();
-            q.startPos = startPos;
-            q.startRef = startRef;
-            q.endPos = endPos;
-            q.endRef = endRef;
-            q.filter = filter;
+            DtPathQuery q = new()
+            {
+                startPos = startPos,
+                startRef = startRef,
+                endPos = endPos,
+                endRef = endRef,
+                filter = filter
+            };
             queue.AddLast(q);
             return q.result;
         }

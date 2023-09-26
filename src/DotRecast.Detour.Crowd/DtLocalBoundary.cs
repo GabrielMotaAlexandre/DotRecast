@@ -32,10 +32,10 @@ namespace DotRecast.Detour.Crowd
     {
         public const int MAX_LOCAL_SEGS = 8;
 
-        private Vector3 m_center = new Vector3();
-        private List<DtSegment> m_segs = new List<DtSegment>();
-        private List<long> m_polys = new List<long>();
-        private List<long> m_parents = new List<long>();
+        private Vector3 m_center = new();
+        private readonly List<DtSegment> m_segs = new();
+        private List<long> m_polys = new();
+        private List<long> m_parents = new();
 
         public DtLocalBoundary()
         {
@@ -52,7 +52,7 @@ namespace DotRecast.Detour.Crowd
         protected void AddSegment(float dist, RcSegmentVert s)
         {
             // Insert neighbour based on the distance.
-            DtSegment seg = new DtSegment();
+            DtSegment seg = new();
             seg.s[0] = s.vmin;
             seg.s[1] = s.vmax;
             //Array.Copy(s, seg.s, 6);
@@ -61,7 +61,7 @@ namespace DotRecast.Detour.Crowd
             {
                 m_segs.Add(seg);
             }
-            else if (dist >= m_segs[m_segs.Count - 1].d)
+            else if (dist >= m_segs[^1].d)
             {
                 if (m_segs.Count >= MAX_LOCAL_SEGS)
                 {
@@ -122,8 +122,9 @@ namespace DotRecast.Detour.Crowd
                             var s0 = s.vmin;
                             var s3 = s.vmax;
 
+
                             // Skip too distant segments.
-                            var distSqr = DtUtils.DistancePtSegSqr2D(pos, s0, s3, out var tseg);
+                            var distSqr = DtUtils.DistancePtSegSqr2D(pos, s0, s3, out _);
                             if (distSqr > RcMath.Sqr(collisionQueryRange))
                             {
                                 continue;

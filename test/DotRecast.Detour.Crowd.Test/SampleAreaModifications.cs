@@ -37,10 +37,10 @@ public class SampleAreaModifications
     public const int SAMPLE_POLYFLAGS_DISABLED = 0x10; // Disabled polygon
     public const int SAMPLE_POLYFLAGS_ALL = 0xffff; // All abilities.
 
-    public static readonly RcAreaModification SAMPLE_AREAMOD_GROUND = new RcAreaModification(SAMPLE_POLYAREA_TYPE_GROUND, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_WATER = new RcAreaModification(SAMPLE_POLYAREA_TYPE_WATER, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_ROAD = new RcAreaModification(SAMPLE_POLYAREA_TYPE_ROAD, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_GRASS = new RcAreaModification(SAMPLE_POLYAREA_TYPE_GRASS, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_DOOR = new RcAreaModification(SAMPLE_POLYAREA_TYPE_DOOR, SAMPLE_POLYAREA_TYPE_DOOR);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_JUMP = new RcAreaModification(SAMPLE_POLYAREA_TYPE_JUMP, SAMPLE_POLYAREA_TYPE_JUMP);
+    public static readonly RcAreaModification SAMPLE_AREAMOD_GROUND = new(SAMPLE_POLYAREA_TYPE_GROUND, SAMPLE_POLYAREA_TYPE_MASK);
+    public static readonly RcAreaModification SAMPLE_AREAMOD_WATER = new(SAMPLE_POLYAREA_TYPE_WATER, SAMPLE_POLYAREA_TYPE_MASK);
+    public static readonly RcAreaModification SAMPLE_AREAMOD_ROAD = new(SAMPLE_POLYAREA_TYPE_ROAD, SAMPLE_POLYAREA_TYPE_MASK);
+    public static readonly RcAreaModification SAMPLE_AREAMOD_GRASS = new(SAMPLE_POLYAREA_TYPE_GRASS, SAMPLE_POLYAREA_TYPE_MASK);
+    public static readonly RcAreaModification SAMPLE_AREAMOD_DOOR = new(SAMPLE_POLYAREA_TYPE_DOOR, SAMPLE_POLYAREA_TYPE_DOOR);
+    public static readonly RcAreaModification SAMPLE_AREAMOD_JUMP = new(SAMPLE_POLYAREA_TYPE_JUMP, SAMPLE_POLYAREA_TYPE_JUMP);
 }

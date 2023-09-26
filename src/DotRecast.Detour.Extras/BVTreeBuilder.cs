@@ -25,7 +25,7 @@ namespace DotRecast.Detour.Extras
 {
     public class BVTreeBuilder
     {
-        public void Build(DtMeshData data)
+        public static void Build(DtMeshData data)
         {
             data.bvTree = new DtBVNode[data.header.polyCount * 2];
             data.header.bvNodeCount = data.bvTree.Length == 0
@@ -38,11 +38,11 @@ namespace DotRecast.Detour.Extras
             BVItem[] items = new BVItem[data.header.polyCount];
             for (int i = 0; i < data.header.polyCount; i++)
             {
-                BVItem it = new BVItem();
+                BVItem it = new();
                 items[i] = it;
                 it.i = i;
-                Vector3 bmin = new Vector3();
-                Vector3 bmax = new Vector3();
+                Vector3 bmin = new();
+                Vector3 bmax = new();
                 bmin.Set(data.verts, data.polys[i].verts[0] * 3);
                 bmax.Set(data.verts, data.polys[i].verts[0] * 3);
                 for (int j = 1; j < data.polys[i].vertCount; j++)

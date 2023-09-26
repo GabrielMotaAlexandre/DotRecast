@@ -35,7 +35,7 @@ namespace DotRecast.Detour.Dynamic
         public DtDynamicTileCheckpoint checkpoint;
         public RcBuilderResult recastResult;
         private DtMeshData meshData;
-        private readonly ConcurrentDictionary<long, IDtCollider> colliders = new ConcurrentDictionary<long, IDtCollider>();
+        private readonly ConcurrentDictionary<long, IDtCollider> colliders = new();
         private bool dirty = true;
         private long id;
 
@@ -89,7 +89,7 @@ namespace DotRecast.Detour.Dynamic
         private RcBuilderResult BuildRecast(RcBuilder builder, DtDynamicNavMeshConfig config, DtVoxelTile vt,
             RcHeightfield heightfield, RcTelemetry telemetry)
         {
-            RcConfig rcConfig = new RcConfig(
+            RcConfig rcConfig = new(
                 config.useTiles, config.tileSizeX, config.tileSizeZ,
                 vt.borderSize,
                 RcPartitionType.OfValue(config.partition),
@@ -100,7 +100,7 @@ namespace DotRecast.Detour.Dynamic
                 Math.Min(DtDynamicNavMesh.MAX_VERTS_PER_POLY, config.vertsPerPoly),
                 config.detailSampleDistance, config.detailSampleMaxError,
                 true, true, true, null, true);
-            RcBuilderResult r = builder.Build(vt.tileX, vt.tileZ, null, rcConfig, heightfield, telemetry);
+            RcBuilderResult r = RcBuilder.Build(vt.tileX, vt.tileZ, null, rcConfig, heightfield, telemetry);
             if (config.keepIntermediateResults)
             {
                 recastResult = r;
@@ -122,19 +122,19 @@ namespace DotRecast.Detour.Dynamic
 
         public void RemoveCollider(long colliderId)
         {
-            if (colliders.TryRemove(colliderId, out var collider))
+            if (colliders.TryRemove(colliderId, out _))
             {
                 dirty = true;
                 checkpoint = null;
             }
         }
 
-        private DtNavMeshCreateParams NavMeshCreateParams(int tilex, int tileZ, float cellSize, float cellHeight,
+        private static DtNavMeshCreateParams NavMeshCreateParams(int tilex, int tileZ, float cellSize, float cellHeight,
             DtDynamicNavMeshConfig config, RcBuilderResult rcResult)
         {
             RcPolyMesh m_pmesh = rcResult.GetMesh();
             RcPolyMeshDetail m_dmesh = rcResult.GetMeshDetail();
-            DtNavMeshCreateParams option = new DtNavMeshCreateParams();
+            DtNavMeshCreateParams option = new();
             for (int i = 0; i < m_pmesh.npolys; ++i)
             {
                 m_pmesh.flags[i] = 1;

@@ -22,7 +22,7 @@ namespace DotRecast.Detour.Extras
 {
     public class ObjExporter
     {
-        public void Export(DtNavMesh mesh)
+        public static void Export(DtNavMesh mesh)
         {
             string filename = Path.Combine(Directory.GetCurrentDirectory(), "Demo", "astar.obj");
             using var fs = new FileStream(filename, FileMode.CreateNew);

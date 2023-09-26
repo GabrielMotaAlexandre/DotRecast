@@ -4,7 +4,7 @@ namespace DotRecast.Recast
 {
     public class RcPotentialDiagonalComparer : IComparer<RcPotentialDiagonal>
     {
-        public static readonly RcPotentialDiagonalComparer Shared = new RcPotentialDiagonalComparer();
+        public static readonly RcPotentialDiagonalComparer Shared = new();
 
         private RcPotentialDiagonalComparer()
         {

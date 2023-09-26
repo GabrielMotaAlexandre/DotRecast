@@ -62,7 +62,7 @@ namespace DotRecast.Detour
         }
 
 
-        private float[] Circle(Vector3 center, float radius)
+        private static float[] Circle(Vector3 center, float radius)
         {
             float[] circle = new float[12 * 3];
             for (int i = 0; i < CIRCLE_SEGMENTS * 3; i += 3)

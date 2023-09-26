@@ -39,7 +39,7 @@ namespace DotRecast.Recast.Toolset.Builder
                 settings.filterLowHangingObstacles, settings.filterLedgeSpans, settings.filterWalkableLowHeightSpans);
         }
 
-        public NavMeshBuildResult Build(DemoInputGeomProvider geom,
+        public static NavMeshBuildResult Build(DemoInputGeomProvider geom,
             RcPartition partitionType,
             float cellSize, float cellHeight,
             float agentMaxSlope, float agentHeight, float agentRadius, float agentMaxClimb,
@@ -49,7 +49,7 @@ namespace DotRecast.Recast.Toolset.Builder
             float detailSampleDist, float detailSampleMaxError,
             bool filterLowHangingObstacles, bool filterLedgeSpans, bool filterWalkableLowHeightSpans)
         {
-            RcConfig cfg = new RcConfig(
+            RcConfig cfg = new(
                 partitionType,
                 cellSize, cellHeight,
                 agentMaxSlope, agentHeight, agentRadius, agentMaxClimb,
@@ -71,19 +71,19 @@ namespace DotRecast.Recast.Toolset.Builder
             return new NavMeshBuildResult(RcImmutableArray.Create(rcResult), navMesh);
         }
 
-        private DtNavMesh BuildNavMesh(DtMeshData meshData, int vertsPerPoly)
+        private static DtNavMesh BuildNavMesh(DtMeshData meshData, int vertsPerPoly)
         {
             return new DtNavMesh(meshData, vertsPerPoly, 0);
         }
 
-        private RcBuilderResult BuildRecastResult(DemoInputGeomProvider geom, RcConfig cfg)
+        private static RcBuilderResult BuildRecastResult(DemoInputGeomProvider geom, RcConfig cfg)
         {
-            RcBuilderConfig bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax());
-            RcBuilder rcBuilder = new RcBuilder();
+            RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax());
+            RcBuilder rcBuilder = new();
             return rcBuilder.Build(geom, bcfg);
         }
 
-        public DtMeshData BuildMeshData(DemoInputGeomProvider geom,
+        public static DtMeshData BuildMeshData(DemoInputGeomProvider geom,
             float cellSize, float cellHeight,
             float agentHeight, float agentRadius, float agentMaxClimb,
             RcBuilderResult result)

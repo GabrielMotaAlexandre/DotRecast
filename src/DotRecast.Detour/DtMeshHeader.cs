@@ -97,10 +97,10 @@ namespace DotRecast.Detour
         public float walkableClimb;
 
         /** The minimum bounds of the tile's AABB. [(x, y, z)] */
-        public Vector3 bmin = new Vector3();
+        public Vector3 bmin = new();
 
         /** The maximum bounds of the tile's AABB. [(x, y, z)] */
-        public Vector3 bmax = new Vector3();
+        public Vector3 bmax = new();
 
         /** The bounding volume quantization factor. */
         public float bvQuantFactor;

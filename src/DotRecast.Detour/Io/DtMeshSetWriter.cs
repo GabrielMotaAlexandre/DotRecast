@@ -23,8 +23,8 @@ namespace DotRecast.Detour.Io
 {
     public class DtMeshSetWriter : DtWriter
     {
-        private readonly DtMeshDataWriter writer = new DtMeshDataWriter();
-        private readonly DtNavMeshParamWriter paramWriter = new DtNavMeshParamWriter();
+        private readonly DtMeshDataWriter writer = new();
+        private readonly DtNavMeshParamWriter paramWriter = new();
 
         public void Write(BinaryWriter stream, DtNavMesh mesh, RcByteOrder order, bool cCompatibility)
         {
@@ -66,10 +66,12 @@ namespace DotRecast.Detour.Io
                     continue;
                 }
 
-                NavMeshTileHeader tileHeader = new NavMeshTileHeader();
-                tileHeader.tileRef = mesh.GetTileRef(tile);
-                using MemoryStream msw = new MemoryStream();
-                using BinaryWriter bw = new BinaryWriter(msw);
+                NavMeshTileHeader tileHeader = new()
+                {
+                    tileRef = DtNavMesh.GetTileRef(tile)
+                };
+                using MemoryStream msw = new();
+                using BinaryWriter bw = new(msw);
                 writer.Write(bw, tile.data, order, cCompatibility);
                 bw.Flush();
                 bw.Close();

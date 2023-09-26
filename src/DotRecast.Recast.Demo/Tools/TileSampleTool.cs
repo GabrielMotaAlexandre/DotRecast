@@ -33,12 +33,12 @@ public class TileSampleTool : ISampleTool
 
         if (ImGui.Button("Create All Tile"))
         {
-            _tool.BuildAllTiles(geom, settings, navMesh);
+            RcTileTool.BuildAllTiles(geom, settings, navMesh);
         }
 
         if (ImGui.Button("Remove All Tile"))
         {
-            _tool.RemoveAllTiles(geom, settings, navMesh);
+            RcTileTool.RemoveAllTiles(geom, settings, navMesh);
         }
     }
 
@@ -109,11 +109,11 @@ public class TileSampleTool : ISampleTool
 
         if (shift)
         {
-            _tool.RemoveTile(geom, settings, navMesh, _hitPos);
+            RcTileTool.RemoveTile(geom, settings, navMesh, _hitPos);
         }
         else
         {
-            bool built = _tool.BuildTile(geom, settings, navMesh, _hitPos, out var tileBuildTicks, out var tileTriCount, out var tileMemUsage);
+            bool built = RcTileTool.BuildTile(geom, settings, navMesh, _hitPos, out var tileBuildTicks, out var tileTriCount, out var tileMemUsage);
             if (!built)
             {
                 Logger.Error($"failed to build tile - check!");

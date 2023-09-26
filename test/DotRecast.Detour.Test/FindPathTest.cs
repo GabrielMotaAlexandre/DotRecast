@@ -192,7 +192,8 @@ public class FindPathTest : AbstractDetourTest
             long endRef = endRefs[i];
             var startPos = startPoss[i];
             var endPos = endPoss[i];
-            var status = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
+
+            _ = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
             var straightPath = new List<StraightPathItem>();
             query.FindStraightPath(startPos, endPos, path, ref straightPath, int.MaxValue, 0);
             Assert.That(straightPath.Count, Is.EqualTo(STRAIGHT_PATHS[i].Length));

@@ -14,15 +14,14 @@ namespace DotRecast.Recast.Toolset.Tools
             return "Tiles";
         }
 
-        public void RemoveAllTiles(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh)
+        public static void RemoveAllTiles(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh)
         {
             if (null == settings || null == geom || navMesh == null)
                 return;
 
             var bmin = geom.GetMeshBoundsMin();
             var bmax = geom.GetMeshBoundsMax();
-            int gw = 0, gh = 0;
-            RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out gw, out gh);
+            RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out int gw, out int gh);
 
             int ts = settings.tileSize;
             int tw = (gw + ts - 1) / ts;
@@ -38,15 +37,14 @@ namespace DotRecast.Recast.Toolset.Tools
             }
         }
 
-        public void BuildAllTiles(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh)
+        public static void BuildAllTiles(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh)
         {
             if (null == settings || null == geom || navMesh == null)
                 return;
 
             var bmin = geom.GetMeshBoundsMin();
             var bmax = geom.GetMeshBoundsMax();
-            int gw = 0, gh = 0;
-            RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out gw, out gh);
+            RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out int gw, out int gh);
 
             int ts = settings.tileSize;
             int tw = (gw + ts - 1) / ts;
@@ -56,12 +54,12 @@ namespace DotRecast.Recast.Toolset.Tools
             {
                 for (int x = 0; x < tw; ++x)
                 {
-                    BuildTile(geom, settings, navMesh, x, y, out var tileBuildTicks, out var tileTriCount, out var tileMemUsage);
+                    BuildTile(geom, settings, navMesh, x, y, out _, out _, out _);
                 }
             }
         }
 
-        public bool BuildTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, int tx, int ty, out long tileBuildTicks, out int tileTriCount, out int tileMemUsage)
+        public static bool BuildTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, int tx, int ty, out long tileBuildTicks, out int tileTriCount, out int tileMemUsage)
         {
             tileBuildTicks = 0;
             tileTriCount = 0; // ...
@@ -76,7 +74,7 @@ namespace DotRecast.Recast.Toolset.Tools
             Vector3 bmin = geom.GetMeshBoundsMin();
             Vector3 bmax = geom.GetMeshBoundsMax();
 
-            RcConfig cfg = new RcConfig(
+            RcConfig cfg = new(
                 true, settings.tileSize, settings.tileSize,
                 RcConfig.CalcBorder(settings.agentRadius, settings.cellSize),
                 RcPartitionType.OfValue(settings.partitioning),
@@ -95,8 +93,8 @@ namespace DotRecast.Recast.Toolset.Tools
             var rb = new RcBuilder();
             var result = rb.BuildTile(geom, cfg, bmin, bmax, tx, ty, new RcAtomicInteger(0), 1);
 
-            var tb = new TileNavMeshBuilder();
-            var meshData = tb.BuildMeshData(geom, settings.cellSize, settings.cellHeight, settings.agentHeight, settings.agentRadius, settings.agentMaxClimb, RcImmutableArray.Create(result)
+            _ = new TileNavMeshBuilder();
+            var meshData = TileNavMeshBuilder.BuildMeshData(geom, settings.cellSize, settings.cellHeight, settings.agentHeight, settings.agentRadius, settings.agentMaxClimb, RcImmutableArray.Create(result)
             ).FirstOrDefault();
 
             if (null == meshData)
@@ -111,7 +109,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return true;
         }
 
-        public bool BuildTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos, out long tileBuildTicks, out int tileTriCount, out int tileMemUsage)
+        public static bool BuildTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos, out long tileBuildTicks, out int tileTriCount, out int tileMemUsage)
         {
             tileBuildTicks = 0;
             tileTriCount = 0;
@@ -123,7 +121,8 @@ namespace DotRecast.Recast.Toolset.Tools
             float ts = settings.tileSize * settings.cellSize;
 
             Vector3 bmin = geom.GetMeshBoundsMin();
-            Vector3 bmax = geom.GetMeshBoundsMax();
+
+            _ = geom.GetMeshBoundsMax();
 
             int tx = (int)((pos.X - bmin[0]) / ts);
             int ty = (int)((pos.Z - bmin[2]) / ts);
@@ -131,7 +130,7 @@ namespace DotRecast.Recast.Toolset.Tools
             return BuildTile(geom, settings, navMesh, tx, ty, out tileBuildTicks, out tileTriCount, out tileMemUsage);
         }
 
-        public bool RemoveTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos)
+        public static bool RemoveTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos)
         {
             if (null == settings || null == geom || navMesh == null)
                 return false;

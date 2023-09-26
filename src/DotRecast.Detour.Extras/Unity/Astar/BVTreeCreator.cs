@@ -20,13 +20,13 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     public class BVTreeCreator
     {
-        private readonly BVTreeBuilder builder = new BVTreeBuilder();
+        private readonly BVTreeBuilder builder = new();
 
-        public void Build(GraphMeshData graphData)
+        public static void Build(GraphMeshData graphData)
         {
             foreach (DtMeshData d in graphData.tiles)
             {
-                builder.Build(d);
+                BVTreeBuilder.Build(d);
             }
         }
     }

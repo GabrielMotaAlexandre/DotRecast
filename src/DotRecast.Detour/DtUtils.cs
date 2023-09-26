@@ -105,7 +105,7 @@ namespace DotRecast.Detour
                 int va = j * 3;
                 int vb = i * 3;
 
-                Vector3 n = new Vector3(polya[vb + 2] - polya[va + 2], 0, -(polya[vb + 0] - polya[va + 0]));
+                Vector3 n = new(polya[vb + 2] - polya[va + 2], 0, -(polya[vb + 0] - polya[va + 0]));
 
                 RcVec2f aminmax = ProjectPoly(n, polya, npolya);
                 RcVec2f bminmax = ProjectPoly(n, polyb, npolyb);
@@ -121,7 +121,7 @@ namespace DotRecast.Detour
                 int va = j * 3;
                 int vb = i * 3;
 
-                Vector3 n = new Vector3(polyb[vb + 2] - polyb[va + 2], 0, -(polyb[vb + 0] - polyb[va + 0]));
+                Vector3 n = new(polyb[vb + 2] - polyb[va + 2], 0, -(polyb[vb + 0] - polyb[va + 0]));
 
                 RcVec2f aminmax = ProjectPoly(n, polya, npolya);
                 RcVec2f bminmax = ProjectPoly(n, polyb, npolyb);

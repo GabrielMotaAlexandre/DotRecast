@@ -6,9 +6,9 @@ namespace DotRecast.Detour.Extras.Jumplink
         public const int EDGE_CLIMB_DOWN_BIT = 1 << 1;
         public const int EDGE_JUMP_OVER_BIT = 1 << 2;
 
-        public static readonly JumpLinkType EDGE_JUMP = new JumpLinkType(EDGE_JUMP_BIT);
-        public static readonly JumpLinkType EDGE_CLIMB_DOWN = new JumpLinkType(EDGE_CLIMB_DOWN_BIT);
-        public static readonly JumpLinkType EDGE_JUMP_OVER = new JumpLinkType(EDGE_JUMP_OVER_BIT);
+        public static readonly JumpLinkType EDGE_JUMP = new(EDGE_JUMP_BIT);
+        public static readonly JumpLinkType EDGE_CLIMB_DOWN = new(EDGE_CLIMB_DOWN_BIT);
+        public static readonly JumpLinkType EDGE_JUMP_OVER = new(EDGE_JUMP_OVER_BIT);
 
         public int Bit { get; }
 

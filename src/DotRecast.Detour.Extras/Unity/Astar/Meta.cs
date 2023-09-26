@@ -26,7 +26,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
         public const string TYPENAME_RECAST_GRAPH = "Pathfinding.RecastGraph";
         public const string MIN_SUPPORTED_VERSION = "4.0.6";
         public const string UPDATED_STRUCT_VERSION = "4.1.16";
-        public static readonly Regex VERSION_PATTERN = new Regex(@"(\d+)\.(\d+)\.(\d+)");
+        public static readonly Regex VERSION_PATTERN = new(@"(\d+)\.(\d+)\.(\d+)");
         public string version { get; set; }
         public int graphs { get; set; }
         public string[] guids { get; set; }
@@ -56,7 +56,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
             return true;
         }
 
-        private int[] ParseVersion(string version)
+        private static int[] ParseVersion(string version)
         {
             Match m = VERSION_PATTERN.Match(version);
             if (m.Success)

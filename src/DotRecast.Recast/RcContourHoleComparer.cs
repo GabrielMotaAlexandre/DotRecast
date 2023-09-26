@@ -4,7 +4,7 @@ namespace DotRecast.Recast
 {
     public class RcContourHoleComparer : IComparer<RcContourHole>
     {
-        public static readonly RcContourHoleComparer Shared = new RcContourHoleComparer();
+        public static readonly RcContourHoleComparer Shared = new();
 
         private RcContourHoleComparer()
         {

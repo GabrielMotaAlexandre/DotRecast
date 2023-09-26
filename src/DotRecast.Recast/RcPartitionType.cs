@@ -4,9 +4,9 @@ namespace DotRecast.Recast
 {
     public class RcPartitionType
     {
-        public static readonly RcPartitionType WATERSHED = new RcPartitionType(RcPartition.WATERSHED);
-        public static readonly RcPartitionType MONOTONE = new RcPartitionType(RcPartition.MONOTONE);
-        public static readonly RcPartitionType LAYERS = new RcPartitionType(RcPartition.LAYERS);
+        public static readonly RcPartitionType WATERSHED = new(RcPartition.WATERSHED);
+        public static readonly RcPartitionType MONOTONE = new(RcPartition.MONOTONE);
+        public static readonly RcPartitionType LAYERS = new(RcPartition.LAYERS);
 
         public static readonly RcPartitionType[] Values = { WATERSHED, MONOTONE, LAYERS };
 

@@ -64,7 +64,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
                 if ((cfg.buildTypes & JumpLinkType.EDGE_CLIMB_DOWN.Bit) != 0)
                 {
-                    JumpLinkBuilderConfig config = new JumpLinkBuilderConfig(
+                    JumpLinkBuilderConfig config = new(
                         cellSize,
                         cellHeight,
                         agentRadius,
@@ -82,7 +82,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
                 if ((cfg.buildTypes & JumpLinkType.EDGE_JUMP.Bit) != 0)
                 {
-                    JumpLinkBuilderConfig config = new JumpLinkBuilderConfig(
+                    JumpLinkBuilderConfig config = new(
                         cellSize,
                         cellHeight,
                         agentRadius,
@@ -107,11 +107,11 @@ namespace DotRecast.Recast.Toolset.Tools
             }
         }
 
-        private void AddOffMeshLink(JumpLink link, IInputGeomProvider geom, float agentRadius)
+        private static void AddOffMeshLink(JumpLink link, IInputGeomProvider geom, float agentRadius)
         {
             int area = SampleAreaModifications.SAMPLE_POLYAREA_TYPE_JUMP_AUTO;
             int flags = SampleAreaModifications.SAMPLE_POLYFLAGS_JUMP;
-            Vector3 prev = new Vector3();
+            Vector3 prev = new();
             for (int i = 0; i < link.startSamples.Length; i++)
             {
                 Vector3 p = link.startSamples[i].p;

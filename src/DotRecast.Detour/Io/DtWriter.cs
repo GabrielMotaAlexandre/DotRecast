@@ -24,14 +24,14 @@ namespace DotRecast.Detour.Io
 {
     public abstract class DtWriter
     {
-        protected void Write(BinaryWriter stream, float value, RcByteOrder order)
+        protected static void Write(BinaryWriter stream, float value, RcByteOrder order)
         {
             byte[] bytes = BitConverter.GetBytes(value);
             int i = BitConverter.ToInt32(bytes, 0);
             Write(stream, i, order);
         }
 
-        protected void Write(BinaryWriter stream, short value, RcByteOrder order)
+        protected static void Write(BinaryWriter stream, short value, RcByteOrder order)
         {
             if (order == RcByteOrder.BIG_ENDIAN)
             {
@@ -45,7 +45,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        protected void Write(BinaryWriter stream, long value, RcByteOrder order)
+        protected static void Write(BinaryWriter stream, long value, RcByteOrder order)
         {
             if (order == RcByteOrder.BIG_ENDIAN)
             {
@@ -59,7 +59,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        protected void Write(BinaryWriter stream, int value, RcByteOrder order)
+        protected static void Write(BinaryWriter stream, int value, RcByteOrder order)
         {
             if (order == RcByteOrder.BIG_ENDIAN)
             {
@@ -77,17 +77,17 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        protected void Write(BinaryWriter stream, bool @bool)
+        protected static void Write(BinaryWriter stream, bool @bool)
         {
             Write(stream, (byte)(@bool ? 1 : 0));
         }
 
-        protected void Write(BinaryWriter stream, byte value)
+        protected static void Write(BinaryWriter stream, byte value)
         {
             stream.Write(value);
         }
 
-        protected void Write(BinaryWriter stream, MemoryStream data)
+        protected static void Write(BinaryWriter stream, MemoryStream data)
         {
             data.Position = 0;
             byte[] buffer = new byte[data.Length];

@@ -32,8 +32,8 @@ namespace DotRecast.Detour.Crowd
         private float _maxTimeToEnqueueRequest;
         private float _maxTimeToFindPath;
 
-        private readonly Dictionary<DtCrowdTimerLabel, long> _executionTimings = new Dictionary<DtCrowdTimerLabel, long>();
-        private readonly Dictionary<DtCrowdTimerLabel, List<long>> _executionTimingSamples = new Dictionary<DtCrowdTimerLabel, List<long>>();
+        private readonly Dictionary<DtCrowdTimerLabel, long> _executionTimings = new();
+        private readonly Dictionary<DtCrowdTimerLabel, List<long>> _executionTimingSamples = new();
 
         public float MaxTimeToEnqueueRequest()
         {

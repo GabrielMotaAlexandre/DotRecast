@@ -4,7 +4,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     public class GroundSample
     {
-        public Vector3 p = new Vector3();
+        public Vector3 p = new();
         public bool validTrajectory;
         public bool validHeight;
     }

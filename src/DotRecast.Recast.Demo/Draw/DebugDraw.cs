@@ -337,12 +337,12 @@ public class DebugDraw
         float dy = y1 - y0;
         float dz = z1 - z0;
         float len = (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
-        Vector3 prev = new Vector3();
+        Vector3 prev = new();
         EvalArc(x0, y0, z0, dx, dy, dz, len * h, PAD, ref prev);
         for (int i = 1; i <= NUM_ARC_PTS; ++i)
         {
             float u = PAD + i * ARC_PTS_SCALE;
-            Vector3 pt = new Vector3();
+            Vector3 pt = new();
             EvalArc(x0, y0, z0, dx, dy, dz, len * h, u, ref pt);
             Vertex(prev.X, prev.Y, prev.Z, col);
             Vertex(pt.X, pt.Y, pt.Z, col);
@@ -354,8 +354,8 @@ public class DebugDraw
         // End arrows
         if (as0 > 0.001f)
         {
-            Vector3 p = new Vector3();
-            Vector3 q = new Vector3();
+            Vector3 p = new();
+            Vector3 q = new();
             EvalArc(x0, y0, z0, dx, dy, dz, len * h, PAD, ref p);
             EvalArc(x0, y0, z0, dx, dy, dz, len * h, PAD + 0.05f, ref q);
             AppendArrowHead(p, q, as0, col);
@@ -363,15 +363,15 @@ public class DebugDraw
 
         if (as1 > 0.001f)
         {
-            Vector3 p = new Vector3();
-            Vector3 q = new Vector3();
+            Vector3 p = new();
+            Vector3 q = new();
             EvalArc(x0, y0, z0, dx, dy, dz, len * h, 1 - PAD, ref p);
             EvalArc(x0, y0, z0, dx, dy, dz, len * h, 1 - (PAD + 0.05f), ref q);
             AppendArrowHead(p, q, as1, col);
         }
     }
 
-    private void EvalArc(float x0, float y0, float z0, float dx, float dy, float dz, float h, float u, ref Vector3 res)
+    private static void EvalArc(float x0, float y0, float z0, float dx, float dy, float dz, float h, float u, ref Vector3 res)
     {
         res.X = x0 + dx * u;
         res.Y = y0 + dy * u + h * (1 - (u * 2 - 1) * (u * 2 - 1));
@@ -462,8 +462,8 @@ public class DebugDraw
         Vertex(x1, y1, z1, col);
 
         // End arrows
-        Vector3 p = new Vector3(x0, y0, z0);
-        Vector3 q = new Vector3(x1, y1, z1);
+        Vector3 p = new(x0, y0, z0);
+        Vector3 q = new(x1, y1, z1);
         if (as0 > 0.001f)
             AppendArrowHead(p, q, as0, col);
         if (as1 > 0.001f)
@@ -478,9 +478,9 @@ public class DebugDraw
             return;
         }
 
-        Vector3 ax = new Vector3();
-        Vector3 ay = new Vector3(0, 1, 0);
-        Vector3 az = new Vector3();
+        Vector3 ax = new();
+        Vector3 ay = new(0, 1, 0);
+        Vector3 az = new();
         Vsub(ref az, q, p);
         Vnormalize(ref az);
         Vcross(ref ax, ay, az);
@@ -496,14 +496,14 @@ public class DebugDraw
         Vertex(p.X + az.X * s - ax.X * s / 3, p.Y + az.Y * s - ax.Y * s / 3, p.Z + az.Z * s - ax.Z * s / 3, col);
     }
 
-    public void Vcross(ref Vector3 dest, Vector3 v1, Vector3 v2)
+    public static void Vcross(ref Vector3 dest, Vector3 v1, Vector3 v2)
     {
         dest.X = v1.Y * v2.Z - v1.Z * v2.Y;
         dest.Y = v1.Z * v2.X - v1.X * v2.Z;
         dest.Z = v1.X * v2.Y - v1.Y * v2.X;
     }
 
-    public void Vnormalize(ref Vector3 v)
+    public static void Vnormalize(ref Vector3 v)
     {
         float d = (float)(1.0f / Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z));
         v.X *= d;
@@ -511,14 +511,14 @@ public class DebugDraw
         v.Z *= d;
     }
 
-    public void Vsub(ref Vector3 dest, Vector3 v1, Vector3 v2)
+    public static void Vsub(ref Vector3 dest, Vector3 v1, Vector3 v2)
     {
         dest.X = v1.X - v2.X;
         dest.Y = v1.Y - v2.Y;
         dest.Z = v1.Z - v2.Z;
     }
 
-    public float VdistSqr(Vector3 v1, Vector3 v2)
+    public static float VdistSqr(Vector3 v1, Vector3 v2)
     {
         float x = v1.X - v2.X;
         float y = v1.Y - v2.Y;
@@ -676,7 +676,7 @@ public class DebugDraw
         NormalizePlane(vpm.M14 - vpm.M13, vpm.M24 - vpm.M23, vpm.M34 - vpm.M33, vpm.M44 - vpm.M43, ref frustumPlanes[5]); // far
     }
 
-    private void NormalizePlane(float px, float py, float pz, float pw, ref float[] plane)
+    private static void NormalizePlane(float px, float py, float pz, float pw, ref float[] plane)
     {
         float length = (float)Math.Sqrt(px * px + py * py + pz * pz);
         if (length != 0)
@@ -701,40 +701,37 @@ public class DebugDraw
             float p_x;
             float p_y;
             float p_z;
-            float n_x;
-            float n_y;
-            float n_z;
             if (plane[0] >= 0)
             {
                 p_x = bounds[3];
-                n_x = bounds[0];
+                _ = bounds[0];
             }
             else
             {
                 p_x = bounds[0];
-                n_x = bounds[3];
+                _ = bounds[3];
             }
 
             if (plane[1] >= 0)
             {
                 p_y = bounds[4];
-                n_y = bounds[1];
+                _ = bounds[1];
             }
             else
             {
                 p_y = bounds[1];
-                n_y = bounds[4];
+                _ = bounds[4];
             }
 
             if (plane[2] >= 0)
             {
                 p_z = bounds[5];
-                n_z = bounds[2];
+                _ = bounds[2];
             }
             else
             {
                 p_z = bounds[2];
-                n_z = bounds[5];
+                _ = bounds[5];
             }
 
             if (plane[0] * p_x + plane[1] * p_y + plane[2] * p_z + plane[3] < 0)

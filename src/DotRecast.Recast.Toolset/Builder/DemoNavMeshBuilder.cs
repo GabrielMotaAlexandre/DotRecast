@@ -12,7 +12,7 @@ namespace DotRecast.Recast.Toolset.Builder
         {
             RcPolyMesh pmesh = rcResult.GetMesh();
             RcPolyMeshDetail dmesh = rcResult.GetMeshDetail();
-            DtNavMeshCreateParams option = new DtNavMeshCreateParams();
+            DtNavMeshCreateParams option = new();
             for (int i = 0; i < pmesh.npolys; ++i)
             {
                 pmesh.flags[i] = 1;

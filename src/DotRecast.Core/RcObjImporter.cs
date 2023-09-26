@@ -27,10 +27,10 @@ namespace DotRecast.Core
     {
         public static RcObjImporterContext LoadContext(byte[] chunk)
         {
-            RcObjImporterContext context = new RcObjImporterContext();
+            RcObjImporterContext context = new();
             try
             {
-                using StreamReader reader = new StreamReader(new MemoryStream(chunk));
+                using StreamReader reader = new(new MemoryStream(chunk));
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {

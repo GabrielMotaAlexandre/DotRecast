@@ -6,10 +6,10 @@ namespace DotRecast.Recast
     /// @see rcHeightfieldLayerSet
     public class RcHeightfieldLayer
     {
-        public Vector3 bmin = new Vector3();
+        public Vector3 bmin = new();
 
         /// < The minimum bounds in world space. [(x, y, z)]
-        public Vector3 bmax = new Vector3();
+        public Vector3 bmax = new();
 
         /// < The maximum bounds in world space. [(x, y, z)]
         public float cs;

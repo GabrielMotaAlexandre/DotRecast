@@ -25,12 +25,12 @@ namespace DotRecast.Detour.Crowd
     public class DtPathQuery
     {
         /// Path find start and end location.
-        public Vector3 startPos = new Vector3();
-        public Vector3 endPos = new Vector3();
+        public Vector3 startPos = new();
+        public Vector3 endPos = new();
         public long startRef;
         public long endRef;
         
-        public readonly DtPathQueryResult result = new DtPathQueryResult();
+        public readonly DtPathQueryResult result = new();
         public IDtQueryFilter filter; // < TODO: This is potentially dangerous!
 
         public DtNavMeshQuery navQuery;

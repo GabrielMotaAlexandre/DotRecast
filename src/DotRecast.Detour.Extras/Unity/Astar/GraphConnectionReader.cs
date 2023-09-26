@@ -24,9 +24,9 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 {
     class GraphConnectionReader : ZipBinaryReader
     {
-        public List<int[]> Read(ZipArchive file, string filename, Meta meta, int[] indexToNode)
+        public static List<int[]> Read(ZipArchive file, string filename, Meta meta, int[] indexToNode)
         {
-            List<int[]> connections = new List<int[]>();
+            List<int[]> connections = new();
             RcByteBuffer buffer = ToByteBuffer(file, filename);
             while (buffer.Remaining() > 0)
             {
@@ -37,11 +37,12 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                 {
                     int nodeIndex = buffer.GetInt();
                     nodeConnections[i] = indexToNode[nodeIndex];
+
                     // XXX: Is there anything we can do with the cost?
-                    int cost = buffer.GetInt();
+                    _ = buffer.GetInt();
                     if (meta.IsVersionAtLeast(Meta.UPDATED_STRUCT_VERSION))
                     {
-                        byte shapeEdge = buffer.Get();
+                        _ = buffer.Get();
                     }
                 }
             }

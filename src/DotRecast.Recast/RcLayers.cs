@@ -184,7 +184,7 @@ namespace DotRecast.Recast
             }
 
             // Find region neighbours and overlapping regions.
-            List<int> lregs = new List<int>();
+            List<int> lregs = new();
             for (int y = 0; y < h; ++y)
             {
                 for (int x = 0; x < w; ++x)
@@ -241,7 +241,7 @@ namespace DotRecast.Recast
             // Create 2D layers from regions.
             int layerId = 0;
 
-            List<int> stack = new List<int>();
+            List<int> stack = new();
 
             for (int i = 0; i < nregs; ++i)
             {
@@ -417,8 +417,10 @@ namespace DotRecast.Recast
             bmax.X -= borderSize * chf.cs;
             bmax.Z -= borderSize * chf.cs;
 
-            RcHeightfieldLayerSet lset = new RcHeightfieldLayerSet();
-            lset.layers = new RcHeightfieldLayer[layerId];
+            RcHeightfieldLayerSet lset = new()
+            {
+                layers = new RcHeightfieldLayer[layerId]
+            };
             for (int i = 0; i < lset.layers.Length; i++)
             {
                 lset.layers[i] = new RcHeightfieldLayer();
