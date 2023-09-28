@@ -91,25 +91,22 @@ namespace DotRecast.Detour
 
         public static bool OverlapRange(float amin, float amax, float bmin, float bmax, float eps)
         {
-            return ((amin + eps) > bmax || (amax - eps) < bmin) ? false : true;
+            return (amin + eps) <= bmax && (amax - eps) >= bmin;
         }
 
         /// @par
         ///
         /// All vertices are projected onto the xz-plane, so the y-values are ignored.
-        public static bool OverlapPolyPoly2D(float[] polya, int npolya, float[] polyb, int npolyb)
+        public static bool OverlapPolyPoly2D(in Span<Vector2> polya, int npolya, in Span<Vector2> polyb, int npolyb)
         {
             const float eps = 1e-4f;
             for (int i = 0, j = npolya - 1; i < npolya; j = i++)
             {
-                int va = j * 3;
-                int vb = i * 3;
+                Vector2 n = new(polya[i].Y - polya[j].Y, -(polya[i].X - polya[j].X));
 
-                Vector3 n = new(polya[vb + 2] - polya[va + 2], 0, -(polya[vb + 0] - polya[va + 0]));
-
-                RcVec2f aminmax = ProjectPoly(n, polya, npolya);
-                RcVec2f bminmax = ProjectPoly(n, polyb, npolyb);
-                if (!OverlapRange(aminmax.x, aminmax.y, bminmax.x, bminmax.y, eps))
+                var aminmax = ProjectPoly(n, polya, npolya);
+                var bminmax = ProjectPoly(n, polyb, npolyb);
+                if (!OverlapRange(aminmax.X, aminmax.Y, bminmax.X, bminmax.Y, eps))
                 {
                     // Found separating axis
                     return false;
@@ -118,14 +115,14 @@ namespace DotRecast.Detour
 
             for (int i = 0, j = npolyb - 1; i < npolyb; j = i++)
             {
-                int va = j * 3;
-                int vb = i * 3;
+                ref readonly var va = ref polyb[j];
+                ref readonly var vb = ref polyb[i];
 
-                Vector3 n = new(polyb[vb + 2] - polyb[va + 2], 0, -(polyb[vb + 0] - polyb[va + 0]));
+                Vector2 n = new(vb.Y - va.Y, -(vb.X - va.X));
 
-                RcVec2f aminmax = ProjectPoly(n, polya, npolya);
-                RcVec2f bminmax = ProjectPoly(n, polyb, npolyb);
-                if (!OverlapRange(aminmax.x, aminmax.y, bminmax.x, bminmax.y, eps))
+                var aminmax = ProjectPoly(n, polya, npolya);
+                var bminmax = ProjectPoly(n, polyb, npolyb);
+                if (!OverlapRange(aminmax.X, aminmax.Y, bminmax.X, bminmax.Y, eps))
                 {
                     // Found separating axis
                     return false;
@@ -154,7 +151,7 @@ namespace DotRecast.Detour
             return acx * abz - abx * acz;
         }
 
-        public static float TriArea2D(Vector3 a, Vector3 b, Vector3 c)
+        public static float TriArea2D(in Vector3 a, in Vector3 b, in Vector3 c)
         {
             float abx = b.X - a.X;
             float abz = b.Z - a.Z;
@@ -163,13 +160,11 @@ namespace DotRecast.Detour
             return acx * abz - abx * acz;
         }
 
-        public static float TriArea2D(Vector3 a, Vector3 b, Vector2 c)
+        public static float TriArea2D(in Vector2 a, in Vector2 b, in Vector2 c)
         {
-            float abx = b.X - a.X;
-            float abz = b.Z - a.Z;
-            float acx = c.X - a.X;
-            float acz = c.Y - a.Z;
-            return acx * abz - abx * acz;
+            var ab = b - a;
+            var ac = c - a;
+            return ac.X * ab.Y - ab.X * ac.Y;
         }
 
         // Returns a random point in a convex polygon.
@@ -255,22 +250,19 @@ namespace DotRecast.Detour
             return false;
         }
 
-        public static RcVec2f ProjectPoly(Vector3 axis, float[] poly, int npoly)
+        public static Vector2 ProjectPoly(Vector2 axis, in Span<Vector2> poly, int npoly)
         {
-            float rmin, rmax;
-            rmin = rmax = axis.Dot2D(poly, 0);
-            for (int i = 1; i < npoly; ++i)
+            float rmin = float.MaxValue;
+            float rmax = float.MinValue;
+
+            for (int i = 0; i < npoly; ++i)
             {
-                float d = axis.Dot2D(poly, i * 3);
+                float d = Vector2.Dot(axis, poly[i]);
                 rmin = Math.Min(rmin, d);
                 rmax = Math.Max(rmax, d);
             }
 
-            return new RcVec2f
-            {
-                x = rmin,
-                y = rmax,
-            };
+            return new Vector2(rmin, rmax);
         }
 
         /// @par
@@ -345,9 +337,26 @@ namespace DotRecast.Detour
                 t = 1;
             }
 
-            dx = p.X + t * pqx - pt.X;
-            dz = p.Z + t * pqz - pt.Z;
+            dx = t * pqx + p.X - pt.X;
+            dz = t * pqz + p.Z - pt.Z;
             return dx * dx + dz * dz;
+        }
+
+        public static float DistancePtSegSqr2D(Vector2 pt, Vector2 p, Vector2 q, out float t)
+        {
+            var pq = q - p;
+            var dd = pt - p;
+            float d = pq.LengthSquared();
+            t = Vector2.Dot(pq, dd);
+            if (d > 0)
+            {
+                t /= d;
+            }
+
+            t = Math.Clamp(t, 0, 1);
+
+            dd = t * pq + p - pt;
+            return dd.LengthSquared();
         }
 
         public static bool IntersectSegmentPoly2D(Vector3 p0, Vector3 p1,

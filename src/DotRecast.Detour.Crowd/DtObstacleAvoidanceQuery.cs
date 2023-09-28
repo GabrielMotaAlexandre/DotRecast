@@ -85,14 +85,14 @@ namespace DotRecast.Detour.Crowd
             cir.dvel = dvel;
         }
 
-        public void AddSegment(Vector3 p, Vector3 q)
+        public void AddSegment(Vector2 p, Vector2 q)
         {
             if (m_nsegments >= m_maxSegments)
                 return;
 
-            DtObstacleSegment seg = m_segments[m_nsegments++];
-            seg.p = p;
-            seg.q = q;
+            ref var segment = ref m_segments[m_nsegments++];
+            segment.p = p;
+            segment.q = q;
         }
 
         public int GetObstacleCircleCount()
@@ -123,36 +123,39 @@ namespace DotRecast.Detour.Crowd
                 DtObstacleCircle cir = m_circles[i];
 
                 // Side
-                Vector3 pa = pos;
-                Vector3 pb = cir.p;
+                ref readonly var pa = ref pos;
+                ref readonly var pb = ref cir.p;
 
-                Vector3 orig = new();
-                cir.dp = Vector3.Normalize(pb - pa);
+                cir.dp = Vector3.Normalize(pb - pa).AsVector2XZ();
 
                 var dv = cir.dvel - dvel;
 
-                float a = DtUtils.TriArea2D(orig, cir.dp, dv);
+                float a = dv.X * cir.dp.Y - cir.dp.X * dv.Y;
+               
                 if (a < 0.01f)
                 {
-                    cir.np.X = -cir.dp.Z;
-                    cir.np.Z = cir.dp.X;
+                    cir.np.X = -cir.dp.Y;
+                    cir.np.Y = cir.dp.X;
                 }
                 else
                 {
-                    cir.np.X = cir.dp.Z;
-                    cir.np.Z = -cir.dp.X;
+                    cir.np.X = cir.dp.Y;
+                    cir.np.Y = -cir.dp.X;
                 }
             }
+
+            var pt = pos.AsVector2XZ();
 
             for (int i = 0; i < m_nsegments; ++i)
             {
                 DtObstacleSegment seg = m_segments[i];
 
                 // Precalc if the agent is really close to the segment.
-                float r = 0.01f;
 
-                var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
-                seg.touch = distSqr < RcMath.Sqr(r);
+                var distSqr = DtUtils.DistancePtSegSqr2D(pt, seg.p, seg.q, out _);
+
+                const float r = 0.01f;
+                seg.touch = distSqr < r * r;
             }
         }
 
@@ -185,10 +188,10 @@ namespace DotRecast.Detour.Crowd
             return true;
         }
 
-        private static bool IsectRaySeg(Vector3 ap, Vector3 u, Vector3 bp, Vector3 bq, ref float t)
+        private static bool IsectRaySeg(Vector2 ap, Vector2 u, Vector2 bp, Vector2 bq, ref float t)
         {
-            Vector3 v = bq - bp;
-            Vector3 w = ap - bp;
+            var v = bq - bp;
+            var w = ap - bp;
             float d = Vector3Extensions.Perp2D(u, v);
             if (Math.Abs(d) < 1e-6f)
                 return false;
@@ -241,7 +244,7 @@ namespace DotRecast.Detour.Crowd
                 var vab = vcand * 2 - vel - cir.vel;
 
                 // Side
-                side += Math.Clamp(Math.Min(Vector2.Dot(cir.dp.AsVector2XZ(), vab) * 0.5f + 0.5f, Vector2.Dot(cir.np.AsVector2XZ(), vab) * 2), 0.0f, 1.0f);
+                side += Math.Clamp(Math.Min(Vector2.Dot(cir.dp, vab) * 0.5f + 0.5f, Vector2.Dot(cir.np, vab) * 2), 0.0f, 1.0f);
                 nside++;
 
                 if (!SweepCircleCircle(pos, rad, vab, cir.p, cir.rad, out var htmin, out var htmax))
@@ -274,8 +277,8 @@ namespace DotRecast.Detour.Crowd
                 if (seg.touch)
                 {
                     // Special case when the agent is very close to the segment.
-                    Vector3 sdir = seg.q - seg.p;
-                    Vector2 snorm = new(-sdir.Z, sdir.X);
+                    var sdir = seg.q - seg.p;
+                    var snorm = new Vector2(-sdir.Y, sdir.X);
                     // If the velocity is pointing towards the segment, no collision.
                     if (Vector2.Dot(snorm, vcand) < 0.0f)
                         continue;
@@ -284,7 +287,7 @@ namespace DotRecast.Detour.Crowd
                 }
                 else
                 {
-                    if (!IsectRaySeg(pos, vcand.AsVector3(), seg.p, seg.q, ref htmin))
+                    if (!IsectRaySeg(pos.AsVector2XZ(), vcand, seg.p, seg.q, ref htmin))
                         continue;
                 }
 

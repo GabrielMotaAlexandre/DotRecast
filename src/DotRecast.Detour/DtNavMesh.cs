@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.Intrinsics;
+using System.Runtime.CompilerServices;
 using DotRecast.Core;
 
 namespace DotRecast.Detour
@@ -249,15 +249,11 @@ namespace DotRecast.Detour
      *            The world position for the query. [(x, y, z)]
      * @return 2-element int array with (tx,ty) tile location
      */
-        public void CalcTileLoc(Vector3 pos, out int tx, out int ty)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CalcTileLoc(in Vector3 pos, out int tx, out int ty)
         {
-            var aa = (pos - m_params.orig) / m_tileWidth;
-
-            var t = Vector.ConvertToInt32(Vector.Floor(aa.AsVector128().AsVector()));
-            tx = t.GetElement(0);
-            ty = t.GetElement(1);
-            //tx = (int)Math.Floor((pos.X - m_params.orig.X) / m_tileWidth);
-            //ty = (int)Math.Floor((pos.Z - m_params.orig.Z) / m_tileHeight);
+            tx = (int)Math.Floor((pos.X - m_params.orig.X) / m_tileWidth);
+            ty = (int)Math.Floor((pos.Z - m_params.orig.Z) / m_tileHeight);
         }
 
         /// Gets the tile and polygon for the specified polygon reference.
@@ -1454,7 +1450,7 @@ namespace DotRecast.Detour
             List<DtMeshTile> tiles = new();
             foreach (DtMeshTile tile in GetTileListByPos(x, y))
             {
-                if (tile.data.header != null && tile.data.header.x == x && tile.data.header.y == y)
+                if (tile.data.header?.x == x && tile.data.header.y == y)
                 {
                     tiles.Add(tile);
                 }

@@ -298,17 +298,14 @@ public class CrowdSampleTool : ISampleTool
                 dd.DebugDrawCircle(center.X, center.Y + radius, center.Z, ag.option.collisionQueryRange, DuRGBA(192, 0, 128, 128), 2.0f);
 
                 dd.Begin(LINES, 3.0f);
-                for (int j = 0; j < ag.boundary.GetSegmentCount(); ++j)
-                {
-                    int col = DuRGBA(192, 0, 128, 192);
-                    Vector3[] s = ag.boundary.GetSegment(j);
-                    Vector3 s0 = s[0];
-                    Vector3 s3 = s[1];
-                    if (DtUtils.TriArea2D(pos, s0, s3) < 0.0f)
-                        col = DuDarkenCol(col);
+                //foreach(var segment in ag.boundary.Segments)
+                //{
+                //    int col = DuRGBA(192, 0, 128, 192);
+                //    if (DtUtils.TriArea2D(pos.AsVector2XZ(), in segment.Start, in segment.End) < 0.0f)
+                //        col = DuDarkenCol(col);
 
-                    dd.AppendArrow(s[0].X, s[0].Y + 0.2f, s[0].Z, s[1].X, s[1].Z + 0.2f, s[1].Z, 0.0f, 0.3f, col);
-                }
+                //    //dd.AppendArrow(s[0].X, s[0].Y + 0.2f, s[0].Z, s[1].X, s[1].Z + 0.2f, s[1].Z, 0.0f, 0.3f, col);
+                //}
 
                 dd.End();
             }

@@ -60,12 +60,6 @@ namespace System.Numerics
             return vector.X * v.X + vector.Z * v.Z;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dot2D(this ref Vector3 vector, float[] v, int vi)
-        {
-            return vector.X * v[vi] + vector.Z * v[vi + 2];
-        }
-
         /// Normalizes the vector.
         /// @param[in,out] v The vector to normalize. [(x, y, z)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -207,6 +201,12 @@ namespace System.Numerics
         public static float Perp2D(Vector3 u, Vector3 v)
         {
             return u.Z * v.X - u.X * v.Z;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Perp2D(Vector2 u, Vector2 v)
+        {
+            return u.Y * v.X - u.X * v.Y;
         }
 
         /// Checks that the specified vector's components are all finite.

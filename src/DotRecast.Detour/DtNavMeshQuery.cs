@@ -724,13 +724,14 @@ namespace DotRecast.Detour
         {
             if (!Vector3Extensions.IsFinite(center) || !Vector3Extensions.IsFinite(halfExtents))
             {
-                return RcImmutableArray<DtMeshTile>.Empty;
+                return Array.Empty<DtMeshTile>();
             }
 
             Vector3 bmin = center - halfExtents;
+            m_nav.CalcTileLoc(in bmin, out var minx, out var miny);
+
             Vector3 bmax = center + halfExtents;
-            m_nav.CalcTileLoc(bmin, out var minx, out var miny);
-            m_nav.CalcTileLoc(bmax, out var maxx, out var maxy);
+            m_nav.CalcTileLoc(in bmax, out var maxx, out var maxy);
 
             List<DtMeshTile> tiles = new();
             for (int y = miny; y <= maxy; ++y)
@@ -2829,10 +2830,10 @@ namespace DotRecast.Detour
 
             float radiusSqr = RcMath.Sqr(radius);
 
-            float[] pa = new float[m_nav.GetMaxVertsPerPoly() * 3];
-            float[] pb = new float[m_nav.GetMaxVertsPerPoly() * 3];
+            Span<Vector2> pa = stackalloc Vector2[m_nav.GetMaxVertsPerPoly()];
+            Span<Vector2> pb = stackalloc Vector2[m_nav.GetMaxVertsPerPoly()];
 
-            while (0 < stack.Count)
+            while (stack.Count > 0)
             {
                 // Pop front.
                 DtNode curNode = stack.First?.Value;
@@ -2901,7 +2902,8 @@ namespace DotRecast.Detour
                     int npa = neighbourPoly.vertCount;
                     for (int k = 0; k < npa; ++k)
                     {
-                        Array.Copy(neighbourTile.data.verts, neighbourPoly.verts[k] * 3, pa, k * 3, 3);
+                        var index = neighbourPoly.verts[k] * 3;
+                        pa[k] = new Vector2(neighbourTile.data.verts[index], neighbourTile.data.verts[index + 2]);
                     }
 
                     bool overlap = false;
@@ -2932,10 +2934,11 @@ namespace DotRecast.Detour
                         int npb = pastPoly.vertCount;
                         for (int k = 0; k < npb; ++k)
                         {
-                            Array.Copy(pastTile.data.verts, pastPoly.verts[k] * 3, pb, k * 3, 3);
+                            var index = pastPoly.verts[k] * 3;
+                            pb[k] = new Vector2(pastTile.data.verts[index], pastTile.data.verts[index + 2]);
                         }
-
-                        if (DtUtils.OverlapPolyPoly2D(pa, npa, pb, npb))
+                        
+                        if (DtUtils.OverlapPolyPoly2D(in pa, npa, in pb, npb))
                         {
                             overlap = true;
                             break;

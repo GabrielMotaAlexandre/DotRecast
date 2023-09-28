@@ -1,13 +1,16 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace DotRecast.Detour.Crowd
 {
-    public class DtSegment
+    public struct DtSegment
     {
-        /** Segment start/end */
-        public Vector3[] s = new Vector3[2];
+        public Vector2 Start;
+        public Vector2 End;
+
+        ///** Segment start/end */
+        //public Vector2[] s = new Vector2[2];
 
         /** Distance for pruning. */
-        public float d;
+        public float PruningDistance;
     }
 }

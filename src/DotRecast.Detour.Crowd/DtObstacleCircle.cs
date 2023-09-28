@@ -18,9 +18,9 @@ namespace DotRecast.Detour.Crowd
         public float rad;
 
         /** Use for side selection during sampling. */
-        public Vector3 dp = new();
+        public Vector2 dp = new();
 
         /** Use for side selection during sampling. */
-        public Vector3 np = new();
+        public Vector2 np = new();
     }
 }

@@ -32,7 +32,7 @@ namespace DotRecast.Detour.Crowd
         public const int MAX_LOCAL_SEGS = 8;
 
         private Vector3 m_center = new();
-        private readonly List<DtSegment> m_segs = new();
+        public List<DtSegment> Segments { get; } = new();
         private List<long> m_polys = new();
         private List<long> m_parents = new();
 
@@ -45,48 +45,51 @@ namespace DotRecast.Detour.Crowd
         {
             m_center.X = m_center.Y = m_center.Z = float.MaxValue;
             m_polys.Clear();
-            m_segs.Clear();
+            Segments.Clear();
         }
 
-        protected void AddSegment(float dist, RcSegmentVert s)
+        protected unsafe void AddSegment(float dist, RcSegmentVert s)
         {
             // Insert neighbour based on the distance.
-            DtSegment seg = new();
-            seg.s[0] = s.vmin;
-            seg.s[1] = s.vmax;
-            //Array.Copy(s, seg.s, 6);
-            seg.d = dist;
-            if (0 == m_segs.Count)
+            DtSegment seg = new()
             {
-                m_segs.Add(seg);
+                Start = s.vmin.AsVector2XZ(),
+                End = s.vmax.AsVector2XZ(),
+                //Array.Copy(s, seg.s, 6);
+                PruningDistance = dist
+            };
+
+            if (Segments.Count == 0)
+            {
+                Segments.Add(seg);
             }
-            else if (dist >= m_segs[^1].d)
+            else if (dist >= Segments[^1].PruningDistance)
             {
-                if (m_segs.Count >= MAX_LOCAL_SEGS)
+                if (Segments.Count >= MAX_LOCAL_SEGS)
                 {
                     return;
                 }
 
-                m_segs.Add(seg);
+                Segments.Add(seg);
             }
             else
             {
                 // Insert inbetween.
                 int i;
-                for (i = 0; i < m_segs.Count; ++i)
+                for (i = 0; i < Segments.Count; ++i)
                 {
-                    if (dist <= m_segs[i].d)
+                    if (dist <= Segments[i].PruningDistance)
                     {
                         break;
                     }
                 }
 
-                m_segs.Insert(i, seg);
+                Segments.Insert(i, seg);
             }
 
-            while (m_segs.Count > MAX_LOCAL_SEGS)
+            while (Segments.Count > MAX_LOCAL_SEGS)
             {
-                m_segs.RemoveAt(m_segs.Count - 1);
+                Segments.RemoveAt(Segments.Count - 1);
             }
         }
 
@@ -105,11 +108,13 @@ namespace DotRecast.Detour.Crowd
             if (status.Succeeded())
             {
                 // Secondly, store all polygon edges.
-                m_segs.Clear();
+                Segments.Clear();
 
                 var segmentVerts = new List<RcSegmentVert>();
                 var segmentRefs = new List<long>();
-                
+
+                var collisionQueryRangeSqr = RcMath.Sqr(collisionQueryRange);
+
                 for (int j = 0; j < m_polys.Count; ++j)
                 {
                     var result = navquery.GetPolyWallSegments(m_polys[j], false, filter, ref segmentVerts, ref segmentRefs);
@@ -124,7 +129,7 @@ namespace DotRecast.Detour.Crowd
 
                             // Skip too distant segments.
                             var distSqr = DtUtils.DistancePtSegSqr2D(pos, s0, s3, out _);
-                            if (distSqr > RcMath.Sqr(collisionQueryRange))
+                            if (distSqr > collisionQueryRangeSqr)
                             {
                                 continue;
                             }
@@ -160,14 +165,9 @@ namespace DotRecast.Detour.Crowd
             return m_center;
         }
 
-        public Vector3[] GetSegment(int j)
-        {
-            return m_segs[j].s;
-        }
-
         public int GetSegmentCount()
         {
-            return m_segs.Count;
+            return Segments.Count;
         }
     }
 }

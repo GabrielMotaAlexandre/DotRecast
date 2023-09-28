@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -107,6 +108,7 @@ namespace DotRecast.Detour.Crowd
             }
             return result;
         }
+
 
         public IEnumerable<(long, int)> GetItemCounts()
         {

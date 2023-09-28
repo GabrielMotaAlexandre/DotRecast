@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+using System.Numerics;
 
 namespace DotRecast.Core
 {
@@ -17,6 +17,5 @@ namespace DotRecast.Core
             vmax.Y = v4;
             vmax.Z = v5;
         }
-
     }
 }

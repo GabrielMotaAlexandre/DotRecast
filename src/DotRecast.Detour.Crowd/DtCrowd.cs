@@ -1148,24 +1148,17 @@ namespace DotRecast.Detour.Crowd
                     }
 
                     // Append neighbour segments as obstacles.
-                    for (int j = 0; j < ag.boundary.GetSegmentCount(); ++j)
+                    foreach(var segment in ag.boundary.Segments)
                     {
-                        Vector3[] s = ag.boundary.GetSegment(j);
-                        Vector3 s3 = s[1];
-
-                        if (DtUtils.TriArea2D(ag.npos, s[0], s3) < 0.0f)
+                        if (DtUtils.TriArea2D(ag.npos.AsVector2XZ(), in segment.Start, in segment.End) < 0.0f)
                         {
                             continue;
                         }
 
-                        _obstacleQuery.AddSegment(s[0], s3);
+                        _obstacleQuery.AddSegment(segment.Start, segment.End);
                     }
 
-                    DtObstacleAvoidanceDebugData vod = null;
-                    if (debugAgent == ag)
-                    {
-                        vod = debug.vod;
-                    }
+                    DtObstacleAvoidanceDebugData vod = debugAgent == ag ? debug.vod : null;
 
                     // Sample new safe velocity.
                     bool adaptive = true;
