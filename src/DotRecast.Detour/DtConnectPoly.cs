@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace DotRecast.Detour
+﻿namespace DotRecast.Detour
 {
     public readonly struct DtConnectPoly
     {

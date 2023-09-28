@@ -42,7 +42,6 @@ using DotRecast.Recast.Demo.Messages;
 using DotRecast.Recast.Toolset.Geom;
 using DotRecast.Recast.Demo.Tools;
 using DotRecast.Recast.Demo.UI;
-using DotRecast.Recast.Toolset;
 using MouseButton = Silk.NET.Input.MouseButton;
 using Window = Silk.NET.Windowing.Window;
 

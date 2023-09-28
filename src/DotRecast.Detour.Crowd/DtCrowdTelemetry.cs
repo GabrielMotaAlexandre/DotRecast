@@ -19,9 +19,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Emit;
 using DotRecast.Core;
 
 namespace DotRecast.Detour.Crowd

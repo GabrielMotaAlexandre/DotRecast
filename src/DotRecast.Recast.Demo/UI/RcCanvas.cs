@@ -17,12 +17,8 @@ freely, subject to the following restrictions:
 */
 
 
-using ImGuiNET;
 using Serilog;
-using Serilog.Core;
-using Silk.NET.Input;
 using Silk.NET.Maths;
-using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 
 namespace DotRecast.Recast.Demo.UI;

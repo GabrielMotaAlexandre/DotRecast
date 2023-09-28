@@ -24,7 +24,6 @@ using System.IO;
 using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour.TileCache.Io;
-using DotRecast.Detour.TileCache.Io.Compress;
 
 
 namespace DotRecast.Detour.TileCache

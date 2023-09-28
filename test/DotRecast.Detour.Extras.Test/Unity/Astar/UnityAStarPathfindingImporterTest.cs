@@ -18,7 +18,6 @@ freely, subject to the following restrictions:
 
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour.Extras.Unity.Astar;

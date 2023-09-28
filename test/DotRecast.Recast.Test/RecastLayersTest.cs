@@ -16,16 +16,10 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-using System;
-using System.IO;
-using DotRecast.Core;
 using DotRecast.Recast.Geom;
 using NUnit.Framework;
 
 namespace DotRecast.Recast.Test;
-
-using static RcConstants;
-
 [Parallelizable]
 public class RecastLayersTest
 {

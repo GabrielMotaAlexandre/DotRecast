@@ -21,24 +21,20 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.Wasm;
 
 namespace DotRecast.Detour.Crowd
 {
     public class DtProximityGrid
     {
-        private readonly float _cellSize;
+        public readonly float CellSize;
         private readonly float _invCellSize;
-        private readonly Dictionary<long, List<DtCrowdAgent>> _items;
+        private readonly Dictionary<long, List<DtCrowdAgent>> _items = new Dictionary<long, List<DtCrowdAgent>>();
 
         public DtProximityGrid(float cellSize)
         {
-            _cellSize = cellSize;
+            CellSize = cellSize;
             _invCellSize = 1.0f / cellSize;
-            _items = new Dictionary<long, List<DtCrowdAgent>>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -69,9 +65,6 @@ namespace DotRecast.Detour.Crowd
             int iminy = (int)Math.Floor(miny * _invCellSize);
             int imaxx = (int)Math.Floor(maxx * _invCellSize);
             int imaxy = (int)Math.Floor(maxy * _invCellSize);
-            //var imin = Vector.ConvertToInt32(Vector.Floor((min * _invCellSize).AsVector128().AsVector()));
-            //var imax = Vector.ConvertToInt32(Vector.Floor((max * _invCellSize).AsVector128().AsVector()));
-
 
             for (int y = iminy; y <= imaxy; ++y)
             {
@@ -124,7 +117,7 @@ namespace DotRecast.Detour.Crowd
 
         public float GetCellSize()
         {
-            return _cellSize;
+            return CellSize;
         }
     }
 }

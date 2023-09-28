@@ -23,7 +23,6 @@ using System.Linq;
 using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Detour.TileCache.Io.Compress;
-using DotRecast.Detour.TileCache.Test.Io;
 using DotRecast.Recast;
 using DotRecast.Recast.Geom;
 

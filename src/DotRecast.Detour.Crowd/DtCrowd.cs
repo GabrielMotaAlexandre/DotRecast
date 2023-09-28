@@ -19,9 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.Intrinsics;
 using DotRecast.Core;
@@ -862,7 +860,13 @@ namespace DotRecast.Detour.Crowd
         {
             using var timer = _telemetry.ScopedTimer(DtCrowdTimerLabel.BuildProximityGrid);
 
-            _grid = new DtProximityGrid(_config.maxAgentRadius * 3);
+            var size = _config.maxAgentRadius * 3;
+            _grid ??= new DtProximityGrid(size);
+
+            if (size != _grid.CellSize)
+            {
+                _grid.Clear();
+            }
 
             foreach (DtCrowdAgent ag in agents)
             {
@@ -906,13 +910,9 @@ namespace DotRecast.Detour.Crowd
             var rangeSqr = RcMath.Sqr(range);
 
             var proxAgents = grid.QueryItems(pos.X - range, pos.Z - range, pos.X + range, pos.Z + range);
+            proxAgents.Remove(skip);
             foreach (DtCrowdAgent ag in proxAgents)
             {
-                if (ag == skip)
-                {
-                    continue;
-                }
-
                 // Check for overlap.
                 Vector3 diff = pos - ag.npos;
                 if (Math.Abs(diff.Y) >= (height + ag.option.height) / 2.0f)

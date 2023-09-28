@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.Intrinsics;
-using System.Threading;
 using DotRecast.Core;
 
 namespace DotRecast.Detour
