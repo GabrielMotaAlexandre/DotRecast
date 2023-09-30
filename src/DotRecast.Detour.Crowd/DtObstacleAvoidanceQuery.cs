@@ -20,7 +20,11 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Buffers;
+using System.Collections;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
@@ -382,6 +386,9 @@ namespace DotRecast.Detour.Crowd
             float da = 1f / nd * float.Pi * 2;
             float ca = (float)Math.Cos(da);
             float sa = (float)Math.Sin(da);
+            var casa = new Vector2(ca, sa);
+            var saca = new Vector2(sa, ca);
+
 
             // desired direction
             var di = Vector2.Normalize(dvel);
@@ -395,22 +402,21 @@ namespace DotRecast.Detour.Crowd
             var rotc = di * c;
             var rots = di * s;
 
-            var ddir = new Vector4(di, rotc.X - rots.Y, rots.X + rotc.Y);
+            ReadOnlySpan<Vector2> ddir = stackalloc Vector2[] { di, new Vector2(rotc.X - rots.Y, rots.X + rotc.Y) };
 
-            var patArray = ArrayPool<float>.Shared.Rent((DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2);
-            var pat = patArray.AsSpan();
+            var pat = ArrayPool<float>.Shared.Rent((DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2);
+
+            ref var patVector = ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetArrayDataReference(pat));
 
             // Always add sample at zero
-            pat[0] = 0;
-            pat[1] = 0;
+            patVector = Vector2.Zero;
 
             int npat = 1;
 
             for (int j = 0; j < nr; ++j)
             {
                 float r = (nr - j) * nrInverted;
-                pat[npat * 2 + 0] = ddir[j % 2 * 2] * r;
-                pat[npat * 2 + 1] = ddir[j % 2 * 2 + 1] * r;
+                Unsafe.Add(ref patVector, npat) = ddir[j % 2] * r;
                 int last1 = npat * 2;
                 int last2 = last1;
                 npat++;
@@ -418,11 +424,13 @@ namespace DotRecast.Detour.Crowd
                 for (int i = 1; i < nd - 1; i += 2)
                 {
                     // get next point on the "right" (rotate CW)
-                    pat[npat * 2 + 0] = pat[last1] * ca + pat[last1 + 1] * sa;
-                    pat[npat * 2 + 1] = -pat[last1] * sa + pat[last1 + 1] * ca;
+                    var ni = npat * 2;
+                    pat[ni] = Vector2.Dot(Unsafe.Add(ref patVector, last1 / 2), casa);
+                    pat[ni + 1] = -pat[last1] * sa + pat[last1 + 1] * ca;
+
                     // get next point on the "left" (rotate CCW)
-                    pat[npat * 2 + 2] = pat[last2] * ca - pat[last2 + 1] * sa;
-                    pat[npat * 2 + 3] = pat[last2] * sa + pat[last2 + 1] * ca;
+                    pat[ni + 2] = pat[last2] * ca - pat[last2 + 1] * sa;
+                    pat[ni + 3] = Vector2.Dot(Unsafe.Add(ref patVector, (last2) / 2), saca);
 
                     last1 = npat * 2;
                     last2 = last1 + 2;
@@ -450,7 +458,7 @@ namespace DotRecast.Detour.Crowd
 
                 for (int i = 0; i < npat; ++i)
                 {
-                    var vcand = nvel + new Vector2(pat[i * 2], pat[i * 2 + 1]) * cr;
+                    var vcand = nvel + Unsafe.Add(ref patVector, i) * cr;
 
                     if (vcand.LengthSquared() > RcMath.Sqr(vmax + 0.001f))
                         continue;
@@ -469,7 +477,7 @@ namespace DotRecast.Detour.Crowd
                 cr /= 2;
             }
 
-            ArrayPool<float>.Shared.Return(patArray);
+            ArrayPool<float>.Shared.Return(pat);
 
             return ns;
         }
