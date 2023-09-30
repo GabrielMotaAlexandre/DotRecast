@@ -4,8 +4,8 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     public class GroundSegment
     {
-        public Vector3 p = new();
-        public Vector3 q = new();
+        public Vector3 p;
+        public Vector3 q;
         public GroundSample[] gsamples;
         public float height;
     }

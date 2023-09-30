@@ -52,23 +52,23 @@ namespace DotRecast.Detour.Crowd
         /// The desired speed.
         public float desiredSpeed;
 
-        public Vector3 npos = new();
+        public Vector3 npos;
 
         /// < The current agent position. [(x, y, z)]
-        public Vector3 disp = new();
+        public Vector3 disp;
 
         /// < A temporary value used to accumulate agent displacement during iterative
         /// collision resolution. [(x, y)]
-        public Vector2 dvel = new();
+        public Vector2 dvel;
 
         /// < The desired velocity of the agent. Based on the current path, calculated
         /// from
         /// scratch each frame. [(x, y)]
-        public Vector2 nvel = new();
+        public Vector2 nvel;
 
         /// < The desired velocity adjusted by obstacle avoidance, calculated from scratch each
         /// frame. [(x, y)]
-        public Vector2 vel = new();
+        public Vector2 vel;
 
         /// < The actual velocity of the agent. The change from nvel -> vel is
         /// constrained by max acceleration. [(x, y, z)]
@@ -84,7 +84,7 @@ namespace DotRecast.Detour.Crowd
         public long targetRef;
 
         /// < Target polyref of the movement request.
-        public Vector3 targetPos = new();
+        public Vector3 targetPos;
 
         /// < Target position of the movement request (or velocity in case of
         /// DT_CROWDAGENT_TARGET_VELOCITY).

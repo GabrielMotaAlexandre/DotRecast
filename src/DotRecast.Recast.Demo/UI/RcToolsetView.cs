@@ -28,7 +28,7 @@ namespace DotRecast.Recast.Demo.UI;
 public class RcToolsetView : IRcView
 {
     //private readonly NkColor white = NkColor.Create();
-    private int _currentToolIdx = 0;
+    private int _currentToolIdx;
     private ISampleTool _currentSampleTool;
     private bool enabled;
     private readonly ISampleTool[] tools;

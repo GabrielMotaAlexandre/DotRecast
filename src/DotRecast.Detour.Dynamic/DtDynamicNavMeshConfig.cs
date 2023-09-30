@@ -45,7 +45,7 @@ namespace DotRecast.Detour.Dynamic
         public bool filterLedgeSpans = true;
         public bool filterWalkableLowHeightSpans = true;
         public bool enableCheckpoints = true;
-        public bool keepIntermediateResults = false;
+        public bool keepIntermediateResults;
 
         public DtDynamicNavMeshConfig(bool useTiles, int tileSizeX, int tileSizeZ, float cellSize)
         {

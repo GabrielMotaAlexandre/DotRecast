@@ -74,7 +74,7 @@ namespace DotRecast.Detour.Crowd
 * @return The current position within the corridor.
 */
         public Vector3 Pos => m_pos;
-        private Vector3 m_target = new();
+        private Vector3 m_target;
         private List<long> m_path;
 
 

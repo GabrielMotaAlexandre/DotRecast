@@ -5,7 +5,7 @@ namespace DotRecast.Recast.Toolset.Tools
     public class RcCrowdAgentData
     {
         public readonly RcCrowdAgentType type;
-        public readonly Vector3 home = new();
+        public readonly Vector3 home;
 
         public RcCrowdAgentData(RcCrowdAgentType type, Vector3 home)
         {

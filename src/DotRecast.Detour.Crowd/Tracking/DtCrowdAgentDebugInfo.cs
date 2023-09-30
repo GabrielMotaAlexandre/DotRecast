@@ -25,8 +25,8 @@ namespace DotRecast.Detour.Crowd.Tracking
     public class DtCrowdAgentDebugInfo
     {
         public DtCrowdAgent agent;
-        public Vector3 optStart = new();
-        public Vector3 optEnd = new();
+        public Vector3 optStart;
+        public Vector3 optEnd;
         public DtObstacleAvoidanceDebugData vod;
     }
 }

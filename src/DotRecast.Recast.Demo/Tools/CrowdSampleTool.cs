@@ -53,7 +53,7 @@ public class CrowdSampleTool : ISampleTool
     private bool _showOpt = true;
     private bool _showNeis = true;
 
-    private bool _showGrid = false;
+    private bool _showGrid;
     private bool _showNodes = true;
     private readonly bool _showDetailAll = true;
 

@@ -31,8 +31,8 @@ namespace DotRecast.Detour.TileCache
         public int version; // < Data version
         public int tx, ty, tlayer;
 
-        public Vector3 bmin = new();
-        public Vector3 bmax = new();
+        public Vector3 bmin;
+        public Vector3 bmax;
         public int hmin, hmax; // < Height min/max range
         public int width, height; // < Dimension of the layer.
         public int minx, maxx, miny, maxy; // < Usable sub-region.

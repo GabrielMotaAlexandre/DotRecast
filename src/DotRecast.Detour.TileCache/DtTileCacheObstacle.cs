@@ -27,12 +27,12 @@ namespace DotRecast.Detour.TileCache
     {
         public readonly int index;
         public DtTileCacheObstacleType type;
-        public Vector3 pos = new();
-        public Vector3 bmin = new();
-        public Vector3 bmax = new();
+        public Vector3 pos;
+        public Vector3 bmin;
+        public Vector3 bmax;
         public float radius, height;
-        public Vector3 center = new();
-        public Vector3 extents = new();
+        public Vector3 center;
+        public Vector3 extents;
         public readonly float[] rotAux = new float[2]; // { Cos(0.5f*angle)*Sin(-0.5f*angle); Cos(0.5f*angle)*Cos(0.5f*angle) - 0.5 }
         public List<long> touched = new();
         public readonly List<long> pending = new();

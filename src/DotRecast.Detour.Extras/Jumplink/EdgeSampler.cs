@@ -9,9 +9,9 @@ namespace DotRecast.Detour.Extras.Jumplink
         public readonly List<GroundSegment> end = new();
         public readonly Trajectory trajectory;
 
-        public readonly Vector3 ax = new();
-        public readonly Vector3 ay = new();
-        public readonly Vector3 az = new();
+        public readonly Vector3 ax;
+        public readonly Vector3 ay;
+        public readonly Vector3 az;
 
         public EdgeSampler(JumpEdge edge, Trajectory trajectory)
         {

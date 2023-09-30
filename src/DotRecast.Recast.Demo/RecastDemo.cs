@@ -64,7 +64,7 @@ public class RecastDemo : IRecastDemoChannel
 
     //private readonly RecastDebugDraw dd;
     private NavMeshRenderer renderer;
-    private float timeAcc = 0;
+    private float timeAcc;
     private float camr = 1000;
 
     private readonly SoloNavMeshBuilder soloNavMeshBuilder = new();
@@ -73,7 +73,7 @@ public class RecastDemo : IRecastDemoChannel
     private string _lastGeomFileName;
     private DemoSample _sample;
 
-    private bool processHitTest = false;
+    private bool processHitTest;
     private bool processHitTestShift;
     private int _modState;
 
@@ -88,7 +88,7 @@ public class RecastDemo : IRecastDemoChannel
     private float scrollZoom;
     private readonly float[] origMousePos = new float[2];
     private readonly float[] origCameraEulers = new float[2];
-    private Vector3 origCameraPos = new();
+    private Vector3 origCameraPos;
 
     private readonly float[] cameraEulers = { 45, -45 };
     private Vector3 cameraPos = new(0, 0, 0);
@@ -108,7 +108,7 @@ public class RecastDemo : IRecastDemoChannel
     private int[] viewport;
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
     private bool markerPositionSet;
-    private Vector3 markerPosition = new();
+    private Vector3 markerPosition;
 
     private RcToolsetView toolset;
     private RcSettingsView settingsView;

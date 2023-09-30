@@ -40,7 +40,7 @@ public class ConvexVolumeSampleTool : ISampleTool
 
     private float _boxHeight = 6f;
     private float _boxDescent = 1f;
-    private float _polyOffset = 0f;
+    private float _polyOffset;
 
     private int _areaTypeValue = SampleAreaModifications.SAMPLE_AREAMOD_GRASS.Value;
     private RcAreaModification _areaType = SampleAreaModifications.SAMPLE_AREAMOD_GRASS;

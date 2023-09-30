@@ -54,7 +54,7 @@ namespace DotRecast.Detour.Dynamic.Io
         public bool useTiles;
         public int tileSizeX;
         public int tileSizeZ;
-        public Vector3 rotation = new();
+        public Vector3 rotation;
         public float[] bounds = new float[6];
         public readonly List<DtVoxelTile> tiles = new();
 

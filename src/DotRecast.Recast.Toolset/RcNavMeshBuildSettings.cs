@@ -29,7 +29,7 @@
         public float detailSampleDist = 6f;
         public float detailSampleMaxError = 1f;
 
-        public bool tiled = false;
+        public bool tiled;
         public int tileSize = 32;
     }
 }

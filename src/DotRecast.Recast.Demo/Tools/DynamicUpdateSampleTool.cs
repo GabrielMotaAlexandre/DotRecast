@@ -70,7 +70,7 @@ public class DynamicUpdateSampleTool : ISampleTool
     private bool buildDetailMesh = true;
 
     private bool compression = true;
-    private bool showColliders = false;
+    private bool showColliders;
     private long buildTime;
     private long raycastTime;
 

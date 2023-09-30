@@ -50,10 +50,10 @@ namespace DotRecast.Recast
         public int maxRegions;
 
         /** The minimum bounds in world space. [(x, y, z)] */
-        public Vector3 bmin = new();
+        public Vector3 bmin;
 
         /** The maximum bounds in world space. [(x, y, z)] */
-        public Vector3 bmax = new();
+        public Vector3 bmax;
 
         /** The size of each cell. (On the xz-plane.) */
         public float cs;

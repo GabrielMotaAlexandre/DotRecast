@@ -124,7 +124,7 @@ public class DebugDraw
 
     private const int CYLINDER_NUM_SEG = 16;
     private readonly float[] cylinderDir = new float[CYLINDER_NUM_SEG * 2];
-    private bool cylinderInit = false;
+    private bool cylinderInit;
 
     private void InitCylinder()
     {
@@ -301,11 +301,11 @@ public class DebugDraw
         End();
     }
 
-    private bool circleInit = false;
+    private bool circleInit;
     private const int CIRCLE_NUM_SEG = 40;
     private readonly float[] circeDir = new float[CIRCLE_NUM_SEG * 2];
-    private RcMatrix4x4f _viewMatrix = new();
-    private RcMatrix4x4f _projectionMatrix = new();
+    private RcMatrix4x4f _viewMatrix;
+    private RcMatrix4x4f _projectionMatrix;
 
     public void AppendCircle(float x, float y, float z, float r, int col)
     {

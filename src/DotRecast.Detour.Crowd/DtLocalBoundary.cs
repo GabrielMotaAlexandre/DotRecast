@@ -31,7 +31,7 @@ namespace DotRecast.Detour.Crowd
     {
         public const int MAX_LOCAL_SEGS = 8;
 
-        private Vector3 m_center = new();
+        private Vector3 m_center;
         public List<DtSegment> Segments { get; } = new();
         private List<long> m_polys = new();
         private List<long> m_parents = new();

@@ -150,7 +150,7 @@ namespace DotRecast.Detour.Crowd
         private readonly DtObstacleAvoidanceParams[] _obstacleQueryParams = new DtObstacleAvoidanceParams[DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS];
         private readonly DtObstacleAvoidanceQuery _obstacleQuery;
         private DtProximityGrid _grid;
-        private readonly Vector3 _ext = new();
+        private readonly Vector3 _ext;
         private readonly IDtQueryFilter[] _filters = new IDtQueryFilter[DT_CROWD_MAX_QUERY_FILTER_TYPE];
         private DtNavMeshQuery _navQuery;
         private DtNavMesh _navMesh;
@@ -468,9 +468,6 @@ namespace DotRecast.Detour.Crowd
                 bool replan = false;
 
                 // First check that the current location is valid.
-                _ = new
-                // First check that the current location is valid.
-                Vector3();
                 long agentRef = ag.corridor.GetFirstPoly();
                 Vector3 agentPos = ag.npos;
                 if (!_navQuery.IsValidPolyRef(agentRef, _filters[ag.option.queryFilterType]))

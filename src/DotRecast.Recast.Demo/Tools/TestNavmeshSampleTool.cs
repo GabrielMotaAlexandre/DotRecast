@@ -28,7 +28,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
     // flags
     private int _includeFlags = SampleAreaModifications.SAMPLE_POLYFLAGS_ALL;
-    private int _excludeFlags = 0;
+    private int _excludeFlags;
 
     private bool _enableRaycast = true;
 
