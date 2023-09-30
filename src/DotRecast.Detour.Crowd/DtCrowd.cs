@@ -860,12 +860,14 @@ namespace DotRecast.Detour.Crowd
             using var timer = _telemetry.ScopedTimer(DtCrowdTimerLabel.BuildProximityGrid);
 
             var size = _config.maxAgentRadius * 3;
-            _grid ??= new DtProximityGrid(size);
 
-            if (size != _grid.CellSize)
+            if (_grid == null || _grid.CellSize != size)
             {
-                _grid.Clear();
+                _navMesh.ComputeBounds(out var min, out var max);
+                _grid = new DtProximityGrid(new Vector4(min.X, min.Z, max.X, max.Z), size);
             }
+
+            _grid.Clear();
 
             foreach (DtCrowdAgent ag in agents)
             {
@@ -901,14 +903,13 @@ namespace DotRecast.Detour.Crowd
             }
         }
 
-
-        private static void GetNeighbours(Vector3 pos, float height, float range, DtCrowdAgent skip, List<DtCrowdNeighbour> result, DtProximityGrid grid)
+        private void GetNeighbours(Vector3 pos, float height, float range, DtCrowdAgent skip, List<DtCrowdNeighbour> result, DtProximityGrid grid)
         {
             result.Clear();
 
             var rangeSqr = RcMath.Sqr(range);
 
-            var proxAgents = grid.QueryItems(pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, skip);
+            var proxAgents = grid.QueryItems(this, pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, skip);
 
             int i = 0;
            
@@ -921,7 +922,7 @@ namespace DotRecast.Detour.Crowd
 
                 // Check for overlap.
                 Vector3 diff = pos - ag.npos;
-                if (Math.Abs(diff.Y) >= (height + ag.option.height) / 2.0f)
+                if (MathF.Abs(diff.Y) >= (height + ag.option.height) / 2f)
                 {
                     continue;
                 }
@@ -1101,8 +1102,8 @@ namespace DotRecast.Detour.Crowd
                             continue;
                         }
 
-                        float dist = (float)Math.Sqrt(distSqr);
-                        float weight = separationWeight * (1.0f - RcMath.Sqr(dist * invSeparationDist));
+                        var dist = MathF.Sqrt(distSqr);
+                        var weight = separationWeight * (1.0f - RcMath.Sqr(dist * invSeparationDist));
 
                         disp = Vector3Extensions.Mad(disp, diff, weight / dist);
                         w += 1.0f;

@@ -51,12 +51,12 @@ namespace DotRecast.Detour.Dynamic.Colliders
                 float vx = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
                 float vy = center.Y + s0 * halfEdges[0].Y + s1 * halfEdges[1].Y + s2 * halfEdges[2].Y;
                 float vz = center.Z + s0 * halfEdges[0].Z + s1 * halfEdges[1].Z + s2 * halfEdges[2].Z;
-                bounds[0] = Math.Min(bounds[0], vx);
-                bounds[1] = Math.Min(bounds[1], vy);
-                bounds[2] = Math.Min(bounds[2], vz);
-                bounds[3] = Math.Max(bounds[3], vx);
-                bounds[4] = Math.Max(bounds[4], vy);
-                bounds[5] = Math.Max(bounds[5], vz);
+                bounds[0] = MathF.Min(bounds[0], vx);
+                bounds[1] = MathF.Min(bounds[1], vy);
+                bounds[2] = MathF.Min(bounds[2], vz);
+                bounds[3] = MathF.Max(bounds[3], vx);
+                bounds[4] = MathF.Max(bounds[4], vy);
+                bounds[5] = MathF.Max(bounds[5], vz);
             }
 
             return bounds;

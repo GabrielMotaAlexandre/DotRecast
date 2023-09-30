@@ -161,7 +161,7 @@ namespace DotRecast.Detour.Crowd
 
             bool endOfPath = ((corners[^1].flags & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0) ? true : false;
             if (endOfPath)
-                return Math.Min(Vector3Extensions.Dist2D(npos, corners[^1].pos), range);
+                return MathF.Min(Vector3Extensions.Dist2D(npos, corners[^1].pos), range);
 
             return range;
         }

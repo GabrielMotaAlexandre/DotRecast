@@ -197,7 +197,7 @@ namespace DotRecast.Detour.Crowd
 
             // Overshoot a little. This helps to optimize open fields in tiled
             // meshes.
-            dist = Math.Min(dist + 0.01f, pathOptimizationRange);
+            dist = MathF.Min(dist + 0.01f, pathOptimizationRange);
 
             // Adjust ray length.
             var delta = next - m_pos;
@@ -451,7 +451,7 @@ namespace DotRecast.Detour.Crowd
         public bool IsValid(int maxLookAhead, DtNavMeshQuery navquery, IDtQueryFilter filter)
         {
             // Check that all polygons still pass query filter.
-            int n = Math.Min(m_path.Count, maxLookAhead);
+            int n = (int)MathF.Min(m_path.Count, maxLookAhead);
             for (int i = 0; i < n; ++i)
             {
                 if (!navquery.IsValidPolyRef(m_path[i], filter))

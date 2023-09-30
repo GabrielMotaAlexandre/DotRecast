@@ -22,7 +22,9 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -30,12 +32,19 @@ namespace DotRecast.Detour.Crowd
     {
         public readonly float CellSize;
         private readonly float _invCellSize;
-        private readonly Dictionary<long, List<DtCrowdAgent>> _items = new Dictionary<long, List<DtCrowdAgent>>();
+        private readonly Dictionary<long, List<DtCrowdAgent>> _items = new();
+        public Vector4 PlaneBounds { get; private set; }
 
-        public DtProximityGrid(float cellSize)
+        public DtProximityGrid(Vector4 planeBounds, float cellSize)
         {
+            PlaneBounds = planeBounds;
             CellSize = cellSize;
             _invCellSize = 1.0f / cellSize;
+        }
+
+        public void Clear()
+        {
+            _items.Clear();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,17 +64,12 @@ namespace DotRecast.Detour.Crowd
             y = (int)uy;
         }
 
-        public void Clear()
-        {
-            _items.Clear();
-        }
-
         public void AddItem(DtCrowdAgent agent, float minx, float miny, float maxx, float maxy)
         {
-            int iminx = (int)Math.Floor(minx * _invCellSize);
-            int iminy = (int)Math.Floor(miny * _invCellSize);
-            int imaxx = (int)Math.Floor(maxx * _invCellSize);
-            int imaxy = (int)Math.Floor(maxy * _invCellSize);
+            int iminx = (int)MathF.Floor(minx * _invCellSize);
+            int iminy = (int)MathF.Floor(miny * _invCellSize);
+            int imaxx = (int)MathF.Floor(maxx * _invCellSize);
+            int imaxy = (int)MathF.Floor(maxy * _invCellSize);
 
             for (int y = iminy; y <= imaxy; ++y)
             {
@@ -84,18 +88,18 @@ namespace DotRecast.Detour.Crowd
         }
 
         // 해당 셀 사이즈의 크기로 x ~ y 영역을 찾아, 군집 에이전트를 가져오는 코드
-        public DtCrowdAgent[] QueryItems(float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
+        public DtCrowdAgent[] QueryItems(DtCrowd dtCrowd, float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
         {
             int i = 0;
-
-            int iminx = (int)Math.Floor(minx * _invCellSize);
-            int iminy = (int)Math.Floor(miny * _invCellSize);
-            int imaxx = (int)Math.Floor(maxx * _invCellSize);
-            int imaxy = (int)Math.Floor(maxy * _invCellSize);
-            var result = ArrayPool<DtCrowdAgent>.Shared.Rent(1000);
+            
+            int iminx = (int)MathF.Floor(minx * _invCellSize);
+            int iminy = (int)MathF.Floor(miny * _invCellSize);
+            int imaxx = (int)MathF.Floor(maxx * _invCellSize);
+            int imaxy = (int)MathF.Floor(maxy * _invCellSize);
+            var result = ArrayPool<DtCrowdAgent>.Shared.Rent(dtCrowd.GetActiveAgents().Count);
             Array.Clear(result);
 
-            var array = ArrayPool<bool>.Shared.Rent(1000);
+            var array = ArrayPool<bool>.Shared.Rent(dtCrowd.GetActiveAgents().Count);
             Array.Clear(array);
 
             array[skip.idx] = true;

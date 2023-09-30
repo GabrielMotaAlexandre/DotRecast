@@ -16,6 +16,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -293,6 +294,23 @@ namespace System.Numerics
         public static ref T GetUnsafe<T>(this T[] array, int index)
         {
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+        }
+    }
+
+    public static class Utils
+    {
+        public static void BubbleSort<T, TComparer>(this List<T> source, TComparer comparer) where TComparer : IComparer<T>
+        {
+            for (int i = (source.Count - 1); i >= 0; i--)
+            {
+                for (int j = 1; j <= i; j++)
+                {
+                    if (comparer.Compare(source[j - 1], source[j]) > 0)
+                    {
+                        (source[j], source[j - 1]) = (source[j - 1], source[j]);
+                    }
+                }
+            }
         }
     }
 
