@@ -897,7 +897,7 @@ namespace DotRecast.Detour.Crowd
                 }
 
                 // Query neighbour agents
-                GetNeighbours(ag.npos, ag.option.height, ag.option.collisionQueryRange, ag, ag.neis, _grid);
+                GetNeighbours(ag.npos, ag.option.height, ag.option.collisionQueryRange, ag, ag.Neighbors, _grid);
             }
         }
 
@@ -1026,7 +1026,7 @@ namespace DotRecast.Detour.Crowd
 
                         ag.state = DtCrowdAgentState.DT_CROWDAGENT_STATE_OFFMESH;
                         ag.corners.Clear();
-                        ag.neis.Clear();
+                        ag.Neighbors.Clear();
                         continue;
                     }
                     else
@@ -1062,14 +1062,9 @@ namespace DotRecast.Detour.Crowd
                 else
                 {
                     // Calculate steering direction.
-                    if ((ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS) != 0)
-                    {
-                        dvel = ag.CalcSmoothSteerDirection();
-                    }
-                    else
-                    {
-                        dvel = ag.CalcStraightSteerDirection();
-                    }
+                    dvel = (ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS) != 0
+                        ? ag.CalcSmoothSteerDirection()
+                        : ag.CalcStraightSteerDirection();
 
                     // Calculate speed scale, which tells the agent to slowdown at the end of the path.
                     float slowDownRadius = ag.option.radius * 2; // TODO: make less hacky.
@@ -1089,9 +1084,9 @@ namespace DotRecast.Detour.Crowd
                     float w = 0;
                     Vector2 disp = new();
 
-                    for (int j = 0; j < ag.neis.Count; ++j)
+                    for (int j = 0; j < ag.Neighbors.Count; ++j)
                     {
-                        DtCrowdAgent nei = ag.neis[j].agent;
+                        DtCrowdAgent nei = ag.Neighbors[j].agent;
 
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
@@ -1149,9 +1144,9 @@ namespace DotRecast.Detour.Crowd
                     _obstacleQuery.Reset();
 
                     // Add neighbours as obstacles.
-                    for (int j = 0; j < ag.neis.Count; ++j)
+                    for (int j = 0; j < ag.Neighbors.Count; ++j)
                     {
-                        DtCrowdAgent nei = ag.neis[j].agent;
+                        DtCrowdAgent nei = ag.Neighbors[j].agent;
                         _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, nei.vel, nei.dvel);
                     }
 
@@ -1229,9 +1224,9 @@ namespace DotRecast.Detour.Crowd
 
                     float w = 0;
 
-                    for (int j = 0; j < ag.neis.Count; ++j)
+                    for (int j = 0; j < ag.Neighbors.Count; ++j)
                     {
-                        DtCrowdAgent nei = ag.neis[j].agent;
+                        DtCrowdAgent nei = ag.Neighbors[j].agent;
 
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 

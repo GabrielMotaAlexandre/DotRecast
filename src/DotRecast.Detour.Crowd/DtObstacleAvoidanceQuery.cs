@@ -21,8 +21,10 @@ freely, subject to the following restrictions:
 using System;
 using System.Buffers;
 using System.Numerics;
+using System.Runtime.Intrinsics;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -356,27 +358,6 @@ namespace DotRecast.Detour.Crowd
             return ns;
         }
 
-        // vector normalization that ignores the y-component.
-        static void DtNormalize2D(float[] v)
-        {
-            float d = (float)Math.Sqrt(v[0] * v[0] + v[2] * v[2]);
-            if (d == 0)
-                return;
-            d = 1.0f / d;
-            v[0] *= d;
-            v[2] *= d;
-        }
-
-        // vector normalization that ignores the y-component.
-        static Vector2 DtRotate2D(float[] v, float ang)
-        {
-            float c = (float)Math.Cos(ang);
-            float s = (float)Math.Sin(ang);
-            return new Vector2(v[0] * c - v[2] * s, v[0] * s + v[2] * c);
-        }
-
-        static readonly float DT_PI = 3.14159265f;
-
         public int SampleVelocityAdaptive(Vector2 pos, float rad, float vmax, Vector2 vel, Vector2 dvel, out Vector2 nvel,
             DtObstacleAvoidanceParams option,
             DtObstacleAvoidanceDebugData debug)
@@ -390,8 +371,6 @@ namespace DotRecast.Detour.Crowd
             debug?.Reset();
 
             // Build sampling pattern aligned to desired velocity.
-            float[] pat = ArrayPool<float>.Shared.Rent((DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2);
-            int npat = 0;
 
             int ndivs = m_params.adaptiveDivs;
             int nrings = m_params.adaptiveRings;
@@ -399,31 +378,39 @@ namespace DotRecast.Detour.Crowd
 
             int nd = Math.Clamp(ndivs, 1, DT_MAX_PATTERN_DIVS);
             int nr = Math.Clamp(nrings, 1, DT_MAX_PATTERN_RINGS);
-            float da = 1.0f / nd * DT_PI * 2;
+            var nrInverted = 1f / nr;
+            float da = 1f / nd * float.Pi * 2;
             float ca = (float)Math.Cos(da);
             float sa = (float)Math.Sin(da);
 
             // desired direction
-            float[] ddir = new float[6];
-            ddir[0] = dvel.X;
-            ddir[1] = 0;
-            ddir[2] = dvel.Y;
-            DtNormalize2D(ddir);
-            var rotated = DtRotate2D(ddir, da * 0.5f); // rotated by da/2
-            ddir[3] = rotated.X;
-            ddir[4] = 0;
-            ddir[5] = rotated.Y;
+            var di = Vector2.Normalize(dvel);
+
+            // DtRotate by da/2
+            var ang = da * 0.5f;
+            float c = MathF.Cos(ang);
+            float s = MathF.Sin(ang);
+
+            // rotated by da/2
+            var rotc = di * c;
+            var rots = di * s;
+
+            var ddir = new Vector4(di, rotc.X - rots.Y, rots.X + rotc.Y);
+
+            var patArray = ArrayPool<float>.Shared.Rent((DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2);
+            var pat = patArray.AsSpan();
 
             // Always add sample at zero
-            pat[npat * 2 + 0] = 0;
-            pat[npat * 2 + 1] = 0;
-            npat++;
+            pat[0] = 0;
+            pat[1] = 0;
+
+            int npat = 1;
 
             for (int j = 0; j < nr; ++j)
             {
-                float r = (nr - j) / (float)nr;
-                pat[npat * 2 + 0] = ddir[j % 2 * 3] * r;
-                pat[npat * 2 + 1] = ddir[j % 2 * 3 + 2] * r;
+                float r = (nr - j) * nrInverted;
+                pat[npat * 2 + 0] = ddir[j % 2 * 2] * r;
+                pat[npat * 2 + 1] = ddir[j % 2 * 2 + 1] * r;
                 int last1 = npat * 2;
                 int last2 = last1;
                 npat++;
@@ -482,7 +469,7 @@ namespace DotRecast.Detour.Crowd
                 cr /= 2;
             }
 
-            ArrayPool<float>.Shared.Return(pat);
+            ArrayPool<float>.Shared.Return(patArray);
 
             return ns;
         }

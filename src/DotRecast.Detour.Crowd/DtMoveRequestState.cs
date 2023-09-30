@@ -1,8 +1,10 @@
-﻿namespace DotRecast.Detour.Crowd
+namespace DotRecast.Detour.Crowd
 {
     public enum DtMoveRequestState
     {
         DT_CROWDAGENT_TARGET_NONE,
+        // should we use?
+        DT_CROWDAGENT_TARGET_STOPPED,
         DT_CROWDAGENT_TARGET_FAILED,
         DT_CROWDAGENT_TARGET_VALID,
         DT_CROWDAGENT_TARGET_REQUESTING,

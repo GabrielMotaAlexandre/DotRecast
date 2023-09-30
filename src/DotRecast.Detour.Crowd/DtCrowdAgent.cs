@@ -20,12 +20,14 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 
 namespace DotRecast.Detour.Crowd
 {
     /// Represents an agent managed by a #dtCrowd object.
     /// @ingroup crowd
+    [DebuggerDisplay($"Agent {nameof(idx)}")]
     public class DtCrowdAgent
     {
         public readonly int idx;
@@ -47,7 +49,7 @@ namespace DotRecast.Detour.Crowd
         public float topologyOptTime;
 
         /// The known neighbors of the agent.
-        public List<DtCrowdNeighbour> neis = new();
+        public List<DtCrowdNeighbour> Neighbors { get; } = new();
 
         /// The desired speed.
         public float desiredSpeed;
@@ -112,18 +114,25 @@ namespace DotRecast.Detour.Crowd
         public void Integrate(float dt)
         {
             // Fake dynamic constraint.
-            float maxDelta = option.maxAcceleration * dt;
             var dv = nvel - vel;
             float ds = dv.Length();
+            float maxDelta = option.maxAcceleration * dt;
             if (ds > maxDelta)
+            {
                 dv *= maxDelta / ds;
+            }
             vel += dv;
 
             // Integrate
             if (vel.Length() > 0.0001f)
+            {
                 npos = Vector3Extensions.Mad(npos, vel.AsVector3(), dt);
+            }
             else
+            {
+                // stopped
                 vel = Vector2.Zero;
+            }
         }
 
         public bool OverOffmeshConnection(float radius)
