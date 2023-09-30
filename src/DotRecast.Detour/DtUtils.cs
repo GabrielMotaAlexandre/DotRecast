@@ -64,12 +64,12 @@ namespace DotRecast.Detour
         /// @param[in] bmax Maximum bounds of box B. [(x, y, z)]
         /// @return True if the two AABB's overlap.
         /// @see dtOverlapBounds
-        public static bool OverlapQuantBounds(int[] amin, int[] amax, int[] bmin, int[] bmax)
+        public static bool OverlapQuantBounds(Vector3 amin, Vector3 amax, int[] bmin, int[] bmax)
         {
-            bool overlap = true;
-            overlap = (amin[0] > bmax[0] || amax[0] < bmin[0]) ? false : overlap;
-            overlap = (amin[1] > bmax[1] || amax[1] < bmin[1]) ? false : overlap;
-            overlap = (amin[2] > bmax[2] || amax[2] < bmin[2]) ? false : overlap;
+            bool overlap = ((int)amin.X & 0x7ffffffe) <= bmax[0] && ((((int)amax.X) + 1) | 1) >= bmin[0]
+                && ((int)amin.Y & 0x7ffffffe) <= bmax[1] && ((((int)amax.Y) + 1) | 1) >= bmin[1] 
+                && ((int)amin.Z & 0x7ffffffe) <= bmax[2] && ((((int)amax.Z) + 1) | 1) >= bmin[2];
+
             return overlap;
         }
 
@@ -317,29 +317,7 @@ namespace DotRecast.Detour
 
         public static float DistancePtSegSqr2D(Vector3 pt, Vector3 p, Vector3 q, out float t)
         {
-            float pqx = q.X - p.X;
-            float pqz = q.Z - p.Z;
-            float dx = pt.X - p.X;
-            float dz = pt.Z - p.Z;
-            float d = pqx * pqx + pqz * pqz;
-            t = pqx * dx + pqz * dz;
-            if (d > 0)
-            {
-                t /= d;
-            }
-
-            if (t < 0)
-            {
-                t = 0;
-            }
-            else if (t > 1)
-            {
-                t = 1;
-            }
-
-            dx = t * pqx + p.X - pt.X;
-            dz = t * pqz + p.Z - pt.Z;
-            return dx * dx + dz * dz;
+            return DistancePtSegSqr2D(pt.AsVector2XZ(), p.AsVector2XZ(), q.AsVector2XZ(), out t);
         }
 
         public static float DistancePtSegSqr2D(Vector2 pt, Vector2 p, Vector2 q, out float t)
@@ -355,8 +333,7 @@ namespace DotRecast.Detour
 
             t = Math.Clamp(t, 0, 1);
 
-            dd = t * pq + p - pt;
-            return dd.LengthSquared();
+            return (t * pq + p - pt).LengthSquared();
         }
 
         public static bool IntersectSegmentPoly2D(Vector3 p0, Vector3 p1,

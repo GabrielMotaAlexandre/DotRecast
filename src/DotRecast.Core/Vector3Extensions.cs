@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace System.Numerics
 {
@@ -79,10 +80,7 @@ namespace System.Numerics
             float sqMag = vector.LengthSquared();
             if (sqMag > EPSILON)
             {
-                float inverseMag = 1.0f / (float)Math.Sqrt(sqMag);
-                vector.X *= inverseMag;
-                vector.Y *= inverseMag;
-                vector.Z *= inverseMag;
+                vector /= MathF.Sqrt(sqMag);
             }
         }
 
@@ -171,7 +169,7 @@ namespace System.Numerics
         {
             float dx = v2.X - v1.X;
             float dz = v2.Z - v1.Z;
-            return (float)Math.Sqrt(dx * dx + dz * dz);
+            return (float)MathF.Sqrt(dx * dx + dz * dz);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -290,5 +288,24 @@ namespace System.Numerics
             dest.Y = v1.Z * v2.X - v1.X * v2.Z;
             dest.Z = v1.X * v2.Y - v1.Y * v2.X;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetUnsafe<T>(this T[] array, int index)
+        {
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+        }
     }
+
+#pragma warning disable CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+#pragma warning disable IDE1006 // Naming Styles
+    public static class math
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T select<T>(this T value1, T value2, bool select)
+        {
+            return select ? value2 : value1;
+        }
+    }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 }

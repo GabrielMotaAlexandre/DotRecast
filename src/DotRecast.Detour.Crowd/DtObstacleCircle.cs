@@ -6,7 +6,7 @@ namespace DotRecast.Detour.Crowd
     public class DtObstacleCircle
     {
         /** Position of the obstacle */
-        public Vector3 p = new();
+        public Vector2 p = new();
 
         /** Velocity of the obstacle */
         public Vector2 vel = new();

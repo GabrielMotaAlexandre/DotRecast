@@ -84,13 +84,21 @@ namespace DotRecast.Detour.Crowd
         }
 
         // 해당 셀 사이즈의 크기로 x ~ y 영역을 찾아, 군집 에이전트를 가져오는 코드
-        public HashSet<DtCrowdAgent> QueryItems(float minx, float miny, float maxx, float maxy)
+        public DtCrowdAgent[] QueryItems(float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
         {
-            var result = new HashSet<DtCrowdAgent>();
+            int i = 0;
+
             int iminx = (int)Math.Floor(minx * _invCellSize);
             int iminy = (int)Math.Floor(miny * _invCellSize);
             int imaxx = (int)Math.Floor(maxx * _invCellSize);
             int imaxy = (int)Math.Floor(maxy * _invCellSize);
+            var result = ArrayPool<DtCrowdAgent>.Shared.Rent(1000);
+            Array.Clear(result);
+
+            var array = ArrayPool<bool>.Shared.Rent(1000);
+            Array.Clear(array);
+
+            array[skip.idx] = true;
 
             for (int y = iminy; y <= imaxy; ++y)
             {
@@ -99,16 +107,23 @@ namespace DotRecast.Detour.Crowd
                     long key = CombineKey(x, y);
                     if (_items.TryGetValue(key, out var ids))
                     {
-                        for (int i = 0; i < ids.Count; ++i)
+                        foreach (var ag in ids)
                         {
-                            result.Add(ids[i]);
+                            ref var a = ref array[ag.idx];
+
+                            if (!a)
+                            {
+                                result[i++] = ag;
+                            }
+
+                            a = true;
                         }
                     }
                 }
             }
+            ArrayPool<bool>.Shared.Return(array);
             return result;
         }
-
 
         public IEnumerable<(long, int)> GetItemCounts()
         {

@@ -599,24 +599,12 @@ namespace DotRecast.Detour
                 int nodeIndex = 0;
                 var tbmin = tile.data.header.bmin;
                 var tbmax = tile.data.header.bmax;
+
                 float qfac = tile.data.header.bvQuantFactor;
-                // Calculate quantized box
-                int[] bmin = new int[3];
-                int[] bmax = new int[3];
-                // dtClamp query box to world box.
-                float minx = Math.Clamp(qmin.X, tbmin.X, tbmax.X) - tbmin.X;
-                float miny = Math.Clamp(qmin.Y, tbmin.Y, tbmax.Y) - tbmin.Y;
-                float minz = Math.Clamp(qmin.Z, tbmin.Z, tbmax.Z) - tbmin.Z;
-                float maxx = Math.Clamp(qmax.X, tbmin.X, tbmax.X) - tbmin.X;
-                float maxy = Math.Clamp(qmax.Y, tbmin.Y, tbmax.Y) - tbmin.Y;
-                float maxz = Math.Clamp(qmax.Z, tbmin.Z, tbmax.Z) - tbmin.Z;
-                // Quantize
-                bmin[0] = (int)(qfac * minx) & 0x7ffffffe;
-                bmin[1] = (int)(qfac * miny) & 0x7ffffffe;
-                bmin[2] = (int)(qfac * minz) & 0x7ffffffe;
-                bmax[0] = (int)(qfac * maxx + 1) | 1;
-                bmax[1] = (int)(qfac * maxy + 1) | 1;
-                bmax[2] = (int)(qfac * maxz + 1) | 1;
+
+                // dtClamp query box to world box quantized
+                var min = (Vector3.Clamp(qmin, tbmin, tbmax) - tbmin) * qfac;
+                var max = (Vector3.Clamp(qmax, tbmin, tbmax) - tbmin) * qfac;
 
                 // Traverse tree
                 long @base = DtNavMesh.GetPolyRefBase(tile);
@@ -624,7 +612,7 @@ namespace DotRecast.Detour
                 while (nodeIndex < end)
                 {
                     DtBVNode node = tile.data.bvTree[nodeIndex];
-                    bool overlap = DtUtils.OverlapQuantBounds(bmin, bmax, node.bmin, node.bmax);
+                    bool overlap = DtUtils.OverlapQuantBounds(min, max, node.bmin, node.bmax);
                     bool isLeafNode = node.i >= 0;
 
                     if (isLeafNode && overlap)
@@ -2937,7 +2925,7 @@ namespace DotRecast.Detour
                             var index = pastPoly.verts[k] * 3;
                             pb[k] = new Vector2(pastTile.data.verts[index], pastTile.data.verts[index + 2]);
                         }
-                        
+
                         if (DtUtils.OverlapPolyPoly2D(in pa, npa, in pb, npb))
                         {
                             overlap = true;

@@ -19,11 +19,13 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.Intrinsics;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace DotRecast.Detour.Crowd
@@ -909,10 +911,17 @@ namespace DotRecast.Detour.Crowd
 
             var rangeSqr = RcMath.Sqr(range);
 
-            var proxAgents = grid.QueryItems(pos.X - range, pos.Z - range, pos.X + range, pos.Z + range);
-            proxAgents.Remove(skip);
-            foreach (DtCrowdAgent ag in proxAgents)
+            var proxAgents = grid.QueryItems(pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, skip);
+
+            int i = 0;
+           
+            while(true)
+            //foreach (DtCrowdAgent ag in proxAgents)
             {
+                var ag = proxAgents[i++];
+                if (ag == null)
+                    break;
+
                 // Check for overlap.
                 Vector3 diff = pos - ag.npos;
                 if (Math.Abs(diff.Y) >= (height + ag.option.height) / 2.0f)
@@ -929,6 +938,8 @@ namespace DotRecast.Detour.Crowd
 
                 result.Add(new DtCrowdNeighbour(ag, distSqr));
             }
+            ArrayPool<DtCrowdAgent>.Shared.Return(proxAgents);
+
 
             result.Sort((o1, o2) => o1.dist.CompareTo(o2.dist));
         }
@@ -1144,7 +1155,7 @@ namespace DotRecast.Detour.Crowd
                     for (int j = 0; j < ag.neis.Count; ++j)
                     {
                         DtCrowdAgent nei = ag.neis[j].agent;
-                        _obstacleQuery.AddCircle(nei.npos, nei.option.radius, nei.vel, nei.dvel);
+                        _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, nei.vel, nei.dvel);
                     }
 
                     // Append neighbour segments as obstacles.
@@ -1165,14 +1176,15 @@ namespace DotRecast.Detour.Crowd
 
                     DtObstacleAvoidanceParams option = _obstacleQueryParams[ag.option.obstacleAvoidanceType];
 
+                    var pos = ag.npos.AsVector2XZ();
                     if (adaptive)
                     {
-                        _obstacleQuery.SampleVelocityAdaptive(ag.npos, ag.option.radius, ag.desiredSpeed,
+                        _obstacleQuery.SampleVelocityAdaptive(pos, ag.option.radius, ag.desiredSpeed,
                             ag.vel, ag.dvel, out ag.nvel, option, vod);
                     }
                     else
                     {
-                        _obstacleQuery.SampleVelocityGrid(ag.npos, ag.option.radius,
+                        _obstacleQuery.SampleVelocityGrid(pos, ag.option.radius,
                             ag.desiredSpeed, ag.vel, ag.dvel, out ag.nvel, option, vod);
                     }
 
@@ -1209,11 +1221,12 @@ namespace DotRecast.Detour.Crowd
             {
                 foreach (DtCrowdAgent ag in agents)
                 {
-                    long idx0 = ag.idx;
                     if (ag.state != DtCrowdAgentState.DT_CROWDAGENT_STATE_WALKING)
                     {
                         continue;
                     }
+
+                    var idx0 = ag.idx;
 
                     ag.disp = Vector3.Zero;
 
@@ -1222,7 +1235,7 @@ namespace DotRecast.Detour.Crowd
                     for (int j = 0; j < ag.neis.Count; ++j)
                     {
                         DtCrowdAgent nei = ag.neis[j].agent;
-                        long idx1 = nei.idx;
+
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
                         float dist = diff.LengthSquared();
@@ -1236,7 +1249,7 @@ namespace DotRecast.Detour.Crowd
                         if (dist < 0.0001f)
                         {
                             // Agents on top of each other, try to choose diverging separation directions.
-                            if (idx0 > idx1)
+                            if (idx0 > nei.idx)
                             {
                                 diff = new Vector2(-ag.dvel.Y, ag.dvel.X);
                             }
