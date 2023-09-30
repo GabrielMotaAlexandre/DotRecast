@@ -1288,7 +1288,7 @@ namespace DotRecast.Detour
                         v[k + 1].Y = tile.data.verts[poly.verts[j + k] * 3 + 1];
                         v[k + 1].Z = tile.data.verts[poly.verts[j + k] * 3 + 2];
                     }
-
+                    
                     if (DtUtils.ClosestHeightPointTriangle(pos, v[0], v[1], v[2], out var h))
                     {
                         height = h;

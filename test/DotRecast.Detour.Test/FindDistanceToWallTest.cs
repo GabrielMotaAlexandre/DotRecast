@@ -35,13 +35,13 @@ public class FindDistanceToWallTest : AbstractDetourTest
         new Vector3(-22.315216f, 4.997294f, -11.441269f),
     };
 
-    private static readonly Vector3[] HIT_NORMAL =
+    private static readonly Vector2[] HIT_NORMAL =
     {
-        new Vector3(-0.955779f, 0.0f, -0.29408592f),
-        new Vector3(0.0f, 0.0f, 1.0f),
-        new Vector3(0.97014254f, 0.0f, 0.24253564f),
-        new Vector3(-1.0f, 0.0f, 0.0f),
-        new Vector3(1.0f, 0.0f, 0.0f),
+        new Vector2(-0.955779f, -0.29408592f),
+        new Vector2(0.0f, 1.0f),
+        new Vector2(0.97014254f,  0.24253564f),
+        new Vector2(-1.0f, 0.0f),
+        new Vector2(1.0f, 0.0f),
     };
 
     [Test]
@@ -61,7 +61,6 @@ public class FindDistanceToWallTest : AbstractDetourTest
 
             Assert.That(hitNormal.X, Is.EqualTo(HIT_NORMAL[i].X).Within(0.001f));
             Assert.That(hitNormal.Y, Is.EqualTo(HIT_NORMAL[i].Y).Within(0.001f));
-            Assert.That(hitNormal.Z, Is.EqualTo(HIT_NORMAL[i].Z).Within(0.001f));
         }
     }
 }

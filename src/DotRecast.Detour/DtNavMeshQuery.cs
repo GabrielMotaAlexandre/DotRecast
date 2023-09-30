@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 using DotRecast.Core;
@@ -475,9 +476,9 @@ namespace DotRecast.Detour
             }
 
             // Collect vertices.
-            float[] verts = new float[m_nav.GetMaxVertsPerPoly() * 3];
-            float[] edged = new float[m_nav.GetMaxVertsPerPoly()];
-            float[] edget = new float[m_nav.GetMaxVertsPerPoly()];
+            float[] verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
+            float[] edged = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
+            float[] edget =  ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
             int nv = poly.vertCount;
             for (int i = 0; i < nv; ++i)
             {
@@ -506,7 +507,9 @@ namespace DotRecast.Detour
                 int vb = (imin + 1) % nv * 3;
                 closest = Vector3Extensions.Lerp(verts, va, vb, edget[imin]);
             }
-
+            ArrayPool<float>.Shared.Return(verts);
+            ArrayPool<float>.Shared.Return(edged);
+            ArrayPool<float>.Shared.Return(edget);
             return DtStatus.DT_SUCCSESS;
         }
 
@@ -2179,7 +2182,7 @@ namespace DotRecast.Detour
         public DtStatus Raycast(long startRef, Vector3 startPos, Vector3 endPos, IDtQueryFilter filter, int options,
             long prevRef, out DtRaycastHit hit)
         {
-            hit = null;
+            hit = default;
 
             // Validate input
             if (!m_nav.IsValidPolyRef(startRef) || !Vector3Extensions.IsFinite(startPos) || !Vector3Extensions.IsFinite(endPos)
@@ -2188,7 +2191,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            hit = new DtRaycastHit();
+            hit.path = new List<long>();
 
             Vector3[] verts = new Vector3[m_nav.GetMaxVertsPerPoly() + 1];
 
@@ -2378,9 +2381,8 @@ namespace DotRecast.Detour
                     float dx = verts[b].X - verts[a].X;
                     float dz = verts[b].Z - verts[a].X;
                     hit.hitNormal.X = dz;
-                    hit.hitNormal.Y = 0;
-                    hit.hitNormal.Z = -dx;
-                    hit.hitNormal.Normalize();
+                    hit.hitNormal.Y = -dx;
+                    hit.hitNormal = Vector2.Normalize(hit.hitNormal);
                     return DtStatus.DT_SUCCSESS;
                 }
 
@@ -3125,11 +3127,11 @@ namespace DotRecast.Detour
         /// @returns The status flags for the query.
         public virtual DtStatus FindDistanceToWall(long startRef, Vector3 centerPos, float maxRadius,
             IDtQueryFilter filter,
-            out float hitDist, out Vector3 hitPos, out Vector3 hitNormal)
+            out float hitDist, out Vector3 hitPos, out Vector2 hitNormal)
         {
             hitDist = 0;
             hitPos = Vector3.Zero;
-            hitNormal = Vector3.Zero;
+            hitNormal = Vector2.Zero;
 
             // Validate input
             if (!m_nav.IsValidPolyRef(startRef) || !Vector3Extensions.IsFinite(centerPos) || maxRadius < 0
@@ -3324,9 +3326,8 @@ namespace DotRecast.Detour
             {
                 var tangent = bestvi - bestvj;
                 hitNormal.X = tangent.Z;
-                hitNormal.Y = 0;
-                hitNormal.Z = -tangent.X;
-                hitNormal.Normalize();
+                hitNormal.Y = -tangent.X;
+                hitNormal = Vector2.Normalize(hitNormal);
             }
 
             hitDist = (float)Math.Sqrt(radiusSqr);

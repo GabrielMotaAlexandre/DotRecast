@@ -26,16 +26,16 @@ namespace DotRecast.Detour
     /**
  * Provides information about raycast hit. Filled by NavMeshQuery::raycast
  */
-    public class DtRaycastHit
+    public struct DtRaycastHit
     {
         /** The hit parameter. (float.MaxValue if no wall hit.) */
         public float t;
 
-        /** hitNormal The normal of the nearest wall hit. [(x, y, z)] */
-        public Vector3 hitNormal;
+        /** hitNormal The normal of the nearest wall hit. [(x, z)] */
+        public Vector2 hitNormal;
 
         /** Visited polygons. */
-        public readonly List<long> path = new();
+        public  List<long> path;
 
         /** The cost of the path until hit. */
         public float pathCost;

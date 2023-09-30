@@ -32,7 +32,7 @@ namespace DotRecast.Detour.Crowd
     {
         public readonly float CellSize;
         private readonly float _invCellSize;
-        private readonly Dictionary<long, List<DtCrowdAgent>> _items = new();
+        private readonly Dictionary<long, (DtCrowdAgent[], int length)> _items = new();
         public Vector4 PlaneBounds { get; private set; }
 
         public DtProximityGrid(Vector4 planeBounds, float cellSize)
@@ -44,6 +44,10 @@ namespace DotRecast.Detour.Crowd
 
         public void Clear()
         {
+            foreach(var item in _items.Values)
+            {
+                ArrayPool<DtCrowdAgent>.Shared.Return(item.Item1);
+            }
             _items.Clear();
         }
 
@@ -78,11 +82,21 @@ namespace DotRecast.Detour.Crowd
                     long key = CombineKey(x, y);
                     if (!_items.TryGetValue(key, out var ids))
                     {
-                        ids = new List<DtCrowdAgent>();
+                        ids = (ArrayPool<DtCrowdAgent>.Shared.Rent(8), 0);
                         _items.Add(key, ids);
                     }
 
-                    ids.Add(agent);
+                    if (ids.length == ids.Item1.Length)
+                    {
+                        var ar = ids.Item1;
+                        ids = (ArrayPool<DtCrowdAgent>.Shared.Rent(ids.length * 2), ids.length);
+
+                        ar.CopyTo(ids.Item1, 0);
+                        ArrayPool<DtCrowdAgent>.Shared.Return(ar);
+                    }
+
+                    ids.Item1[ids.length] = agent;
+                    _items[key] = (ids.Item1, ids.length + 1);
                 }
             }
         }
@@ -91,7 +105,6 @@ namespace DotRecast.Detour.Crowd
         public DtCrowdAgent[] QueryItems(DtCrowd dtCrowd, float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
         {
             int i = 0;
-            
             int iminx = (int)MathF.Floor(minx * _invCellSize);
             int iminy = (int)MathF.Floor(miny * _invCellSize);
             int imaxx = (int)MathF.Floor(maxx * _invCellSize);
@@ -111,8 +124,9 @@ namespace DotRecast.Detour.Crowd
                     long key = CombineKey(x, y);
                     if (_items.TryGetValue(key, out var ids))
                     {
-                        foreach (var ag in ids)
+                        for(int iId = 0; iId != ids.length; iId++)
                         {
+                            var ag = ids.Item1.GetUnsafe(iId);
                             ref var a = ref array[ag.idx];
 
                             if (!a)
@@ -132,8 +146,8 @@ namespace DotRecast.Detour.Crowd
         public IEnumerable<(long, int)> GetItemCounts()
         {
             return _items
-                .Where(e => e.Value.Count > 0)
-                .Select(e => (e.Key, e.Value.Count));
+                .Where(e => e.Value.length > 0)
+                .Select(e => (e.Key, e.Value.length));
         }
 
         public float GetCellSize()

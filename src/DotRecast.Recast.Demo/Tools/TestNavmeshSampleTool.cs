@@ -53,7 +53,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
     // for hit
     private Vector3 m_hitPos;
-    private Vector3 m_hitNormal;
+    private Vector2 m_hitNormal;
     private bool m_hitResult;
 
     private float m_distanceToWall;
@@ -372,7 +372,7 @@ public class TestNavmeshSampleTool : ISampleTool
                     int hitCol = DuRGBA(0, 0, 0, 128);
                     dd.Begin(LINES, 2.0f);
                     dd.Vertex(m_hitPos.X, m_hitPos.Y + 0.4f, m_hitPos.Z, hitCol);
-                    dd.Vertex(m_hitPos.X + m_hitNormal.X * agentRadius, m_hitPos.Y + 0.4f + m_hitNormal.Y * agentRadius, m_hitPos.Z + m_hitNormal.Z * agentRadius, hitCol);
+                    dd.Vertex(m_hitPos.X + m_hitNormal.X * agentRadius, m_hitPos.Y + 0.4f, m_hitPos.Z, hitCol);
                     dd.End();
                 }
 

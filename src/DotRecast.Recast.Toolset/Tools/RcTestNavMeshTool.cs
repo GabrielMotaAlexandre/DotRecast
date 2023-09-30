@@ -247,7 +247,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
 
         public static DtStatus Raycast(DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 startPos, Vector3 endPos, IDtQueryFilter filter,
-            ref List<long> polys, ref List<StraightPathItem> straightPath, ref Vector3 hitPos, ref Vector3 hitNormal, ref bool hitResult)
+            ref List<long> polys, ref List<StraightPathItem> straightPath, ref Vector3 hitPos, ref Vector2 hitNormal, ref bool hitResult)
         {
             if (startRef == 0 || endRef == 0)
             {
@@ -299,7 +299,7 @@ namespace DotRecast.Recast.Toolset.Tools
         }
 
         public static DtStatus FindDistanceToWall(DtNavMeshQuery navQuery, long startRef, Vector3 spos, float maxRadius, IDtQueryFilter filter,
-            ref float hitDist, ref Vector3 hitPos, ref Vector3 hitNormal)
+            ref float hitDist, ref Vector3 hitPos, ref Vector2 hitNormal)
         {
             if (0 == startRef)
             {
