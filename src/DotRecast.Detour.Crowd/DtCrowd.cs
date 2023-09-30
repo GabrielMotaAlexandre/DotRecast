@@ -588,11 +588,10 @@ namespace DotRecast.Detour.Crowd
                     {
                         throw new ArgumentException("Empty path");
                     }
-
-
+                    
                     // Quick search towards the goal.
-                    _navQuery.InitSlicedFindPath(path[0], ag.targetRef, ag.npos, ag.targetPos,
-                        _filters[ag.option.queryFilterType], 0);
+                    _navQuery.InitSlicedFindPath(path[0], ag.targetRef, ag.npos, ag.targetPos, _filters[ag.option.queryFilterType], 0);
+
                     _navQuery.UpdateSlicedFindPath(_config.maxTargetFindPathIterations, out var _);
 
                     DtStatus status;
@@ -938,8 +937,17 @@ namespace DotRecast.Detour.Crowd
             }
             ArrayPool<DtCrowdAgent>.Shared.Return(proxAgents);
 
-
             result.Sort((o1, o2) => o1.dist.CompareTo(o2.dist));
+
+            //result.BubbleSort(new DistComparer());
+        }
+
+        private readonly struct DistComparer : IComparer<DtCrowdNeighbour>
+        {
+            public int Compare(DtCrowdNeighbour x, DtCrowdNeighbour y)
+            {
+                return x.dist.CompareTo(y.dist);
+            }
         }
 
         private void FindCorners(IList<DtCrowdAgent> agents, DtCrowdAgentDebugInfo debug)
