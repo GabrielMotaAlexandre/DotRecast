@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -158,11 +159,10 @@ namespace System.Numerics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Lerp(float[] verts, int v1, int v2, float t)
         {
-            return new Vector3(
-                verts[v1 + 0] + (verts[v2 + 0] - verts[v1 + 0]) * t,
-                verts[v1 + 1] + (verts[v2 + 1] - verts[v1 + 1]) * t,
-                verts[v1 + 2] + (verts[v2 + 2] - verts[v1 + 2]) * t
-            );
+            ref readonly Vector3 vector1 = ref verts.GetReference().UnsafeAdd(v1).UnsafeAs<float, Vector3>();
+            ref readonly Vector3 vector2 = ref verts.GetReference().UnsafeAdd(v2).UnsafeAs<float, Vector3>();
+
+            return vector1 + (vector2 - vector1) * t;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -290,10 +290,39 @@ namespace System.Numerics
             dest.Z = v1.X * v2.Y - v1.Y * v2.X;
         }
 
+        [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetUnsafe<T>(this T[] array, int index)
         {
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetReference<T>(this T[] array)
+        {
+            return ref MemoryMarshal.GetArrayDataReference(array);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref TTo UnsafeAs<T, TTo>(this T[] array) where T : struct where TTo : struct
+        {
+            return ref Unsafe.As<T, TTo>(ref array.GetReference());
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref TTo UnsafeAs<T, TTo>(ref this T value) where T : struct where TTo : struct
+        {
+            return ref Unsafe.As<T, TTo>(ref value);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T UnsafeAdd<T>(ref this T value, int offset) where T : struct
+        {
+            return ref Unsafe.Add(ref value, offset);
         }
     }
 

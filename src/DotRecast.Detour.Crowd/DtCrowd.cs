@@ -1156,13 +1156,14 @@ namespace DotRecast.Detour.Crowd
                     for (int j = 0; j < ag.Neighbors.Count; ++j)
                     {
                         DtCrowdAgent nei = ag.Neighbors[j].agent;
-                        _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, nei.vel, nei.dvel);
+                        _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, in nei.vel, in nei.dvel);
                     }
 
+                    var pos = ag.npos.AsVector2XZ();
                     // Append neighbour segments as obstacles.
-                    foreach(var segment in ag.boundary.Segments)
+                    foreach (var segment in ag.boundary.Segments)
                     {
-                        if (DtUtils.TriArea2D(ag.npos.AsVector2XZ(), in segment.Start, in segment.End) < 0.0f)
+                        if (DtUtils.TriArea2D(in pos, in segment.Start, in segment.End) < 0.0f)
                         {
                             continue;
                         }
@@ -1177,7 +1178,6 @@ namespace DotRecast.Detour.Crowd
 
                     DtObstacleAvoidanceParams option = _obstacleQueryParams[ag.option.obstacleAvoidanceType];
 
-                    var pos = ag.npos.AsVector2XZ();
                     if (adaptive)
                     {
                         _obstacleQuery.SampleVelocityAdaptive(pos, ag.option.radius, ag.desiredSpeed,
@@ -1227,8 +1227,6 @@ namespace DotRecast.Detour.Crowd
                         continue;
                     }
 
-                    var idx0 = ag.idx;
-
                     ag.disp = Vector3.Zero;
 
                     float w = 0;
@@ -1250,14 +1248,7 @@ namespace DotRecast.Detour.Crowd
                         if (dist < 0.0001f)
                         {
                             // Agents on top of each other, try to choose diverging separation directions.
-                            if (idx0 > nei.idx)
-                            {
-                                diff = new Vector2(-ag.dvel.Y, ag.dvel.X);
-                            }
-                            else
-                            {
-                                diff = new Vector2(ag.dvel.Y, -ag.dvel.X);
-                            }
+                            diff = ag.idx > nei.idx ? new Vector2(-ag.dvel.Y, ag.dvel.X) : new Vector2(ag.dvel.Y, -ag.dvel.X);
 
                             pen = 0.01f;
                         }
@@ -1268,12 +1259,12 @@ namespace DotRecast.Detour.Crowd
 
                         ag.disp = Vector3Extensions.Mad(ag.disp, diff.AsVector3(), pen);
 
-                        w += 1.0f;
+                        w += 1f;
                     }
 
                     if (w > 0.0001f)
                     {
-                        float iw = 1.0f / w;
+                        float iw = 1f / w;
                         ag.disp *= iw;
                     }
                 }

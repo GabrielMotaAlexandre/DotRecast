@@ -80,7 +80,7 @@ namespace DotRecast.Detour.Crowd
             m_nsegments = 0;
         }
 
-        public void AddCircle(Vector2 pos, float rad, Vector2 vel, Vector2 dvel)
+        public void AddCircle(in Vector2 pos, float rad, in Vector2 vel, in Vector2 dvel)
         {
             if (m_ncircles >= m_maxCircles)
                 return;
@@ -190,25 +190,6 @@ namespace DotRecast.Detour.Crowd
             return true;
         }
 
-        private static bool IsectRaySeg(Vector2 ap, Vector2 u, Vector2 bp, Vector2 bq, ref float t)
-        {
-            var v = bq - bp;
-            var w = ap - bp;
-            float d = Vector3Extensions.Perp2D(u, v);
-            if (MathF.Abs(d) < 1e-6f)
-                return false;
-
-            t = Vector3Extensions.Perp2D(v, w) / d;
-            if (t < 0 || t > 1)
-                return false;
-
-            float s = Vector3Extensions.Perp2D(u, w) / d;
-            if (s < 0 || s > 1)
-                return false;
-
-            return true;
-        }
-
         /**
      * Calculate the collision penalty for a given velocity vector
      *
@@ -244,7 +225,7 @@ namespace DotRecast.Detour.Crowd
                 var vab = vcand * 2 - vel - cir.vel;
 
                 // Side
-                side += Math.Clamp(Math.Min(Vector2.Dot(cir.dp, vab) * 0.5f + 0.5f, Vector2.Dot(cir.np, vab) * 2), 0.0f, 1.0f);
+                side += Math.Clamp(MathF.Min(Vector2.Dot(cir.dp, vab) * 0.5f + 0.5f, Vector2.Dot(cir.np, vab) * 2), 0.0f, 1.0f);
 
                 if (!SweepCircleCircle(pos, rad, vab, cir.p, cir.rad, out var htmin, out var htmax))
                     continue;
@@ -283,16 +264,27 @@ namespace DotRecast.Detour.Crowd
                     if (Vector2.Dot(snorm, vcand) < 0.0f)
                         continue;
                     // Else immediate collision.
-                    htmin = 0;
                 }
-                else
+                else  // IsectRaySeg                
                 {
-                    if (!IsectRaySeg(pos, vcand, seg.p, seg.q, ref htmin))
+                    var v = seg.q - seg.p;
+                    var w = pos - seg.p;
+                    float d = Vector3Extensions.Perp2D(vcand, v);
+                    if (MathF.Abs(d) < 1e-6f)
                         continue;
-                }
 
-                // Avoid less when facing walls.
-                htmin *= 2;
+                    htmin = Vector3Extensions.Perp2D(v, w) / d;
+                    if (htmin < 0 || htmin > 1)
+                        continue;
+
+                    float s = Vector3Extensions.Perp2D(vcand, w) / d;
+
+                    if (s < 0 || s > 1)
+                        continue;
+
+                    // Avoid less when facing walls.
+                    htmin *= 2;
+                }
 
                 // The closest obstacle is somewhere ahead of us, keep track of nearest obstacle.
                 if (htmin < tmin)
@@ -308,7 +300,7 @@ namespace DotRecast.Detour.Crowd
                 // Normalize side bias, to prevent it dominating too much.
                 : m_params.weightSide * (side / m_ncircles);
 
-            float tpen = m_params.weightToi * (1f / (0.1f + tmin * m_invHorizTime));
+            float tpen = m_params.weightToi / (0.1f + tmin * m_invHorizTime);
 
             float penalty = vpen + vcpen + spen + tpen;
 
@@ -375,7 +367,6 @@ namespace DotRecast.Detour.Crowd
 
             int ndivs = m_params.adaptiveDivs;
             int nrings = m_params.adaptiveRings;
-            int depth = m_params.adaptiveDepth;
 
             int nd = Math.Clamp(ndivs, 1, DT_MAX_PATTERN_DIVS);
             int nr = Math.Clamp(nrings, 1, DT_MAX_PATTERN_RINGS);
@@ -394,26 +385,29 @@ namespace DotRecast.Detour.Crowd
             var rotc = di * MathF.Cos(ang);
             var rots = di * MathF.Sin(ang);
 
-            ReadOnlySpan<float> ddir = stackalloc float[] { di.X, di.Y, rotc.X - rots.Y, rots.X + rotc.Y };
+            ReadOnlySpan<Vector2> ddir = stackalloc Vector2[] { di, new Vector2(rotc.X - rots.Y, rots.X + rotc.Y) };
 
             var pat = ArrayPool<float>.Shared.Rent((DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2);
 
             // Always add sample at zero
-            pat[0] = 0;
-            pat[1] = 0;
+            pat.UnsafeAs<float, Vector2>() = Vector2.Zero;
+
+            int end = nd - 1;
+            var preCalculated = (nd & 1) == 0;
+
             int npat = 1;
 
             for (int j = 0; j < nr; ++j)
             {
                 int last1 = npat * 2;
                 int last2 = last1;
+
+                var r = (nr - j) * nrInverted;
+                pat.UnsafeAs<float, Vector2>().UnsafeAdd(npat) = ddir[j % 2] * r;
+
                 npat++;
 
-                float r = (nr - j) * nrInverted;
-                pat.GetUnsafe(last1) = ddir[j % 2 * 2] * r;
-                pat.GetUnsafe(last1 + 1) = ddir[j % 2 * 2 + 1] * r;
-
-                for (int i = 1; i < nd - 1; i += 2)
+                for (int i = 1; i < end; i += 2)
                 {
                     var npat2 = npat * 2;
                     // get next point on the "right" (rotate CW)
@@ -428,7 +422,7 @@ namespace DotRecast.Detour.Crowd
                     npat += 2;
                 }
 
-                if ((nd & 1) == 0)
+                if (preCalculated)
                 {
                     pat[npat * 2 + 2] = pat[last2] * ca - pat[last2 + 1] * sa;
                     pat[npat * 2 + 3] = pat[last2] * sa + pat[last2 + 1] * ca;
@@ -441,6 +435,9 @@ namespace DotRecast.Detour.Crowd
             float cs = cr / 10;
 
             nvel = dvel * m_params.velBias;
+
+            int depth = m_params.adaptiveDepth;
+
             //int ns = 0;
             for (int k = 0; k < depth; ++k)
             {
@@ -449,7 +446,7 @@ namespace DotRecast.Detour.Crowd
 
                 for (int i = 0; i < npat; ++i)
                 {
-                    var vcand = nvel + Unsafe.Add(ref Unsafe.As<float, Vector2>(ref MemoryMarshal.GetArrayDataReference(pat)), i) * cr;
+                    var vcand = nvel + pat.UnsafeAs<float, Vector2>().UnsafeAdd(i) * cr;
 
                     if (vcand.LengthSquared() > RcMath.Sqr(vmax + 0.001f))
                         continue;

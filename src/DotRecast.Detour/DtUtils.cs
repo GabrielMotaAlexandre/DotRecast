@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using DotRecast.Core;
 
 namespace DotRecast.Detour
@@ -320,12 +321,14 @@ namespace DotRecast.Detour
             return DistancePtSegSqr2D(pt.AsVector2XZ(), p.AsVector2XZ(), q.AsVector2XZ(), out t);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static float DistancePtSegSqr2D(Vector2 pt, Vector2 p, Vector2 q, out float t)
         {
             var pq = q - p;
             var dd = pt - p;
-            float d = pq.LengthSquared();
             t = Vector2.Dot(pq, dd);
+
+            float d = pq.LengthSquared();
             if (d > 0)
             {
                 t /= d;

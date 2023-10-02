@@ -22,6 +22,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 using DotRecast.Core;
 
 namespace DotRecast.Detour
@@ -1815,17 +1816,15 @@ namespace DotRecast.Detour
             startNode.flags = DtNode.DT_NODE_CLOSED;
             LinkedList<DtNode> stack = new();
             stack.AddLast(startNode);
-            _ = new
-            Vector3();
             float bestDist = float.MaxValue;
             DtNode bestNode = null;
-            Vector3 bestPos = startPos;
+            resultPos = startPos;
 
             // Search constraints
             var searchPos = Vector3.Lerp(startPos, endPos, 0.5f);
             float searchRadSqr = RcMath.Sqr(Vector3.Distance(startPos, endPos) / 2.0f + 0.001f);
 
-            float[] verts = new float[m_nav.GetMaxVertsPerPoly() * 3];
+            float[] verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
 
             while (0 < stack.Count)
             {
@@ -1842,14 +1841,14 @@ namespace DotRecast.Detour
                 int nverts = curPoly.vertCount;
                 for (int i = 0; i < nverts; ++i)
                 {
-                    Array.Copy(curTile.data.verts, curPoly.verts[i] * 3, verts, i * 3, 3);
+                    verts.UnsafeAs<float, Vector3>().UnsafeAdd(i) = curTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(curPoly.verts[i]);
                 }
 
                 // If target is inside the poly, stop search.
                 if (DtUtils.PointInPolygon(endPos, verts, nverts))
                 {
                     bestNode = curNode;
-                    bestPos = endPos;
+                    resultPos = endPos;
                     break;
                 }
 
@@ -1903,7 +1902,7 @@ namespace DotRecast.Detour
                         if (distSqr < bestDist)
                         {
                             // Update nearest distance.
-                            bestPos = Vector3Extensions.Lerp(verts, vj, vi, tseg);
+                            resultPos = Vector3Extensions.Lerp(verts, vj, vi, tseg);
                             bestDist = distSqr;
                             bestNode = curNode;
                         }
@@ -1938,6 +1937,8 @@ namespace DotRecast.Detour
                 }
             }
 
+            ArrayPool<float>.Shared.Return(verts);
+
             if (bestNode != null)
             {
                 // Reverse the path.
@@ -1959,8 +1960,6 @@ namespace DotRecast.Detour
                     node = tinyNodePool.GetNodeAtIdx(node.pidx);
                 } while (node != null);
             }
-
-            resultPos = bestPos;
 
             return DtStatus.DT_SUCCSESS;
         }
@@ -2024,13 +2023,8 @@ namespace DotRecast.Detour
                     if (fromTile.links[i].refs == to)
                     {
                         int v = fromTile.links[i].edge;
-                        left.X = fromTile.data.verts[fromPoly.verts[v] * 3];
-                        left.Y = fromTile.data.verts[fromPoly.verts[v] * 3 + 1];
-                        left.Z = fromTile.data.verts[fromPoly.verts[v] * 3 + 2];
-
-                        right.X = fromTile.data.verts[fromPoly.verts[v] * 3];
-                        right.Y = fromTile.data.verts[fromPoly.verts[v] * 3 + 1];
-                        right.Z = fromTile.data.verts[fromPoly.verts[v] * 3 + 2];
+                        var index = fromPoly.verts[v];
+                        left = right = fromTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(index);
 
                         return DtStatus.DT_SUCCSESS;
                     }
@@ -2046,13 +2040,8 @@ namespace DotRecast.Detour
                     if (toTile.links[i].refs == from)
                     {
                         int v = toTile.links[i].edge;
-                        left.X = toTile.data.verts[toPoly.verts[v] * 3];
-                        left.Y = toTile.data.verts[toPoly.verts[v] * 3 + 1];
-                        left.Z = toTile.data.verts[toPoly.verts[v] * 3 + 2];
-
-                        right.X = toTile.data.verts[toPoly.verts[v] * 3];
-                        right.Y = toTile.data.verts[toPoly.verts[v] * 3 + 1];
-                        right.Z = toTile.data.verts[toPoly.verts[v] * 3 + 2];
+                        var index = toPoly.verts[v];
+                        left = right = toTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(index);
 
                         return DtStatus.DT_SUCCSESS;
                     }
@@ -2063,14 +2052,10 @@ namespace DotRecast.Detour
 
             // Find portal vertices.
             int v0 = fromPoly.verts[link.edge];
-            int v1 = fromPoly.verts[(link.edge + 1) % fromPoly.vertCount];
-            left.X = fromTile.data.verts[v0 * 3];
-            left.Y = fromTile.data.verts[v0 * 3 + 1];
-            left.Z = fromTile.data.verts[v0 * 3 + 2];
+            left = fromTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(v0);
 
-            right.X = fromTile.data.verts[v1 * 3];
-            right.Y = fromTile.data.verts[v1 * 3 + 1];
-            right.Z = fromTile.data.verts[v1 * 3 + 2];
+            int v1 = fromPoly.verts[(link.edge + 1) % fromPoly.vertCount];
+            right = fromTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(v1);
 
             // If the link is at tile boundary, dtClamp the vertices to
             // the link width.
@@ -2079,9 +2064,9 @@ namespace DotRecast.Detour
                 // Unpack portal limits.
                 if (link.bmin != 0 || link.bmax != 255)
                 {
-                    float s = 1.0f / 255.0f;
-                    float tmin = link.bmin * s;
-                    float tmax = link.bmax * s;
+                    const float s = 255f;
+                    float tmin = link.bmin / s;
+                    float tmax = link.bmax / s;
                     left = Vector3Extensions.Lerp(fromTile.data.verts, v0 * 3, v1 * 3, tmin);
                     right = Vector3Extensions.Lerp(fromTile.data.verts, v0 * 3, v1 * 3, tmax);
                 }
@@ -2099,9 +2084,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            mid.X = (left.X + right.X) * 0.5f;
-            mid.Y = (left.Y + right.Y) * 0.5f;
-            mid.Z = (left.Z + right.Z) * 0.5f;
+            mid = (left + right) * 0.5f;
 
             return DtStatus.DT_SUCCSESS;
         }
@@ -2875,7 +2858,7 @@ namespace DotRecast.Detour
                     }
 
                     // If the circle is not touching the next polygon, skip it.
-                    var distSqr = DtUtils.DistancePtSegSqr2D(centerPos, va, vb, out var _);
+                    var distSqr = DtUtils.DistancePtSegSqr2D(centerPos, va, vb, out _);
                     if (distSqr > radiusSqr)
                     {
                         continue;
