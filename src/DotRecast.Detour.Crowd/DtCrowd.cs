@@ -20,10 +20,12 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
+using System.Threading.Tasks;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -149,7 +151,6 @@ namespace DotRecast.Detour.Crowd
         private readonly List<DtCrowdAgent> _agents;
         private readonly DtPathQueue _pathQ;
         private readonly DtObstacleAvoidanceParams[] _obstacleQueryParams = new DtObstacleAvoidanceParams[DT_CROWD_MAX_OBSTAVOIDANCE_PARAMS];
-        private readonly DtObstacleAvoidanceQuery _obstacleQuery;
         private DtProximityGrid _grid;
         private readonly Vector3 _ext;
         private readonly IDtQueryFilter[] _filters = new IDtQueryFilter[DT_CROWD_MAX_QUERY_FILTER_TYPE];
@@ -168,8 +169,6 @@ namespace DotRecast.Detour.Crowd
         {
             _config = config;
             _ext = new Vector3(config.maxAgentRadius * 2.0f, config.maxAgentRadius * 1.5f, config.maxAgentRadius * 2.0f);
-
-            _obstacleQuery = new DtObstacleAvoidanceQuery(config.maxObstacleAvoidanceCircles, config.maxObstacleAvoidanceSegments);
 
             for (int i = 0; i < DT_CROWD_MAX_QUERY_FILTER_TYPE; i++)
             {
@@ -881,26 +880,31 @@ namespace DotRecast.Detour.Crowd
         {
             using var timer = _telemetry.ScopedTimer(DtCrowdTimerLabel.BuildNeighbours);
 
-            foreach (DtCrowdAgent ag in agents)
+            Parallel.ForEach(Partitioner.Create(0, agents.Count), new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, range =>
             {
-                if (ag.state != DtCrowdAgentState.DT_CROWDAGENT_STATE_WALKING)
+                for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    continue;
-                }
+                    DtCrowdAgent ag = agents[i];
 
-                // Update the collision boundary after certain distance has been passed or
-                // if it has become invalid.
-                float updateThr = ag.option.collisionQueryRange * 0.25f;
-                if (Vector3Extensions.Dist2DSqr(ag.npos, ag.boundary.GetCenter()) > RcMath.Sqr(updateThr)
-                    || !ag.boundary.IsValid(_navQuery, _filters[ag.option.queryFilterType]))
-                {
-                    ag.boundary.Update(ag.corridor.GetFirstPoly(), ag.npos, ag.option.collisionQueryRange, _navQuery,
-                        _filters[ag.option.queryFilterType]);
-                }
+                    if (ag.state != DtCrowdAgentState.DT_CROWDAGENT_STATE_WALKING)
+                    {
+                        continue;
+                    }
 
-                // Query neighbour agents
-                GetNeighbours(ag, _grid);
-            }
+                    // Update the collision boundary after certain distance has been passed or
+                    // if it has become invalid.
+                    float updateThr = ag.option.collisionQueryRange * 0.25f;
+                    if (Vector3Extensions.Dist2DSqr(ag.npos, ag.boundary.GetCenter()) > RcMath.Sqr(updateThr)
+                        || !ag.boundary.IsValid(_navQuery, _filters[ag.option.queryFilterType]))
+                    {
+                        ag.boundary.Update(ag.corridor.GetFirstPoly(), ag.npos, ag.option.collisionQueryRange, _navQuery,
+                            _filters[ag.option.queryFilterType]);
+                    }
+
+                    // Query neighbour agents
+                    GetNeighbours(ag, _grid);
+                }
+            });
         }
 
         private void GetNeighbours(DtCrowdAgent agent, DtProximityGrid grid)
@@ -1133,61 +1137,58 @@ namespace DotRecast.Detour.Crowd
             using var timer = _telemetry.ScopedTimer(DtCrowdTimerLabel.PlanVelocity);
 
             DtCrowdAgent debugAgent = debug?.agent;
-            foreach (DtCrowdAgent ag in agents)
+            Parallel.ForEach(Partitioner.Create(0, agents.Count), new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, range =>
             {
-                if (ag.state != DtCrowdAgentState.DT_CROWDAGENT_STATE_WALKING)
-                {
-                    continue;
-                }
+                var obstacleQuery = new DtObstacleAvoidanceQuery(_config.maxObstacleAvoidanceCircles, _config.maxObstacleAvoidanceSegments);
 
-                if ((ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE) != 0)
+                for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    _obstacleQuery.Reset();
+                    DtCrowdAgent ag = agents[i];
 
-                    // Add neighbours as obstacles.
-                    foreach(var nei in ag.Neighbors)
+                    if (ag.state != DtCrowdAgentState.DT_CROWDAGENT_STATE_WALKING)
                     {
-                        _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, in nei.vel, in nei.dvel);
+                        continue;
                     }
 
-                    var pos = ag.npos.AsVector2XZ();
-                    // Append neighbour segments as obstacles.
-                    foreach (var segment in ag.boundary.Segments)
+                    if ((ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE) != 0)
                     {
-                        if (DtUtils.TriArea2D(in pos, in segment.Start, in segment.End) < 0)
+                        obstacleQuery.Reset();
+
+                        // Add neighbours as obstacles.
+                        foreach (var nei in ag.Neighbors)
                         {
-                            continue;
+                            obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, in nei.vel, in nei.dvel);
                         }
 
-                        _obstacleQuery.AddSegment(segment.Start, segment.End);
-                    }
+                        var pos = ag.npos.AsVector2XZ();
+                        // Append neighbour segments as obstacles.
+                        foreach (var segment in ag.boundary.Segments)
+                        {
+                            if (DtUtils.TriArea2D(in pos, in segment.Start, in segment.End) < 0)
+                            {
+                                continue;
+                            }
 
-                    DtObstacleAvoidanceDebugData vod = debugAgent == ag ? debug.vod : null;
+                            obstacleQuery.AddSegment(segment.Start, segment.End);
+                        }
 
-                    // Sample new safe velocity.
-                    bool adaptive = true;
+                        DtObstacleAvoidanceDebugData vod = debugAgent == ag ? debug.vod : null;
 
-                    DtObstacleAvoidanceParams option = _obstacleQueryParams[ag.option.obstacleAvoidanceType];
+                        // Sample new safe velocity.
+                        DtObstacleAvoidanceParams option = _obstacleQueryParams[ag.option.obstacleAvoidanceType];
 
-                    if (adaptive)
-                    {
-                        _obstacleQuery.SampleVelocityAdaptive(pos, ag.option.radius, ag.desiredSpeed,
-                            ag.vel, ag.dvel, out ag.nvel, option, vod);
+                        obstacleQuery.SampleVelocityAdaptive(pos, ag.option.radius, ag.desiredSpeed,
+                                 ag.vel, ag.dvel, out ag.nvel, option, vod);
+
+                        //_velocitySampleCount += ns;
                     }
                     else
                     {
-                        _obstacleQuery.SampleVelocityGrid(pos, ag.option.radius,
-                            ag.desiredSpeed, ag.vel, ag.dvel, out ag.nvel, option, vod);
+                        // If not using velocity planning, new velocity is directly the desired velocity.
+                        ag.nvel = ag.dvel;
                     }
-
-                    //_velocitySampleCount += ns;
                 }
-                else
-                {
-                    // If not using velocity planning, new velocity is directly the desired velocity.
-                    ag.nvel = ag.dvel;
-                }
-            }
+            });
         }
 
         private void Integrate(float dt, IList<DtCrowdAgent> agents)

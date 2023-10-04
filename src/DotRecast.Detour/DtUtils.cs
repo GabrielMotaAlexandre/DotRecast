@@ -105,7 +105,10 @@ namespace DotRecast.Detour
             const float eps = 1e-4f;
             for (int i = 0, j = npolya - 1; i < npolya; j = i++)
             {
-                Vector2 n = new(polya[i].Y - polya[j].Y, -(polya[i].X - polya[j].X));
+                ref readonly var va = ref polyb[i];
+                ref readonly var vj = ref polyb[j];
+
+                Vector2 n = new(va.Y - vj.Y, -(va.X - vj.X));
 
                 var aminmax = ProjectPoly(n, polya, npolya);
                 var bminmax = ProjectPoly(n, polyb, npolyb);
@@ -255,7 +258,7 @@ namespace DotRecast.Detour
             return false;
         }
 
-        public static Vector2 ProjectPoly(Vector2 axis, in Span<Vector2> poly, int npoly)
+        public static Vector2 ProjectPoly(in Vector2 axis, in Span<Vector2> poly, int npoly)
         {
             float rmin = float.MaxValue;
             float rmax = float.MinValue;
@@ -263,8 +266,8 @@ namespace DotRecast.Detour
             for (int i = 0; i < npoly; ++i)
             {
                 float d = Vector2.Dot(axis, poly[i]);
-                rmin = Math.Min(rmin, d);
-                rmax = Math.Max(rmax, d);
+                rmin = MathF.Min(rmin, d);
+                rmax = MathF.Max(rmax, d);
             }
 
             return new Vector2(rmin, rmax);
@@ -441,12 +444,13 @@ namespace DotRecast.Detour
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Clamp01(float value)
         {
-            if (value < 0F)
-                return 0F;
-            else if (value > 1F)
-                return 1F;
+            if (value < 0)
+                return 0;
+            else if (value > 1)
+                return 1;
             else
                 return value;
         }

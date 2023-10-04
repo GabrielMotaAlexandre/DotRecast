@@ -20,15 +20,10 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Buffers;
-using System.Collections;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -102,26 +97,6 @@ namespace DotRecast.Detour.Crowd
             ref var segment = ref m_segments[m_nsegments++];
             segment.p = p;
             segment.q = q;
-        }
-
-        public int GetObstacleCircleCount()
-        {
-            return m_ncircles;
-        }
-
-        public DtObstacleCircle GetObstacleCircle(int i)
-        {
-            return m_circles[i];
-        }
-
-        public int GetObstacleSegmentCount()
-        {
-            return m_nsegments;
-        }
-
-        public DtObstacleSegment GetObstacleSegment(int i)
-        {
-            return m_segments[i];
         }
 
         private void Prepare(Vector2 pos, Vector2 dvel)
@@ -210,6 +185,7 @@ namespace DotRecast.Detour.Crowd
             // Find min time of impact and exit amongst all obstacles.
             var tmin = m_params.horizTime;
             float side = 0;
+
             for (int i = 0; i != m_ncircles; i++)
             {
                 DtObstacleCircle cir = m_circles[i];
@@ -218,7 +194,7 @@ namespace DotRecast.Detour.Crowd
                 var vab = vabPre - cir.vel;
 
                 // Side
-                side += Math.Clamp(MathF.Min(Vector2.Dot(cir.dp, vab) / 2 + 0.5f, Vector2.Dot(cir.np, vab) * 2), 0f, 1f);
+                side += DtUtils.Clamp01(MathF.Min(Vector2.Dot(cir.dp, vab) / 2 + 0.5f, Vector2.Dot(cir.np, vab) * 2));
 
                 if (!SweepCircleCircle(pos, rad, vab, cir.p, cir.rad, out var htmin, out var htmax))
                     continue;
@@ -246,7 +222,6 @@ namespace DotRecast.Detour.Crowd
             for (int i = 0; i < m_nsegments; ++i)
             {
                 DtObstacleSegment seg = m_segments[i];
-                float htmin;
 
                 //var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
                 var sdir = seg.q - seg.p;
@@ -262,41 +237,52 @@ namespace DotRecast.Detour.Crowd
                 const float r = 0.01f;
                 var touch = distSqr < r * r;
 
-                if (touch)
-                {
-                    // Special case when the agent is very close to the segment.
-                    var snorm = new Vector2(-sdir.Y, sdir.X);
-                    // If the velocity is pointing towards the segment, no collision.
-                    if (Vector2.Dot(snorm, vcand) < 0)
-                        continue;
-                    // Else immediate collision.
-                    htmin = 0;
-                }
-                else  // IsectRaySeg                
-                {
-                    float dvcand = Vector3Extensions.Perp2D(vcand, sdir);
-                    if (MathF.Abs(d) < 1e-6f)
-                        continue;
+                //if (touch)
+                //{
+                //    // Special case when the agent is very close to the segment.
+                //    var snorm = new Vector2(-sdir.Y, sdir.X);
+                //    // If the velocity is pointing towards the segment, no collision.
+                //    //if (Vector2.Dot(snorm, vcand) < 0)
+                //    //    continue;
+                //    //// Else immediate collision.
+                //    //htmin = 0;
 
-                    htmin = Vector3Extensions.Perp2D(sdir, w) / dvcand;
-                    if (htmin < 0 || htmin > 1)
-                        continue;
+                //    htmin = Vector2.Dot(snorm, vcand) < 0 ? tmin : 0;
+                //}
+                //else  // IsectRaySeg                
+                //{
+                //    float dvcand = Vector3Extensions.Perp2D(vcand, sdir);
+                //    //if (MathF.Abs(d) < 1e-6f)
+                //    //    continue;
 
-                    float s = Vector3Extensions.Perp2D(vcand, w) / dvcand;
-                    if (s < 0 || s > 1)
-                        continue;
+                //    htmin = Vector3Extensions.Perp2D(sdir, w) / dvcand;
+                //    //if (htmin < 0 || htmin > 1)
+                //    //    continue;
 
-                    // Avoid less when facing walls.
-                    htmin *= 2;
-                }
+                //    float s = Vector3Extensions.Perp2D(vcand, w) / dvcand;
+                //    //if (s < 0 || s > 1)
+                //    //    continue;
+
+                //    htmin = MathF.Abs(d) < 1e-6f || htmin < 0 || htmin > 1 || s < 0 || s > 1 ? tmin : htmin;
+                //}
+
+                // Avoid less when facing walls.
+                const float f = 2;
+
+                var snorm = new Vector2(-sdir.Y, sdir.X);
+
+                float dvcand = Vector3Extensions.Perp2D(vcand, sdir);
+
+                float htmin = Vector3Extensions.Perp2D(sdir, w) / dvcand;
+
+                float s = Vector3Extensions.Perp2D(vcand, w) / dvcand;
+
+                htmin = touch && Vector2.Dot(snorm, vcand) < 0 ? float.MaxValue / f : (!touch && MathF.Abs(d) < 1e-6f || htmin < 0 || htmin > 1 || s < 0 || s > 1 ? float.MaxValue / f : htmin);
 
                 // The closest obstacle is somewhere ahead of us, keep track of nearest obstacle.
-                if (htmin < tmin)
-                {
-                    tmin = htmin;
-                    if (tmin < tThresold)
-                        return minPenalty;
-                }
+                tmin = MathF.Min(tmin, htmin * f);
+                if (tmin < tThresold)
+                    return minPenalty;
             }
 
             float spen = m_ncircles == 0
@@ -314,46 +300,46 @@ namespace DotRecast.Detour.Crowd
             return penalty;
         }
 
-        public int SampleVelocityGrid(Vector2 pos, float rad, float vmax, Vector2 vel, Vector2 dvel, out Vector2 nvel,
-            DtObstacleAvoidanceParams option, DtObstacleAvoidanceDebugData debug)
-        {
-            Prepare(pos, dvel);
-            m_params = option;
-            m_invHorizTime = 1f / m_params.horizTime;
-            m_vmax = vmax;
-            m_invVmax = vmax > 0 ? 1f / vmax : float.MaxValue;
+        //public int SampleVelocityGrid(Vector2 pos, float rad, float vmax, Vector2 vel, Vector2 dvel, out Vector2 nvel,
+        //    DtObstacleAvoidanceParams option, DtObstacleAvoidanceDebugData debug)
+        //{
+        //    Prepare(pos, dvel);
+        //    m_params = option;
+        //    m_invHorizTime = 1f / m_params.horizTime;
+        //    m_vmax = vmax;
+        //    m_invVmax = vmax > 0 ? 1f / vmax : float.MaxValue;
 
-            nvel = default;
+        //    nvel = default;
 
-            debug?.Reset();
+        //    debug?.Reset();
 
-            var cv = dvel * m_params.velBias;
-            float cs = vmax * 2 * (1 - m_params.velBias) / (m_params.gridSize - 1);
-            float half = (m_params.gridSize - 1) * cs * 0.5f;
+        //    var cv = dvel * m_params.velBias;
+        //    float cs = vmax * 2 * (1 - m_params.velBias) / (m_params.gridSize - 1);
+        //    float half = (m_params.gridSize - 1) * cs * 0.5f;
 
-            float minPenalty = float.MaxValue;
-            int ns = 0;
+        //    float minPenalty = float.MaxValue;
+        //    int ns = 0;
 
-            for (int y = 0; y < m_params.gridSize; ++y)
-            {
-                for (int x = 0; x < m_params.gridSize; ++x)
-                {
-                    Vector2 vcand = new(cv.X + x * cs - half, cv.Y + y * cs - half);
-                    if (vcand.LengthSquared() > RcMath.Sqr(vmax + cs / 2))
-                        continue;
+        //    for (int y = 0; y < m_params.gridSize; ++y)
+        //    {
+        //        for (int x = 0; x < m_params.gridSize; ++x)
+        //        {
+        //            Vector2 vcand = new(cv.X + x * cs - half, cv.Y + y * cs - half);
+        //            if (vcand.LengthSquared() > RcMath.Sqr(vmax + cs / 2))
+        //                continue;
 
-                    float penalty = ProcessSample(new Vector2(vcand.X, vcand.Y), cs, pos, rad, vel, dvel, minPenalty, debug);
-                    ns++;
-                    if (penalty < minPenalty)
-                    {
-                        minPenalty = penalty;
-                        nvel = new Vector2(vcand.X, vcand.Y);
-                    }
-                }
-            }
+        //            float penalty = ProcessSample(new Vector2(vcand.X, vcand.Y), cs, pos, rad, vel, dvel, minPenalty, debug);
+        //            ns++;
+        //            if (penalty < minPenalty)
+        //            {
+        //                minPenalty = penalty;
+        //                nvel = new Vector2(vcand.X, vcand.Y);
+        //            }
+        //        }
+        //    }
 
-            return ns;
-        }
+        //    return ns;
+        //}
 
         public void SampleVelocityAdaptive(Vector2 pos, float rad, float vmax, Vector2 vel, Vector2 dvel, out Vector2 nvel,
             DtObstacleAvoidanceParams option,
@@ -374,7 +360,6 @@ namespace DotRecast.Detour.Crowd
 
             int nd = Math.Clamp(ndivs, 1, DT_MAX_PATTERN_DIVS);
             int nr = Math.Clamp(nrings, 1, DT_MAX_PATTERN_RINGS);
-            var nrInverted = 1f / nr;
             var da = 1f / nd * float.Pi * 2;
             var ca = MathF.Cos(da);
             var sa = MathF.Sin(da);
@@ -391,27 +376,28 @@ namespace DotRecast.Detour.Crowd
 
             ReadOnlySpan<Vector2> ddir = stackalloc Vector2[] { di, new Vector2(rotc.X - rots.Y, rots.X + rotc.Y) };
 
-            var pat = ArrayPool<float>.Shared.Rent((DT_MAX_PATTERN_DIVS * DT_MAX_PATTERN_RINGS + 1) * 2);
+            var pat = ArrayPool<float>.Shared.Rent((ndivs * nrings + 1) * 2);
 
             // Always add sample at zero
-            pat.UnsafeAs<float, Vector2>() = Vector2.Zero;
+            pat.UnsafeAs<float, Vector2>() = default;
 
-            int end = nd - 1;
-            var preCalculated = (nd & 1) == 0;
+            //var preCalculated = (nd % 2) == 0;
+            //const int preCalculatedInt = 0; // Unsafe.As<bool, int>(ref preCalculated);
+
+            float nrInverted = 1f / nr;
 
             int npat = 1;
-
             for (int j = 0; j < nr; ++j)
             {
                 int last1 = npat * 2;
                 int last2 = last1;
 
                 var r = (nr - j) * nrInverted;
-                pat.UnsafeAs<float, Vector2>().UnsafeAdd(npat) = ddir[j % 2] * r;
+                pat.UnsafeAs<float, Vector2>().UnsafeAdd(npat) = ddir[j % 2] * r; // npat == 1 + (end + preCalculatedInt + 1) * j
 
                 npat++;
 
-                for (int i = 1; i < end; i += 2)
+                for (int i = 1; i < nd - 1; i += 2)
                 {
                     var npat2 = npat * 2;
                     // get next point on the "right" (rotate CW)
@@ -426,12 +412,12 @@ namespace DotRecast.Detour.Crowd
                     npat += 2;
                 }
 
-                if (preCalculated)
-                {
-                    pat[npat * 2 + 2] = pat[last2] * ca - pat[last2 + 1] * sa;
-                    pat[npat * 2 + 3] = pat[last2] * sa + pat[last2 + 1] * ca;
-                    npat++;
-                }
+                //if (preCalculated) // nd % 2 != 0
+                //{
+                //    pat[npat * 2 + 2] = pat[last2] * ca - pat[last2 + 1] * sa;
+                //    pat[npat * 2 + 3] = pat[last2] * sa + pat[last2 + 1] * ca;
+                //    npat++;
+                //}
             }
 
             // Start sampling.

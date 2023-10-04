@@ -120,6 +120,8 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
 
     public void HandleRender(NavMeshRenderer renderer)
     {
+        // todo
+        return;
         RecastDebugDraw dd = renderer.GetDebugDraw();
         dd.DepthMask(false);
 
