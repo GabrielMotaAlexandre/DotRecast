@@ -80,6 +80,7 @@ namespace DotRecast.Detour.Crowd
             m_nsegments = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddCircle(in Vector2 pos, float rad, in Vector2 vel, in Vector2 dvel)
         {
             if (m_ncircles >= m_maxCircles)
@@ -92,7 +93,8 @@ namespace DotRecast.Detour.Crowd
             cir.dvel = dvel;
         }
 
-        public void AddSegment(Vector2 p, Vector2 q)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddSegment(in Vector2 p, in Vector2 q)
         {
             if (m_nsegments >= m_maxSegments)
                 return;

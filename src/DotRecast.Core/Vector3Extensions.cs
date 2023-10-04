@@ -134,7 +134,7 @@ namespace System.Numerics
         /// @param[in] v2 The vector to scale and add to @p v1. [(x, y, z)]
         /// @param[in] s The amount to scale @p v2 by before adding to @p v1.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 Mad(Vector3 v1, Vector3 v2, float s)
+        public static Vector3 Mad(in Vector3 v1, in Vector3 v2, float s)
         {
             return v1 + v2 * s;
         }
@@ -145,7 +145,7 @@ namespace System.Numerics
         /// @param[in] v2 The vector to scale and add to @p v1. [(x, y, z)]
         /// @param[in] s The amount to scale @p v2 by before adding to @p v1.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector2 Mad(Vector2 v1, Vector2 v2, float s)
+        public static Vector2 Mad(in Vector2 v1, in Vector2 v2, float s)
         {
             return v1 + v2 * s;
         }
@@ -323,23 +323,6 @@ namespace System.Numerics
         public static ref T UnsafeAdd<T>(ref this T value, int offset) where T : struct
         {
             return ref Unsafe.Add(ref value, offset);
-        }
-    }
-
-    public static class Utils
-    {
-        public static void BubbleSort<T, TComparer>(this List<T> source, TComparer comparer) where TComparer : IComparer<T>
-        {
-            for (int i = (source.Count - 1); i >= 0; i--)
-            {
-                for (int j = 1; j <= i; j++)
-                {
-                    if (comparer.Compare(source[j - 1], source[j]) > 0)
-                    {
-                        (source[j], source[j - 1]) = (source[j - 1], source[j]);
-                    }
-                }
-            }
         }
     }
 

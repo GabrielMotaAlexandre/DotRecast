@@ -1,9 +1,11 @@
+using System;
+
 namespace DotRecast.Detour.Crowd
 {
     /// Provides neighbor data for agents managed by the crowd.
     /// @ingroup crowd
     /// @see dtCrowdAgent::neis, dtCrowd
-    public readonly struct DtCrowdNeighbour
+    public readonly struct DtCrowdNeighbour : IComparable<DtCrowdNeighbour>
     {
         public readonly DtCrowdAgent agent;
 
@@ -15,6 +17,11 @@ namespace DotRecast.Detour.Crowd
         {
             this.agent = agent;
             this.dist = dist;
+        }
+
+        public int CompareTo(DtCrowdNeighbour other)
+        {
+            return dist.CompareTo(other.dist);
         }
     }
 }

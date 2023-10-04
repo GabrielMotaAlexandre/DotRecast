@@ -22,6 +22,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
@@ -588,7 +589,7 @@ namespace DotRecast.Detour.Crowd
                     {
                         throw new ArgumentException("Empty path");
                     }
-                    
+
                     // Quick search towards the goal.
                     _navQuery.InitSlicedFindPath(path[0], ag.targetRef, ag.npos, ag.targetPos, _filters[ag.option.queryFilterType], 0);
 
@@ -906,18 +907,17 @@ namespace DotRecast.Detour.Crowd
         {
             result.Clear();
 
-            var rangeSqr = RcMath.Sqr(range);
-
             var proxAgents = grid.QueryItems(this, pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, skip);
 
             int i = 0;
-           
-            while(true)
-            //foreach (DtCrowdAgent ag in proxAgents)
+
+            while (true)
             {
-                var ag = proxAgents[i++];
-                if (ag == null)
+                var agId = proxAgents[i++];
+                if (agId < 0)
                     break;
+
+                var ag = _agents[agId];
 
                 // Check for overlap.
                 Vector3 diff = pos - ag.npos;
@@ -928,26 +928,15 @@ namespace DotRecast.Detour.Crowd
 
                 diff.Y = 0;
                 float distSqr = diff.LengthSquared();
-                if (distSqr > rangeSqr)
+                if (distSqr > RcMath.Sqr(range))
                 {
                     continue;
                 }
 
                 result.Add(new DtCrowdNeighbour(ag, distSqr));
             }
-            ArrayPool<DtCrowdAgent>.Shared.Return(proxAgents);
 
-            result.Sort((o1, o2) => o1.dist.CompareTo(o2.dist));
-
-            //result.BubbleSort(new DistComparer());
-        }
-
-        private readonly struct DistComparer : IComparer<DtCrowdNeighbour>
-        {
-            public int Compare(DtCrowdNeighbour x, DtCrowdNeighbour y)
-            {
-                return x.dist.CompareTo(y.dist);
-            }
+            ArrayPool<int>.Shared.Return(proxAgents);
         }
 
         private void FindCorners(IList<DtCrowdAgent> agents, DtCrowdAgentDebugInfo debug)
@@ -1030,7 +1019,7 @@ namespace DotRecast.Detour.Crowd
                         anim.initPos = ag.npos;
                         anim.polyRef = refs[1];
                         anim.active = true;
-                        anim.t = 0.0f;
+                        anim.t = 0f;
                         anim.tmax = Vector3Extensions.Dist2D(anim.startPos, anim.endPos) / ag.option.maxSpeed * 0.5f;
 
                         ag.state = DtCrowdAgentState.DT_CROWDAGENT_STATE_OFFMESH;
@@ -1063,10 +1052,11 @@ namespace DotRecast.Detour.Crowd
                 }
 
                 Vector2 dvel;
+
                 if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
-                    dvel = new Vector2(ag.targetPos.X, ag.targetPos.Z);
-                    ag.desiredSpeed = new Vector2(ag.targetPos.X, ag.targetPos.Z).Length();
+                    dvel = ag.targetPos.AsVector2XZ();
+                    ag.desiredSpeed = dvel.Length();
                 }
                 else
                 {
@@ -1090,12 +1080,12 @@ namespace DotRecast.Detour.Crowd
                     float invSeparationDist = 1.0f / separationDist;
                     float separationWeight = ag.option.separationWeight;
 
-                    float w = 0;
-                    Vector2 disp = new();
+                    var w = 0;
+                    Vector2 disp = default;
 
-                    for (int j = 0; j < ag.Neighbors.Count; ++j)
+                    foreach (var neiAg in ag.Neighbors)
                     {
-                        DtCrowdAgent nei = ag.Neighbors[j].agent;
+                        DtCrowdAgent nei = neiAg.agent;
 
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
@@ -1113,14 +1103,14 @@ namespace DotRecast.Detour.Crowd
                         var dist = MathF.Sqrt(distSqr);
                         var weight = separationWeight * (1.0f - RcMath.Sqr(dist * invSeparationDist));
 
-                        disp = Vector3Extensions.Mad(disp, diff, weight / dist);
-                        w += 1.0f;
+                        disp = Vector3Extensions.Mad(in disp, in diff, weight / dist);
+                        w++;
                     }
 
-                    if (w > 0.0001f)
+                    if (w != 0)
                     {
                         // Adjust desired velocity.
-                        dvel = Vector3Extensions.Mad(dvel, disp, 1.0f / w);
+                        dvel = Vector3Extensions.Mad(in dvel, in disp, 1f / w);
                         // Clamp desired velocity to desired speed.
                         float speedSqr = dvel.LengthSquared();
                         float desiredSqr = RcMath.Sqr(ag.desiredSpeed);
@@ -1153,9 +1143,9 @@ namespace DotRecast.Detour.Crowd
                     _obstacleQuery.Reset();
 
                     // Add neighbours as obstacles.
-                    for (int j = 0; j < ag.Neighbors.Count; ++j)
+                    foreach(var neiAg in ag.Neighbors)
                     {
-                        DtCrowdAgent nei = ag.Neighbors[j].agent;
+                        DtCrowdAgent nei = neiAg.agent;
                         _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, in nei.vel, in nei.dvel);
                     }
 
@@ -1231,9 +1221,9 @@ namespace DotRecast.Detour.Crowd
 
                     float w = 0;
 
-                    for (int j = 0; j < ag.Neighbors.Count; ++j)
+                    foreach (var neiAg in ag.Neighbors)
                     {
-                        DtCrowdAgent nei = ag.Neighbors[j].agent;
+                        DtCrowdAgent nei = neiAg.agent;
 
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 

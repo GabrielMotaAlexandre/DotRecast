@@ -177,39 +177,39 @@ public class CrowdSampleTool : ISampleTool
         if (moveTargetRef != 0)
             dd.DebugDrawCross(moveTargetPos.X, moveTargetPos.Y + 0.1f, moveTargetPos.Z, rad, DuRGBA(255, 255, 255, 192), 2.0f);
 
-        // Occupancy grid.
-        if (_showGrid)
-        {
-            float gridy = -float.MaxValue;
-            foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-            {
-                Vector3 pos = ag.corridor.Pos;
-                gridy = Math.Max(gridy, pos.Y);
-            }
+        //// Occupancy grid.
+        //if (_showGrid)
+        //{
+        //    float gridy = -float.MaxValue;
+        //    foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+        //    {
+        //        Vector3 pos = ag.corridor.Pos;
+        //        gridy = Math.Max(gridy, pos.Y);
+        //    }
 
-            gridy += 1.0f;
+        //    gridy += 1.0f;
 
-            DtProximityGrid grid = crowd.GetGrid();
-            if (null != grid)
-            {
-                dd.Begin(QUADS);
-                float cs = grid.GetCellSize();
-                foreach (var (combinedKey, count) in grid.GetItemCounts())
-                {
-                    DtProximityGrid.DecomposeKey(combinedKey, out var x, out var y);
-                    if (count != 0)
-                    {
-                        int col = DuRGBA(128, 0, 0, Math.Min(count * 40, 255));
-                        dd.Vertex(x * cs, gridy, y * cs, col);
-                        dd.Vertex(x * cs, gridy, y * cs + cs, col);
-                        dd.Vertex(x * cs + cs, gridy, y * cs + cs, col);
-                        dd.Vertex(x * cs + cs, gridy, y * cs, col);
-                    }
-                }
+        //    DtProximityGrid grid = crowd.GetGrid();
+        //    if (null != grid)
+        //    {
+        //        dd.Begin(QUADS);
+        //        float cs = grid.GetCellSize();
+        //        foreach (var (combinedKey, count) in grid.GetItemCounts())
+        //        {
+        //            DtProximityGrid.DecomposeKey(combinedKey, out var x, out var y);
+        //            if (count != 0)
+        //            {
+        //                int col = DuRGBA(128, 0, 0, Math.Min(count * 40, 255));
+        //                dd.Vertex(x * cs, gridy, y * cs, col);
+        //                dd.Vertex(x * cs, gridy, y * cs + cs, col);
+        //                dd.Vertex(x * cs + cs, gridy, y * cs + cs, col);
+        //                dd.Vertex(x * cs + cs, gridy, y * cs, col);
+        //            }
+        //        }
 
-                dd.End();
-            }
-        }
+        //        dd.End();
+        //    }
+        //}
 
         // Trail
         foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
