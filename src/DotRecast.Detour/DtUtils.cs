@@ -9,6 +9,7 @@ namespace DotRecast.Detour
     {
         private static readonly float EQUAL_THRESHOLD = RcMath.Sqr(1.0f / 16384.0f);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int NextPow2(int v)
         {
             v--;
@@ -17,8 +18,7 @@ namespace DotRecast.Detour
             v |= v >> 4;
             v |= v >> 8;
             v |= v >> 16;
-            v++;
-            return v;
+            return v + 1;
         }
 
         public static int Ilog2(int v)
@@ -52,6 +52,7 @@ namespace DotRecast.Detour
             return VEqual(p0, p1, EQUAL_THRESHOLD);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool VEqual(Vector3 p0, Vector3 p1, float thresholdSqr)
         {
             float d = Vector3.DistanceSquared(p0, p1);
@@ -90,6 +91,7 @@ namespace DotRecast.Detour
             return overlap;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool OverlapRange(float amin, float amax, float bmin, float bmax, float eps)
         {
             return (amin + eps) <= bmax && (amax - eps) >= bmin;
@@ -152,6 +154,7 @@ namespace DotRecast.Detour
             return acx * abz - abx * acz;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float TriArea2D(in Vector3 a, in Vector3 b, in Vector3 c)
         {
             float abx = b.X - a.X;
@@ -161,6 +164,7 @@ namespace DotRecast.Detour
             return acx * abz - abx * acz;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float TriArea2D(in Vector2 a, in Vector2 b, in Vector2 c)
         {
             var ab = b - a;
@@ -309,6 +313,7 @@ namespace DotRecast.Detour
             return c;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DistancePtSegSqr2D(Vector3 pt, float[] verts, int p, int q, out float t)
         {
             var vp = Vector3Extensions.Of(verts, p);
@@ -336,7 +341,7 @@ namespace DotRecast.Detour
 
             t = Math.Clamp(t, 0, 1);
 
-            return (t * pq + p - pt).LengthSquared();
+            return (t * pq - dd).LengthSquared();
         }
 
         public static bool IntersectSegmentPoly2D(Vector3 p0, Vector3 p1,
@@ -409,6 +414,7 @@ namespace DotRecast.Detour
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int OppositeTile(int side)
         {
             return (side + 4) & 0x7;
@@ -433,6 +439,16 @@ namespace DotRecast.Detour
             t = Vector3Extensions.PerpXZ(u, w) / d;
 
             return true;
+        }
+
+        public static float Clamp01(float value)
+        {
+            if (value < 0F)
+                return 0F;
+            else if (value > 1F)
+                return 1F;
+            else
+                return value;
         }
     }
 }

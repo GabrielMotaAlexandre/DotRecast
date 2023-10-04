@@ -899,29 +899,33 @@ namespace DotRecast.Detour.Crowd
                 }
 
                 // Query neighbour agents
-                GetNeighbours(ag.npos, ag.option.height, ag.option.collisionQueryRange, ag, ag.Neighbors, _grid);
+                GetNeighbours(ag, _grid);
             }
         }
 
-        private void GetNeighbours(Vector3 pos, float height, float range, DtCrowdAgent skip, List<DtCrowdNeighbour> result, DtProximityGrid grid)
+        private void GetNeighbours(DtCrowdAgent agent, DtProximityGrid grid)
         {
-            result.Clear();
+            agent.Neighbors.Clear();
 
-            var proxAgents = grid.QueryItems(this, pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, skip);
+            var pos = agent.npos;
+            var range = agent.option.collisionQueryRange;
+            var height = agent.option.height;
+
+            var neiAgentIds = grid.QueryItems(this, pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, agent);
 
             int i = 0;
 
             while (true)
             {
-                var agId = proxAgents[i++];
-                if (agId < 0)
+                var neiAgId = neiAgentIds[i++];
+                if (neiAgId < 0)
                     break;
 
-                var ag = _agents[agId];
+                var neiAg = _agents[neiAgId];
 
                 // Check for overlap.
-                Vector3 diff = pos - ag.npos;
-                if (MathF.Abs(diff.Y) >= (height + ag.option.height) / 2f)
+                Vector3 diff = pos - neiAg.npos;
+                if (MathF.Abs(diff.Y) >= (height + neiAg.option.height) / 2f)
                 {
                     continue;
                 }
@@ -933,10 +937,10 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                result.Add(new DtCrowdNeighbour(ag, distSqr));
+                agent.Neighbors.Add(neiAg);
             }
 
-            ArrayPool<int>.Shared.Return(proxAgents);
+            ArrayPool<int>.Shared.Return(neiAgentIds);
         }
 
         private void FindCorners(IList<DtCrowdAgent> agents, DtCrowdAgentDebugInfo debug)
@@ -1083,10 +1087,8 @@ namespace DotRecast.Detour.Crowd
                     var w = 0;
                     Vector2 disp = default;
 
-                    foreach (var neiAg in ag.Neighbors)
+                    foreach (var nei in ag.Neighbors)
                     {
-                        DtCrowdAgent nei = neiAg.agent;
-
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
                         float distSqr = diff.LengthSquared();
@@ -1143,9 +1145,8 @@ namespace DotRecast.Detour.Crowd
                     _obstacleQuery.Reset();
 
                     // Add neighbours as obstacles.
-                    foreach(var neiAg in ag.Neighbors)
+                    foreach(var nei in ag.Neighbors)
                     {
-                        DtCrowdAgent nei = neiAg.agent;
                         _obstacleQuery.AddCircle(nei.npos.AsVector2XZ(), nei.option.radius, in nei.vel, in nei.dvel);
                     }
 
@@ -1153,7 +1154,7 @@ namespace DotRecast.Detour.Crowd
                     // Append neighbour segments as obstacles.
                     foreach (var segment in ag.boundary.Segments)
                     {
-                        if (DtUtils.TriArea2D(in pos, in segment.Start, in segment.End) < 0.0f)
+                        if (DtUtils.TriArea2D(in pos, in segment.Start, in segment.End) < 0)
                         {
                             continue;
                         }
@@ -1221,10 +1222,8 @@ namespace DotRecast.Detour.Crowd
 
                     float w = 0;
 
-                    foreach (var neiAg in ag.Neighbors)
+                    foreach (var nei in ag.Neighbors)
                     {
-                        DtCrowdAgent nei = neiAg.agent;
-
                         Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
                         float dist = diff.LengthSquared();

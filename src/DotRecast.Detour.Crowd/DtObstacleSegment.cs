@@ -9,7 +9,5 @@ namespace DotRecast.Detour.Crowd
 
         /** End points of the obstacle segment */
         public Vector2 q;
-
-        public bool touch;
     }
 }

@@ -49,7 +49,7 @@ namespace DotRecast.Detour.Crowd
         public float topologyOptTime;
 
         /// The known neighbors of the agent.
-        public List<DtCrowdNeighbour> Neighbors { get; } = new();
+        public List<DtCrowdAgent> Neighbors { get; } = new();
 
         /// The desired speed.
         public float desiredSpeed;

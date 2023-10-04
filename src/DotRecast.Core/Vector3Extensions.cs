@@ -166,7 +166,7 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dist2D(Vector3 v1, Vector3 v2)
+        public static float Dist2D(in Vector3 v1, in Vector3 v2)
         {
             float dx = v2.X - v1.X;
             float dz = v2.Z - v1.Z;
@@ -174,7 +174,7 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dist2DSqr(Vector3 v1, Vector3 v2)
+        public static float Dist2DSqr(in Vector3 v1, in Vector3 v2)
         {
             float dx = v2.X - v1.X;
             float dz = v2.Z - v1.Z;
@@ -197,13 +197,13 @@ namespace System.Numerics
         /// The vectors are projected onto the xz-plane, so the y-values are
         /// ignored.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Perp2D(Vector3 u, Vector3 v)
+        public static float Perp2D(in Vector3 u, in Vector3 v)
         {
             return u.Z * v.X - u.X * v.Z;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Perp2D(Vector2 u, Vector2 v)
+        public static float Perp2D(in Vector2 u, in Vector2 v)
         {
             return u.Y * v.X - u.X * v.Y;
         }

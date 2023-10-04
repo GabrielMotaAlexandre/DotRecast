@@ -136,7 +136,7 @@ namespace DotRecast.Detour.Crowd
 
                 var dv = cir.dvel - dvel;
 
-                float a = dv.X * cir.dp.Y - cir.dp.X * dv.Y;
+                float a = Vector3Extensions.Perp2D(in cir.dp, in dv);
 
                 if (a < 0.01f)
                 {
@@ -149,20 +149,9 @@ namespace DotRecast.Detour.Crowd
                     cir.np.Y = -cir.dp.X;
                 }
             }
-
-            for (int i = 0; i < m_nsegments; ++i)
-            {
-                DtObstacleSegment seg = m_segments[i];
-
-                // Precalc if the agent is really close to the segment.
-
-                var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
-
-                const float r = 0.01f;
-                seg.touch = distSqr < r * r;
-            }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static bool SweepCircleCircle(Vector2 c0, float r0, Vector2 v, Vector2 c1, float r1, out float tmin, out float tmax)
         {
             const float EPS = 0.0001f;
@@ -202,7 +191,7 @@ namespace DotRecast.Detour.Crowd
      * @param minPenalty
      *            threshold penalty for early out
      */
-        private float ProcessSample(Vector2 vcand, float cs, Vector2 pos, float rad, Vector2 vel, Vector2 dvel,
+        private float ProcessSample(in Vector2 vcand, float cs, in Vector2 pos, float rad, in Vector2 vel, in Vector2 dvel,
             float minPenalty, DtObstacleAvoidanceDebugData debug)
         {
             // penalty for straying away from the desired and current velocities
@@ -216,18 +205,20 @@ namespace DotRecast.Detour.Crowd
             if (tThresold - m_params.horizTime > -float.MinValue)
                 return minPenalty; // already too much
 
+            var vabPre = vcand * 2 - vel;
+
             // Find min time of impact and exit amongst all obstacles.
             var tmin = m_params.horizTime;
             float side = 0;
             for (int i = 0; i != m_ncircles; i++)
             {
-                ref readonly DtObstacleCircle cir = ref m_circles.GetUnsafe(i);
+                DtObstacleCircle cir = m_circles[i];
 
                 // RVO
-                var vab = vcand * 2 - vel - cir.vel;
+                var vab = vabPre - cir.vel;
 
                 // Side
-                side += Math.Clamp(MathF.Min(Vector2.Dot(cir.dp, vab) * 0.5f + 0.5f, Vector2.Dot(cir.np, vab) * 2), 0.0f, 1.0f);
+                side += Math.Clamp(MathF.Min(Vector2.Dot(cir.dp, vab) / 2 + 0.5f, Vector2.Dot(cir.np, vab) * 2), 0f, 1f);
 
                 if (!SweepCircleCircle(pos, rad, vab, cir.p, cir.rad, out var htmin, out var htmax))
                     continue;
@@ -255,32 +246,43 @@ namespace DotRecast.Detour.Crowd
             for (int i = 0; i < m_nsegments; ++i)
             {
                 DtObstacleSegment seg = m_segments[i];
-                float htmin = 0;
+                float htmin;
 
-                if (seg.touch)
+                //var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
+                var sdir = seg.q - seg.p;
+                var w = pos - seg.p;
+                var t = Vector2.Dot(sdir, w);
+
+                float d = sdir.LengthSquared();
+                t = DtUtils.Clamp01(t / (d > 0 ? d : 1));
+
+                var distSqr = (t * sdir - w).LengthSquared();
+
+
+                const float r = 0.01f;
+                var touch = distSqr < r * r;
+
+                if (touch)
                 {
                     // Special case when the agent is very close to the segment.
-                    var sdir = seg.q - seg.p;
                     var snorm = new Vector2(-sdir.Y, sdir.X);
                     // If the velocity is pointing towards the segment, no collision.
-                    if (Vector2.Dot(snorm, vcand) < 0.0f)
+                    if (Vector2.Dot(snorm, vcand) < 0)
                         continue;
                     // Else immediate collision.
+                    htmin = 0;
                 }
                 else  // IsectRaySeg                
                 {
-                    var v = seg.q - seg.p;
-                    var w = pos - seg.p;
-                    float d = Vector3Extensions.Perp2D(vcand, v);
+                    float dvcand = Vector3Extensions.Perp2D(vcand, sdir);
                     if (MathF.Abs(d) < 1e-6f)
                         continue;
 
-                    htmin = Vector3Extensions.Perp2D(v, w) / d;
+                    htmin = Vector3Extensions.Perp2D(sdir, w) / dvcand;
                     if (htmin < 0 || htmin > 1)
                         continue;
 
-                    float s = Vector3Extensions.Perp2D(vcand, w) / d;
-
+                    float s = Vector3Extensions.Perp2D(vcand, w) / dvcand;
                     if (s < 0 || s > 1)
                         continue;
 
@@ -444,7 +446,7 @@ namespace DotRecast.Detour.Crowd
             for (int k = 0; k < depth; ++k)
             {
                 float minPenalty = float.MaxValue;
-                Vector2 bvel = Vector2.Zero;
+                Vector2 bvel = default;
 
                 for (int i = 0; i < npat; ++i)
                 {

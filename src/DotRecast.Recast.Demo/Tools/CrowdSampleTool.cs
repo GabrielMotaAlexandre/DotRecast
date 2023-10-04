@@ -318,7 +318,7 @@ public class CrowdSampleTool : ISampleTool
                 dd.Begin(LINES, 2.0f);
                 for (int j = 0; j < ag.Neighbors.Count; ++j)
                 {
-                    DtCrowdAgent nei = ag.Neighbors[j].agent;
+                    DtCrowdAgent nei = ag.Neighbors[j];
                     if (nei != null)
                     {
                         dd.Vertex(pos.X, pos.Y + radius, pos.Z, DuRGBA(0, 192, 128, 128));
