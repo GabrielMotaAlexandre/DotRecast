@@ -136,8 +136,7 @@ namespace DotRecast.Detour.Crowd
             }
         }
 
-        // 해당 셀 사이즈의 크기로 x ~ y 영역을 찾아, 군집 에이전트를 가져오는 코드
-        public int[] QueryItems(DtCrowd dtCrowd, float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
+        public void QueryItems(int[] neighbourAgentIds, DtCrowd dtCrowd, float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
         {
             int i = 0;
             int iminx = (int)MathF.Floor(minx * _invCellSize) - Min.X;
@@ -146,7 +145,6 @@ namespace DotRecast.Detour.Crowd
             int imaxy = (int)MathF.Floor(maxy * _invCellSize) - Min.Y;
 
             var count = dtCrowd.GetActiveAgents().Count;
-            var result = ArrayPool<int>.Shared.Rent(count + 1);
 
             var array = ArrayPool<bool>.Shared.Rent(count);
             Array.Clear(array);
@@ -164,15 +162,14 @@ namespace DotRecast.Detour.Crowd
                         var agId = ids.ids.GetUnsafe(iId);
                         ref var exist = ref array[agId];
 
-                        result[exist ? count : i++] = agId;
+                        neighbourAgentIds[exist ? count : i++] = agId;
                         exist = true;
                     }
                 }
             }
-
-            result[i] = -1;
+            
+            neighbourAgentIds[i] = -1;
             ArrayPool<bool>.Shared.Return(array);
-            return result;
         }
     }
 

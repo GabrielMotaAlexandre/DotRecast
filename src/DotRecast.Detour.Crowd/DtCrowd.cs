@@ -915,13 +915,15 @@ namespace DotRecast.Detour.Crowd
             var range = agent.option.collisionQueryRange;
             var height = agent.option.height;
 
-            var neiAgentIds = grid.QueryItems(this, pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, agent);
+            var neighbourAgentIds = ArrayPool<int>.Shared.Rent(_agents.Count + 1);
+
+            grid.QueryItems(neighbourAgentIds, this, pos.X - range, pos.Z - range, pos.X + range, pos.Z + range, agent);
 
             int i = 0;
 
             while (true)
             {
-                var neiAgId = neiAgentIds[i++];
+                var neiAgId = neighbourAgentIds[i++];
                 if (neiAgId < 0)
                     break;
 
@@ -944,7 +946,7 @@ namespace DotRecast.Detour.Crowd
                 agent.Neighbors.Add(neiAg);
             }
 
-            ArrayPool<int>.Shared.Return(neiAgentIds);
+            ArrayPool<int>.Shared.Return(neighbourAgentIds);
         }
 
         private void FindCorners(IList<DtCrowdAgent> agents, DtCrowdAgentDebugInfo debug)
