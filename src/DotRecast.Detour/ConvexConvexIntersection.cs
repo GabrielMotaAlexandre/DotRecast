@@ -250,42 +250,42 @@ namespace DotRecast.Detour
 
         private static Intersection ParallelInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, ref Vector3 p, ref Vector3 q)
         {
-            if (Between(a, b, c) && Between(a, b, d))
+            if (Between2D(a, b, c) && Between2D(a, b, d))
             {
                 p = c;
                 q = d;
                 return Intersection.Overlap;
             }
 
-            if (Between(c, d, a) && Between(c, d, b))
+            if (Between2D(c, d, a) && Between2D(c, d, b))
             {
                 p = a;
                 q = b;
                 return Intersection.Overlap;
             }
 
-            if (Between(a, b, c) && Between(c, d, b))
+            if (Between2D(a, b, c) && Between2D(c, d, b))
             {
                 p = c;
                 q = b;
                 return Intersection.Overlap;
             }
 
-            if (Between(a, b, c) && Between(c, d, a))
+            if (Between2D(a, b, c) && Between2D(c, d, a))
             {
                 p = c;
                 q = a;
                 return Intersection.Overlap;
             }
 
-            if (Between(a, b, d) && Between(c, d, b))
+            if (Between2D(a, b, d) && Between2D(c, d, b))
             {
                 p = d;
                 q = b;
                 return Intersection.Overlap;
             }
 
-            if (Between(a, b, d) && Between(c, d, a))
+            if (Between2D(a, b, d) && Between2D(c, d, a))
             {
                 p = d;
                 q = a;
@@ -295,7 +295,7 @@ namespace DotRecast.Detour
             return Intersection.None;
         }
 
-        private static bool Between(Vector3 a, Vector3 b, Vector3 c)
+        private static bool Between2D(Vector3 a, Vector3 b, Vector3 c)
         {
             if (Math.Abs(a.X - b.X) > Math.Abs(a.Z - b.Z))
             {

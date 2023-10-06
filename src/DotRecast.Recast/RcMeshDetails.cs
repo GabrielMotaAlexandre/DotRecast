@@ -147,7 +147,7 @@ namespace DotRecast.Recast
                 return true;
             }
 
-            c = Vector3Extensions.Copy(verts, p1);
+            c = verts.GetUnsafe(p1).UnsafeAs<float, Vector3>();
             r.Exchange(0f);
             return false;
         }
@@ -966,8 +966,8 @@ namespace DotRecast.Recast
             if (sampleDist > 0)
             {
                 // Create sample locations in a grid.
-                var bmin = Vector3Extensions.Copy(@in, 0);
-                var bmax = Vector3Extensions.Copy(@in, 0);
+                var bmin = verts.UnsafeAs<float, Vector3>();
+                var bmax = bmin;
                 for (int i = 1; i < nin; ++i)
                 {
                     bmin.Min(@in, i * 3);

@@ -241,8 +241,8 @@ namespace DotRecast.Recast
             float by = heightfieldBBMax.Y - heightfieldBBMin.Y;
 
             // Calculate the bounding box of the triangle.
-            var tmin = Vector3Extensions.Copy(verts, v0 * 3);
-            var tmax = Vector3Extensions.Copy(verts, v0 * 3);
+            var tmin = verts.UnsafeAs<float, Vector3>(v0);
+            var tmax = tmin;
             tmin.Min(verts, v1 * 3);
             tmin.Min(verts, v2 * 3);
             tmax.Max(verts, v1 * 3);

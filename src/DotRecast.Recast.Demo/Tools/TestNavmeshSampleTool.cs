@@ -509,10 +509,10 @@ public class TestNavmeshSampleTool : ISampleTool
                                 }
 
                                 Vector3 delta = s3 - s.vmin;
-                                Vector3 p0 = Vector3Extensions.Mad(s.vmin, delta, 0.5f);
+                                Vector3 p0 = s.vmin + delta * 0.5f;
                                 Vector3 norm = new(delta.Z, 0, -delta.X);
                                 norm.Normalize();
-                                Vector3 p1 = Vector3Extensions.Mad(p0, norm, agentRadius * 0.5f);
+                                Vector3 p1 = p0 + norm * (agentRadius * 0.5f);
                                 // Skip backfacing segments.
                                 if (segmentRefs[j] != 0)
                                 {

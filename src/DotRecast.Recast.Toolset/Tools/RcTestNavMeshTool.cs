@@ -85,7 +85,7 @@ namespace DotRecast.Recast.Toolset.Tools
                     len = STEP_SIZE / len;
                 }
 
-                Vector3 moveTgt = Vector3Extensions.Mad(iterPos, delta, len);
+                Vector3 moveTgt = iterPos + delta * len;
 
                 // Move
                 navQuery.MoveAlongSurface(polys[0], iterPos, moveTgt, filter, out var result, ref visited);

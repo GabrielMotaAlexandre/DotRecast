@@ -41,10 +41,8 @@ namespace DotRecast.Detour.Extras
                 BVItem it = new();
                 items[i] = it;
                 it.i = i;
-                Vector3 bmin = new();
-                Vector3 bmax = new();
-                bmin.Set(data.verts, data.polys[i].verts[0] * 3);
-                bmax.Set(data.verts, data.polys[i].verts[0] * 3);
+                var bmin = data.verts.UnsafeAs<float, Vector3>(data.polys[i].verts[0]);
+                var bmax = bmin;
                 for (int j = 1; j < data.polys[i].vertCount; j++)
                 {
                     bmin.Min(data.verts, data.polys[i].verts[j] * 3);

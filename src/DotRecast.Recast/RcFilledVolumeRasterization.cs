@@ -512,8 +512,8 @@ namespace DotRecast.Recast
                 if (vertices[vi] >= rectangle[0] && vertices[vi] < rectangle[2] && vertices[vi + 2] >= rectangle[1]
                     && vertices[vi + 2] < rectangle[3])
                 {
-                    yMin = Math.Min(yMin, vertices[vi + 1]);
-                    yMax = Math.Max(yMax, vertices[vi + 1]);
+                    yMin = MathF.Min(yMin, vertices[vi + 1]);
+                    yMax = MathF.Max(yMax, vertices[vi + 1]);
                 }
             }
 
@@ -525,9 +525,9 @@ namespace DotRecast.Recast
                 point.Z = ((i & 2) == 0) ? rectangle[1] : rectangle[3];
                 for (int j = 0; j < 6; j++)
                 {
-                    if (Math.Abs(planes[j][1]) > EPSILON)
+                    if (MathF.Abs(planes[j][1]) > EPSILON)
                     {
-                        float dotNormalPoint = Vector3Extensions.Dot(planes[j], point);
+                        float dotNormalPoint = Vector3.Dot(planes[j].UnsafeAs<float, Vector3>(), point);
                         float t = (planes[j][3] - dotNormalPoint) / planes[j][1];
                         float y = point.Y + t;
                         bool valid = true;
@@ -545,8 +545,8 @@ namespace DotRecast.Recast
 
                         if (valid)
                         {
-                            yMin = Math.Min(yMin, y);
-                            yMax = Math.Max(yMax, y);
+                            yMin = MathF.Min(yMin, y);
+                            yMax = MathF.Max(yMax, y);
                         }
                     }
                 }
@@ -564,33 +564,33 @@ namespace DotRecast.Recast
                 float dx = vertices[vj] - x;
                 float dy = vertices[vj + 1] - y;
                 float dz = vertices[vj + 2] - z;
-                if (Math.Abs(dx) > EPSILON)
+                if (MathF.Abs(dx) > EPSILON)
                 {
                     if (XSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[0], out var iy))
                     {
-                        yMin = Math.Min(yMin, iy);
-                        yMax = Math.Max(yMax, iy);
+                        yMin = MathF.Min(yMin, iy);
+                        yMax = MathF.Max(yMax, iy);
                     }
 
                     if (XSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[2], out iy))
                     {
-                        yMin = Math.Min(yMin, iy);
-                        yMax = Math.Max(yMax, iy);
+                        yMin = MathF.Min(yMin, iy);
+                        yMax = MathF.Max(yMax, iy);
                     }
                 }
 
-                if (Math.Abs(dz) > EPSILON)
+                if (MathF.Abs(dz) > EPSILON)
                 {
                     if (ZSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[1], out var iy))
                     {
-                        yMin = Math.Min(yMin, iy);
-                        yMax = Math.Max(yMax, iy);
+                        yMin = MathF.Min(yMin, iy);
+                        yMax = MathF.Max(yMax, iy);
                     }
 
                     if (ZSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[3], out iy))
                     {
-                        yMin = Math.Min(yMin, iy);
-                        yMax = Math.Max(yMax, iy);
+                        yMin = MathF.Min(yMin, iy);
+                        yMax = MathF.Max(yMax, iy);
                     }
                 }
             }
@@ -730,16 +730,16 @@ namespace DotRecast.Recast
 
         private static bool RayTriangleIntersection(Vector3 point, int plane, float[][] planes, out float y)
         {
-            y = 0.0f;
-            float t = (planes[plane][3] - Vector3Extensions.Dot(planes[plane], point)) / planes[plane][1];
+            y = 0;
+            float t = (planes[plane][3] - Vector3.Dot(planes[plane].UnsafeAs<float, Vector3>(), point)) / planes[plane][1];
             float[] s = { point.X, point.Y + t, point.Z };
-            float u = Vector3Extensions.Dot(s, planes[plane + 1]) - planes[plane + 1][3];
+            float u = Vector3.Dot(s.UnsafeAs<float, Vector3>(), planes[plane + 1].UnsafeAs<float, Vector3>()) - planes[plane + 1][3];
             if (u < 0.0f || u > 1.0f)
             {
                 return false;
             }
 
-            float v = Vector3Extensions.Dot(s, planes[plane + 2]) - planes[plane + 2][3];
+            float v = Vector3.Dot(s.UnsafeAs<float, Vector3>(), planes[plane + 2].UnsafeAs<float, Vector3>()) - planes[plane + 2][3];
             if (v < 0.0f)
             {
                 return false;

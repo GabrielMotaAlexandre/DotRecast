@@ -26,12 +26,6 @@ namespace System.Numerics
     public static class Vector3Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 AsVector3(this Vector2 vector)
-        {
-            return new Vector3(vector.X, 0, vector.Y);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 AsVector2XZ(this Vector3 vector)
         {
             return new Vector2(vector.X, vector.Z);
@@ -39,15 +33,13 @@ namespace System.Numerics
 
         public static Vector3 Of(float[] f, int idx)
         {
-            return new Vector3(f[idx + 0], f[idx + 1], f[idx + 2]);
+            return f.GetUnsafe(idx).UnsafeAs<float, Vector3>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Set(this ref Vector3 vector, float[] @in, int i)
         {
-            vector.X = @in[i];
-            vector.Y = @in[i + 1];
-            vector.Z = @in[i + 2];
+            vector = @in.GetUnsafe(i).UnsafeAs<float, Vector3>();
         }
 
         /// Derives the dot product of two vectors on the xz-plane. (@p u . @p v)
@@ -111,43 +103,9 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dot(float[] v1, float[] v2)
-        {
-            return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dot(float[] v1, Vector3 v2)
-        {
-            return v1[0] * v2.X + v1[1] * v2.Y + v1[2] * v2.Z;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float PerpXZ(Vector3 a, Vector3 b)
         {
             return (a.X * b.Z) - (a.Z * b.X);
-        }
-
-        /// Performs a scaled vector addition. (@p v1 + (@p v2 * @p s))
-        /// @param[out] dest The result vector. [(x, y, z)]
-        /// @param[in] v1 The base vector. [(x, y, z)]
-        /// @param[in] v2 The vector to scale and add to @p v1. [(x, y, z)]
-        /// @param[in] s The amount to scale @p v2 by before adding to @p v1.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector3 Mad(in Vector3 v1, in Vector3 v2, float s)
-        {
-            return v1 + v2 * s;
-        }
-
-        /// Performs a scaled vector addition. (@p v1 + (@p v2 * @p s))
-        /// @param[out] dest The result vector. [(x, y, z)]
-        /// @param[in] v1 The base vector. [(x, y, z)]
-        /// @param[in] v2 The vector to scale and add to @p v1. [(x, y, z)]
-        /// @param[in] s The amount to scale @p v2 by before adding to @p v1.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector2 Mad(in Vector2 v1, in Vector2 v2, float s)
-        {
-            return v1 + v2 * s;
         }
 
         /// Performs a linear interpolation between two vectors. (@p v1 toward @p
@@ -163,6 +121,7 @@ namespace System.Numerics
             ref readonly Vector3 vector2 = ref verts.GetReference().UnsafeAdd(v2).UnsafeAs<float, Vector3>();
 
             return vector1 + (vector2 - vector1) * t;
+            //return Vector3.Lerp(vector1, vector2, t);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -178,14 +137,6 @@ namespace System.Numerics
         {
             float dx = v2.X - v1.X;
             float dz = v2.Z - v1.Z;
-            return dx * dx + dz * dz;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dist2DSqr(Vector3 p, float[] verts, int i)
-        {
-            float dx = verts[i] - p.X;
-            float dz = verts[i + 2] - p.Z;
             return dx * dx + dz * dz;
         }
 
@@ -224,11 +175,6 @@ namespace System.Numerics
         public static bool IsFinite2D(Vector3 v)
         {
             return float.IsFinite(v.X) && float.IsFinite(v.Z);
-        }
-
-        public static Vector3 Copy(float[] @in, int i)
-        {
-            return @in.GetUnsafe(i).UnsafeAs<float, Vector3>();
         }
 
         public static void Copy(float[] @out, int n, float[] @in, int m)

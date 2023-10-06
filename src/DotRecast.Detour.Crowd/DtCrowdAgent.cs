@@ -126,7 +126,8 @@ namespace DotRecast.Detour.Crowd
             // Integrate
             if (vel.Length() > 0.0001f)
             {
-                npos = Vector3Extensions.Mad(npos, vel.AsVector3(), dt);
+                npos.X += vel.X * dt;
+                npos.Z += vel.Y * dt;
             }
             else
             {
