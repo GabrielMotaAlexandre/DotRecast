@@ -142,11 +142,12 @@ namespace DotRecast.Recast
                 c.Y = 0;
                 c.Z = (v1Sq * (v3.X - v2.X) + v2Sq * (v1.X - v3.X) + v3Sq * (v2.X - v1.X)) / (2 * cp);
                 r.Exchange(Vdist2(c, v1));
-                Vector3Extensions.Add(ref c, c, verts, p1);
+                c += verts.GetUnsafe(p1).UnsafeAs<float, Vector3>();
+
                 return true;
             }
 
-            Vector3Extensions.Copy(ref c, verts, p1);
+            c = Vector3Extensions.Copy(verts, p1);
             r.Exchange(0f);
             return false;
         }
@@ -158,7 +159,7 @@ namespace DotRecast.Recast
             Vector3 v2 = new();
             Vector3Extensions.Sub(ref v0, verts, c, a);
             Vector3Extensions.Sub(ref v1, verts, b, a);
-            Vector3Extensions.Sub(ref v2, p, verts, a);
+            v2 = p - verts.GetUnsafe(a).UnsafeAs<float, Vector3>();
 
             float dot00 = Vdot2(v0, v0);
             float dot01 = Vdot2(v0, v1);
@@ -965,10 +966,8 @@ namespace DotRecast.Recast
             if (sampleDist > 0)
             {
                 // Create sample locations in a grid.
-                Vector3 bmin = new();
-                Vector3 bmax = new();
-                Vector3Extensions.Copy(ref bmin, @in, 0);
-                Vector3Extensions.Copy(ref bmax, @in, 0);
+                var bmin = Vector3Extensions.Copy(@in, 0);
+                var bmax = Vector3Extensions.Copy(@in, 0);
                 for (int i = 1; i < nin; ++i)
                 {
                     bmin.Min(@in, i * 3);
@@ -1057,7 +1056,8 @@ namespace DotRecast.Recast
                     // Mark sample as added.
                     samples[besti * 4 + 3] = 1;
                     // Add the new sample point.
-                    Vector3Extensions.Copy(verts, nverts * 3, bestpt, 0);
+                    verts.UnsafeAs<float, Vector3>(nverts) = bestpt;
+
                     nverts++;
 
                     // Create new triangulation.

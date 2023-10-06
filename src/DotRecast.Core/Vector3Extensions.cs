@@ -226,9 +226,9 @@ namespace System.Numerics
             return float.IsFinite(v.X) && float.IsFinite(v.Z);
         }
 
-        public static void Copy(ref Vector3 @out, float[] @in, int i)
+        public static Vector3 Copy(float[] @in, int i)
         {
-            Copy(ref @out, 0, @in, i);
+            return @in.GetUnsafe(i).UnsafeAs<float, Vector3>();
         }
 
         public static void Copy(float[] @out, int n, float[] @in, int m)
@@ -238,56 +238,14 @@ namespace System.Numerics
             @out[n + 2] = @in[m + 2];
         }
 
-        public static void Copy(float[] @out, int n, Vector3 @in, int m)
-        {
-            @out[n] = @in[m];
-            @out[n + 1] = @in[m + 1];
-            @out[n + 2] = @in[m + 2];
-        }
-
-        public static void Copy(ref Vector3 @out, int n, float[] @in, int m)
-        {
-            @out[n] = @in[m];
-            @out[n + 1] = @in[m + 1];
-            @out[n + 2] = @in[m + 2];
-        }
-
-        public static void Add(ref Vector3 e0, Vector3 a, float[] verts, int i)
-        {
-            e0.X = a.X + verts[i];
-            e0.Y = a.Y + verts[i + 1];
-            e0.Z = a.Z + verts[i + 2];
-        }
-
-
         public static void Sub(ref Vector3 e0, float[] verts, int i, int j)
         {
-            e0.X = verts[i] - verts[j];
-            e0.Y = verts[i + 1] - verts[j + 1];
-            e0.Z = verts[i + 2] - verts[j + 2];
-        }
-
-
-        public static void Sub(ref Vector3 e0, Vector3 i, float[] verts, int j)
-        {
-            e0.X = i.X - verts[j];
-            e0.Y = i.Y - verts[j + 1];
-            e0.Z = i.Z - verts[j + 2];
-        }
-
-
-        public static void Cross(float[] dest, float[] v1, float[] v2)
-        {
-            dest[0] = v1[1] * v2[2] - v1[2] * v2[1];
-            dest[1] = v1[2] * v2[0] - v1[0] * v2[2];
-            dest[2] = v1[0] * v2[1] - v1[1] * v2[0];
+            e0 = verts.GetUnsafe(i).UnsafeAs<float, Vector3>() - verts.GetUnsafe(j).UnsafeAs<float, Vector3>();
         }
 
         public static void Cross(ref Vector3 dest, Vector3 v1, Vector3 v2)
         {
-            dest.X = v1.Y * v2.Z - v1.Z * v2.Y;
-            dest.Y = v1.Z * v2.X - v1.X * v2.Z;
-            dest.Z = v1.X * v2.Y - v1.Y * v2.X;
+            dest = Vector3.Cross(v1, v2);
         }
 
         [Pure]
@@ -308,7 +266,14 @@ namespace System.Numerics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref TTo UnsafeAs<T, TTo>(this T[] array) where T : struct where TTo : struct
         {
-            return ref Unsafe.As<T, TTo>(ref array.GetReference());
+            return ref array.UnsafeAs<T, TTo>(0);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref TTo UnsafeAs<T, TTo>(this T[] array, int index) where T : struct where TTo : struct
+        {
+            return ref Unsafe.As<T, TTo>(ref array.GetReference()).UnsafeAdd(index);
         }
 
         [Pure]

@@ -238,13 +238,11 @@ namespace DotRecast.Recast
             float cellSize, float inverseCellSize, float inverseCellHeight,
             int flagMergeThreshold)
         {
-            Vector3 tmin = new();
-            Vector3 tmax = new();
             float by = heightfieldBBMax.Y - heightfieldBBMin.Y;
 
             // Calculate the bounding box of the triangle.
-            Vector3Extensions.Copy(ref tmin, verts, v0 * 3);
-            Vector3Extensions.Copy(ref tmax, verts, v0 * 3);
+            var tmin = Vector3Extensions.Copy(verts, v0 * 3);
+            var tmax = Vector3Extensions.Copy(verts, v0 * 3);
             tmin.Min(verts, v1 * 3);
             tmin.Min(verts, v2 * 3);
             tmax.Max(verts, v1 * 3);

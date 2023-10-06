@@ -76,10 +76,8 @@ namespace DotRecast.Recast.Geom
             this.faces = faces;
             normals = new float[faces.Length];
             CalculateNormals();
-            bmin = Vector3.Zero;
-            bmax = Vector3.Zero;
-            Vector3Extensions.Copy(ref bmin, vertices, 0);
-            Vector3Extensions.Copy(ref bmax, vertices, 0);
+            bmin = Vector3Extensions.Copy(vertices, 0);
+            bmax = Vector3Extensions.Copy(vertices, 0);
             for (int i = 1; i < vertices.Length / 3; i++)
             {
                 bmin.Min(vertices, i * 3);

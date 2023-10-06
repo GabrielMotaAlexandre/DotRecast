@@ -1841,7 +1841,7 @@ namespace DotRecast.Detour
                 int nverts = curPoly.vertCount;
                 for (int i = 0; i < nverts; ++i)
                 {
-                    verts.UnsafeAs<float, Vector3>().UnsafeAdd(i) = curTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(curPoly.verts[i]);
+                    verts.UnsafeAs<float, Vector3>(i) = curTile.data.verts.UnsafeAs<float, Vector3>(curPoly.verts[i]);
                 }
 
                 // If target is inside the poly, stop search.
@@ -2024,7 +2024,7 @@ namespace DotRecast.Detour
                     {
                         int v = fromTile.links[i].edge;
                         var index = fromPoly.verts[v];
-                        left = right = fromTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(index);
+                        left = right = fromTile.data.verts.UnsafeAs<float, Vector3>(index);
 
                         return DtStatus.DT_SUCCSESS;
                     }
@@ -2041,7 +2041,7 @@ namespace DotRecast.Detour
                     {
                         int v = toTile.links[i].edge;
                         var index = toPoly.verts[v];
-                        left = right = toTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(index);
+                        left = right = toTile.data.verts.UnsafeAs<float, Vector3>(index);
 
                         return DtStatus.DT_SUCCSESS;
                     }
@@ -2052,10 +2052,10 @@ namespace DotRecast.Detour
 
             // Find portal vertices.
             int v0 = fromPoly.verts[link.edge];
-            left = fromTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(v0);
+            left = fromTile.data.verts.UnsafeAs<float, Vector3>(v0);
 
             int v1 = fromPoly.verts[(link.edge + 1) % fromPoly.vertCount];
-            right = fromTile.data.verts.UnsafeAs<float, Vector3>().UnsafeAdd(v1);
+            right = fromTile.data.verts.UnsafeAs<float, Vector3>(v1);
 
             // If the link is at tile boundary, dtClamp the vertices to
             // the link width.

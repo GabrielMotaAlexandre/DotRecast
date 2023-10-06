@@ -393,7 +393,7 @@ namespace DotRecast.Detour.Crowd
                 int last2 = last1;
 
                 var r = (nr - j) * nrInverted;
-                pat.UnsafeAs<float, Vector2>().UnsafeAdd(npat) = ddir[j % 2] * r; // npat == 1 + (end + preCalculatedInt + 1) * j
+                pat.UnsafeAs<float, Vector2>(npat) = ddir[j % 2] * r; // npat == 1 + (end + preCalculatedInt + 1) * j
 
                 npat++;
 
@@ -436,7 +436,7 @@ namespace DotRecast.Detour.Crowd
 
                 for (int i = 0; i < npat; ++i)
                 {
-                    var vcand = nvel + pat.UnsafeAs<float, Vector2>().UnsafeAdd(i) * cr;
+                    var vcand = nvel + pat.UnsafeAs<float, Vector2>(i) * cr;
 
                     if (vcand.LengthSquared() > RcMath.Sqr(vmax + 0.001f))
                         continue;
