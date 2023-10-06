@@ -179,9 +179,7 @@ namespace System.Numerics
 
         public static void Copy(float[] @out, int n, float[] @in, int m)
         {
-            @out[n] = @in[m];
-            @out[n + 1] = @in[m + 1];
-            @out[n + 2] = @in[m + 2];
+            @out.GetUnsafe(n).UnsafeAs<float, Vector3>() = @in.GetUnsafe(m).UnsafeAs<float, Vector3>();
         }
 
         public static void Sub(ref Vector3 e0, float[] verts, int i, int j)

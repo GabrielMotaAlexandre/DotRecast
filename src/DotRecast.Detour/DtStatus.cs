@@ -18,12 +18,32 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace DotRecast.Detour
 {
+    [DebuggerDisplay("Status: {Check()}")]
     public readonly struct DtStatus
     {
+        private string Check()
+        {
+            string r = "";
+
+            r += (Value & DT_FAILURE.Value) != 0 ? nameof(DT_FAILURE) + " " : "";
+            r += (Value & DT_SUCCSESS.Value) != 0 ? nameof(DT_SUCCSESS) + " " : "";
+            r += (Value & DT_IN_PROGRESS.Value) != 0 ? nameof(DT_IN_PROGRESS) + " " : "";
+            r += (Value & DT_STATUS_DETAIL_MASK.Value) != 0 ? nameof(DT_STATUS_DETAIL_MASK) + " " : "";
+            r += (Value & DT_STATUS_NOTHING.Value) != 0 ? nameof(DT_STATUS_NOTHING) + " " : "";
+            r += (Value & DT_INVALID_PARAM.Value) != 0 ? nameof(DT_INVALID_PARAM) + " " : "";
+            r += (Value & DT_BUFFER_TOO_SMALL.Value) != 0 ? nameof(DT_BUFFER_TOO_SMALL) + " " : "";
+            r += (Value & DT_OUT_OF_NODES.Value) != 0 ? nameof(DT_OUT_OF_NODES) + " " : "";
+            r += (Value & DT_PARTIAL_RESULT.Value) != 0 ? nameof(DT_PARTIAL_RESULT) : "";
+
+            return r;
+        }
+
         // High level status.
         public static readonly DtStatus DT_FAILURE = new(1u << 31); // Operation failed. 
         public static readonly DtStatus DT_SUCCSESS = new(1u << 30); // Operation succeed. 
@@ -32,14 +52,10 @@ namespace DotRecast.Detour
         // Detail information for status.
         public static readonly DtStatus DT_STATUS_DETAIL_MASK = new(0x0ffffff);
         public static readonly DtStatus DT_STATUS_NOTHING = new(0); // nothing
-        public static readonly DtStatus DT_WRONG_MAGIC = new(1 << 0); // Input data is not recognized.
-        public static readonly DtStatus DT_WRONG_VERSION = new(1 << 1); // Input data is in wrong version.
-        public static readonly DtStatus DT_OUT_OF_MEMORY = new(1 << 2); // Operation ran out of memory.
         public static readonly DtStatus DT_INVALID_PARAM = new(1 << 3); // An input parameter was invalid.
         public static readonly DtStatus DT_BUFFER_TOO_SMALL = new(1 << 4); // Result buffer for the query was too small to store all results.
         public static readonly DtStatus DT_OUT_OF_NODES = new(1 << 5); // Query ran out of nodes during search.
         public static readonly DtStatus DT_PARTIAL_RESULT = new(1 << 6); // Query did not reach the end location, returning best guess. 
-        public static readonly DtStatus DT_ALREADY_OCCUPIED = new(1 << 7); // A tile has already been assigned to the given x,y coordinate
 
         public readonly uint Value;
 

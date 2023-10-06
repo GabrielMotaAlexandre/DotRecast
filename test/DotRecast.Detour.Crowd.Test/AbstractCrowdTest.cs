@@ -177,7 +177,7 @@ public class AbstractCrowdTest
         Console.WriteLine(crowd.GetActiveAgents().Count);
         foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
         {
-            Console.WriteLine(ag.state + ", " + ag.targetState);
+            Console.WriteLine(ag.state + ", " + ag.TargetState);
             Console.WriteLine(ag.npos.X + ", " + ag.npos.Y);
             Console.WriteLine(ag.nvel.X + ", " + ag.nvel.Y);
         }

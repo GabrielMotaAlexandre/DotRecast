@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
@@ -204,7 +204,7 @@ namespace DotRecast.Recast.Toolset.Tools
             );
             Vector3 forward = new(1f - 2 * (float)random.NextDouble(), 0, 1f - 2 * (float)random.NextDouble());
             Vector3 up = new(1f - 2 * (float)random.NextDouble(), 0.01f + (float)random.NextDouble(), 1f - 2 * (float)random.NextDouble());
-            Vector3[] halfEdges = Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(up, forward, extent);
+            Vector3[] halfEdges = DtBoxCollider.GetHalfEdges(up, forward, extent);
             var collider = new DtBoxCollider(p, halfEdges, SampleAreaModifications.SAMPLE_POLYAREA_TYPE_WATER, walkableClimb);
             var gizmo = RcGizmoFactory.Box(p, halfEdges);
             return new RcGizmo(collider, gizmo);
@@ -235,14 +235,14 @@ namespace DotRecast.Recast.Toolset.Tools
             Vector3 forward = new(1f - 2 * (float)random.NextDouble(), 0, 1f - 2 * (float)random.NextDouble());
             forward.Normalize();
             Vector3 side = Vector3.Cross(forward, baseUp);
-            DtBoxCollider @base = new(baseCenter, Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(baseUp, forward, baseExtent),
+            DtBoxCollider @base = new(baseCenter, DtBoxCollider.GetHalfEdges(baseUp, forward, baseExtent),
                 SampleAreaModifications.SAMPLE_POLYAREA_TYPE_ROAD, walkableClimb);
             var roofUp = Vector3.Zero;
             Vector3 roofExtent = new(4.5f, 4.5f, 8f);
             var rx = RcMatrix4x4f.CreateFromRotate(45, forward.X, forward.Y, forward.Z);
             roofUp = MulMatrixVector(ref roofUp, rx, baseUp);
             Vector3 roofCenter = new(p.X, p.Y + 6, p.Z);
-            DtBoxCollider roof = new(roofCenter, Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(roofUp, forward, roofExtent),
+            DtBoxCollider roof = new(roofCenter, DtBoxCollider.GetHalfEdges(roofUp, forward, roofExtent),
                 SampleAreaModifications.SAMPLE_POLYAREA_TYPE_ROAD, walkableClimb);
             Vector3 trunkStart = new(
                 baseCenter.X - forward.X * 15 + side.X * 6,
@@ -259,8 +259,8 @@ namespace DotRecast.Recast.Toolset.Tools
             DtSphereCollider crown = new(crownCenter, 4f, SampleAreaModifications.SAMPLE_POLYAREA_TYPE_GRASS,
                 walkableClimb);
             DtCompositeCollider collider = new(@base, roof, trunk, crown);
-            IRcGizmoMeshFilter baseGizmo = RcGizmoFactory.Box(baseCenter, Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(baseUp, forward, baseExtent));
-            IRcGizmoMeshFilter roofGizmo = RcGizmoFactory.Box(roofCenter, Detour.Dynamic.Colliders.DtBoxCollider.GetHalfEdges(roofUp, forward, roofExtent));
+            IRcGizmoMeshFilter baseGizmo = RcGizmoFactory.Box(baseCenter, DtBoxCollider.GetHalfEdges(baseUp, forward, baseExtent));
+            IRcGizmoMeshFilter roofGizmo = RcGizmoFactory.Box(roofCenter, DtBoxCollider.GetHalfEdges(roofUp, forward, roofExtent));
             IRcGizmoMeshFilter trunkGizmo = RcGizmoFactory.Capsule(trunkStart, trunkEnd, 0.5f);
             IRcGizmoMeshFilter crownGizmo = RcGizmoFactory.Sphere(crownCenter, 4f);
             IRcGizmoMeshFilter gizmo = RcGizmoFactory.Composite(baseGizmo, roofGizmo, trunkGizmo, crownGizmo);

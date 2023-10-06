@@ -80,7 +80,7 @@ namespace DotRecast.Detour.Crowd
         /// The local path corridor corners for the agent.
         public List<StraightPathItem> corners = new();
 
-        public DtMoveRequestState targetState;
+        public DtMoveRequestState TargetState { get; set; }
 
         /// < State of the movement request.
         public long targetRef;
@@ -207,11 +207,11 @@ namespace DotRecast.Detour.Crowd
             targetPathQueryResult = null;
             if (targetRef != 0)
             {
-                targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING;
+                TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING;
             }
             else
             {
-                targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED;
+                TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED;
             }
         }
     }

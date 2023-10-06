@@ -25,19 +25,19 @@ namespace DotRecast.Recast.Geom
     public class RcTriMesh
     {
         private readonly float[] vertices;
-        private readonly int[] faces;
+        private readonly int[] triangles;
         public readonly RcChunkyTriMesh chunkyTriMesh;
 
-        public RcTriMesh(float[] vertices, int[] faces)
+        public RcTriMesh(float[] vertices, int[] triangles)
         {
             this.vertices = vertices;
-            this.faces = faces;
-            chunkyTriMesh = new RcChunkyTriMesh(vertices, faces, faces.Length / 3, 32);
+            this.triangles = triangles;
+            chunkyTriMesh = new RcChunkyTriMesh(vertices, triangles, triangles.Length / 3, 32);
         }
 
         public int[] GetTris()
         {
-            return faces;
+            return triangles;
         }
 
         public float[] GetVerts()

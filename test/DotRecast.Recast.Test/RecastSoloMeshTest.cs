@@ -240,7 +240,7 @@ public class RecastSoloMeshTest
 
         // Create contours.
         RcContourSet m_cset = RcContours.BuildContours(m_ctx, m_chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen,
-            RcConstants.RC_CONTOUR_TESS_WALL_EDGES);
+            RC_CONTOUR_TESS_WALL_EDGES);
 
         Assert.That(m_cset.conts.Count, Is.EqualTo(expContours), "Contours");
         //

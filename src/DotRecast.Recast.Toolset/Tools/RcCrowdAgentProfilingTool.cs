@@ -304,13 +304,13 @@ namespace DotRecast.Recast.Toolset.Tools
 
         private static bool NeedsNewTarget(DtCrowdAgent ag)
         {
-            if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
+            if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
             {
                 return true;
             }
 
-            if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID)
+            if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID)
             {
                 float dx = ag.targetPos.X - ag.npos.X;
                 float dy = ag.targetPos.Y - ag.npos.Y;

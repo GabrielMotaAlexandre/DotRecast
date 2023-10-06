@@ -30,7 +30,7 @@ namespace DotRecast.Recast
 
     public static class RcLayers
     {
-        const int RC_MAX_LAYERS = RcConstants.RC_NOT_CONNECTED;
+        const int RC_MAX_LAYERS = RC_NOT_CONNECTED;
         const int RC_MAX_NEIS = 16;
 
 

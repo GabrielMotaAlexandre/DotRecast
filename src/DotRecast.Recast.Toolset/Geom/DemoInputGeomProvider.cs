@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast.Geom;
+using DotRecast.Recast.Toolset.Gizmos;
 
 namespace DotRecast.Recast.Toolset.Geom
 {
@@ -112,7 +113,16 @@ namespace DotRecast.Recast.Toolset.Geom
 
         public IEnumerable<RcTriMesh> Meshes()
         {
-            return RcImmutableArray.Create(_mesh);
+            RcTriMesh[] a = new RcTriMesh[26];
+            a[25] = _mesh;
+            for (int x = 0; x != 5; x++)
+                for (int y = 0; y != 5; y++)
+                {
+                    var s = new RcBoxGizmo(new Vector3(x * 12, 0, y * 12), Vector3.One * 4, Vector3.One, new Vector3(0, 1, 0));
+                    a[x * 5 + y] = new RcTriMesh(s.vertices, RcBoxGizmo.TRIANLGES);
+                }
+
+            return a;// RcImmutableArray.Create(_mesh, new RcTriMesh(s.vertices, s.triangles));
         }
 
         public List<RcOffMeshConnection> GetOffMeshConnections()

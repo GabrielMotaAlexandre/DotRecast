@@ -285,7 +285,7 @@ namespace DotRecast.Detour.Crowd
                 ag.state = DtCrowdAgentState.DT_CROWDAGENT_STATE_INVALID;
             }
 
-            ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
+            ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
 
             return ag;
         }
@@ -343,7 +343,7 @@ namespace DotRecast.Detour.Crowd
             agent.targetPos = vel;
             agent.targetPathQueryResult = null;
             agent.targetReplan = false;
-            agent.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY;
+            agent.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY;
 
             return true;
         }
@@ -359,7 +359,7 @@ namespace DotRecast.Detour.Crowd
             agent.dvel = Vector2.Zero;
             agent.targetPathQueryResult = null;
             agent.targetReplan = false;
-            agent.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
+            agent.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
             return true;
         }
 
@@ -409,7 +409,10 @@ namespace DotRecast.Detour.Crowd
 
             _telemetry.Start();
 
-            IList<DtCrowdAgent> agents = GetActiveAgents();
+            var agents = GetActiveAgents();
+
+            if (agents.Count == 0)
+                return _telemetry;
 
             // Check that all agents still have valid paths.
             CheckPathValidity(agents, dt);
@@ -501,15 +504,15 @@ namespace DotRecast.Detour.Crowd
 
                 // If the agent does not have move target or is controlled by
                 // velocity, no need to recover the target nor replan.
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     continue;
                 }
 
                 // Try to recover move request position.
-                if (ag.targetState != DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    && ag.targetState != DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
+                if (ag.TargetState != DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    && ag.TargetState != DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
                 {
                     if (!_navQuery.IsValidPolyRef(ag.targetRef, _filters[ag.option.queryFilterType]))
                     {
@@ -524,7 +527,7 @@ namespace DotRecast.Detour.Crowd
                         // Failed to reposition target, fail moverequest.
                         ag.corridor.Reset(agentRef, agentPos);
                         ag.partial = false;
-                        ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
+                        ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
                     }
                 }
 
@@ -540,7 +543,7 @@ namespace DotRecast.Detour.Crowd
 
                 // If the end of the path is near and it is not the requested
                 // location, replan.
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID)
                 {
                     if (ag.targetReplanTime > _config.targetReplanDelay && ag.corridor.GetPathCount() < _config.checkLookAhead
                                                                         && ag.corridor.GetLastPoly() != ag.targetRef)
@@ -552,7 +555,7 @@ namespace DotRecast.Detour.Crowd
                 // Try to replan path to goal.
                 if (replan)
                 {
-                    if (ag.targetState != DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE)
+                    if (ag.TargetState != DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE)
                     {
                         RequestMoveTargetReplan(ag, ag.targetRef, ag.targetPos);
                     }
@@ -575,16 +578,16 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING)
                 {
                     List<long> path = ag.corridor.GetPath();
-                    if (0 == path.Count)
+                    if (path.Count == 0)
                     {
                         throw new ArgumentException("Empty path");
                     }
@@ -606,7 +609,7 @@ namespace DotRecast.Detour.Crowd
                         status = _navQuery.FinalizeSlicedFindPath(ref reqPath);
                     }
 
-                    Vector3 reqPos = new();
+                    Vector3 reqPos;
                     if (status.Succeeded() && reqPath.Count > 0)
                     {
                         // In progress or succeed.
@@ -617,8 +620,9 @@ namespace DotRecast.Detour.Crowd
                             var cr = _navQuery.ClosestPointOnPoly(reqPath[^1], ag.targetPos, out reqPos, out var _);
                             if (cr.Failed())
                             {
-                                reqPath = new List<long>();
+                                reqPath.Clear();
                             }
+                            reqPos = default;
                         }
                         else
                         {
@@ -630,10 +634,8 @@ namespace DotRecast.Detour.Crowd
                         // Could not find path, start the request from current
                         // location.
                         reqPos = ag.npos;
-                        reqPath = new List<long>
-                        {
-                            path[0]
-                        };
+                        reqPath.Clear();
+                        reqPath.Add(path[0]);
                     }
 
                     ag.corridor.SetCorridor(reqPos, reqPath);
@@ -642,19 +644,19 @@ namespace DotRecast.Detour.Crowd
 
                     if (reqPath[^1] == ag.targetRef)
                     {
-                        ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID;
+                        ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID;
                         ag.targetReplanTime = 0;
                     }
                     else
                     {
                         // The path is longer or potentially unreachable, full plan.
-                        ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE;
+                        ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE;
                     }
 
                     ag.targetReplanWaitTime = 0;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
                 {
                     queue.Enqueue(ag);
                 }
@@ -666,7 +668,7 @@ namespace DotRecast.Detour.Crowd
                 ag.targetPathQueryResult = _pathQ.Request(ag.corridor.GetLastPoly(), ag.targetRef, ag.corridor.GetTarget(), ag.targetPos, _filters[ag.option.queryFilterType]);
                 if (ag.targetPathQueryResult != null)
                 {
-                    ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH;
+                    ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH;
                 }
                 else
                 {
@@ -684,13 +686,13 @@ namespace DotRecast.Detour.Crowd
             // Process path results.
             foreach (DtCrowdAgent ag in agents)
             {
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
                 {
                     // _telemetry.RecordPathWaitTime(ag.targetReplanTime);
                     // Poll path queue.
@@ -702,11 +704,11 @@ namespace DotRecast.Detour.Crowd
                         ag.targetPathQueryResult = null;
                         if (ag.targetRef != 0)
                         {
-                            ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING;
+                            ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING;
                         }
                         else
                         {
-                            ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED;
+                            ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED;
                         }
 
                         ag.targetReplanTime = 0;
@@ -798,12 +800,12 @@ namespace DotRecast.Detour.Crowd
                             ag.corridor.SetCorridor(targetPos, res);
                             // Force to update boundary.
                             ag.boundary.Reset();
-                            ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID;
+                            ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_VALID;
                         }
                         else
                         {
                             // Something went wrong.
-                            ag.targetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED;
+                            ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED;
                         }
 
                         ag.targetReplanTime = 0;
@@ -828,8 +830,8 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     continue;
                 }
@@ -961,8 +963,8 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     continue;
                 }
@@ -1008,8 +1010,8 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     continue;
                 }
@@ -1056,14 +1058,14 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE)
                 {
                     continue;
                 }
 
                 Vector2 dvel;
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     dvel = ag.targetPos.AsVector2XZ();
                     ag.desiredSpeed = dvel.Length();
@@ -1291,8 +1293,8 @@ namespace DotRecast.Detour.Crowd
                 ag.npos = ag.corridor.Pos;
 
                 // If not using path, truncate the corridor to just one poly.
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
                     ag.corridor.Reset(ag.corridor.GetFirstPoly(), ag.npos);
                     ag.partial = false;

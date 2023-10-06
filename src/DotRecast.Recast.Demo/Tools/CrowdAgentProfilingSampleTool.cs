@@ -152,14 +152,14 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
                     col = DuRGBA(120, 80, 160, 128);
                 }
 
-                if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
-                    || ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
                     col = DuLerpCol(col, DuRGBA(255, 255, 32, 128), 128);
-                else if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
                     col = DuLerpCol(col, DuRGBA(255, 64, 32, 128), 128);
-                else if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
                     col = DuRGBA(255, 32, 16, 128);
-                else if (ag.targetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                     col = DuLerpCol(col, DuRGBA(64, 255, 0, 128), 128);
 
                 dd.DebugDrawCylinder(pos.X - radius, pos.Y + radius * 0.1f, pos.Z - radius, pos.X + radius, pos.Y + height,
