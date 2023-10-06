@@ -39,9 +39,7 @@ namespace DotRecast.Detour
 
         public List<DtNode> FindNodes(long id)
         {
-            _ = m_map.TryGetValue(id, out var nodes);
-            ;
-            if (nodes == null)
+            if (!m_map.TryGetValue(id, out var nodes))
             {
                 nodes = new List<DtNode>();
             }
@@ -51,9 +49,7 @@ namespace DotRecast.Detour
 
         public DtNode FindNode(long id)
         {
-            _ = m_map.TryGetValue(id, out var nodes);
-            ;
-            if (nodes != null && 0 != nodes.Count)
+            if (m_map.TryGetValue(id, out var nodes) &&  nodes.Count != 0)
             {
                 return nodes[0];
             }

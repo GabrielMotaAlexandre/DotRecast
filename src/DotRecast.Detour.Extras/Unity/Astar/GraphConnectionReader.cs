@@ -39,10 +39,10 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     nodeConnections[i] = indexToNode[nodeIndex];
 
                     // XXX: Is there anything we can do with the cost?
-                    _ = buffer.GetInt();
+                    buffer.GetInt();
                     if (meta.IsVersionAtLeast(Meta.UPDATED_STRUCT_VERSION))
                     {
-                        _ = buffer.Get();
+                        buffer.Get();
                     }
                 }
             }

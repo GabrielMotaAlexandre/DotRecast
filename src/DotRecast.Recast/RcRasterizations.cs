@@ -331,8 +331,8 @@ namespace DotRecast.Recast
                     float spanMax = buf[p1 + 1];
                     for (int i = 1; i < nv; ++i)
                     {
-                        spanMin = Math.Min(spanMin, buf[p1 + i * 3 + 1]);
-                        spanMax = Math.Max(spanMax, buf[p1 + i * 3 + 1]);
+                        spanMin = MathF.Min(spanMin, buf[p1 + i * 3 + 1]);
+                        spanMax = MathF.Max(spanMax, buf[p1 + i * 3 + 1]);
                     }
 
                     spanMin -= heightfieldBBMin.Y;

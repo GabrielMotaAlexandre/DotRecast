@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Numerics;
 using DotRecast.Core;
@@ -30,7 +30,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public NavMeshBuildResult Build(IInputGeomProvider geom, RcNavMeshBuildSettings setting, RcByteOrder order, bool cCompatibility)
         {
-            if (null == geom || null == geom.GetMesh())
+            if (null == geom || !geom.Meshes().Any())
             {
                 //m_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: No vertices and triangles.");
                 return new NavMeshBuildResult();

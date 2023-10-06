@@ -35,9 +35,6 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                 int startNode = indexToNode[buffer.GetInt()];
                 int endNode = indexToNode[buffer.GetInt()];
 
-                _ = buffer.GetInt();
-
-                _ = buffer.GetInt();
                 Vector3 clamped1 = new()
                 {
                     X = buffer.GetFloat(),
@@ -51,7 +48,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     Z = buffer.GetFloat()
                 };
 
-                _ = buffer.Get() != 0;
+                buffer.Get();
                 links[i] = new NodeLink2(linkID, startNode, endNode, clamped1, clamped2);
             }
 

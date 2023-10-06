@@ -479,7 +479,7 @@ namespace DotRecast.Detour
             // Collect vertices.
             float[] verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
             float[] edged = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
-            float[] edget =  ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
+            float[] edget = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
             int nv = poly.vertCount;
             for (int i = 0; i < nv; ++i)
             {
@@ -890,14 +890,14 @@ namespace DotRecast.Detour
                     // If the node is visited the first time, calculate node position.
                     var neighbourPos = neighbourNode.pos;
 
-                    _ = neighbourRef == endRef
-                        ? GetEdgeIntersectionPoint(bestNode.pos, bestRef, bestPoly, bestTile,
+                    if (neighbourRef == endRef)
+                        GetEdgeIntersectionPoint(bestNode.pos, bestRef, bestPoly, bestTile,
                             endPos, neighbourRef, neighbourPoly, neighbourTile,
-                            ref neighbourPos)
-                        : GetEdgeMidPoint(bestRef, bestPoly, bestTile,
-                            neighbourRef, neighbourPoly, neighbourTile,
                             ref neighbourPos);
-
+                    else
+                        GetEdgeMidPoint(bestRef, bestPoly, bestTile,
+                           neighbourRef, neighbourPoly, neighbourTile,
+                           ref neighbourPos);
                     // Calculate cost and heuristic.
                     float cost = 0;
                     float heuristicCost = 0;

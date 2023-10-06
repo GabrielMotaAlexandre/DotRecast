@@ -52,9 +52,9 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 
                     tiles[tileIndex] = new DtMeshData();
 
-                    _ = buffer.GetInt();
+                    buffer.GetInt();
 
-                    _ = buffer.GetInt();
+                    buffer.GetInt();
 
                     int trisCount = buffer.GetInt();
                     int[] tris = new int[trisCount];

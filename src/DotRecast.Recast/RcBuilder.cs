@@ -144,7 +144,7 @@ namespace DotRecast.Recast
             {
             }
 
-            return Task.WhenAll(tasks.ToArray());
+            return Task.WhenAll(tasks);
         }
 
         public RcBuilderResult BuildTile(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax, int tx,

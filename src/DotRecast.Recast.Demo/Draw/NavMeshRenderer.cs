@@ -44,8 +44,6 @@ public class NavMeshRenderer
 
     public void Render(DemoSample sample, DrawMode drawMode)
     {
-        //todo
-        return;
         if (sample == null)
         {
             return;

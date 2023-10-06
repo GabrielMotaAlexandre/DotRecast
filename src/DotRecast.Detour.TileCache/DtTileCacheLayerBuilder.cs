@@ -98,7 +98,6 @@ namespace DotRecast.Detour.TileCache
             List<byte[]> result = new();
             if (lset != null)
             {
-                _ = new DtTileCacheBuilder();
                 for (int i = 0; i < lset.layers.Length; ++i)
                 {
                     RcHeightfieldLayer layer = lset.layers[i];

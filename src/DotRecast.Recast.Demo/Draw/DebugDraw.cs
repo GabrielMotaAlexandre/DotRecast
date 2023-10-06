@@ -404,8 +404,6 @@ public class DebugDraw
 
     public void DebugDrawCylinder(float minx, float miny, float minz, float maxx, float maxy, float maxz, int col)
     {
-        // todo
-        return;
         Begin(DebugDrawPrimitives.TRIS);
         AppendCylinder(minx, miny, minz, maxx, maxy, maxz, col);
         End();
@@ -706,34 +704,28 @@ public class DebugDraw
             if (plane[0] >= 0)
             {
                 p_x = bounds[3];
-                _ = bounds[0];
             }
             else
             {
                 p_x = bounds[0];
-                _ = bounds[3];
             }
 
             if (plane[1] >= 0)
             {
                 p_y = bounds[4];
-                _ = bounds[1];
             }
             else
             {
                 p_y = bounds[1];
-                _ = bounds[4];
             }
 
             if (plane[2] >= 0)
             {
                 p_z = bounds[5];
-                _ = bounds[2];
             }
             else
             {
                 p_z = bounds[2];
-                _ = bounds[5];
             }
 
             if (plane[0] * p_x + plane[1] * p_y + plane[2] * p_z + plane[3] < 0)

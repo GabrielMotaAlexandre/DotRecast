@@ -655,7 +655,7 @@ public class RecastDemo : IRecastDemoChannel
 
     private void OnNavMeshBuildBegan(NavMeshBuildBeganEvent args)
     {
-        if (null == _sample.GetInputGeom())
+        if (_sample.GetInputGeom() is null)
         {
             Logger.Information($"not found source geom");
             return;
@@ -669,13 +669,14 @@ public class RecastDemo : IRecastDemoChannel
         NavMeshBuildResult buildResult;
 
         var settings = _sample.GetSettings();
+        var geom = _sample.GetInputGeom();
         if (settings.tiled)
         {
-            buildResult = tileNavMeshBuilder.Build(_sample.GetInputGeom(), settings);
+            buildResult = tileNavMeshBuilder.Build(geom, settings);
         }
         else
         {
-            buildResult = soloNavMeshBuilder.Build(_sample.GetInputGeom(), settings);
+            buildResult = soloNavMeshBuilder.Build(geom, settings);
         }
 
         if (!buildResult.Success)

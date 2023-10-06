@@ -309,8 +309,6 @@ namespace DotRecast.Detour
 
                 hmin -= option.walkableClimb;
                 hmax += option.walkableClimb;
-                _ = new Vector3();
-                _ = new Vector3();
                 Vector3 bmin = option.bmin;
                 Vector3 bmax = option.bmax;
                 bmin.Y = hmin;
