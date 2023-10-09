@@ -177,11 +177,13 @@ namespace System.Numerics
             return float.IsFinite(v.X) && float.IsFinite(v.Z);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Copy(float[] @out, int n, float[] @in, int m)
         {
             @out.GetUnsafe(n).UnsafeAs<float, Vector3>() = @in.GetUnsafe(m).UnsafeAs<float, Vector3>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Sub(ref Vector3 e0, float[] verts, int i, int j)
         {
             e0 = verts.GetUnsafe(i).UnsafeAs<float, Vector3>() - verts.GetUnsafe(j).UnsafeAs<float, Vector3>();
@@ -197,6 +199,13 @@ namespace System.Numerics
         public static ref T GetUnsafe<T>(this T[] array, int index)
         {
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetUnsafe<T>(this Span<T> array, int index)
+        {
+            return ref Unsafe.Add(ref MemoryMarshal.GetReference(array), index);
         }
 
         [Pure]
@@ -222,9 +231,16 @@ namespace System.Numerics
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TTo UnsafeAs<T, TTo>(ref this T value) where T : struct where TTo : struct
+        public static ref TTo UnsafeAs<T, TTo>(this Span<T> array, int index) where T : struct where TTo : struct
         {
-            return ref Unsafe.As<T, TTo>(ref value);
+            return ref Unsafe.As<T, TTo>(ref MemoryMarshal.GetReference(array)).UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref TTo UnsafeAs<T, TTo>(ref this T value, int index = 0) where T : struct where TTo : struct
+        {
+            return ref Unsafe.Add(ref Unsafe.As<T, TTo>(ref value), index);
         }
 
         [Pure]

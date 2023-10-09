@@ -290,12 +290,13 @@ namespace DotRecast.Recast
                 }
 
                 // find the horizontal bounds in the row
-                float minX = buf[inRow], maxX = buf[inRow];
+                var minX = buf[inRow];
+                var maxX = minX;
                 for (int i = 1; i < nvRow; ++i)
                 {
                     float v = buf[inRow + i * 3];
-                    minX = Math.Min(minX, v);
-                    maxX = Math.Max(maxX, v);
+                    minX = MathF.Min(minX, v);
+                    maxX = MathF.Max(maxX, v);
                 }
 
                 int x0 = (int)((minX - heightfieldBBMin.X) * inverseCellSize);
