@@ -47,8 +47,7 @@ namespace DotRecast.Recast
             // the are type for each of the meshes and rasterize them.
             foreach (RcTriMesh geom in geomProvider.Meshes())
             {
-                float[] verts = geom.GetVerts();
-                var vertsSpan = MemoryMarshal.Cast<float, Vector3>(verts.AsSpan());
+                var verts = MemoryMarshal.Cast<float, Vector3>(geom.GetVerts().AsSpan());
 
                 if (cfg.UseTiles)
                 {
@@ -62,14 +61,14 @@ namespace DotRecast.Recast
                     foreach (RcChunkyTriMeshNode node in nodes)
                     {
                         int[] tris = node.tris;
-                        int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, vertsSpan, tris, cfg.WalkableAreaMod);
+                        int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
                         RcRasterizations.RasterizeTriangles(solid, verts, tris, m_triareas, cfg.WalkableClimb, ctx);
                     }
                 }
                 else
                 {
                     int[] tris = geom.GetTris();
-                    int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, vertsSpan, tris, cfg.WalkableAreaMod);
+                    int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
                     RcRasterizations.RasterizeTriangles(solid, verts, tris, m_triareas, cfg.WalkableClimb, ctx);
                 }
             }

@@ -144,7 +144,6 @@ namespace DotRecast.Recast
             norm = Vector3.Normalize(Vector3.Cross(e0, e1));
         }
 
-
         /// @par
         ///
         /// Only sets the area id's for the unwalkable triangles. Does not alter the

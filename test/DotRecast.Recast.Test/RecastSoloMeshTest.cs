@@ -129,11 +129,8 @@ public class RecastSoloMeshTest
 
         foreach (RcTriMesh geom in geomProvider.Meshes())
         {
-            float[] verts = geom.GetVerts();
-            var vertsSpan = MemoryMarshal.Cast<float, Vector3>(verts.AsSpan());
-
+            var verts = MemoryMarshal.Cast<float, Vector3>(geom.GetVerts().AsSpan());
             int[] tris = geom.GetTris();
-
 
             // Allocate array that can hold triangle area types.
             // If you have multiple meshes you need to process, allocate
@@ -142,7 +139,7 @@ public class RecastSoloMeshTest
             // Find triangles which are walkable based on their slope and rasterize them.
             // If your input data is multiple meshes, you can transform them here, calculate
             // the are type for each of the meshes and rasterize them.
-            int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, vertsSpan, tris, cfg.WalkableAreaMod);
+            int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
             RcRasterizations.RasterizeTriangles(m_solid, verts, tris, m_triareas, cfg.WalkableClimb, m_ctx);
         }
 

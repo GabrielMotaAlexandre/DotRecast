@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast.Geom;
@@ -37,7 +38,7 @@ namespace DotRecast.Recast.Toolset.Geom
 
         private readonly List<RcConvexVolume> _convexVolumes = new();
         private readonly List<RcOffMeshConnection> _offMeshConnections = new();
-        private readonly RcTriMesh _mesh;
+        private readonly List<RcTriMesh> meshes = new();
 
         public static DemoInputGeomProvider LoadFile(string objFilePath)
         {
@@ -64,7 +65,20 @@ namespace DotRecast.Recast.Toolset.Geom
                 bmax.Max(vertices, i * 3);
             }
 
-            _mesh = new RcTriMesh(vertices, faces);
+
+
+            bmin *= 2;
+            bmax *= 2;
+
+            meshes.Add(new RcTriMesh(vertices, faces));
+
+
+            for (int x = 0; x != 10; x++)
+                for (int y = 0; y != 10; y++)
+                {
+                    var s = new RcBoxGizmo(new Vector3(x * 12, 0, y * 12), Vector3.One * 3, new Vector3(1, 0, 0), new Vector3(0, 1, 0));
+                    meshes.Add(new RcTriMesh(s.vertices, RcBoxGizmo.TRIANLGES));
+                }
         }
 
         public Vector3 GetMeshBoundsMin()
@@ -113,16 +127,7 @@ namespace DotRecast.Recast.Toolset.Geom
 
         public IEnumerable<RcTriMesh> Meshes()
         {
-            RcTriMesh[] a = new RcTriMesh[26];
-            a[25] = _mesh;
-            for (int x = 0; x != 5; x++)
-                for (int y = 0; y != 5; y++)
-                {
-                    var s = new RcBoxGizmo(new Vector3(x * 12, 0, y * 12), Vector3.One * 4, Vector3.One, new Vector3(0, 1, 0));
-                    a[x * 5 + y] = new RcTriMesh(s.vertices, RcBoxGizmo.TRIANLGES);
-                }
-
-            return a;// RcImmutableArray.Create(_mesh, new RcTriMesh(s.vertices, s.triangles));
+            return meshes;
         }
 
         public List<RcOffMeshConnection> GetOffMeshConnections()
@@ -158,7 +163,7 @@ namespace DotRecast.Recast.Toolset.Geom
             q[0] = src.X + (dst.X - src.X) * btmax;
             q[1] = src.Z + (dst.Z - src.Z) * btmax;
 
-            List<RcChunkyTriMeshNode> chunks = _mesh.chunkyTriMesh.GetChunksOverlappingSegment(p, q);
+            List<RcChunkyTriMeshNode> chunks = meshes[0].chunkyTriMesh.GetChunksOverlappingSegment(p, q);
             if (0 == chunks.Count)
             {
                 return false;

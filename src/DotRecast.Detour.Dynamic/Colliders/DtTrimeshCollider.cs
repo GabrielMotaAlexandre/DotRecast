@@ -18,6 +18,8 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using DotRecast.Core;
 using DotRecast.Recast;
 
@@ -60,9 +62,11 @@ namespace DotRecast.Detour.Dynamic.Colliders
 
         public override void Rasterize(RcHeightfield hf, RcTelemetry telemetry)
         {
+            var vert = MemoryMarshal.Cast<float, Vector3>(vertices.AsSpan());
+
             for (int i = 0; i < triangles.Length; i += 3)
             {
-                RcRasterizations.RasterizeTriangle(hf, vertices, triangles[i], triangles[i + 1], triangles[i + 2], area,
+                RcRasterizations.RasterizeTriangle(hf, vert, triangles[i], triangles[i + 1], triangles[i + 2], area,
                     (int)Math.Floor(flagMergeThreshold / hf.ch), telemetry);
             }
         }

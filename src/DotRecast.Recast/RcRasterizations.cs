@@ -20,14 +20,14 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using DotRecast.Core;
 using static DotRecast.Recast.RcConstants;
 
 namespace DotRecast.Recast
 {
-
-
-    public static class RcRasterizations
+    public unsafe static class RcRasterizations
     {
         /**
          * Check whether two bounding boxes overlap
@@ -53,10 +53,15 @@ namespace DotRecast.Recast
 
         private static bool OverlapBounds(Vector3 amin, Vector3 amax, Vector3 bmin, Vector3 bmax)
         {
+            //bool overlap = amin.X <= bmax.X && amax.X >= bmin.X;
+            //overlap &= amin.Y <= bmax.Y && amax.Y >= bmin.Y;
+            //overlap &= amin.Z <= bmax.Z && amax.Z >= bmin.Z;
+
             bool overlap = true;
             overlap = (amin.X > bmax.X || amax.X < bmin.X) ? false : overlap;
             overlap = (amin.Y > bmax.Y || amax.Y < bmin.Y) ? false : overlap;
             overlap = (amin.Z > bmax.Z || amax.Z < bmin.Z) ? false : overlap;
+
             return overlap;
         }
 
@@ -153,7 +158,8 @@ namespace DotRecast.Recast
         /// @param[out]	outVerts2Count	The number of resulting polygon 2 vertices
         /// @param[in]	axisOffset		THe offset along the specified axis
         /// @param[in]	axis			The separating axis
-        private static void DividePoly(float[] inVerts, int inVertsOffset, int inVertsCount,
+        [SkipLocalsInit]
+        private static void DividePoly(Span<float> inVerts, int inVertsOffset, int inVertsCount,
             int outVerts1, out int outVerts1Count,
             int outVerts2, out int outVerts2Count,
             float axisOffset, int axis)
@@ -233,7 +239,7 @@ namespace DotRecast.Recast
         /// @param[in] 	inverseCellHeight	1 / cellHeight
         /// @param[in] 	flagMergeThreshold	The threshold in which area flags will be merged 
         /// @returns true if the operation completes successfully.  false if there was an error adding spans to the heightfield.
-        private static void RasterizeTri(float[] verts, int v0, int v1, int v2, int area, RcHeightfield heightfield,
+        private static void RasterizeTri(ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area, RcHeightfield heightfield,
             Vector3 heightfieldBBMin, Vector3 heightfieldBBMax,
             float cellSize, float inverseCellSize, float inverseCellHeight,
             int flagMergeThreshold)
@@ -241,12 +247,14 @@ namespace DotRecast.Recast
             float by = heightfieldBBMax.Y - heightfieldBBMin.Y;
 
             // Calculate the bounding box of the triangle.
-            var tmin = verts.UnsafeAs<float, Vector3>(v0);
-            var tmax = tmin;
-            tmin.Min(verts, v1 * 3);
-            tmin.Min(verts, v2 * 3);
-            tmax.Max(verts, v1 * 3);
-            tmax.Max(verts, v2 * 3);
+            var v0Vert = verts[v0];
+            var v1Vert = verts[v1];
+            var tmin = Vector3.Min(v0Vert, v1Vert);
+            var v2Vert = verts[v2];
+            tmin = Vector3.Min(tmin, v2Vert);
+
+            var tmax = Vector3.Max(v0Vert, v1Vert);
+            tmax = Vector3.Max(tmax, v2Vert);
 
             // If the triangle does not touch the bbox of the heightfield, skip the triagle.
             if (!OverlapBounds(heightfieldBBMin, heightfieldBBMax, tmin, tmax))
@@ -269,9 +277,9 @@ namespace DotRecast.Recast
             int p1 = inRow + 7 * 3;
             int p2 = p1 + 7 * 3;
 
-            Vector3Extensions.Copy(buf, 0, verts, v0 * 3);
-            Vector3Extensions.Copy(buf, 3, verts, v1 * 3);
-            Vector3Extensions.Copy(buf, 6, verts, v2 * 3);
+            buf.UnsafeAs<float, Vector3>() = verts[v0];
+            buf.UnsafeAs<float, Vector3>(1) = verts[v1];
+            buf.UnsafeAs<float, Vector3>(2) = verts[v2];
             int nvIn = 3;
 
             for (int z = z0; z <= z1; ++z)
@@ -326,12 +334,13 @@ namespace DotRecast.Recast
                     }
 
                     // Calculate min and max of the span.
-                    float spanMin = buf[p1 + 1];
-                    float spanMax = buf[p1 + 1];
+                    var spanMin = buf[p1 + 1];
+                    var spanMax = buf[p1 + 1];
                     for (int i = 1; i < nv; ++i)
                     {
-                        spanMin = MathF.Min(spanMin, buf[p1 + i * 3 + 1]);
-                        spanMax = MathF.Max(spanMax, buf[p1 + i * 3 + 1]);
+                        var s = buf[p1 + i * 3 + 1];
+                        spanMin = MathF.Min(spanMin, s);
+                        spanMax = MathF.Max(spanMax, s);
                     }
 
                     spanMin -= heightfieldBBMin.Y;
@@ -377,7 +386,7 @@ namespace DotRecast.Recast
      *            The distance where the walkable flag is favored over the non-walkable flag. [Limit: >= 0] [Units: vx]
      * @see Heightfield
      */
-        public static void RasterizeTriangle(RcHeightfield heightfield, float[] verts, int v0, int v1, int v2, int area,
+        public static void RasterizeTriangle(RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area,
             int flagMergeThreshold, RcTelemetry ctx)
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
@@ -406,7 +415,7 @@ namespace DotRecast.Recast
      *            The distance where the walkable flag is favored over the non-walkable flag. [Limit: >= 0] [Units: vx]
      * @see Heightfield
      */
-        public static void RasterizeTriangles(RcHeightfield heightfield, float[] verts, int[] tris, int[] areaIds,
+        public static void RasterizeTriangles(RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, ReadOnlySpan<int> areaIds,
             int flagMergeThreshold, RcTelemetry ctx)
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
@@ -415,44 +424,9 @@ namespace DotRecast.Recast
             float inverseCellHeight = 1.0f / heightfield.ch;
             for (int triIndex = 0; triIndex < tris.Length / 3; ++triIndex)
             {
-                int v0 = tris[triIndex * 3 + 0];
+                int v0 = tris[triIndex * 3];
                 int v1 = tris[triIndex * 3 + 1];
                 int v2 = tris[triIndex * 3 + 2];
-                RasterizeTri(verts, v0, v1, v2, areaIds[triIndex], heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs,
-                    inverseCellSize, inverseCellHeight, flagMergeThreshold);
-            }
-        }
-
-        /**
-     * Rasterizes a triangle list into the specified heightfield. Expects each triangle to be specified as three
-     * sequential vertices of 3 floats. Spans will only be added for triangles that overlap the heightfield grid.
-     *
-     * @param heightfield
-     *            An initialized heightfield.
-     * @param verts
-     *            The vertices. [(x, y, z) * numVerts]
-     * @param areaIds
-     *            The area id's of the triangles. [Limit: <= WALKABLE_AREA] [Size: numTris]
-     * @param tris
-     *            The triangle indices. [(vertA, vertB, vertC) * nt]
-     * @param numTris
-     *            The number of triangles.
-     * @param flagMergeThreshold
-     *            The distance where the walkable flag is favored over the non-walkable flag. [Limit: >= 0] [Units: vx]
-     * @see Heightfield
-     */
-        public static void RasterizeTriangles(RcHeightfield heightfield, float[] verts, int[] areaIds, int numTris,
-            int flagMergeThreshold, RcTelemetry ctx)
-        {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
-
-            float inverseCellSize = 1.0f / heightfield.cs;
-            float inverseCellHeight = 1.0f / heightfield.ch;
-            for (int triIndex = 0; triIndex < numTris; ++triIndex)
-            {
-                int v0 = triIndex * 3 + 0;
-                int v1 = triIndex * 3 + 1;
-                int v2 = triIndex * 3 + 2;
                 RasterizeTri(verts, v0, v1, v2, areaIds[triIndex], heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs,
                     inverseCellSize, inverseCellHeight, flagMergeThreshold);
             }

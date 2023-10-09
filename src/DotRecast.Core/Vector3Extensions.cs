@@ -184,6 +184,12 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Copy(Span<float> @out, int n, Span<float> @in, int m)
+        {
+            @out.GetUnsafe(n).UnsafeAs<float, Vector3>() = @in.GetUnsafe(m).UnsafeAs<float, Vector3>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Sub(ref Vector3 e0, float[] verts, int i, int j)
         {
             e0 = verts.GetUnsafe(i).UnsafeAs<float, Vector3>() - verts.GetUnsafe(j).UnsafeAs<float, Vector3>();
