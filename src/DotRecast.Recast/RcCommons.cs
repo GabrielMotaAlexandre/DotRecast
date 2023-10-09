@@ -119,12 +119,12 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcHeightfield, rcClearUnwalkableTriangles, rcRasterizeTriangles
-        public static int[] MarkWalkableTriangles(RcTelemetry ctx, float walkableSlopeAngle, float[] verts, int[] tris, int nt, RcAreaModification areaMod)
+        public static int[] MarkWalkableTriangles(float walkableSlopeAngle, ReadOnlySpan<Vector3> verts, int[] tris, RcAreaModification areaMod)
         {
-            int[] areas = new int[nt];
+            int[] areas = new int[tris.Length / 3];
             float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180.0f * Math.PI);
             Vector3 norm = new();
-            for (int i = 0; i < nt; ++i)
+            for (int i = 0; i < areas.Length; ++i)
             {
                 int tri = i * 3;
                 CalcTriNormal(verts, tris[tri], tris[tri + 1], tris[tri + 2], ref norm);
@@ -136,14 +136,12 @@ namespace DotRecast.Recast
             return areas;
         }
 
-        public static void CalcTriNormal(float[] verts, int v0, int v1, int v2, ref Vector3 norm)
+        public static void CalcTriNormal(ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, ref Vector3 norm)
         {
-            Vector3 e0 = new();
-            Vector3 e1 = new();
-            Vector3Extensions.Sub(ref e0, verts, v1 * 3, v0 * 3);
-            Vector3Extensions.Sub(ref e1, verts, v2 * 3, v0 * 3);
-            Vector3Extensions.Cross(ref norm, e0, e1);
-            Vector3Extensions.Normalize(ref norm);
+            Vector3 e0 = verts[v1] - verts[v0];
+            Vector3 e1 = verts[v2] - verts[v0];
+
+            norm = Vector3.Normalize(Vector3.Cross(e0, e1));
         }
 
 
@@ -155,13 +153,13 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcHeightfield, rcClearUnwalkableTriangles, rcRasterizeTriangles
-        public static void ClearUnwalkableTriangles(RcTelemetry ctx, float walkableSlopeAngle, float[] verts, int nv, int[] tris, int nt, int[] areas)
+        public static void ClearUnwalkableTriangles(float walkableSlopeAngle, ReadOnlySpan<Vector3> verts, int[] tris, int[] areas)
         {
             float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180.0f * Math.PI);
 
             Vector3 norm = new();
 
-            for (int i = 0; i < nt; ++i)
+            for (int i = 0; i < tris.Length / 3; ++i)
             {
                 int tri = i * 3;
                 CalcTriNormal(verts, tris[tri], tris[tri + 1], tris[tri + 2], ref norm);

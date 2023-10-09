@@ -17,7 +17,10 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using DotRecast.Core;
 using DotRecast.Recast.Geom;
 
@@ -45,6 +48,8 @@ namespace DotRecast.Recast
             foreach (RcTriMesh geom in geomProvider.Meshes())
             {
                 float[] verts = geom.GetVerts();
+                var vertsSpan = MemoryMarshal.Cast<float, Vector3>(verts.AsSpan());
+
                 if (cfg.UseTiles)
                 {
                     float[] tbmin = new float[2];
@@ -57,17 +62,15 @@ namespace DotRecast.Recast
                     foreach (RcChunkyTriMeshNode node in nodes)
                     {
                         int[] tris = node.tris;
-                        int ntris = tris.Length / 3;
-                        int[] m_triareas = RcCommons.MarkWalkableTriangles(ctx, cfg.WalkableSlopeAngle, verts, tris, ntris, cfg.WalkableAreaMod);
-                        RcRasterizations.RasterizeTriangles(solid, verts, tris, m_triareas, ntris, cfg.WalkableClimb, ctx);
+                        int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, vertsSpan, tris, cfg.WalkableAreaMod);
+                        RcRasterizations.RasterizeTriangles(solid, verts, tris, m_triareas, cfg.WalkableClimb, ctx);
                     }
                 }
                 else
                 {
                     int[] tris = geom.GetTris();
-                    int ntris = tris.Length / 3;
-                    int[] m_triareas = RcCommons.MarkWalkableTriangles(ctx, cfg.WalkableSlopeAngle, verts, tris, ntris, cfg.WalkableAreaMod);
-                    RcRasterizations.RasterizeTriangles(solid, verts, tris, m_triareas, ntris, cfg.WalkableClimb, ctx);
+                    int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, vertsSpan, tris, cfg.WalkableAreaMod);
+                    RcRasterizations.RasterizeTriangles(solid, verts, tris, m_triareas, cfg.WalkableClimb, ctx);
                 }
             }
 

@@ -406,14 +406,14 @@ namespace DotRecast.Recast
      *            The distance where the walkable flag is favored over the non-walkable flag. [Limit: >= 0] [Units: vx]
      * @see Heightfield
      */
-        public static void RasterizeTriangles(RcHeightfield heightfield, float[] verts, int[] tris, int[] areaIds, int numTris,
+        public static void RasterizeTriangles(RcHeightfield heightfield, float[] verts, int[] tris, int[] areaIds,
             int flagMergeThreshold, RcTelemetry ctx)
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
 
             float inverseCellSize = 1.0f / heightfield.cs;
             float inverseCellHeight = 1.0f / heightfield.ch;
-            for (int triIndex = 0; triIndex < numTris; ++triIndex)
+            for (int triIndex = 0; triIndex < tris.Length / 3; ++triIndex)
             {
                 int v0 = tris[triIndex * 3 + 0];
                 int v1 = tris[triIndex * 3 + 1];

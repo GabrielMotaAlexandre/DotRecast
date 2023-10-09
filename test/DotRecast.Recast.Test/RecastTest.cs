@@ -16,6 +16,8 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
+using System.Runtime.InteropServices;
 using DotRecast.Core;
 using NUnit.Framework;
 
@@ -30,27 +32,25 @@ public class RecastTest
     public void TestClearUnwalkableTriangles()
     {
         float walkableSlopeAngle = 45;
-        float[] verts = { 0, 0, 0, 1, 0, 0, 0, 0, -1 };
-        int nv = 3;
+        var verts = MemoryMarshal.Cast<float, Vector3>(new float[] { 0, 0, 0, 1, 0, 0, 0, 0, -1 });
         int[] walkable_tri = { 0, 1, 2 };
         int[] unwalkable_tri = { 0, 2, 1 };
-        int nt = 1;
 
         RcTelemetry ctx = new();
         {
             int[] areas = { 42 };
-            RcCommons.ClearUnwalkableTriangles(ctx, walkableSlopeAngle, verts, nv, unwalkable_tri, nt, areas);
+            RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, unwalkable_tri, areas);
             Assert.That(areas[0], Is.EqualTo(RC_NULL_AREA), "Sets area ID of unwalkable triangle to RC_NULL_AREA");
         }
         {
             int[] areas = { 42 };
-            RcCommons.ClearUnwalkableTriangles(ctx, walkableSlopeAngle, verts, nv, walkable_tri, nt, areas);
+            RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, walkable_tri, areas);
             Assert.That(areas[0], Is.EqualTo(42), "Does not modify walkable triangle aread ID's");
         }
         {
             int[] areas = { 42 };
             walkableSlopeAngle = 0;
-            RcCommons.ClearUnwalkableTriangles(ctx, walkableSlopeAngle, verts, nv, walkable_tri, nt, areas);
+            RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, walkable_tri, areas);
             Assert.That(areas[0], Is.EqualTo(RC_NULL_AREA), "Slopes equal to the max slope are considered unwalkable.");
         }
     }

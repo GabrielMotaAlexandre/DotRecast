@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 using System;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using DotRecast.Core;
 using DotRecast.Recast.Geom;
 using NUnit.Framework;
@@ -129,8 +130,10 @@ public class RecastSoloMeshTest
         foreach (RcTriMesh geom in geomProvider.Meshes())
         {
             float[] verts = geom.GetVerts();
+            var vertsSpan = MemoryMarshal.Cast<float, Vector3>(verts.AsSpan());
+
             int[] tris = geom.GetTris();
-            int ntris = tris.Length / 3;
+
 
             // Allocate array that can hold triangle area types.
             // If you have multiple meshes you need to process, allocate
@@ -139,8 +142,8 @@ public class RecastSoloMeshTest
             // Find triangles which are walkable based on their slope and rasterize them.
             // If your input data is multiple meshes, you can transform them here, calculate
             // the are type for each of the meshes and rasterize them.
-            int[] m_triareas = RcCommons.MarkWalkableTriangles(m_ctx, cfg.WalkableSlopeAngle, verts, tris, ntris, cfg.WalkableAreaMod);
-            RcRasterizations.RasterizeTriangles(m_solid, verts, tris, m_triareas, ntris, cfg.WalkableClimb, m_ctx);
+            int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, vertsSpan, tris, cfg.WalkableAreaMod);
+            RcRasterizations.RasterizeTriangles(m_solid, verts, tris, m_triareas, cfg.WalkableClimb, m_ctx);
         }
 
         //
