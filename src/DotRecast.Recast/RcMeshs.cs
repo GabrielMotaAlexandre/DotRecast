@@ -678,7 +678,7 @@ namespace DotRecast.Recast
             return true;
         }
 
-        private static void RemoveVertex(RcTelemetry ctx, RcPolyMesh mesh, int rem, int maxTris)
+        private static void RemoveVertex(RcPolyMesh mesh, int rem, int maxTris)
         {
             int nvp = mesh.nvp;
 
@@ -1147,7 +1147,7 @@ namespace DotRecast.Recast
                 {
                     if (!CanRemoveVertex(ctx, mesh, i))
                         continue;
-                    RemoveVertex(ctx, mesh, i, maxTris);
+                    RemoveVertex(mesh, i, maxTris);
                     // Remove vertex
                     // Note: mesh.nverts is already decremented inside RemoveVertex()!
                     // Fixup vertex flags

@@ -42,25 +42,11 @@ namespace DotRecast.Recast
          *            Max axis extents of bounding box B
          * @returns true if the two bounding boxes overlap. False otherwise
          */
-        private static bool OverlapBounds(float[] amin, float[] amax, float[] bmin, float[] bmax)
-        {
-            bool overlap = true;
-            overlap = (amin[0] > bmax[0] || amax[0] < bmin[0]) ? false : overlap;
-            overlap = (amin[1] > bmax[1] || amax[1] < bmin[1]) ? false : overlap;
-            overlap = (amin[2] > bmax[2] || amax[2] < bmin[2]) ? false : overlap;
-            return overlap;
-        }
-
         private static bool OverlapBounds(Vector3 amin, Vector3 amax, Vector3 bmin, Vector3 bmax)
         {
-            //bool overlap = amin.X <= bmax.X && amax.X >= bmin.X;
-            //overlap &= amin.Y <= bmax.Y && amax.Y >= bmin.Y;
-            //overlap &= amin.Z <= bmax.Z && amax.Z >= bmin.Z;
-
-            bool overlap = true;
-            overlap = (amin.X > bmax.X || amax.X < bmin.X) ? false : overlap;
-            overlap = (amin.Y > bmax.Y || amax.Y < bmin.Y) ? false : overlap;
-            overlap = (amin.Z > bmax.Z || amax.Z < bmin.Z) ? false : overlap;
+            bool overlap = amin.X <= bmax.X && amax.X >= bmin.X;
+            overlap &= amin.Y <= bmax.Y && amax.Y >= bmin.Y;
+            overlap &= amin.Z <= bmax.Z && amax.Z >= bmin.Z;
 
             return overlap;
         }
@@ -159,68 +145,69 @@ namespace DotRecast.Recast
         /// @param[in]	axisOffset		THe offset along the specified axis
         /// @param[in]	axis			The separating axis
         [SkipLocalsInit]
-        private static void DividePoly(Span<float> inVerts, int inVertsOffset, int inVertsCount,
+        private static void DividePoly(Span<float> d12LengthStackData, Span<float> inVerts, int inVertsOffset, int inVertsCount,
             int outVerts1, out int outVerts1Count,
             int outVerts2, out int outVerts2Count,
             float axisOffset, int axis)
         {
-            float[] d = new float[12];
-
             // How far positive or negative away from the separating axis is each vertex.
-            for (int inVert = 0; inVert < inVertsCount; ++inVert)
+            for (int inVert = 0; inVert < inVertsCount; inVert++)
             {
-                d[inVert] = axisOffset - inVerts[inVertsOffset + inVert * 3 + axis];
+                d12LengthStackData[inVert] = axisOffset - inVerts[inVertsOffset + inVert * 3 + axis];
             }
 
-            int poly1Vert = 0;
-            int poly2Vert = 0;
-            for (int inVertA = 0, inVertB = inVertsCount - 1; inVertA < inVertsCount; inVertB = inVertA, ++inVertA)
+            outVerts1Count = 0;
+            outVerts2Count = 0;
+            for (int inVertA = 0, inVertB = inVertsCount - 1; inVertA < inVertsCount; inVertB = inVertA++)
             {
-                bool ina = d[inVertB] >= 0;
-                bool inb = d[inVertA] >= 0;
+                var dInvertA = d12LengthStackData[inVertA];
+                var dInvertB = d12LengthStackData[inVertB];
+
+                ref var outVert1 = ref inVerts.GetUnsafe(outVerts1).UnsafeAs<float, Vector3>(outVerts1Count);
+                ref var outVert2 = ref inVerts.GetUnsafe(outVerts2).UnsafeAs<float, Vector3>(outVerts2Count);
+                ref var inVA = ref inVerts.GetUnsafe(inVertsOffset).UnsafeAs<float, Vector3>(inVertA);
+
+                var ina = dInvertB >= 0;
+                bool inb = dInvertA >= 0;
+
                 if (ina != inb)
                 {
-                    float s = d[inVertB] / (d[inVertB] - d[inVertA]);
-                    inVerts[outVerts1 + poly1Vert * 3 + 0] = inVerts[inVertsOffset + inVertB * 3 + 0] +
-                                                             (inVerts[inVertsOffset + inVertA * 3 + 0] - inVerts[inVertsOffset + inVertB * 3 + 0]) * s;
-                    inVerts[outVerts1 + poly1Vert * 3 + 1] = inVerts[inVertsOffset + inVertB * 3 + 1] +
-                                                             (inVerts[inVertsOffset + inVertA * 3 + 1] - inVerts[inVertsOffset + inVertB * 3 + 1]) * s;
-                    inVerts[outVerts1 + poly1Vert * 3 + 2] = inVerts[inVertsOffset + inVertB * 3 + 2] +
-                                                             (inVerts[inVertsOffset + inVertA * 3 + 2] - inVerts[inVertsOffset + inVertB * 3 + 2]) * s;
-                    Vector3Extensions.Copy(inVerts, outVerts2 + poly2Vert * 3, inVerts, outVerts1 + poly1Vert * 3);
-                    poly1Vert++;
-                    poly2Vert++;
+                    float s = dInvertB / (dInvertB - dInvertA);
+
+                    var inVB = inVerts.GetUnsafe(inVertsOffset).UnsafeAs<float, Vector3>(inVertB);
+
+                    outVert1 = outVert2 = inVB + (inVA - inVB) * s;
+
+                    outVerts1Count++;
+                    outVerts2Count++;
                     // add the i'th point to the right polygon. Do NOT add points that are on the dividing line
                     // since these were already added above
-                    if (d[inVertA] > 0)
+                    if (d12LengthStackData[inVertA] > 0)
                     {
-                        Vector3Extensions.Copy(inVerts, outVerts1 + poly1Vert * 3, inVerts, inVertsOffset + inVertA * 3);
-                        poly1Vert++;
+                        Unsafe.Add(ref outVert1, 1) = inVA;
+                        outVerts1Count++;
                     }
-                    else if (d[inVertA] < 0)
+                    else if (d12LengthStackData[inVertA] < 0)
                     {
-                        Vector3Extensions.Copy(inVerts, outVerts2 + poly2Vert * 3, inVerts, inVertsOffset + inVertA * 3);
-                        poly2Vert++;
+                        Unsafe.Add(ref outVert2, 1) = inVA;
+                        outVerts2Count++;
                     }
                 }
                 else // same side
                 {
                     // add the i'th point to the right polygon. Addition is done even for points on the dividing line
-                    if (d[inVertA] >= 0)
+                    if (dInvertA >= 0)
                     {
-                        Vector3Extensions.Copy(inVerts, outVerts1 + poly1Vert * 3, inVerts, inVertsOffset + inVertA * 3);
-                        poly1Vert++;
-                        if (d[inVertA] != 0)
+                        outVert1 = inVA;
+                        outVerts1Count++;
+                        if (dInvertA != 0)
                             continue;
                     }
 
-                    Vector3Extensions.Copy(inVerts, outVerts2 + poly2Vert * 3, inVerts, inVertsOffset + inVertA * 3);
-                    poly2Vert++;
+                    outVert2 = inVA;
+                    outVerts2Count++;
                 }
             }
-
-            outVerts1Count = poly1Vert;
-            outVerts2Count = poly2Vert;
         }
 
         ///	Rasterize a single triangle to the heightfield.
@@ -239,12 +226,13 @@ namespace DotRecast.Recast
         /// @param[in] 	inverseCellHeight	1 / cellHeight
         /// @param[in] 	flagMergeThreshold	The threshold in which area flags will be merged 
         /// @returns true if the operation completes successfully.  false if there was an error adding spans to the heightfield.
+        [SkipLocalsInit]
         private static void RasterizeTri(ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area, RcHeightfield heightfield,
             Vector3 heightfieldBBMin, Vector3 heightfieldBBMax,
             float cellSize, float inverseCellSize, float inverseCellHeight,
             int flagMergeThreshold)
         {
-            float by = heightfieldBBMax.Y - heightfieldBBMin.Y;
+            var by = heightfieldBBMax.Y - heightfieldBBMin.Y;
 
             // Calculate the bounding box of the triangle.
             var v0Vert = verts[v0];
@@ -271,44 +259,43 @@ namespace DotRecast.Recast
             z1 = Math.Clamp(z1, 0, h - 1);
 
             // Clip the triangle into all grid cells it touches.
-            float[] buf = new float[7 * 3 * 4];
+            Span<float> buf = stackalloc float[7 * 3 * 4];
             int @in = 0;
             int inRow = 7 * 3;
             int p1 = inRow + 7 * 3;
             int p2 = p1 + 7 * 3;
 
-            buf.UnsafeAs<float, Vector3>() = verts[v0];
+            buf.UnsafeAs<float, Vector3>(0) = verts[v0];
             buf.UnsafeAs<float, Vector3>(1) = verts[v1];
             buf.UnsafeAs<float, Vector3>(2) = verts[v2];
             int nvIn = 3;
+
+            Span<float> d12LengthStackData = stackalloc float[12];
 
             for (int z = z0; z <= z1; ++z)
             {
                 // Clip polygon to row. Store the remaining polygon as well
                 float cellZ = heightfieldBBMin.Z + z * cellSize;
-                DividePoly(buf, @in, nvIn, inRow, out int nvRow, p1, out nvIn, cellZ + cellSize, 2);
+                DividePoly(d12LengthStackData, buf, @in, nvIn, inRow, out int nvRow, p1, out nvIn, cellZ + cellSize, 2);
                 (@in, p1) = (p1, @in);
 
-                if (nvRow < 3)
-                    continue;
-
-                if (z < 0)
+                if (nvRow < 3 || z < 0)
                 {
                     continue;
                 }
 
                 // find the horizontal bounds in the row
-                var minX = buf[inRow];
-                var maxX = minX;
-                for (int i = 1; i < nvRow; ++i)
+                var minX = float.MaxValue;
+                var maxX = float.MinValue;
+                for (int i = 0; i < nvRow; ++i)
                 {
                     float v = buf[inRow + i * 3];
                     minX = MathF.Min(minX, v);
                     maxX = MathF.Max(maxX, v);
                 }
 
-                int x0 = (int)((minX - heightfieldBBMin.X) * inverseCellSize);
-                int x1 = (int)((maxX - heightfieldBBMin.X) * inverseCellSize);
+                var x0 = (int)((minX - heightfieldBBMin.X) * inverseCellSize);
+                var x1 = (int)((maxX - heightfieldBBMin.X) * inverseCellSize);
                 if (x1 < 0 || x0 >= w)
                 {
                     continue;
@@ -321,8 +308,8 @@ namespace DotRecast.Recast
                 for (int x = x0; x <= x1; ++x)
                 {
                     // Clip polygon to column. store the remaining polygon as well
-                    float cx = heightfieldBBMin.X + x * cellSize;
-                    DividePoly(buf, inRow, nv2, p1, out int nv, p2, out nv2, cx + cellSize, 0);
+                    var cx = heightfieldBBMin.X + x * cellSize;
+                    DividePoly(d12LengthStackData, buf, inRow, nv2, p1, out int nv, p2, out nv2, cx + cellSize, 0);
                     (inRow, p2) = (p2, inRow);
 
                     if (nv < 3)
@@ -334,9 +321,9 @@ namespace DotRecast.Recast
                     }
 
                     // Calculate min and max of the span.
-                    var spanMin = buf[p1 + 1];
-                    var spanMax = buf[p1 + 1];
-                    for (int i = 1; i < nv; ++i)
+                    var spanMin = float.MaxValue;
+                    var spanMax = float.MinValue;
+                    for (int i = 0; i < nv; ++i)
                     {
                         var s = buf[p1 + i * 3 + 1];
                         spanMin = MathF.Min(spanMin, s);
@@ -346,19 +333,19 @@ namespace DotRecast.Recast
                     spanMin -= heightfieldBBMin.Y;
                     spanMax -= heightfieldBBMin.Y;
                     // Skip the span if it is outside the heightfield bbox
-                    if (spanMax < 0.0f)
+                    if (spanMax < 0)
                         continue;
                     if (spanMin > by)
                         continue;
                     // Clamp the span to the heightfield bbox.
-                    if (spanMin < 0.0f)
+                    if (spanMin < 0)
                         spanMin = 0;
                     if (spanMax > by)
                         spanMax = by;
 
                     // Snap the span to the heightfield height grid.
-                    int spanMinCellIndex = Math.Clamp((int)Math.Floor(spanMin * inverseCellHeight), 0, SPAN_MAX_HEIGHT);
-                    int spanMaxCellIndex = Math.Clamp((int)Math.Ceiling(spanMax * inverseCellHeight), spanMinCellIndex + 1, SPAN_MAX_HEIGHT);
+                    var spanMinCellIndex = Math.Clamp((int)MathF.Floor(spanMin * inverseCellHeight), 0, SPAN_MAX_HEIGHT);
+                    var spanMaxCellIndex = Math.Clamp((int)MathF.Ceiling(spanMax * inverseCellHeight), spanMinCellIndex + 1, SPAN_MAX_HEIGHT);
 
                     AddSpan(heightfield, x, z, spanMinCellIndex, spanMaxCellIndex, area, flagMergeThreshold);
                 }

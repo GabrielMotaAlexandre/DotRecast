@@ -23,11 +23,10 @@ using System.Collections.Generic;
 using System.Numerics;
 using DotRecast.Core;
 using static DotRecast.Recast.RcConstants;
+using static DotRecast.Recast.RcCommons;
 
 namespace DotRecast.Recast
 {
-    using static RcCommons;
-
     public static class RcMeshDetails
     {
         public const int MAX_VERTS = 127;
@@ -56,21 +55,6 @@ namespace DotRecast.Recast
             return (float)Math.Sqrt(VdistSq2(verts, p, q));
         }
 
-        private static float VdistSq2(float[] p, float[] q)
-        {
-            float dx = q[0] - p[0];
-            float dy = q[2] - p[2];
-            return dx * dx + dy * dy;
-        }
-
-        private static float VdistSq2(float[] p, Vector3 q)
-        {
-            float dx = q.X - p[0];
-            float dy = q.Z - p[2];
-            return dx * dx + dy * dy;
-        }
-
-
         private static float VdistSq2(Vector3 p, Vector3 q)
         {
             float dx = q.X - p.X;
@@ -81,13 +65,6 @@ namespace DotRecast.Recast
         private static float Vdist2(Vector3 p, Vector3 q)
         {
             return (float)Math.Sqrt(VdistSq2(p, q));
-        }
-
-        private static float VdistSq2(float[] p, float[] verts, int q)
-        {
-            float dx = verts[q + 0] - p[0];
-            float dy = verts[q + 2] - p[2];
-            return dx * dx + dy * dy;
         }
 
         private static float VdistSq2(Vector3 p, float[] verts, int q)
@@ -154,12 +131,11 @@ namespace DotRecast.Recast
 
         private static float DistPtTri(Vector3 p, float[] verts, int a, int b, int c)
         {
-            Vector3 v0 = new();
-            Vector3 v1 = new();
-            Vector3 v2 = new();
+            Vector3 v0 = default;
+            Vector3 v1 = default;
             Vector3Extensions.Sub(ref v0, verts, c, a);
             Vector3Extensions.Sub(ref v1, verts, b, a);
-            v2 = p - verts.GetUnsafe(a).UnsafeAs<float, Vector3>();
+            var v2 = p - verts.GetUnsafe(a).UnsafeAs<float, Vector3>();
 
             float dot00 = Vdot2(v0, v0);
             float dot01 = Vdot2(v0, v1);
@@ -411,7 +387,7 @@ namespace DotRecast.Recast
             return EV_UNDEF;
         }
 
-        private static void AddEdge(RcTelemetry ctx, List<int> edges, int maxEdges, int s, int t, int l, int r)
+        private static void AddEdge(List<int> edges, int maxEdges, int s, int t, int l, int r)
         {
             if (edges.Count / 4 >= maxEdges)
             {
@@ -568,7 +544,7 @@ namespace DotRecast.Recast
                 e = FindEdge(edges, pt, s);
                 if (e == EV_UNDEF)
                 {
-                    AddEdge(ctx, edges, maxEdges, pt, s, nfaces, EV_UNDEF);
+                    AddEdge(edges, maxEdges, pt, s, nfaces, EV_UNDEF);
                 }
                 else
                 {
@@ -579,7 +555,7 @@ namespace DotRecast.Recast
                 e = FindEdge(edges, t, pt);
                 if (e == EV_UNDEF)
                 {
-                    AddEdge(ctx, edges, maxEdges, t, pt, nfaces, EV_UNDEF);
+                    AddEdge(edges, maxEdges, t, pt, nfaces, EV_UNDEF);
                 }
                 else
                 {
@@ -603,7 +579,7 @@ namespace DotRecast.Recast
             List<int> edges = new(64);
             for (int i = 0, j = nhull - 1; i < nhull; j = i++)
             {
-                AddEdge(ctx, edges, maxEdges, hull[j], hull[i], EV_HULL, EV_UNDEF);
+                AddEdge(edges, maxEdges, hull[j], hull[i], EV_HULL, EV_UNDEF);
             }
 
             int currentEdge = 0;
@@ -1569,75 +1545,6 @@ namespace DotRecast.Recast
             }
 
             return dmesh;
-        }
-
-        /// @see rcAllocPolyMeshDetail, rcPolyMeshDetail
-        private static RcPolyMeshDetail MergePolyMeshDetails(RcTelemetry ctx, RcPolyMeshDetail[] meshes, int nmeshes)
-        {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_MERGE_POLYMESHDETAIL);
-
-            RcPolyMeshDetail mesh = new();
-
-            int maxVerts = 0;
-            int maxTris = 0;
-            int maxMeshes = 0;
-
-            for (int i = 0; i < nmeshes; ++i)
-            {
-                if (meshes[i] == null)
-                {
-                    continue;
-                }
-
-                maxVerts += meshes[i].nverts;
-                maxTris += meshes[i].ntris;
-                maxMeshes += meshes[i].nmeshes;
-            }
-
-            mesh.nmeshes = 0;
-            mesh.meshes = new int[maxMeshes * 4];
-            mesh.ntris = 0;
-            mesh.tris = new int[maxTris * 4];
-            mesh.nverts = 0;
-            mesh.verts = new float[maxVerts * 3];
-
-            // Merge datas.
-            for (int i = 0; i < nmeshes; ++i)
-            {
-                RcPolyMeshDetail dm = meshes[i];
-                if (dm == null)
-                {
-                    continue;
-                }
-
-                for (int j = 0; j < dm.nmeshes; ++j)
-                {
-                    int dst = mesh.nmeshes * 4;
-                    int src = j * 4;
-                    mesh.meshes[dst + 0] = mesh.nverts + dm.meshes[src + 0];
-                    mesh.meshes[dst + 1] = dm.meshes[src + 1];
-                    mesh.meshes[dst + 2] = mesh.ntris + dm.meshes[src + 2];
-                    mesh.meshes[dst + 3] = dm.meshes[src + 3];
-                    mesh.nmeshes++;
-                }
-
-                for (int k = 0; k < dm.nverts; ++k)
-                {
-                    Vector3Extensions.Copy(mesh.verts, mesh.nverts * 3, dm.verts, k * 3);
-                    mesh.nverts++;
-                }
-
-                for (int k = 0; k < dm.ntris; ++k)
-                {
-                    mesh.tris[mesh.ntris * 4 + 0] = dm.tris[k * 4 + 0];
-                    mesh.tris[mesh.ntris * 4 + 1] = dm.tris[k * 4 + 1];
-                    mesh.tris[mesh.ntris * 4 + 2] = dm.tris[k * 4 + 2];
-                    mesh.tris[mesh.ntris * 4 + 3] = dm.tris[k * 4 + 3];
-                    mesh.ntris++;
-                }
-            }
-
-            return mesh;
         }
     }
 }

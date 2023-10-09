@@ -94,11 +94,11 @@ public class RecastSoloMeshTest
         TestBuild("nav_test.obj", RcPartition.LAYERS, 0, 19, 32, 310, 150, 150, 773, 526);
     }
 
-    public void TestBuild(string filename, RcPartition partitionType, int expDistance, int expRegions,
+    void TestBuild(string filename, RcPartition partitionType, int expDistance, int expRegions,
         int expContours, int expVerts, int expPolys, int expDetMeshes, int expDetVerts, int expDetTris)
     {
         m_partitionType = partitionType;
-        IInputGeomProvider geomProvider = SimpleInputGeomProvider.LoadFile(filename);
+        var geomProvider = SimpleInputGeomProvider.LoadFile(filename);
         long time = RcFrequency.Ticks;
         Vector3 bmin = geomProvider.GetMeshBoundsMin();
         Vector3 bmax = geomProvider.GetMeshBoundsMax();
