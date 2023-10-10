@@ -199,7 +199,10 @@ namespace System.Numerics
         {
             dest = Vector3.Cross(v1, v2);
         }
+    }
 
+    public static class UnsafeExtensions
+    {
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetUnsafe<T>(this T[] array, int index)
@@ -269,4 +272,19 @@ namespace System.Numerics
     }
 #pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+}
+
+namespace UnityEngine
+{
+    public readonly struct Vector2Int
+    {
+        public readonly int x;
+        public readonly int y;
+
+        public Vector2Int(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+    }
 }

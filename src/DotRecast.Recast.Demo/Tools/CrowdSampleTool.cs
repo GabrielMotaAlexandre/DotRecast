@@ -44,8 +44,6 @@ public class CrowdSampleTool : ISampleTool
     private RcCrowdToolMode m_mode = RcCrowdToolMode.CREATE;
     private int m_modeIdx = RcCrowdToolMode.CREATE.Idx;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
-    private readonly int _expandSelectedDebugDraw = 1;
     private bool _showCorners = true;
     private bool _showCollisionSegments = true;
     private bool _showPath = true;

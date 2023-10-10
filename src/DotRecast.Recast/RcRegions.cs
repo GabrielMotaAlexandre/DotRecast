@@ -392,11 +392,17 @@ namespace DotRecast.Recast
             return count > 0;
         }
 
-        private static int[] ExpandRegions(int maxIter, int level, RcCompactHeightfield chf, int[] srcReg, int[] srcDist,
-            List<int> stack, bool fillStack)
+        private static void ExpandRegions(
+            int maxIter, 
+            int level, 
+            RcCompactHeightfield chf,
+            Span<int> srcReg,
+            Span<int> srcDist,
+            List<int> stack,
+            bool fillStack)
         {
-            int w = chf.width;
-            int h = chf.height;
+            var w = chf.width;
+            var h = chf.height;
 
             if (fillStack)
             {
@@ -406,7 +412,7 @@ namespace DotRecast.Recast
                 {
                     for (int x = 0; x < w; ++x)
                     {
-                        RcCompactCell c = chf.cells[x + y * w];
+                        var c = chf.cells[x + y * w];
                         for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
                         {
                             if (chf.dist[i] >= level && srcReg[i] == 0 && chf.areas[i] != RC_NULL_AREA)
@@ -424,7 +430,7 @@ namespace DotRecast.Recast
                 // mark all cells which already have a region
                 for (int j = 0; j < stack.Count; j += 3)
                 {
-                    int i = stack[j + 2];
+                    var i = stack[j + 2];
                     if (srcReg[i] != 0)
                     {
                         stack[j + 2] = -1;
@@ -441,7 +447,7 @@ namespace DotRecast.Recast
 
                 for (int j = 0; j < stack.Count; j += 3)
                 {
-                    int x = stack[j + 0];
+                    int x = stack[j];
                     int y = stack[j + 1];
                     int i = stack[j + 2];
                     if (i < 0)
@@ -469,12 +475,14 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        if (srcReg[ai] > 0 && (srcReg[ai] & RC_BORDER_REG) == 0)
+                        var regAi = srcReg[ai];
+                        if (regAi > 0 && (regAi & RC_BORDER_REG) == 0)
                         {
-                            if (srcDist[ai] + 2 < d2)
+                            var distAi = srcDist[ai] + 2;
+                            if (distAi < d2)
                             {
-                                r = srcReg[ai];
-                                d2 = srcDist[ai] + 2;
+                                r = regAi;
+                                d2 = distAi;
                             }
                         }
                     }
@@ -500,22 +508,11 @@ namespace DotRecast.Recast
                     srcDist[idx] = dirtyEntries[i + 2];
                 }
 
-                if (failed * 3 == stack.Count())
+                if (failed * 3 == stack.Count || level > 0 && ++iter >= maxIter)
                 {
                     break;
                 }
-
-                if (level > 0)
-                {
-                    ++iter;
-                    if (iter >= maxIter)
-                    {
-                        break;
-                    }
-                }
             }
-
-            return srcReg;
         }
 
         private static void SortCellsByLevel(int startLevel, RcCompactHeightfield chf, int[] srcReg, int nbStacks,
@@ -592,7 +589,7 @@ namespace DotRecast.Recast
                 }
                 else
                 {
-                    ++i;
+                    i++;
                 }
             }
         }
@@ -740,21 +737,20 @@ namespace DotRecast.Recast
         private static bool IsSolidEdge(RcCompactHeightfield chf, int[] srcReg, int x, int y, int i, int dir)
         {
             RcCompactSpan s = chf.spans[i];
-            int r = 0;
+            int r;
             if (GetCon(s, dir) != RC_NOT_CONNECTED)
             {
-                int ax = x + GetDirOffsetX(dir);
-                int ay = y + GetDirOffsetY(dir);
-                int ai = chf.cells[ax + ay * chf.width].index + GetCon(s, dir);
+                var ax = x + GetDirOffsetX(dir);
+                var ay = y + GetDirOffsetY(dir);
+                var ai = chf.cells[ax + ay * chf.width].index + GetCon(s, dir);
                 r = srcReg[ai];
             }
-
-            if (r == srcReg[i])
+            else
             {
-                return false;
+                r = 0;
             }
 
-            return true;
+            return r != srcReg[i];
         }
 
         private static void WalkContour(int x, int y, int i, int dir, RcCompactHeightfield chf, int[] srcReg,
@@ -1169,8 +1165,8 @@ namespace DotRecast.Recast
             }
         }
 
-        private static int MergeAndFilterLayerRegions(RcTelemetry ctx, int minRegionArea, int maxRegionId,
-            RcCompactHeightfield chf, int[] srcReg, List<int> overlaps)
+        private static int MergeAndFilterLayerRegions(int minRegionArea, int maxRegionId,
+            RcCompactHeightfield chf, int[] srcReg)
         {
             int w = chf.width;
             int h = chf.height;
@@ -1924,8 +1920,7 @@ namespace DotRecast.Recast
             ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
             // Merge monotone regions to layers and remove small regions.
-            List<int> overlaps = new();
-            chf.maxRegions = MergeAndFilterLayerRegions(ctx, minRegionArea, id, chf, srcReg, overlaps);
+            chf.maxRegions = MergeAndFilterLayerRegions(minRegionArea, id, chf, srcReg);
 
             ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 

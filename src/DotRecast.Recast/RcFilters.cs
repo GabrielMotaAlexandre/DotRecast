@@ -88,8 +88,8 @@ namespace DotRecast.Recast
         {
             using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_FILTER_BORDER);
 
-            int w = solid.width;
-            int h = solid.height;
+            var w = solid.width;
+            var h = solid.height;
 
             // Mark border spans.
             for (int y = 0; y < h; ++y)
@@ -102,15 +102,15 @@ namespace DotRecast.Recast
                         if (s.area == RC_NULL_AREA)
                             continue;
 
-                        int bot = s.smax;
-                        int top = s.next != null ? s.next.smin : SPAN_MAX_HEIGHT;
+                        var bot = s.smax;
+                        var top = s.next != null ? s.next.smin : SPAN_MAX_HEIGHT;
 
                         // Find neighbours minimum height.
                         int minh = SPAN_MAX_HEIGHT;
 
                         // Min and max height of accessible neighbours.
-                        int asmin = s.smax;
-                        int asmax = s.smax;
+                        var asmin = s.smax;
+                        var asmax = s.smax;
 
                         for (int dir = 0; dir < 4; ++dir)
                         {
@@ -126,7 +126,7 @@ namespace DotRecast.Recast
                             // From minus infinity to the first span.
                             RcSpan ns = solid.spans[dx + dy * w];
                             int nbot = -walkableClimb;
-                            int ntop = ns != null ? ns.smin : SPAN_MAX_HEIGHT;
+                            int ntop = ns?.smin ?? SPAN_MAX_HEIGHT;
                             // Skip neightbour if the gap between the spans is too small.
                             if (Math.Min(top, ntop) - Math.Max(bot, nbot) > walkableHeight)
                                 minh = Math.Min(minh, nbot - bot);

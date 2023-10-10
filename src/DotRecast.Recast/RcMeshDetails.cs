@@ -246,7 +246,7 @@ namespace DotRecast.Recast
             return dx * dx + dz * dz;
         }
 
-        private static float DistToTriMesh(Vector3 p, float[] verts, int nverts, List<int> tris, int ntris)
+        private static float DistToTriMesh(Vector3 p, float[] verts, List<int> tris, int ntris)
         {
             float dmin = float.MaxValue;
             for (int i = 0; i < ntris; ++i)
@@ -694,7 +694,7 @@ namespace DotRecast.Recast
             return (float)Math.Sqrt(minDist);
         }
 
-        private static void TriangulateHull(int nverts, float[] verts, int nhull, int[] hull, int nin, List<int> tris)
+        private static void TriangulateHull(float[] verts, int nhull, int[] hull, int nin, List<int> tris)
         {
             int start = 0, left = 1, right = nhull - 1;
 
@@ -923,7 +923,7 @@ namespace DotRecast.Recast
             // If the polygon minimum extent is small (sliver or small triangle), do not try to add internal points.
             if (minExtent < sampleDist * 2)
             {
-                TriangulateHull(nverts, verts, nhull, hull, nin, tris);
+                TriangulateHull(verts, nhull, hull, nin, tris);
                 return nverts;
             }
 
@@ -931,7 +931,7 @@ namespace DotRecast.Recast
             // We're using the triangulateHull instead of delaunayHull as it tends to
             // create a bit better triangulation for long thin triangles when there
             // are no internal points.
-            TriangulateHull(nverts, verts, nhull, hull, nin, tris);
+            TriangulateHull(verts, nhull, hull, nin, tris);
 
             if (tris.Count == 0)
             {
@@ -1009,7 +1009,7 @@ namespace DotRecast.Recast
                             Y = samples[s + 1] * chf.ch,
                             Z = samples[s + 2] * sampleDist + GetJitterY(i) * cs * 0.1f
                         };
-                        float d = DistToTriMesh(pt, verts, nverts, tris, tris.Count / 4);
+                        float d = DistToTriMesh(pt, verts, tris, tris.Count / 4);
                         if (d < 0)
                         {
                             continue; // did not hit the mesh.

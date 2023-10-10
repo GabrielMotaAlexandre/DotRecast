@@ -78,7 +78,7 @@ namespace DotRecast.Recast.Toolset.Builder
         {
             RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax());
             RcBuilder rcBuilder = new();
-            return rcBuilder.Build(geom, bcfg);
+            return RcBuilder.Build(geom, bcfg);
         }
 
         public static DtMeshData BuildMeshData(DemoInputGeomProvider geom,

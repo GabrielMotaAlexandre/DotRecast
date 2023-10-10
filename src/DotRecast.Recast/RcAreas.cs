@@ -51,8 +51,8 @@ namespace DotRecast.Recast
 
             using var timer = context.ScopedTimer(RcTimerLabel.RC_TIMER_ERODE_AREA);
 
-            int[] distanceToBoundary = new int[compactHeightfield.spanCount];
-            Array.Fill(distanceToBoundary, 255);
+            byte[] distanceToBoundary = new byte[compactHeightfield.spanCount];
+            Array.Fill(distanceToBoundary, byte.MaxValue);
 
             // Mark boundary cells.
             for (int z = 0; z < zSize; ++z)
@@ -101,8 +101,6 @@ namespace DotRecast.Recast
                 }
             }
 
-            int newDistance;
-
             // Pass 1
             for (int z = 0; z < zSize; ++z)
             {
@@ -120,20 +118,20 @@ namespace DotRecast.Recast
                             int aX = x + GetDirOffsetX(0);
                             int aY = z + GetDirOffsetY(0);
                             int aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 0);
-                            RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
-                            newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[spanIndex])
                             {
                                 distanceToBoundary[spanIndex] = newDistance;
                             }
 
+                            RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
                             // (-1,-1)
                             if (GetCon(aSpan, 3) != RC_NOT_CONNECTED)
                             {
                                 int bX = aX + GetDirOffsetX(3);
                                 int bY = aY + GetDirOffsetY(3);
                                 int bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 3);
-                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[spanIndex])
                                 {
                                     distanceToBoundary[spanIndex] = newDistance;
@@ -147,20 +145,20 @@ namespace DotRecast.Recast
                             int aX = x + GetDirOffsetX(3);
                             int aY = z + GetDirOffsetY(3);
                             int aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 3);
-                            RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
-                            newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[spanIndex])
                             {
                                 distanceToBoundary[spanIndex] = newDistance;
                             }
 
+                            RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
                             // (1,-1)
                             if (GetCon(aSpan, 2) != RC_NOT_CONNECTED)
                             {
                                 int bX = aX + GetDirOffsetX(2);
                                 int bY = aY + GetDirOffsetY(2);
                                 int bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 2);
-                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[spanIndex])
                                 {
                                     distanceToBoundary[spanIndex] = newDistance;
@@ -185,11 +183,11 @@ namespace DotRecast.Recast
                         if (GetCon(span, 2) != RC_NOT_CONNECTED)
                         {
                             // (1,0)
-                            int aX = x + GetDirOffsetX(2);
-                            int aY = z + GetDirOffsetY(2);
-                            int aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 2);
+                            var aX = x + 1; // GetDirOffset
+                            var aY = z + 0;
+                            var aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 2);
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
-                            newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[i])
                             {
                                 distanceToBoundary[i] = newDistance;
@@ -198,10 +196,10 @@ namespace DotRecast.Recast
                             // (1,1)
                             if (GetCon(aSpan, 1) != RC_NOT_CONNECTED)
                             {
-                                int bX = aX + GetDirOffsetX(1);
-                                int bY = aY + GetDirOffsetY(1);
-                                int bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 1);
-                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                var bX = aX + 0; // GetDirOffset
+                                var bY = aY + 1;
+                                var bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 1);
+                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[i])
                                 {
                                     distanceToBoundary[i] = newDistance;
@@ -212,11 +210,11 @@ namespace DotRecast.Recast
                         if (GetCon(span, 1) != RC_NOT_CONNECTED)
                         {
                             // (0,1)
-                            int aX = x + GetDirOffsetX(1);
-                            int aY = z + GetDirOffsetY(1);
-                            int aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 1);
+                            var aX = x + 0; // GetDirOffset
+                            var aY = z + 1;
+                            var aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 1);
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
-                            newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[i])
                             {
                                 distanceToBoundary[i] = newDistance;
@@ -225,10 +223,10 @@ namespace DotRecast.Recast
                             // (-1,1)
                             if (GetCon(aSpan, 0) != RC_NOT_CONNECTED)
                             {
-                                int bX = aX + GetDirOffsetX(0);
-                                int bY = aY + GetDirOffsetY(0);
-                                int bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 0);
-                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                var bX = aX - 1; // GetDirOffset
+                                var bY = aY + 0;
+                                var bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 0);
+                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[i])
                                 {
                                     distanceToBoundary[i] = newDistance;

@@ -20,7 +20,9 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Recast
 {
@@ -47,6 +49,7 @@ namespace DotRecast.Recast
         /// @param[in]		span		The span to check.
         /// @param[in]		direction	The direction to check. [Limits: 0 <= value < 4]
         /// @return The neighbor connection data for the specified direction, or #RC_NOT_CONNECTED if there is no connection.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetCon(RcCompactSpan s, int dir)
         {
             int shift = dir * 6;
@@ -56,6 +59,7 @@ namespace DotRecast.Recast
         /// Gets the standard width (x-axis) offset for the specified direction.
         /// @param[in]		direction		The direction. [Limits: 0 <= value < 4]
         /// @return The width offset to apply to the current cell position to move in the direction.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetDirOffsetX(int dir)
         {
             return DirOffsetX[dir & 0x03];
@@ -65,6 +69,7 @@ namespace DotRecast.Recast
         /// Gets the standard height (z-axis) offset for the specified direction.
         /// @param[in]		direction		The direction. [Limits: 0 <= value < 4]
         /// @return The height offset to apply to the current cell position to move in the direction.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetDirOffsetY(int dir)
         {
             return DirOffsetY[dir & 0x03];
@@ -74,6 +79,7 @@ namespace DotRecast.Recast
         /// @param[in]		offsetX		The x offset. [Limits: -1 <= value <= 1]
         /// @param[in]		offsetZ		The z offset. [Limits: -1 <= value <= 1]
         /// @return The direction that represents the offset.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetDirForOffset(int x, int y)
         {
             return DirForOffset[((y + 1) << 1) + x];
@@ -98,6 +104,7 @@ namespace DotRecast.Recast
             // Calculate bounding box.
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CalcGridSize(Vector3 bmin, Vector3 bmax, float cs, out int sizeX, out int sizeZ)
         {
             sizeX = (int)((bmax.X - bmin.X) / cs + 0.5f);
@@ -105,6 +112,7 @@ namespace DotRecast.Recast
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CalcTileCount(Vector3 bmin, Vector3 bmax, float cs, int tileSizeX, int tileSizeZ, out int tw, out int td)
         {
             CalcGridSize(bmin, bmax, cs, out var gw, out var gd);
@@ -136,6 +144,7 @@ namespace DotRecast.Recast
             return areas;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CalcTriNormal(ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, ref Vector3 norm)
         {
             Vector3 e0 = verts[v1] - verts[v0];

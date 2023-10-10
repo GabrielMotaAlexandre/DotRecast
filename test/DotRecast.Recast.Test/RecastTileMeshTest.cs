@@ -54,10 +54,9 @@ public class RecastTileMeshTest
         TestBuild("dungeon.obj");
     }
 
-    public void TestBuild(string filename)
+    void TestBuild(string filename)
     {
-        IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile(filename);
-        RcBuilder builder = new();
+        var geom = SimpleInputGeomProvider.LoadFile(filename);
         RcConfig cfg = new(
             true, m_tileSize, m_tileSize, RcConfig.CalcBorder(m_agentRadius, m_cellSize),
             m_partitionType,
@@ -70,27 +69,27 @@ public class RecastTileMeshTest
             true, true, true,
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
         RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 7, 8);
-        RcBuilderResult rcResult = builder.Build(geom, bcfg);
+        RcBuilderResult rcResult = RcBuilder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(1));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(5));
         bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 6, 9);
-        rcResult = builder.Build(geom, bcfg);
+        rcResult = RcBuilder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(2));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(7));
         bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 2, 9);
-        rcResult = builder.Build(geom, bcfg);
+        rcResult = RcBuilder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(2));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(9));
         bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 4, 3);
-        rcResult = builder.Build(geom, bcfg);
+        rcResult = RcBuilder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(3));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(6));
         bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 2, 8);
-        rcResult = builder.Build(geom, bcfg);
+        rcResult = RcBuilder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(5));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(17));
         bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 0, 8);
-        rcResult = builder.Build(geom, bcfg);
+        rcResult = RcBuilder.Build(geom, bcfg);
         Assert.That(rcResult.GetMesh().npolys, Is.EqualTo(6));
         Assert.That(rcResult.GetMesh().nverts, Is.EqualTo(15));
     }

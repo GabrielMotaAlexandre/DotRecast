@@ -25,6 +25,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
+using UnityEngine;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -34,7 +35,6 @@ namespace DotRecast.Detour.Crowd
         private readonly float _invCellSize;
         private readonly (int[] ids, int length)[] _items;
         public Vector2Int Min { get; }
-        public Vector2Int Max { get; }
         public Vector2Int Length { get; }
 
         public DtProximityGrid(Vector4 planeBounds, float cellSize)
@@ -44,109 +44,75 @@ namespace DotRecast.Detour.Crowd
 
             const int collisionQueryRange = 10;
 
-            int iminx = (int)MathF.Floor(planeBounds.X * _invCellSize) - collisionQueryRange;
-            int iminy = (int)MathF.Floor(planeBounds.Y * _invCellSize) - collisionQueryRange;
+            var iminx = GetSize(planeBounds.X, collisionQueryRange);
+            var iminy = GetSize(planeBounds.Y, collisionQueryRange);
             Min = new Vector2Int(iminx, iminy);
-            int imaxx = (int)MathF.Floor(planeBounds.Z * _invCellSize) + collisionQueryRange;
-            int imaxy = (int)MathF.Floor(planeBounds.W * _invCellSize) + collisionQueryRange;
-            Max = new Vector2Int(imaxx, imaxy);
-            Length = new Vector2Int(Max.X - Min.X, Max.Y - Min.Y);
 
+            var imaxx = GetSize(planeBounds.Z, -collisionQueryRange);
+            var imaxy = GetSize(planeBounds.W, -collisionQueryRange);
+            Length = new Vector2Int(imaxx - Min.x, imaxy - Min.y);
 
-            _items = new (int[] ids, int length)[Length.Y * Length.X];
+            _items = new (int[] ids, int length)[Length.y * Length.x];
         }
 
         public void Clear()
         {
             for (int i = 0; i != _items.Length; i++)
             {
-                //ArrayPool<int>.Shared.Return(item.ids);
                 _items[i].length = 0;
-
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector2 GetSize()
+        private int GetSize(float v, int offset)
         {
-
-            //int iminx = (int)MathF.Floor(minx * _invCellSize);
-            //int iminy = (int)MathF.Floor(miny * _invCellSize);
-            //int imaxx = (int)MathF.Floor(maxx * _invCellSize);
-            //int imaxy = (int)MathF.Floor(maxy * _invCellSize);
-
-            return new Vector2();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long CombineKey(int x, int y)
-        {
-            uint ux = (uint)x;
-            uint uy = (uint)y;
-            return ((long)ux << 32) | uy;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void DecomposeKey(long key, out int x, out int y)
-        {
-            uint ux = (uint)(key >> 32);
-            uint uy = (uint)key;
-            x = (int)ux;
-            y = (int)uy;
+            return (int)MathF.Floor(v * _invCellSize) - offset;
         }
 
         public void AddItem(DtCrowdAgent agent, float minx, float miny, float maxx, float maxy)
         {
-            int iminx = (int)MathF.Floor(minx * _invCellSize) - Min.X;
-            int iminy = (int)MathF.Floor(miny * _invCellSize) - Min.Y;
-            int imaxx = (int)MathF.Floor(maxx * _invCellSize) - Min.X;
-            int imaxy = (int)MathF.Floor(maxy * _invCellSize) - Min.Y;
+            var iminx = GetSize(minx, Min.x);
+            var iminy = GetSize(miny, Min.y);
+            var imaxx = GetSize(maxx, Min.x);
+            var imaxy = GetSize(maxy, Min.y);
 
             for (int y = iminy; y <= imaxy; ++y)
             {
                 for (int x = iminx; x <= imaxx; ++x)
                 {
-                    try
+                    ref var item = ref _items[y * Length.x + x];
+
+                    if (item.ids == null)
                     {
-                        ref var item = ref _items[y * Length.X + x];
-
-                        if (item.ids == null)
-                        {
-                            item = (ArrayPool<int>.Shared.Rent(8), 0);
-                        }
-
-                        if (item.length == item.ids.Length)
-                        {
-                            var ar = item.ids;
-                            item.ids = ArrayPool<int>.Shared.Rent(item.length * 2);
-
-                            ar.CopyTo(item.ids, 0);
-                            ArrayPool<int>.Shared.Return(ar);
-                        }
-
-                        item.ids[item.length] = agent.idx;
-                        item = (item.ids, item.length + 1);
+                        item = (ArrayPool<int>.Shared.Rent(8), 0);
                     }
-                    catch (Exception)
+
+                    if (item.length == item.ids.Length)
                     {
+                        var ar = item.ids;
+                        item.ids = ArrayPool<int>.Shared.Rent(item.length * 2);
 
-                        throw;
+                        ar.CopyTo(item.ids, 0);
+                        ArrayPool<int>.Shared.Return(ar);
                     }
+
+                    item.ids[item.length] = agent.idx;
+                    item = (item.ids, item.length + 1);
                 }
             }
         }
 
         public void QueryItems(int[] neighbourAgentIds, DtCrowd dtCrowd, float minx, float miny, float maxx, float maxy, DtCrowdAgent skip)
         {
-            int i = 0;
-            int iminx = (int)MathF.Floor(minx * _invCellSize) - Min.X;
-            int iminy = (int)MathF.Floor(miny * _invCellSize) - Min.Y;
-            int imaxx = (int)MathF.Floor(maxx * _invCellSize) - Min.X;
-            int imaxy = (int)MathF.Floor(maxy * _invCellSize) - Min.Y;
+            int count = 0;
+            var iminx = GetSize(minx, Min.x);
+            var iminy = GetSize(miny, Min.y);
+            var imaxx = GetSize(maxx, Min.x);
+            var imaxy = GetSize(maxy, Min.y);
 
-            var count = dtCrowd.GetActiveAgents().Count;
+            var agentsCount = dtCrowd.GetActiveAgents().Count;
 
-            var array = ArrayPool<bool>.Shared.Rent(count);
+            var array = ArrayPool<bool>.Shared.Rent(agentsCount);
             Array.Clear(array);
 
             array[skip.idx] = true;
@@ -155,34 +121,21 @@ namespace DotRecast.Detour.Crowd
             {
                 for (int x = iminx; x <= imaxx; ++x)
                 {
-                    var ids = _items[y * Length.X + x];
+                    var ids = _items[y * Length.x + x];
 
                     for (int iId = 0; iId != ids.length; iId++)
                     {
                         var agId = ids.ids.GetUnsafe(iId);
                         ref var exist = ref array[agId];
 
-                        neighbourAgentIds[exist ? count : i++] = agId;
+                        neighbourAgentIds[exist ? agentsCount : count++] = agId;
                         exist = true;
                     }
                 }
             }
-            
-            neighbourAgentIds[i] = -1;
+
+            neighbourAgentIds[count] = -1;
             ArrayPool<bool>.Shared.Return(array);
         }
-    }
-
-    public readonly struct Vector2Int
-    {
-        public Vector2Int(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        public readonly int X;
-
-        public readonly int Y;
     }
 }

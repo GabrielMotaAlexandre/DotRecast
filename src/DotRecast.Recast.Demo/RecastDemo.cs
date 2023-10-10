@@ -106,7 +106,6 @@ public class RecastDemo : IRecastDemoChannel
     private float _moveAccel;
 
     private int[] viewport;
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
     private bool markerPositionSet;
     private Vector3 markerPosition;
 
@@ -188,7 +187,7 @@ public class RecastDemo : IRecastDemoChannel
         }
     }
 
-    public void OnMouseUpAndDown(IMouse mouse, MouseButton button, bool down)
+    public void OnMouseUpAndDown(MouseButton button, bool down)
     {
         if (down)
         {
@@ -356,8 +355,8 @@ public class RecastDemo : IRecastDemoChannel
         foreach (var mice in _input.Mice)
         {
             mice.Scroll += OnMouseScrolled;
-            mice.MouseDown += (m, b) => OnMouseUpAndDown(m, b, true);
-            mice.MouseUp += (m, b) => OnMouseUpAndDown(m, b, false);
+            mice.MouseDown += (m, b) => OnMouseUpAndDown(b, true);
+            mice.MouseUp += (m, b) => OnMouseUpAndDown(b, false);
             mice.MouseMove += OnMouseMoved;
         }
 

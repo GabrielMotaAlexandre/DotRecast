@@ -100,7 +100,7 @@ namespace DotRecast.Recast.Toolset.Builder
             return rcBuilder.BuildTiles(geom, cfg, Task.Factory);
         }
 
-        public DtNavMesh BuildNavMesh(IInputGeomProvider geom, List<DtMeshData> meshData, float cellSize, int tileSize, int vertsPerPoly)
+        public static DtNavMesh BuildNavMesh(IInputGeomProvider geom, List<DtMeshData> meshData, float cellSize, int tileSize, int vertsPerPoly)
         {
             DtNavMeshParams navMeshParams = new()
             {

@@ -161,7 +161,7 @@ public class RecastSoloMeshTest
         // Compact the heightfield so that it is faster to handle from now on.
         // This will result more cache coherent data as well as the neighbours
         // between walkable cells will be calculated.
-        RcCompactHeightfield m_chf = RcCompacts.BuildCompactHeightfield(m_ctx, cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
+        RcCompactHeightfield m_chf = RcCompacts.BuildCompactHeightfield(cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
 
         // Erode the walkable area by agent radius.
         ErodeWalkableArea(m_ctx, cfg.WalkableRadius, m_chf);
@@ -267,10 +267,6 @@ public class RecastSoloMeshTest
         Console.WriteLine("           " + (time3 - time) / TimeSpan.TicksPerMillisecond + " ms");
         SaveObj(filename.Substring(0, filename.LastIndexOf('.')) + "_" + partitionType + "_detail.obj", m_dmesh);
         SaveObj(filename.Substring(0, filename.LastIndexOf('.')) + "_" + partitionType + ".obj", m_pmesh);
-        foreach (var rtt in m_ctx.ToList())
-        {
-            Console.WriteLine($"{rtt.Key} : {rtt.Millis} ms");
-        }
     }
 
     private static void SaveObj(string filename, RcPolyMesh mesh)

@@ -156,7 +156,7 @@ namespace DotRecast.Recast
             return result;
         }
 
-        public RcBuilderResult Build(IInputGeomProvider geom, RcBuilderConfig builderCfg)
+        public static RcBuilderResult Build(IInputGeomProvider geom, RcBuilderConfig builderCfg)
         {
             RcConfig cfg = builderCfg.cfg;
             RcTelemetry ctx = new();
@@ -285,7 +285,7 @@ namespace DotRecast.Recast
             // Compact the heightfield so that it is faster to handle from now on.
             // This will result more cache coherent data as well as the neighbours
             // between walkable cells will be calculated.
-            RcCompactHeightfield chf = RcCompacts.BuildCompactHeightfield(ctx, cfg.WalkableHeight, cfg.WalkableClimb, solid);
+            RcCompactHeightfield chf = RcCompacts.BuildCompactHeightfield(cfg.WalkableHeight, cfg.WalkableClimb, solid);
 
             // Erode the walkable area by agent radius.
             ErodeWalkableArea(ctx, cfg.WalkableRadius, chf);

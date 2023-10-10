@@ -26,8 +26,7 @@ public class TestDetourBuilder : DetourBuilder
     public static DtMeshData Build(IInputGeomProvider geom, RcBuilderConfig rcConfig, float agentHeight, float agentRadius,
         float agentMaxClimb, int x, int y, bool applyRecastDemoFlags)
     {
-        RcBuilder rcBuilder = new();
-        RcBuilderResult rcResult = rcBuilder.Build(geom, rcConfig);
+        RcBuilderResult rcResult = RcBuilder.Build(geom, rcConfig);
         RcPolyMesh pmesh = rcResult.GetMesh();
 
         if (applyRecastDemoFlags)
