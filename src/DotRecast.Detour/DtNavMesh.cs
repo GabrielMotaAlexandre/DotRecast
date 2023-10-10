@@ -26,8 +26,6 @@ using DotRecast.Core;
 
 namespace DotRecast.Detour
 {
-
-
     public class DtNavMesh
     {
         public const int DT_SALT_BITS = 16;

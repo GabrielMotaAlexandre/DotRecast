@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\DotRecast.Detour.Dynamic\DotRecast.Detour.Dynamic.csproj" />
         <ProjectReference Include="..\DotRecast.Core.Test\DotRecast.Core.Test.csproj" />
         <ProjectReference Include="..\..\src\DotRecast.Detour\DotRecast.Detour.csproj" />
         <ProjectReference Include="..\..\src\DotRecast.Recast\DotRecast.Recast.csproj" />

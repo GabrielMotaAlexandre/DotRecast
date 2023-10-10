@@ -3,6 +3,8 @@ using System.IO;
 using System.Numerics;
 using System.Threading.Tasks;
 using DotRecast.Core;
+using DotRecast.Detour.Dynamic.Colliders;
+using DotRecast.Detour.Dynamic.Io;
 using DotRecast.Detour.Dynamic.Test.Io;
 using NUnit.Framework;
 

@@ -24,15 +24,12 @@ using DotRecast.Recast.Toolset;
 using DotRecast.Recast.Toolset.Geom;
 using DotRecast.Recast.Toolset.Tools;
 using ImGuiNET;
-using Serilog;
 using static DotRecast.Recast.Demo.Draw.DebugDraw;
 
 namespace DotRecast.Recast.Demo.Tools;
 
 public class OffMeshConnectionSampleTool : ISampleTool
 {
-    private static readonly ILogger Logger = Log.ForContext<OffMeshConnectionSampleTool>();
-
     private DemoSample _sample;
 
     private readonly RcOffMeshConnectionTool _tool;
@@ -120,7 +117,6 @@ public class OffMeshConnectionSampleTool : ISampleTool
 
     public void HandleUpdate(float dt)
     {
-        // TODO Auto-generated method stub
     }
 
     public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)

@@ -62,9 +62,9 @@ namespace DotRecast.Recast
         /// @param[in]	flagMergeThreshold	How close two spans maximum extents need to be to merge area type IDs
         public static void AddSpan(RcHeightfield heightfield, int x, int y, int spanMin, int spanMax, int areaId, int flagMergeThreshold)
         {
-            int idx = x + y * heightfield.width;
+            var idx = x + y * heightfield.width;
 
-            RcSpan s = new()
+            RcSpan span = new()
             {
                 smin = spanMin,
                 smax = spanMax,
@@ -75,22 +75,22 @@ namespace DotRecast.Recast
             // Empty cell, add the first span.
             if (heightfield.spans[idx] == null)
             {
-                heightfield.spans[idx] = s;
+                heightfield.spans[idx] = span;
                 return;
             }
 
-            RcSpan prev = null;
+            RcSpan prev = default;
             RcSpan cur = heightfield.spans[idx];
 
             // Insert and merge spans.
             while (cur != null)
             {
-                if (cur.smin > s.smax)
+                if (cur.smin > span.smax)
                 {
                     // Current span is further than the new span, break.
                     break;
                 }
-                else if (cur.smax < s.smin)
+                else if (cur.smax < span.smin)
                 {
                     // Current span is before the new span advance.
                     prev = cur;
@@ -99,14 +99,12 @@ namespace DotRecast.Recast
                 else
                 {
                     // Merge spans.
-                    if (cur.smin < s.smin)
-                        s.smin = cur.smin;
-                    if (cur.smax > s.smax)
-                        s.smax = cur.smax;
+                    span.smin = Math.Min(span.smin, cur.smin);
+                    span.smax = Math.Max(span.smax, cur.smax);
 
                     // Merge flags.
-                    if (Math.Abs(s.smax - cur.smax) <= flagMergeThreshold)
-                        s.area = Math.Max(s.area, cur.area);
+                    if (Math.Abs(span.smax - cur.smax) <= flagMergeThreshold)
+                        span.area = Math.Max(span.area, cur.area);
 
                     // Remove current span.
                     RcSpan next = cur.next;
@@ -114,6 +112,7 @@ namespace DotRecast.Recast
                         prev.next = next;
                     else
                         heightfield.spans[idx] = next;
+
                     cur = next;
                 }
             }
@@ -121,13 +120,13 @@ namespace DotRecast.Recast
             // Insert new span.
             if (prev != null)
             {
-                s.next = prev.next;
-                prev.next = s;
+                span.next = prev.next;
+                prev.next = span;
             }
             else
             {
-                s.next = heightfield.spans[idx];
-                heightfield.spans[idx] = s;
+                span.next = heightfield.spans[idx];
+                heightfield.spans[idx] = span;
             }
         }
 
@@ -142,7 +141,6 @@ namespace DotRecast.Recast
         /// @param[out]	outVerts2Count	The number of resulting polygon 2 vertices
         /// @param[in]	axisOffset		THe offset along the specified axis
         /// @param[in]	axis			The separating axis
-        [SkipLocalsInit]
         private static void DividePoly(Span<float> d12LengthStackData, Span<float> inVerts, int inVertsOffset, int inVertsCount,
             int outVerts1, out int outVerts1Count,
             int outVerts2, out int outVerts2Count,
@@ -160,13 +158,13 @@ namespace DotRecast.Recast
             {
                 var dInvertA = d12LengthStackData[inVertA];
                 var dInvertB = d12LengthStackData[inVertB];
-
+                
                 ref var outVert1 = ref inVerts.GetUnsafe(outVerts1).UnsafeAs<float, Vector3>(outVerts1Count);
                 ref var outVert2 = ref inVerts.GetUnsafe(outVerts2).UnsafeAs<float, Vector3>(outVerts2Count);
                 ref var inVA = ref inVerts.GetUnsafe(inVertsOffset).UnsafeAs<float, Vector3>(inVertA);
 
                 var ina = dInvertB >= 0;
-                bool inb = dInvertA >= 0;
+                var inb = dInvertA >= 0;
 
                 if (ina != inb)
                 {
@@ -180,12 +178,13 @@ namespace DotRecast.Recast
                     outVerts2Count++;
                     // add the i'th point to the right polygon. Do NOT add points that are on the dividing line
                     // since these were already added above
-                    if (d12LengthStackData[inVertA] > 0)
+                    var d = d12LengthStackData[inVertA];
+                    if (d > 0)
                     {
                         Unsafe.Add(ref outVert1, 1) = inVA;
                         outVerts1Count++;
                     }
-                    else if (d12LengthStackData[inVertA] < 0)
+                    else if (d < 0)
                     {
                         Unsafe.Add(ref outVert2, 1) = inVA;
                         outVerts2Count++;
@@ -331,10 +330,9 @@ namespace DotRecast.Recast
                     spanMin -= heightfieldBBMin.Y;
                     spanMax -= heightfieldBBMin.Y;
                     // Skip the span if it is outside the heightfield bbox
-                    if (spanMax < 0)
+                    if (spanMax < 0 || spanMin > by)
                         continue;
-                    if (spanMin > by)
-                        continue;
+
                     // Clamp the span to the heightfield bbox.
                     if (spanMin < 0)
                         spanMin = 0;

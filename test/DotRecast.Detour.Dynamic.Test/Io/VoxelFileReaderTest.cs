@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 using System.IO;
 using System.Numerics;
 using DotRecast.Core;
+using DotRecast.Detour.Dynamic.Io;
 using NUnit.Framework;
 
 namespace DotRecast.Detour.Dynamic.Test.Io;

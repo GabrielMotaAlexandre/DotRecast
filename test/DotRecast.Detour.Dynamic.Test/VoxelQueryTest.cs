@@ -27,6 +27,7 @@ using DotRecast.Recast;
 using Moq;
 using NUnit.Framework;
 using System.Numerics;
+using DotRecast.Detour.Dynamic.Io;
 
 namespace DotRecast.Detour.Dynamic.Test;
 

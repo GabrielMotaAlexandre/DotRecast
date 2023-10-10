@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DotRecast.Detour.Dynamic\DotRecast.Detour.Dynamic.csproj" />
     <ProjectReference Include="..\DotRecast.Recast.Toolset\DotRecast.Recast.Toolset.csproj" />
   </ItemGroup>
 
