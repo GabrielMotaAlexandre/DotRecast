@@ -21,7 +21,6 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using DotRecast.Core;
 using DotRecast.Detour;
 using DotRecast.Recast.Toolset.Builder;
 using Silk.NET.OpenGL;
@@ -43,9 +42,9 @@ public class RecastDebugDraw : DebugDraw
     {
         float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180.0f * Math.PI);
 
-        RcVec2f uva = RcVec2f.Zero;
-        RcVec2f uvb = RcVec2f.Zero;
-        RcVec2f uvc = RcVec2f.Zero;
+        Vector2 uva = Vector2.Zero;
+        Vector2 uvb = Vector2.Zero;
+        Vector2 uvc = Vector2.Zero;
 
         Texture(true);
 
@@ -83,12 +82,12 @@ public class RecastDebugDraw : DebugDraw
 
             ax = (1 << ax) & 3; // +1 mod 3
             int ay = (1 << ax) & 3;
-            uva.x = va[ax] * texScale;
-            uva.y = va[ay] * texScale;
-            uvb.x = vb[ax] * texScale;
-            uvb.y = vb[ay] * texScale;
-            uvc.x = vc[ax] * texScale;
-            uvc.y = vc[ay] * texScale;
+            uva.X = va[ax] * texScale;
+            uva.Y = va[ay] * texScale;
+            uvb.X = vb[ax] * texScale;
+            uvb.Y = vb[ay] * texScale;
+            uvc.X = vc[ax] * texScale;
+            uvc.Y = vc[ay] * texScale;
 
             Vertex(va, color, uva);
             Vertex(vb, color, uvb);

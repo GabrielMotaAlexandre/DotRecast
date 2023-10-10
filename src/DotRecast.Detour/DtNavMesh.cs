@@ -893,14 +893,14 @@ namespace DotRecast.Detour
 
             cons.Clear();
 
-            RcVec2f amin = RcVec2f.Zero;
-            RcVec2f amax = RcVec2f.Zero;
+            Vector2 amin = Vector2.Zero;
+            Vector2 amax = Vector2.Zero;
             CalcSlabEndPoints(verts, va, vb, ref amin, ref amax, side);
             float apos = GetSlabCoord(verts, va, side);
 
             // Remove links pointing to 'side' and compact the links array.
-            RcVec2f bmin = RcVec2f.Zero;
-            RcVec2f bmax = RcVec2f.Zero;
+            Vector2 bmin = Vector2.Zero;
+            Vector2 bmax = Vector2.Zero;
             int m = DT_EXT_LINK | side;
             long @base = GetPolyRefBase(tile);
 
@@ -935,8 +935,8 @@ namespace DotRecast.Detour
 
                     // Add return value.
                     long refs = @base | (long)i;
-                    float tmin = Math.Max(amin.x, bmin.x);
-                    float tmax = Math.Min(amax.x, bmax.x);
+                    float tmin = Math.Max(amin.X, bmin.X);
+                    float tmax = Math.Min(amax.X, bmax.X);
                     cons.Add(new DtConnectPoly(refs, tmin, tmax));
                     break;
                 }
@@ -957,61 +957,61 @@ namespace DotRecast.Detour
             return 0;
         }
 
-        static void CalcSlabEndPoints(float[] verts, int va, int vb, ref RcVec2f bmin, ref RcVec2f bmax, int side)
+        static void CalcSlabEndPoints(float[] verts, int va, int vb, ref Vector2 bmin, ref Vector2 bmax, int side)
         {
             if (side == 0 || side == 4)
             {
                 if (verts[va + 2] < verts[vb + 2])
                 {
-                    bmin.x = verts[va + 2];
-                    bmin.y = verts[va + 1];
-                    bmax.x = verts[vb + 2];
-                    bmax.y = verts[vb + 1];
+                    bmin.X = verts[va + 2];
+                    bmin.Y = verts[va + 1];
+                    bmax.X = verts[vb + 2];
+                    bmax.Y = verts[vb + 1];
                 }
                 else
                 {
-                    bmin.x = verts[vb + 2];
-                    bmin.y = verts[vb + 1];
-                    bmax.x = verts[va + 2];
-                    bmax.y = verts[va + 1];
+                    bmin.X = verts[vb + 2];
+                    bmin.Y = verts[vb + 1];
+                    bmax.X = verts[va + 2];
+                    bmax.Y = verts[va + 1];
                 }
             }
             else if (side == 2 || side == 6)
             {
                 if (verts[va + 0] < verts[vb + 0])
                 {
-                    bmin.x = verts[va + 0];
-                    bmin.y = verts[va + 1];
-                    bmax.x = verts[vb + 0];
-                    bmax.y = verts[vb + 1];
+                    bmin.X = verts[va + 0];
+                    bmin.Y = verts[va + 1];
+                    bmax.X = verts[vb + 0];
+                    bmax.Y = verts[vb + 1];
                 }
                 else
                 {
-                    bmin.x = verts[vb + 0];
-                    bmin.y = verts[vb + 1];
-                    bmax.x = verts[va + 0];
-                    bmax.y = verts[va + 1];
+                    bmin.X = verts[vb + 0];
+                    bmin.Y = verts[vb + 1];
+                    bmax.X = verts[va + 0];
+                    bmax.Y = verts[va + 1];
                 }
             }
         }
 
-        static bool OverlapSlabs(RcVec2f amin, RcVec2f amax, RcVec2f bmin, RcVec2f bmax, float px, float py)
+        static bool OverlapSlabs(Vector2 amin, Vector2 amax, Vector2 bmin, Vector2 bmax, float px, float py)
         {
             // Check for horizontal overlap.
             // The segment is shrunken a little so that slabs which touch
             // at end points are not connected.
-            float minx = Math.Max(amin.x + px, bmin.x + px);
-            float maxx = Math.Min(amax.x - px, bmax.x - px);
+            float minx = Math.Max(amin.X + px, bmin.X + px);
+            float maxx = Math.Min(amax.X - px, bmax.X - px);
             if (minx > maxx)
             {
                 return false;
             }
 
             // Check vertical overlap.
-            float ad = (amax.y - amin.y) / (amax.x - amin.x);
-            float ak = amin.y - ad * amin.x;
-            float bd = (bmax.y - bmin.y) / (bmax.x - bmin.x);
-            float bk = bmin.y - bd * bmin.x;
+            float ad = (amax.Y - amin.Y) / (amax.X - amin.X);
+            float ak = amin.Y - ad * amin.X;
+            float bd = (bmax.Y - bmin.Y) / (bmax.X - bmin.X);
+            float bk = bmin.Y - bd * bmin.X;
             float aminy = ad * minx + ak;
             float amaxy = ad * maxx + ak;
             float bminy = bd * minx + bk;

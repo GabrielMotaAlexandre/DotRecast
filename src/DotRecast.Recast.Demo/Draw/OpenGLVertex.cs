@@ -1,7 +1,6 @@
 using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using DotRecast.Core;
 
 namespace DotRecast.Recast.Demo.Draw;
 
@@ -26,8 +25,8 @@ public struct OpenGLVertex
     [FieldOffset(20)]
     private readonly int color;
 
-    public OpenGLVertex(Vector3 pos, RcVec2f uv, int color) :
-        this(pos.X, pos.Y, pos.Z, uv.x, uv.y, color)
+    public OpenGLVertex(Vector3 pos, Vector2 uv, int color) :
+        this(pos.X, pos.Y, pos.Z, uv.X, uv.Y, color)
     {
     }
 

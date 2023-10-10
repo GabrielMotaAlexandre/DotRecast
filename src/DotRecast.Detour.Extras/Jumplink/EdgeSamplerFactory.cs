@@ -1,6 +1,5 @@
 using System;
 using System.Numerics;
-using DotRecast.Core;
 
 namespace DotRecast.Detour.Extras.Jumplink
 {
@@ -31,7 +30,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             EdgeSampler es = new(edge, new JumpTrajectory(acfg.jumpHeight));
             es.start.height = acfg.agentClimb * 2;
             Vector3 offset = new();
-            Trans2d(ref offset, es.az, es.ay, new RcVec2f { x = acfg.startDistance, y = -acfg.agentClimb, });
+            Trans2d(ref offset, es.az, es.ay, new Vector2 { X = acfg.startDistance, Y = -acfg.agentClimb, });
             Vadd(ref es.start.p, edge.sp, offset);
             Vadd(ref es.start.q, edge.sq, offset);
 
@@ -43,7 +42,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             {
                 float v = j / (float)(nsamples - 1);
                 float ox = 2 * acfg.agentRadius + dx * v;
-                Trans2d(ref offset, es.az, es.ay, new RcVec2f { x = ox, y = acfg.minHeight });
+                Trans2d(ref offset, es.az, es.ay, new Vector2 { X = ox, Y = acfg.minHeight });
                 GroundSegment end = new()
                 {
                     height = acfg.heightRange
@@ -61,11 +60,11 @@ namespace DotRecast.Detour.Extras.Jumplink
             EdgeSampler es = new(edge, new ClimbTrajectory());
             es.start.height = acfg.agentClimb * 2;
             Vector3 offset = new();
-            Trans2d(ref offset, es.az, es.ay, new RcVec2f() { x = acfg.startDistance, y = -acfg.agentClimb });
+            Trans2d(ref offset, es.az, es.ay, new Vector2() { X = acfg.startDistance, Y = -acfg.agentClimb });
             Vadd(ref es.start.p, edge.sp, offset);
             Vadd(ref es.start.q, edge.sq, offset);
 
-            Trans2d(ref offset, es.az, es.ay, new RcVec2f() { x = acfg.endDistance, y = acfg.minHeight });
+            Trans2d(ref offset, es.az, es.ay, new Vector2() { X = acfg.endDistance, Y = acfg.minHeight });
             GroundSegment end = new()
             {
                 height = acfg.heightRange
@@ -98,11 +97,11 @@ namespace DotRecast.Detour.Extras.Jumplink
             dst[2] = ax[2] * pt[0] + ay[2] * pt[1];
         }
         
-        private static void Trans2d(ref Vector3 dst, Vector3 ax, Vector3 ay, RcVec2f pt)
+        private static void Trans2d(ref Vector3 dst, Vector3 ax, Vector3 ay, Vector2 pt)
         {
-            dst.X = ax.X * pt.x + ay.X * pt.y;
-            dst.Y = ax.Y * pt.x + ay.Y * pt.y;
-            dst.Z = ax.Z * pt.x + ay.Z * pt.y;
+            dst.X = ax.X * pt.X + ay.X * pt.Y;
+            dst.Y = ax.Y * pt.X + ay.Y * pt.Y;
+            dst.Z = ax.Z * pt.X + ay.Z * pt.Y;
         }
 
     }

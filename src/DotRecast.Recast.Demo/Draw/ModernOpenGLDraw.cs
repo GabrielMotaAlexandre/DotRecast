@@ -292,7 +292,7 @@ public class ModernOpenGLDraw : IOpenGLDraw
     }
 
 
-    public void Vertex(Vector3 pos, int color, RcVec2f uv)
+    public void Vertex(Vector3 pos, int color, Vector2 uv)
     {
         vertices.Add(new OpenGLVertex(pos, uv, color));
     }

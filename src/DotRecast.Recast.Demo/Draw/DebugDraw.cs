@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
 using System;
 using Silk.NET.OpenGL;
 using DotRecast.Core;
-using DotRecast.Recast.Toolset.Builder;
 using System.Numerics;
+using DotRecast.Recast.Toolset.Builder;
 
 namespace DotRecast.Recast.Demo.Draw;
 
@@ -103,7 +103,7 @@ public class DebugDraw
         GetOpenGlDraw().Vertex(x, y, z, color);
     }
 
-    public void Vertex(Vector3 pos, int color, RcVec2f uv)
+    public void Vertex(Vector3 pos, int color, Vector2 uv)
     {
         GetOpenGlDraw().Vertex(pos, color, uv);
     }
