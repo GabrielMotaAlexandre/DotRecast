@@ -81,7 +81,6 @@ public class RecastDemo : IRecastDemoChannel
 
     private bool _mouseOverMenu;
     private bool pan;
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "<Pending>")]
     private bool movedDuringPan;
     private bool rotate;
     private bool movedDuringRotate;
@@ -320,7 +319,7 @@ public class RecastDemo : IRecastDemoChannel
 
             if (null != mesh)
             {
-                _sample.Update(_sample.GetInputGeom(), ImmutableArray<RcBuilderResult>.Empty, mesh);
+                _sample.Update(_sample.GetInputGeom(), Array.Empty<RcBuilderResult>(), mesh);
                 toolset.SetEnabled(true);
             }
         }
@@ -649,7 +648,7 @@ public class RecastDemo : IRecastDemoChannel
     {
         var geom = LoadInputMesh(args.FilePath);
 
-        _sample.Update(geom, ImmutableArray<RcBuilderResult>.Empty, null);
+        _sample.Update(geom, Array.Empty<RcBuilderResult>(), null);
     }
 
     private void OnNavMeshBuildBegan(NavMeshBuildBeganEvent args)
@@ -689,19 +688,6 @@ public class RecastDemo : IRecastDemoChannel
         settingsView.SetBuildTime((RcFrequency.Ticks - t) / TimeSpan.TicksPerMillisecond);
         //settingsUI.SetBuildTelemetry(buildResult.Item1.Select(x => x.GetTelemetry()).ToList());
         toolset.SetSample(_sample);
-
-        Logger.Information($"build times");
-        Logger.Information($"-----------------------------------------");
-        var telemetries = buildResult.RecastBuilderResults
-            .Select(x => x.GetTelemetry())
-            .SelectMany(x => x.ToList())
-            .GroupBy(x => x.Key)
-            .ToImmutableSortedDictionary(x => x.Key, x => x.Sum(y => y.Millis));
-
-        foreach (var (key, millis) in telemetries)
-        {
-            Logger.Information($"{key}: {millis} ms");
-        }
     }
 
     private void OnNavMeshSaveBegan(NavMeshSaveBeganEvent args)

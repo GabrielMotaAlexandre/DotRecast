@@ -374,10 +374,8 @@ namespace DotRecast.Recast
      * @see Heightfield
      */
         public static void RasterizeTriangle(RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area,
-            int flagMergeThreshold, RcTelemetry ctx)
+            int flagMergeThreshold)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
-
             float inverseCellSize = 1.0f / heightfield.cs;
             float inverseCellHeight = 1.0f / heightfield.ch;
             RasterizeTri(verts, v0, v1, v2, area, heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs, inverseCellSize,
@@ -403,10 +401,8 @@ namespace DotRecast.Recast
      * @see Heightfield
      */
         public static void RasterizeTriangles(RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, ReadOnlySpan<int> areaIds,
-            int flagMergeThreshold, RcTelemetry ctx)
+            int flagMergeThreshold)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_RASTERIZE_TRIANGLES);
-
             float inverseCellSize = 1.0f / heightfield.cs;
             float inverseCellHeight = 1.0f / heightfield.ch;
             for (int triIndex = 0; triIndex < tris.Length / 3; ++triIndex)

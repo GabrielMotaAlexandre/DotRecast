@@ -36,7 +36,6 @@ public class RecastTest
         int[] walkable_tri = { 0, 1, 2 };
         int[] unwalkable_tri = { 0, 2, 1 };
 
-        RcTelemetry ctx = new();
         {
             int[] areas = { 42 };
             RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, unwalkable_tri, areas);

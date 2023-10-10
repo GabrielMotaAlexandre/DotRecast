@@ -62,10 +62,9 @@ namespace DotRecast.Detour.Dynamic.Colliders
             return bounds;
         }
 
-        public override void Rasterize(RcHeightfield hf, RcTelemetry telemetry)
+        public override void Rasterize(RcHeightfield hf)
         {
-            RcFilledVolumeRasterization.RasterizeBox(
-                hf, center, halfEdges, area, (int)Math.Floor(flagMergeThreshold / hf.ch), telemetry);
+            RcFilledVolumeRasterization.RasterizeBox(hf, center, halfEdges, area, (int)Math.Floor(flagMergeThreshold / hf.ch));
         }
 
         public static Vector3[] GetHalfEdges(Vector3 up, Vector3 forward, Vector3 extent)

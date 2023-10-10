@@ -451,9 +451,9 @@ namespace DotRecast.Detour.Crowd
 
             // Update agents using off-mesh connection.
             UpdateOffMeshConnections(agents, dt);
+
             return _telemetry;
         }
-
 
         private void CheckPathValidity(IList<DtCrowdAgent> agents, float dt)
         {
@@ -694,7 +694,6 @@ namespace DotRecast.Detour.Crowd
 
                 if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
                 {
-                    // _telemetry.RecordPathWaitTime(ag.targetReplanTime);
                     // Poll path queue.
                     DtStatus status = ag.targetPathQueryResult.status;
                     if (status.Failed())

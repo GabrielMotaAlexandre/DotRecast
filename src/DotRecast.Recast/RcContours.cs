@@ -604,7 +604,7 @@ namespace DotRecast.Recast
             return new int[] { minx, minz, leftmost };
         }
 
-        private static void MergeRegionHoles(RcTelemetry ctx, RcContourRegion region)
+        private static void MergeRegionHoles(RcContourRegion region)
         {
             // Sort holes from left to right.
             for (int i = 0; i < region.nholes; i++)
@@ -689,7 +689,7 @@ namespace DotRecast.Recast
 
                 if (index == -1)
                 {
-                    RcTelemetry.Warn("mergeHoles: Failed to find merge points for");
+                    Console.WriteLine("mergeHoles: Failed to find merge points for");
                     continue;
                 }
 
@@ -710,18 +710,18 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcAllocContourSet, rcCompactHeightfield, rcContourSet, rcConfig
-        public static RcContourSet BuildContours(RcTelemetry ctx, RcCompactHeightfield chf, float maxError, int maxEdgeLen,
+        public static RcContourSet BuildContours(RcCompactHeightfield chf, float maxError, int maxEdgeLen,
             int buildFlags)
         {
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
-            RcContourSet cset = new();
+            RcContourSet cset = new()
+            {
+                bmin = chf.bmin,
+                bmax = chf.bmax
+            };
 
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS);
-
-            cset.bmin = chf.bmin;
-            cset.bmax = chf.bmax;
             if (borderSize > 0)
             {
                 // If the heightfield was build with bordersize, remove the offset.
@@ -740,8 +740,6 @@ namespace DotRecast.Recast
             cset.maxError = maxError;
 
             int[] flags = new int[chf.spanCount];
-
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_TRACE);
 
             // Mark boundaries.
             for (int y = 0; y < h; ++y)
@@ -779,8 +777,6 @@ namespace DotRecast.Recast
                 }
             }
 
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_TRACE);
-
             List<int> verts = new(256);
             List<int> simplified = new(64);
 
@@ -805,14 +801,10 @@ namespace DotRecast.Recast
                         verts.Clear();
                         simplified.Clear();
 
-                        ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_WALK);
                         WalkContour(x, y, i, chf, flags, verts);
-                        ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_WALK);
 
-                        ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_SIMPLIFY);
                         SimplifyContour(verts, simplified, maxError, maxEdgeLen, buildFlags);
                         RemoveDegenerateSegments(simplified);
-                        ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_CONTOURS_SIMPLIFY);
 
                         // Store region->contour remap info.
                         // Create contour.
@@ -939,7 +931,7 @@ namespace DotRecast.Recast
 
                         if (reg.outline != null)
                         {
-                            MergeRegionHoles(ctx, reg);
+                            MergeRegionHoles(reg);
                         }
                         else
                         {

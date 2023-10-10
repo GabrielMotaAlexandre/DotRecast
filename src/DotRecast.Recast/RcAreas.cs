@@ -43,15 +43,13 @@ namespace DotRecast.Recast
         /// @param[in]		erosionRadius		The radius of erosion. [Limits: 0 < value < 255] [Units: vx]
         /// @param[in,out]	compactHeightfield	The populated compact heightfield to erode.
         /// @returns True if the operation completed successfully.
-        public static void ErodeWalkableArea(RcTelemetry context, int erosionRadius, RcCompactHeightfield compactHeightfield)
+        public static void ErodeWalkableArea(int erosionRadius, RcCompactHeightfield compactHeightfield)
         {
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;
             int zStride = xSize; // For readability
 
-            using var timer = context.ScopedTimer(RcTimerLabel.RC_TIMER_ERODE_AREA);
-
-            byte[] distanceToBoundary = new byte[compactHeightfield.spanCount];
+            var distanceToBoundary = new int[compactHeightfield.spanCount];
             Array.Fill(distanceToBoundary, byte.MaxValue);
 
             // Mark boundary cells.
@@ -118,7 +116,7 @@ namespace DotRecast.Recast
                             int aX = x + GetDirOffsetX(0);
                             int aY = z + GetDirOffsetY(0);
                             int aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 0);
-                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[spanIndex])
                             {
                                 distanceToBoundary[spanIndex] = newDistance;
@@ -131,7 +129,7 @@ namespace DotRecast.Recast
                                 int bX = aX + GetDirOffsetX(3);
                                 int bY = aY + GetDirOffsetY(3);
                                 int bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 3);
-                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[spanIndex])
                                 {
                                     distanceToBoundary[spanIndex] = newDistance;
@@ -145,7 +143,7 @@ namespace DotRecast.Recast
                             int aX = x + GetDirOffsetX(3);
                             int aY = z + GetDirOffsetY(3);
                             int aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 3);
-                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[spanIndex])
                             {
                                 distanceToBoundary[spanIndex] = newDistance;
@@ -158,7 +156,7 @@ namespace DotRecast.Recast
                                 int bX = aX + GetDirOffsetX(2);
                                 int bY = aY + GetDirOffsetY(2);
                                 int bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 2);
-                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[spanIndex])
                                 {
                                     distanceToBoundary[spanIndex] = newDistance;
@@ -187,7 +185,7 @@ namespace DotRecast.Recast
                             var aY = z + 0;
                             var aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 2);
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
-                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[i])
                             {
                                 distanceToBoundary[i] = newDistance;
@@ -199,7 +197,7 @@ namespace DotRecast.Recast
                                 var bX = aX + 0; // GetDirOffset
                                 var bY = aY + 1;
                                 var bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 1);
-                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[i])
                                 {
                                     distanceToBoundary[i] = newDistance;
@@ -214,7 +212,7 @@ namespace DotRecast.Recast
                             var aY = z + 1;
                             var aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 1);
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
-                            var newDistance = (byte)Math.Min(distanceToBoundary[aIndex] + 2, 255);
+                            var newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
                             if (newDistance < distanceToBoundary[i])
                             {
                                 distanceToBoundary[i] = newDistance;
@@ -226,7 +224,7 @@ namespace DotRecast.Recast
                                 var bX = aX - 1; // GetDirOffset
                                 var bY = aY + 0;
                                 var bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 0);
-                                newDistance = (byte)Math.Min(distanceToBoundary[bIndex] + 3, 255);
+                                newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[i])
                                 {
                                     distanceToBoundary[i] = newDistance;
@@ -258,13 +256,11 @@ namespace DotRecast.Recast
         /// @param[in,out]	context		The build context to use during the operation.
         /// @param[in,out]	compactHeightfield		A populated compact heightfield.
         /// @returns True if the operation completed successfully.
-        public static bool MedianFilterWalkableArea(RcTelemetry context, RcCompactHeightfield compactHeightfield)
+        public static bool MedianFilterWalkableArea(RcCompactHeightfield compactHeightfield)
         {
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;
             int zStride = xSize; // For readability
-
-            using var timer = context.ScopedTimer(RcTimerLabel.RC_TIMER_MEDIAN_AREA);
 
             int[] areas = new int[compactHeightfield.spanCount];
 
@@ -341,10 +337,8 @@ namespace DotRecast.Recast
         /// @param[in]		boxMaxBounds		The maximum extents of the bounding box. [(x, y, z)] [Units: wu]
         /// @param[in]		areaId				The area id to apply. [Limit: <= #RC_WALKABLE_AREA]
         /// @param[in,out]	compactHeightfield	A populated compact heightfield.
-        public static void MarkBoxArea(RcTelemetry context, float[] boxMinBounds, float[] boxMaxBounds, RcAreaModification areaId, RcCompactHeightfield compactHeightfield)
+        public static void MarkBoxArea(float[] boxMinBounds, float[] boxMaxBounds, RcAreaModification areaId, RcCompactHeightfield compactHeightfield)
         {
-            using var timer = context.ScopedTimer(RcTimerLabel.RC_TIMER_MARK_BOX_AREA);
-
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;
             int zStride = xSize; // For readability
@@ -443,12 +437,10 @@ namespace DotRecast.Recast
         /// @param[in]		maxY				The height of the top of the polygon. [Units: wu]
         /// @param[in]		areaId				The area id to apply. [Limit: <= #RC_WALKABLE_AREA]
         /// @param[in,out]	compactHeightfield	A populated compact heightfield.
-        public static void MarkConvexPolyArea(RcTelemetry context, float[] verts,
+        public static void MarkConvexPolyArea(float[] verts,
             float minY, float maxY, RcAreaModification areaId,
             RcCompactHeightfield compactHeightfield)
         {
-            using var timer = context.ScopedTimer(RcTimerLabel.RC_TIMER_MARK_CONVEXPOLY_AREA);
-
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;
             int zStride = xSize; // For readability
@@ -565,11 +557,9 @@ namespace DotRecast.Recast
         /// @param[in]		height				The height of the cylinder. [Units: wu] [Limit: > 0]
         /// @param[in]		areaId				The area id to apply. [Limit: <= #RC_WALKABLE_AREA]
         /// @param[in,out]	compactHeightfield	A populated compact heightfield.
-        public static void MarkCylinderArea(RcTelemetry context, float[] position, float radius, float height,
+        public static void MarkCylinderArea(float[] position, float radius, float height,
             RcAreaModification areaId, RcCompactHeightfield compactHeightfield)
         {
-            using var timer = context.ScopedTimer(RcTimerLabel.RC_TIMER_MARK_CYLINDER_AREA);
-
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;
             int zStride = xSize; // For readability

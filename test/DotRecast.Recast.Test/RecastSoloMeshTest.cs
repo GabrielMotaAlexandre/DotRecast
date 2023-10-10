@@ -102,7 +102,6 @@ public class RecastSoloMeshTest
         long time = RcFrequency.Ticks;
         Vector3 bmin = geomProvider.GetMeshBoundsMin();
         Vector3 bmax = geomProvider.GetMeshBoundsMax();
-        RcTelemetry m_ctx = new();
         //
         // Step 1. Initialize build config.
         //
@@ -140,7 +139,7 @@ public class RecastSoloMeshTest
             // If your input data is multiple meshes, you can transform them here, calculate
             // the are type for each of the meshes and rasterize them.
             int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
-            RcRasterizations.RasterizeTriangles(m_solid, verts, tris, m_triareas, cfg.WalkableClimb, m_ctx);
+            RcRasterizations.RasterizeTriangles(m_solid, verts, tris, m_triareas, cfg.WalkableClimb);
         }
 
         //
@@ -150,9 +149,9 @@ public class RecastSoloMeshTest
         // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
-        RcFilters.FilterLowHangingWalkableObstacles(m_ctx, cfg.WalkableClimb, m_solid);
-        RcFilters.FilterLedgeSpans(m_ctx, cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
-        RcFilters.FilterWalkableLowHeightSpans(m_ctx, cfg.WalkableHeight, m_solid);
+        RcFilters.FilterLowHangingWalkableObstacles(cfg.WalkableClimb, m_solid);
+        RcFilters.FilterLedgeSpans(cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
+        RcFilters.FilterWalkableLowHeightSpans(cfg.WalkableHeight, m_solid);
 
         //
         // Step 4. Partition walkable surface to simple regions.
@@ -164,7 +163,7 @@ public class RecastSoloMeshTest
         RcCompactHeightfield m_chf = RcCompacts.BuildCompactHeightfield(cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
 
         // Erode the walkable area by agent radius.
-        ErodeWalkableArea(m_ctx, cfg.WalkableRadius, m_chf);
+        ErodeWalkableArea(cfg.WalkableRadius, m_chf);
 
         // (Optional) Mark areas.
         /*
@@ -216,20 +215,20 @@ public class RecastSoloMeshTest
         {
             // Prepare for region partitioning, by calculating distance field
             // along the walkable surface.
-            RcRegions.BuildDistanceField(m_ctx, m_chf);
+            RcRegions.BuildDistanceField(m_chf);
             // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildRegions(m_ctx, m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+            RcRegions.BuildRegions(m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
         }
         else if (m_partitionType == RcPartition.MONOTONE)
         {
             // Partition the walkable surface into simple regions without holes.
             // Monotone partitioning does not need distancefield.
-            RcRegions.BuildRegionsMonotone(m_ctx, m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+            RcRegions.BuildRegionsMonotone(m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
         }
         else
         {
             // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildLayerRegions(m_ctx, m_chf, cfg.MinRegionArea);
+            RcRegions.BuildLayerRegions(m_chf, cfg.MinRegionArea);
         }
 
         Assert.That(m_chf.maxDistance, Is.EqualTo(expDistance), "maxDistance");
@@ -239,7 +238,7 @@ public class RecastSoloMeshTest
         //
 
         // Create contours.
-        RcContourSet m_cset = RcContours.BuildContours(m_ctx, m_chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen,
+        RcContourSet m_cset = RcContours.BuildContours(m_chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen,
             RC_CONTOUR_TESS_WALL_EDGES);
 
         Assert.That(m_cset.conts.Count, Is.EqualTo(expContours), "Contours");
@@ -248,7 +247,7 @@ public class RecastSoloMeshTest
         //
 
         // Build polygon navmesh from the contours.
-        RcPolyMesh m_pmesh = RcMeshs.BuildPolyMesh(m_ctx, m_cset, cfg.MaxVertsPerPoly);
+        RcPolyMesh m_pmesh = RcMeshs.BuildPolyMesh(m_cset, cfg.MaxVertsPerPoly);
         Assert.That(m_pmesh.nverts, Is.EqualTo(expVerts), "Mesh Verts");
         Assert.That(m_pmesh.npolys, Is.EqualTo(expPolys), "Mesh Polys");
 
@@ -257,7 +256,7 @@ public class RecastSoloMeshTest
         // on each polygon.
         //
 
-        RcPolyMeshDetail m_dmesh = RcMeshDetails.BuildPolyMeshDetail(m_ctx, m_pmesh, m_chf, cfg.DetailSampleDist,
+        RcPolyMeshDetail m_dmesh = RcMeshDetails.BuildPolyMeshDetail(m_pmesh, m_chf, cfg.DetailSampleDist,
             cfg.DetailSampleMaxError);
         Assert.That(m_dmesh.nmeshes, Is.EqualTo(expDetMeshes), "Mesh Detail Meshes");
         Assert.That(m_dmesh.nverts, Is.EqualTo(expDetVerts), "Mesh Detail Verts");

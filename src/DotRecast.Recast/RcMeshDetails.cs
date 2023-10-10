@@ -455,7 +455,7 @@ namespace DotRecast.Recast
             return false;
         }
 
-        static int CompleteFacet(RcTelemetry ctx, float[] pts, int npts, List<int> edges, int maxEdges, int nfaces, int e)
+        static int CompleteFacet(float[] pts, int npts, List<int> edges, int maxEdges, int nfaces, int e)
         {
             const float EPS = 1e-5f;
 
@@ -572,7 +572,7 @@ namespace DotRecast.Recast
             return nfaces;
         }
 
-        private static void DelaunayHull(RcTelemetry ctx, int npts, float[] pts, int nhull, int[] hull, List<int> tris)
+        private static void DelaunayHull(int npts, float[] pts, int nhull, int[] hull, List<int> tris)
         {
             int nfaces = 0;
             int maxEdges = npts * 10;
@@ -587,12 +587,12 @@ namespace DotRecast.Recast
             {
                 if (edges[currentEdge * 4 + 2] == EV_UNDEF)
                 {
-                    nfaces = CompleteFacet(ctx, pts, npts, edges, maxEdges, nfaces, currentEdge);
+                    nfaces = CompleteFacet(pts, npts, edges, maxEdges, nfaces, currentEdge);
                 }
 
                 if (edges[currentEdge * 4 + 3] == EV_UNDEF)
                 {
-                    nfaces = CompleteFacet(ctx, pts, npts, edges, maxEdges, nfaces, currentEdge);
+                    nfaces = CompleteFacet(pts, npts, edges, maxEdges, nfaces, currentEdge);
                 }
 
                 currentEdge++;
@@ -776,7 +776,7 @@ namespace DotRecast.Recast
             return (((i * 0xd8163841) & 0xffff) / 65535.0f * 2.0f) - 1.0f;
         }
 
-        static int BuildPolyDetail(RcTelemetry ctx, float[] @in, int nin, float sampleDist, float sampleMaxError,
+        static int BuildPolyDetail(float[] @in, int nin, float sampleDist, float sampleMaxError,
             int heightSearchRadius, RcCompactHeightfield chf, RcHeightPatch hp, float[] verts, List<int> tris)
         {
             List<int> samples = new(512);
@@ -1038,7 +1038,7 @@ namespace DotRecast.Recast
 
                     // Create new triangulation.
                     // TODO: Incremental add instead of full rebuild.
-                    DelaunayHull(ctx, nverts, verts, nhull, hull, tris);
+                    DelaunayHull(nverts, verts, nhull, hull, tris);
                 }
             }
 
@@ -1055,13 +1055,13 @@ namespace DotRecast.Recast
             return nverts;
         }
 
-        static void SeedArrayWithPolyCenter(RcTelemetry ctx, RcCompactHeightfield chf, int[] meshpoly, int poly, int npoly,
+        static void SeedArrayWithPolyCenter(RcCompactHeightfield chf, int[] meshpoly, int poly, int npoly,
             int[] verts, int bs, RcHeightPatch hp, List<int> array)
         {
             // Note: Reads to the compact heightfield are offset by border size (bs)
             // since border size offset is already removed from the polymesh vertices.
 
-            int[] offset = { 0, 0, -1, -1, 0, -1, 1, -1, 1, 0, 1, 1, 0, 1, -1, 1, -1, 0, };
+            ReadOnlySpan<int> offset = stackalloc int[] { 0, 0, -1, -1, 0, -1, 1, -1, 1, 0, 1, 1, 0, 1, -1, 1, -1, 0, };
 
             // Find cell closest to a poly vertex
             int startCellX = 0, startCellY = 0, startSpanIndex = -1;
@@ -1120,7 +1120,7 @@ namespace DotRecast.Recast
             {
                 if (array.Count < 3)
                 {
-                    RcTelemetry.Warn("Walk towards polygon center failed to reach center");
+                    Console.WriteLine("Walk towards polygon center failed to reach center");
                     break;
                 }
 
@@ -1205,7 +1205,7 @@ namespace DotRecast.Recast
             queue.Add(v3);
         }
 
-        static void GetHeightData(RcTelemetry ctx, RcCompactHeightfield chf, int[] meshpolys, int poly, int npoly, int[] verts,
+        static void GetHeightData(RcCompactHeightfield chf, int[] meshpolys, int poly, int npoly, int[] verts,
             int bs, RcHeightPatch hp, int region)
         {
             // Note: Reads to the compact heightfield are offset by border size (bs)
@@ -1274,7 +1274,7 @@ namespace DotRecast.Recast
             // then use the center as the seed point.
             if (empty)
             {
-                SeedArrayWithPolyCenter(ctx, chf, meshpolys, poly, npoly, verts, bs, hp, queue);
+                SeedArrayWithPolyCenter(chf, meshpolys, poly, npoly, verts, bs, hp, queue);
             }
 
             int head = 0;
@@ -1357,10 +1357,9 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcAllocPolyMeshDetail, rcPolyMesh, rcCompactHeightfield, rcPolyMeshDetail, rcConfig
-        public static RcPolyMeshDetail BuildPolyMeshDetail(RcTelemetry ctx, RcPolyMesh mesh, RcCompactHeightfield chf,
+        public static RcPolyMeshDetail BuildPolyMeshDetail(RcPolyMesh mesh, RcCompactHeightfield chf,
             float sampleDist, float sampleMaxError)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_POLYMESHDETAIL);
             if (mesh.nverts == 0 || mesh.npolys == 0)
             {
                 return null;
@@ -1459,10 +1458,10 @@ namespace DotRecast.Recast
                 hp.ymin = bounds[i * 4 + 2];
                 hp.width = bounds[i * 4 + 1] - bounds[i * 4 + 0];
                 hp.height = bounds[i * 4 + 3] - bounds[i * 4 + 2];
-                GetHeightData(ctx, chf, mesh.polys, p, npoly, mesh.verts, borderSize, hp, mesh.regs[i]);
+                GetHeightData(chf, mesh.polys, p, npoly, mesh.verts, borderSize, hp, mesh.regs[i]);
 
                 // Build detail mesh.
-                int nverts = BuildPolyDetail(ctx, poly, npoly, sampleDist, sampleMaxError, heightSearchRadius, chf, hp,
+                int nverts = BuildPolyDetail(poly, npoly, sampleDist, sampleMaxError, heightSearchRadius, chf, hp,
                     verts, tris);
 
                 // Move detail verts to world space.

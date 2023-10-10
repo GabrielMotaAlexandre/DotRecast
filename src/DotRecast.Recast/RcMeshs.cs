@@ -577,7 +577,7 @@ namespace DotRecast.Recast
             return an;
         }
 
-        private static bool CanRemoveVertex(RcTelemetry ctx, RcPolyMesh mesh, int rem)
+        private static bool CanRemoveVertex(RcPolyMesh mesh, int rem)
         {
             int nvp = mesh.nvp;
 
@@ -850,7 +850,7 @@ namespace DotRecast.Recast
             if (ntris < 0)
             {
                 ntris = -ntris;
-                RcTelemetry.Warn("removeVertex: Triangulate() returned bad results.");
+                Console.WriteLine("removeVertex: Triangulate() returned bad results.");
             }
 
             // Merge the hole triangles back to polygons.
@@ -965,10 +965,8 @@ namespace DotRecast.Recast
         /// limit must be restricted to <= #DT_VERTS_PER_POLYGON.
         ///
         /// @see rcAllocPolyMesh, rcContourSet, rcPolyMesh, rcConfig
-        public static RcPolyMesh BuildPolyMesh(RcTelemetry ctx, RcContourSet cset, int nvp)
+        public static RcPolyMesh BuildPolyMesh(RcContourSet cset, int nvp)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_POLYMESH);
-
             RcPolyMesh mesh = new()
             {
                 bmin = cset.bmin,
@@ -1037,7 +1035,7 @@ namespace DotRecast.Recast
                 if (ntris <= 0)
                 {
                     // Bad triangulation, should not happen.
-                    RcTelemetry.Warn("buildPolyMesh: Bad triangulation Contour " + i + ".");
+                    Console.WriteLine("buildPolyMesh: Bad triangulation Contour " + i + ".");
                     ntris = -ntris;
                 }
 
@@ -1145,7 +1143,7 @@ namespace DotRecast.Recast
             {
                 if (vflags[i] != 0)
                 {
-                    if (!CanRemoveVertex(ctx, mesh, i))
+                    if (!CanRemoveVertex(mesh, i))
                         continue;
                     RemoveVertex(mesh, i, maxTris);
                     // Remove vertex
@@ -1212,12 +1210,10 @@ namespace DotRecast.Recast
         }
 
         /// @see rcAllocPolyMesh, rcPolyMesh
-        public static RcPolyMesh MergePolyMeshes(RcTelemetry ctx, RcPolyMesh[] meshes, int nmeshes)
+        public static RcPolyMesh MergePolyMeshes(RcPolyMesh[] meshes, int nmeshes)
         {
             if (nmeshes == 0 || meshes == null)
                 return null;
-
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_MERGE_POLYMESH);
 
             RcPolyMesh mesh = new()
             {
@@ -1342,7 +1338,7 @@ namespace DotRecast.Recast
             return mesh;
         }
 
-        public static RcPolyMesh CopyPolyMesh(RcTelemetry ctx, RcPolyMesh src)
+        public static RcPolyMesh CopyPolyMesh(RcPolyMesh src)
         {
             RcPolyMesh dst = new()
             {

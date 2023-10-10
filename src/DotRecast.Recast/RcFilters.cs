@@ -39,10 +39,8 @@ namespace DotRecast.Recast
         /// #rcFilterLedgeSpans after calling this filter.
         ///
         /// @see rcHeightfield, rcConfig
-        public static void FilterLowHangingWalkableObstacles(RcTelemetry ctx, int walkableClimb, RcHeightfield solid)
+        public static void FilterLowHangingWalkableObstacles(int walkableClimb, RcHeightfield solid)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_FILTER_LOW_OBSTACLES);
-
             int w = solid.width;
             int h = solid.height;
 
@@ -84,10 +82,8 @@ namespace DotRecast.Recast
         /// A span is a ledge if: <tt>RcAbs(currentSpan.smax - neighborSpan.smax) > walkableClimb</tt>
         ///
         /// @see rcHeightfield, rcConfig
-        public static void FilterLedgeSpans(RcTelemetry ctx, int walkableHeight, int walkableClimb, RcHeightfield solid)
+        public static void FilterLedgeSpans(int walkableHeight, int walkableClimb, RcHeightfield solid)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_FILTER_BORDER);
-
             var w = solid.width;
             var h = solid.height;
 
@@ -175,10 +171,8 @@ namespace DotRecast.Recast
         /// maximum to the next higher span's minimum. (Same grid column.)
         ///
         /// @see rcHeightfield, rcConfig
-        public static void FilterWalkableLowHeightSpans(RcTelemetry ctx, int walkableHeight, RcHeightfield solid)
+        public static void FilterWalkableLowHeightSpans(int walkableHeight, RcHeightfield solid)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_FILTER_WALKABLE);
-
             int w = solid.width;
             int h = solid.height;
 

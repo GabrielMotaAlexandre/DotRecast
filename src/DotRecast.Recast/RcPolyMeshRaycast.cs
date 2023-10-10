@@ -27,7 +27,7 @@ namespace DotRecast.Recast
     {
         public static bool Raycast(IList<RcBuilderResult> results, Vector3 src, Vector3 dst, out float hitTime)
         {
-            hitTime = 0.0f;
+            hitTime = 0f;
             foreach (RcBuilderResult result in results)
             {
                 if (result.GetMeshDetail() != null)

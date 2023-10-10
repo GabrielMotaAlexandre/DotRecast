@@ -843,8 +843,7 @@ namespace DotRecast.Recast
             }
         }
 
-        private static int MergeAndFilterRegions(RcTelemetry ctx, int minRegionArea, int mergeRegionSize, int maxRegionId,
-            RcCompactHeightfield chf, int[] srcReg, List<int> overlaps)
+        private static int MergeAndFilterRegions(int minRegionArea, int mergeRegionSize, int maxRegionId, RcCompactHeightfield chf, int[] srcReg)
         {
             int w = chf.width;
             int h = chf.height;
@@ -1145,15 +1144,6 @@ namespace DotRecast.Recast
                 }
             }
 
-            // Return regions that we found to be overlapping.
-            for (int i = 0; i < nreg; ++i)
-            {
-                if (regions[i].overlap)
-                {
-                    overlaps.Add(regions[i].id);
-                }
-            }
-
             return maxRegionId;
         }
 
@@ -1411,30 +1401,21 @@ namespace DotRecast.Recast
         /// and rcCompactHeightfield::dist fields.
         ///
         /// @see rcCompactHeightfield, rcBuildRegions, rcBuildRegionsMonotone
-        public static void BuildDistanceField(RcTelemetry ctx, RcCompactHeightfield chf)
+        public static void BuildDistanceField(RcCompactHeightfield chf)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_DISTANCEFIELD);
+            var src = new int[chf.spanCount];
 
-            int[] src = new int[chf.spanCount];
-
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_DISTANCEFIELD_DIST);
             int maxDist = CalculateDistanceField(chf, src);
             chf.maxDistance = maxDist;
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_DISTANCEFIELD_DIST);
-
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_DISTANCEFIELD_BLUR);
 
             // Blur
             src = BoxBlur(chf, 1, src);
 
             // Store distance.
             chf.dist = src;
-
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_DISTANCEFIELD_BLUR);
         }
 
-        private static void PaintRectRegion(int minx, int maxx, int miny, int maxy, int regId, RcCompactHeightfield chf,
-            int[] srcReg)
+        private static void PaintRectRegion(int minx, int maxx, int miny, int maxy, int regId, RcCompactHeightfield chf, int[] srcReg)
         {
             int w = chf.width;
             for (int y = miny; y < maxy; ++y)
@@ -1472,11 +1453,9 @@ namespace DotRecast.Recast
         /// @warning The distance field must be created using #rcBuildDistanceField before attempting to build regions.
         ///
         /// @see rcCompactHeightfield, rcCompactSpan, rcBuildDistanceField, rcBuildRegionsMonotone, rcConfig
-        public static void BuildRegionsMonotone(RcTelemetry ctx, RcCompactHeightfield chf, int minRegionArea,
+        public static void BuildRegionsMonotone(RcCompactHeightfield chf, int minRegionArea,
             int mergeRegionArea)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS);
-
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
@@ -1617,14 +1596,10 @@ namespace DotRecast.Recast
                 }
             }
 
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
             // Merge regions and filter out small regions.
-            List<int> overlaps = new();
-            chf.maxRegions = MergeAndFilterRegions(ctx, minRegionArea, mergeRegionArea, id, chf, srcReg, overlaps);
+            chf.maxRegions = MergeAndFilterRegions(minRegionArea, mergeRegionArea, id, chf, srcReg);
 
             // Monotone partitioning does not generate overlapping regions.
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
-
             // Store the result out.
             for (int i = 0; i < chf.spanCount; ++i)
             {
@@ -1651,16 +1626,12 @@ namespace DotRecast.Recast
         /// @warning The distance field must be created using #rcBuildDistanceField before attempting to build regions.
         ///
         /// @see rcCompactHeightfield, rcCompactSpan, rcBuildDistanceField, rcBuildRegionsMonotone, rcConfig
-        public static void BuildRegions(RcTelemetry ctx, RcCompactHeightfield chf, int minRegionArea,
+        public static void BuildRegions(RcCompactHeightfield chf, int minRegionArea,
             int mergeRegionArea)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS);
-
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
-
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_WATERSHED);
 
             int LOG_NB_STACKS = 3;
             int NB_STACKS = 1 << LOG_NB_STACKS;
@@ -1719,16 +1690,8 @@ namespace DotRecast.Recast
                     AppendStacks(lvlStacks[sId - 1], lvlStacks[sId], srcReg); // copy left overs from last level
                 }
 
-                // ctx->StopTimer(RC_TIMER_DIVIDE_TO_LEVELS);
-
-                ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_EXPAND);
-
                 // Expand current regions until no empty connected cells found.
                 ExpandRegions(expandIters, level, chf, srcReg, srcDist, lvlStacks[sId], false);
-
-                ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_EXPAND);
-
-                ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FLOOD);
 
                 // Mark new regions with IDs.
                 for (int j = 0; j < lvlStacks[sId].Count; j += 3)
@@ -1744,28 +1707,19 @@ namespace DotRecast.Recast
                         }
                     }
                 }
-
-                ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FLOOD);
             }
 
             // Expand current regions until no empty connected cells found.
             ExpandRegions(expandIters * 8, 0, chf, srcReg, srcDist, stack, true);
 
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_WATERSHED);
-
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
-
             // Merge regions and filter out small regions.
-            List<int> overlaps = new();
-            chf.maxRegions = MergeAndFilterRegions(ctx, minRegionArea, mergeRegionArea, regionId, chf, srcReg, overlaps);
+            chf.maxRegions = MergeAndFilterRegions(minRegionArea, mergeRegionArea, regionId, chf, srcReg);
 
-            // If overlapping regions were found during merging, split those regions.
-            if (overlaps.Count > 0)
-            {
-                RcTelemetry.Warn("rcBuildRegions: " + overlaps.Count + " overlapping regions.");
-            }
-
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
+            //// If overlapping regions were found during merging, split those regions.
+            //if (overlaps.Count > 0)
+            //{
+            //    Console.WriteLine("rcBuildRegions: " + overlaps.Count + " overlapping regions.");
+            //}
 
             // Write the result out.
             for (int i = 0; i < chf.spanCount; ++i)
@@ -1774,10 +1728,8 @@ namespace DotRecast.Recast
             }
         }
 
-        public static void BuildLayerRegions(RcTelemetry ctx, RcCompactHeightfield chf, int minRegionArea)
+        public static void BuildLayerRegions(RcCompactHeightfield chf, int minRegionArea)
         {
-            using var timer = ctx.ScopedTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS);
-
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
@@ -1917,12 +1869,8 @@ namespace DotRecast.Recast
                 }
             }
 
-            ctx.StartTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
-
             // Merge monotone regions to layers and remove small regions.
             chf.maxRegions = MergeAndFilterLayerRegions(minRegionArea, id, chf, srcReg);
-
-            ctx.StopTimer(RcTimerLabel.RC_TIMER_BUILD_REGIONS_FILTER);
 
             // Store the result out.
             for (int i = 0; i < chf.spanCount; ++i)
