@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using DotRecast.Core;
-using DotRecast.Detour.TileCache.Io.Compress;
 using DotRecast.Recast;
 using DotRecast.Recast.Geom;
 

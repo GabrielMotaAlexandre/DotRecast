@@ -19,7 +19,6 @@ freely, subject to the following restrictions:
 */
 
 using DotRecast.Core;
-using DotRecast.Detour.TileCache.Io.Compress;
 using DotRecast.Recast;
 using DotRecast.Recast.Geom;
 using NUnit.Framework;

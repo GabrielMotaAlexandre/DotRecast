@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
 using System;
 using System.IO;
 using DotRecast.Core;
-using DotRecast.Detour.TileCache.Io;
-using DotRecast.Detour.TileCache.Io.Compress;
 using NUnit.Framework;
 
 namespace DotRecast.Detour.TileCache.Test.Io;

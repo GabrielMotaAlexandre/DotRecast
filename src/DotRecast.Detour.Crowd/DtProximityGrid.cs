@@ -20,11 +20,8 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
 using UnityEngine;
 
 namespace DotRecast.Detour.Crowd

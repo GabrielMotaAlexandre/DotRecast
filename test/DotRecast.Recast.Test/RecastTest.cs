@@ -18,7 +18,6 @@ freely, subject to the following restrictions:
 
 using System.Numerics;
 using System.Runtime.InteropServices;
-using DotRecast.Core;
 using NUnit.Framework;
 
 namespace DotRecast.Recast.Test;

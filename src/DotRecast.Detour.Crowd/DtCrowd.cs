@@ -23,12 +23,9 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
 using System.Threading.Tasks;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace DotRecast.Detour.Crowd

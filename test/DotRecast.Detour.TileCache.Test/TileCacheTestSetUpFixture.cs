@@ -1,5 +1,4 @@
-﻿using DotRecast.Detour.TileCache.Io.Compress;
-using DotRecast.Detour.TileCache.Test.Io;
+﻿using DotRecast.Detour.TileCache.Test.Io;
 using NUnit.Framework;
 
 namespace DotRecast.Detour.TileCache.Test;

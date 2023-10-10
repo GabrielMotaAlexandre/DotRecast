@@ -378,13 +378,11 @@ public class RecastDemo : IRecastDemoChannel
         toolset = new RcToolsetView(
             new TestNavmeshSampleTool(),
             new TileSampleTool(),
-            new ObstacleSampleTool(),
             new OffMeshConnectionSampleTool(),
             new ConvexVolumeSampleTool(),
             new CrowdSampleTool(),
             new CrowdAgentProfilingSampleTool(),
-            new JumpLinkBuilderSampleTool(),
-            new DynamicUpdateSampleTool()
+            new JumpLinkBuilderSampleTool()
         );
         toolset.SetEnabled(true);
         logView = new RcLogView();

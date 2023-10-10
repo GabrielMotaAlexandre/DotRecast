@@ -19,7 +19,6 @@ freely, subject to the following restrictions:
 */
 
 using System;
-using DotRecast.Core;
 
 namespace DotRecast.Recast
 {

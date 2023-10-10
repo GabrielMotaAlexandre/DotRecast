@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using DotRecast.Core;
-using UnityEngine;
 
 namespace DotRecast.Recast
 {

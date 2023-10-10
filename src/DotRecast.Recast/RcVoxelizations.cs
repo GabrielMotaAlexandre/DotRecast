@@ -21,7 +21,6 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using DotRecast.Core;
 using DotRecast.Recast.Geom;
 
 namespace DotRecast.Recast

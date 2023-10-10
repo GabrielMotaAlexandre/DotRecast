@@ -1,5 +1,3 @@
-using DotRecast.Core;
-
 namespace DotRecast.Recast
 {
     public class RcBuilderResult

@@ -18,7 +18,6 @@ freely, subject to the following restrictions:
 */
 
 using System;
-using DotRecast.Core;
 
 using static DotRecast.Recast.RcConstants;
 
@@ -26,8 +25,8 @@ using static DotRecast.Recast.RcConstants;
 namespace DotRecast.Recast
 {
     using static RcCommons;
-    
-    
+
+
     public static class RcCompacts
     {
         private const int MAX_LAYERS = RC_NOT_CONNECTED - 1;

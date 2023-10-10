@@ -22,7 +22,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DotRecast.Core;
-using DotRecast.Detour.Dynamic.Io;
 using DotRecast.Detour.Dynamic.Test.Io;
 using DotRecast.Recast;
 using Moq;

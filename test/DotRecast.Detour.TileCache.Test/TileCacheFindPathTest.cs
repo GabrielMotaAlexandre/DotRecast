@@ -22,8 +22,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using DotRecast.Core;
-using DotRecast.Detour.TileCache.Io;
-using DotRecast.Detour.TileCache.Io.Compress;
 using NUnit.Framework;
 
 namespace DotRecast.Detour.TileCache.Test;

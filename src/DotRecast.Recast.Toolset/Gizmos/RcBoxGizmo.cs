@@ -1,5 +1,4 @@
 using System.Numerics;
-using DotRecast.Detour.Dynamic.Colliders;
 
 namespace DotRecast.Recast.Toolset.Gizmos
 {
@@ -28,7 +27,7 @@ namespace DotRecast.Recast.Toolset.Gizmos
         public readonly Vector3[] halfEdges;
 
         public RcBoxGizmo(Vector3 center, Vector3 extent, Vector3 forward, Vector3 up) :
-            this(center, DtBoxCollider.GetHalfEdges(up, forward, extent))
+            this(center, GetHalfEdges(up, forward, extent))
         {
         }
 
@@ -45,6 +44,31 @@ namespace DotRecast.Recast.Toolset.Gizmos
                 vertices[i * 3 + 1] = center.Y + s0 * halfEdges[0].Y + s1 * halfEdges[1].Y + s2 * halfEdges[2].Y;
                 vertices[i * 3 + 2] = center.Z + s0 * halfEdges[0].Z + s1 * halfEdges[1].Z + s2 * halfEdges[2].Z;
             }
+        }
+
+        public static Vector3[] GetHalfEdges(Vector3 up, Vector3 forward, Vector3 extent)
+        {
+            Vector3[] halfEdges =
+            {
+                Vector3.Zero,
+                new Vector3(up.X, up.Y, up.Z),
+                Vector3.Zero
+            };
+            Vector3Extensions.Normalize(ref halfEdges[1]);
+            Vector3Extensions.Cross(ref halfEdges[0], up, forward);
+            Vector3Extensions.Normalize(ref halfEdges[0]);
+            Vector3Extensions.Cross(ref halfEdges[2], halfEdges[0], up);
+            Vector3Extensions.Normalize(ref halfEdges[2]);
+            halfEdges[0].X *= extent.X;
+            halfEdges[0].Y *= extent.X;
+            halfEdges[0].Z *= extent.X;
+            halfEdges[1].X *= extent.Y;
+            halfEdges[1].Y *= extent.Y;
+            halfEdges[1].Z *= extent.Y;
+            halfEdges[2].X *= extent.Z;
+            halfEdges[2].Y *= extent.Z;
+            halfEdges[2].Z *= extent.Z;
+            return halfEdges;
         }
     }
 }

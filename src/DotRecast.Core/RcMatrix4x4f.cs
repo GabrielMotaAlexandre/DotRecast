@@ -76,7 +76,7 @@ namespace DotRecast.Core
         }
 
 
-        public void CopyTo(float[] m)
+        public readonly void CopyTo(float[] m)
         {
             m[0] = M11;
             m[1] = M12;
