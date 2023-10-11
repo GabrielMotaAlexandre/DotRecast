@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.AccessControl;
 using DotRecast.Core;
 using DotRecast.Recast.Geom;
 using DotRecast.Recast.Toolset.Gizmos;
@@ -209,13 +210,7 @@ namespace DotRecast.Recast.Toolset.Geom
 
         public void AddConvexVolume(float[] verts, float minh, float maxh, RcAreaModification areaMod)
         {
-            RcConvexVolume volume = new()
-            {
-                verts = verts,
-                hmin = minh,
-                hmax = maxh,
-                areaMod = areaMod
-            };
+            RcConvexVolume volume = new(verts, minh, maxh, areaMod);
             AddConvexVolume(volume);
         }
 

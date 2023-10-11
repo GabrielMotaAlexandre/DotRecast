@@ -20,11 +20,19 @@ freely, subject to the following restrictions:
 
 namespace DotRecast.Recast
 {
-    public struct RcConvexVolume
+    public readonly struct RcConvexVolume
     {
-        public float[] verts;
-        public float hmin;
-        public float hmax;
-        public RcAreaModification areaMod;
+        public readonly float[] verts;
+        public readonly float hmin;
+        public readonly float hmax;
+        public readonly RcAreaModification areaMod;
+
+        public RcConvexVolume(float[] verts, float hmin, float hmax, RcAreaModification areaMod)
+        {
+            this.verts = verts;
+            this.hmin = hmin;
+            this.hmax = hmax;
+            this.areaMod = areaMod;
+        }
     }
 }

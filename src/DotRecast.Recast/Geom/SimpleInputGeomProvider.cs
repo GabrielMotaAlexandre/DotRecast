@@ -101,17 +101,6 @@ namespace DotRecast.Recast.Geom
             return volumes;
         }
 
-        public static void AddConvexVolume(float[] verts, float minh, float maxh, RcAreaModification areaMod)
-        {
-            RcConvexVolume vol = new()
-            {
-                hmin = minh,
-                hmax = maxh,
-                verts = verts,
-                areaMod = areaMod
-            };
-        }
-
         public void AddConvexVolume(RcConvexVolume convexVolume)
         {
             volumes.Add(convexVolume);

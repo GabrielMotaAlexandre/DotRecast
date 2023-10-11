@@ -137,13 +137,7 @@ namespace DotRecast.Recast.Toolset.Tools
                 }
             }
 
-            return new RcConvexVolume()
-            {
-                verts = verts,
-                hmin = minh,
-                hmax = maxh,
-                areaMod = areaType,
-            };
+            return new RcConvexVolume(verts, minh, maxh, areaType);
         }
     }
 }
