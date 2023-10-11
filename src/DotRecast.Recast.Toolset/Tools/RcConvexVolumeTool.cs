@@ -90,7 +90,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
             // If end point close enough, delete it.
             if (nearestIndex == -1)
-                return null;
+                return default;
 
             var removal = geom.ConvexVolumes()[nearestIndex];
             geom.ConvexVolumes().RemoveAt(nearestIndex);
@@ -107,7 +107,7 @@ namespace DotRecast.Recast.Toolset.Tools
             // 
             if (hull.Count <= 2)
             {
-                return null;
+                return default;
             }
 
             // Create shape.

@@ -873,7 +873,7 @@ namespace DotRecast.Recast
                     // Collect outline contour and holes contours per region.
                     // We assume that there is one outline and multiple holes.
                     int nregions = chf.maxRegions + 1;
-                    RcContourRegion[] regions = new RcContourRegion[nregions];
+                    var regions = new RcContourRegion[nregions];
                     for (int i = 0; i < nregions; i++)
                     {
                         regions[i] = new RcContourRegion();
@@ -881,21 +881,21 @@ namespace DotRecast.Recast
 
                     for (int i = 0; i < cset.conts.Count; ++i)
                     {
-                        RcContour cont = cset.conts[i];
+                        var contour = cset.conts[i];
                         // Positively would contours are outlines, negative holes.
                         if (winding[i] > 0)
                         {
-                            if (regions[cont.reg].outline != null)
+                            if (regions[contour.reg].outline != null)
                             {
                                 throw new Exception(
-                                    "rcBuildContours: Multiple outlines for region " + cont.reg + ".");
+                                    "rcBuildContours: Multiple outlines for region " + contour.reg + ".");
                             }
 
-                            regions[cont.reg].outline = cont;
+                            regions[contour.reg].outline = contour;
                         }
                         else
                         {
-                            regions[cont.reg].nholes++;
+                            regions[contour.reg].nholes++;
                         }
                     }
 

@@ -256,7 +256,7 @@ namespace DotRecast.Recast
         /// @param[in,out]	context		The build context to use during the operation.
         /// @param[in,out]	compactHeightfield		A populated compact heightfield.
         /// @returns True if the operation completed successfully.
-        public static bool MedianFilterWalkableArea(RcCompactHeightfield compactHeightfield)
+        public static bool MedianFilterWalkableArea(ref RcCompactHeightfield compactHeightfield)
         {
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;

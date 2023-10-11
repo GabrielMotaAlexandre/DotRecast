@@ -20,7 +20,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         public JumpLinkBuilder(IList<RcBuilderResult> results)
         {
             this.results = results;
-            edges = results.Select(r => EdgeExtractor.ExtractEdges(r.GetMesh())).ToList();
+            edges = results.Select(r => EdgeExtractor.ExtractEdges(r.Mesh)).ToList();
         }
 
         public List<JumpLink> Build(JumpLinkBuilderConfig acfg, JumpLinkType type)

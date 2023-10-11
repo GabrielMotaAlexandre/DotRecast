@@ -128,8 +128,8 @@ public class RecastSoloMeshTest
 
         foreach (RcTriMesh geom in geomProvider.Meshes())
         {
-            var verts = MemoryMarshal.Cast<float, Vector3>(geom.GetVerts().AsSpan());
-            int[] tris = geom.GetTris();
+            var verts = MemoryMarshal.Cast<float, Vector3>(geom.Vertices.AsSpan());
+            int[] tris = geom.Triangles;
 
             // Allocate array that can hold triangle area types.
             // If you have multiple meshes you need to process, allocate
@@ -160,7 +160,7 @@ public class RecastSoloMeshTest
         // Compact the heightfield so that it is faster to handle from now on.
         // This will result more cache coherent data as well as the neighbours
         // between walkable cells will be calculated.
-        RcCompactHeightfield m_chf = RcCompacts.BuildCompactHeightfield(cfg.WalkableHeight, cfg.WalkableClimb, in m_solid);
+        RcCompactHeightfield m_chf = new(in m_solid, in cfg);
 
         // Erode the walkable area by agent radius.
         ErodeWalkableArea(cfg.WalkableRadius, m_chf);
@@ -215,20 +215,20 @@ public class RecastSoloMeshTest
         {
             // Prepare for region partitioning, by calculating distance field
             // along the walkable surface.
-            RcRegions.BuildDistanceField(m_chf);
+            RcRegions.BuildDistanceField(ref m_chf);
             // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildRegions(m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+            RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
         }
         else if (m_partitionType == RcPartition.MONOTONE)
         {
             // Partition the walkable surface into simple regions without holes.
             // Monotone partitioning does not need distancefield.
-            RcRegions.BuildRegionsMonotone(m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+            RcRegions.BuildRegionsMonotone(ref m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
         }
         else
         {
             // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildLayerRegions(m_chf, cfg.MinRegionArea);
+            RcRegions.BuildLayerRegions(ref m_chf, cfg.MinRegionArea);
         }
 
         Assert.That(m_chf.maxDistance, Is.EqualTo(expDistance), "maxDistance");

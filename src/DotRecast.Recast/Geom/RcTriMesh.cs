@@ -24,25 +24,15 @@ namespace DotRecast.Recast.Geom
 {
     public class RcTriMesh
     {
-        private readonly float[] vertices;
-        private readonly int[] triangles;
+        public readonly float[] Vertices;
+        public readonly int[] Triangles;
         public readonly RcChunkyTriMesh chunkyTriMesh;
 
         public RcTriMesh(float[] vertices, int[] triangles)
         {
-            this.vertices = vertices;
-            this.triangles = triangles;
+            this.Vertices = vertices;
+            this.Triangles = triangles;
             chunkyTriMesh = new RcChunkyTriMesh(vertices, triangles, triangles.Length / 3, 32);
-        }
-
-        public int[] GetTris()
-        {
-            return triangles;
-        }
-
-        public float[] GetVerts()
-        {
-            return vertices;
         }
 
         public List<RcChunkyTriMeshNode> GetChunksOverlappingRect(float[] bmin, float[] bmax)

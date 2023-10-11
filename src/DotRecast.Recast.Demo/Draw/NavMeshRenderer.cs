@@ -122,19 +122,19 @@ public class NavMeshRenderer
 
         foreach (RcBuilderResult rcBuilderResult in rcBuilderResults)
         {
-            if (rcBuilderResult.GetCompactHeightfield() != null && drawMode == DrawMode.DRAWMODE_COMPACT)
+            if (rcBuilderResult.CompactHeightfield.spans != null && drawMode == DrawMode.DRAWMODE_COMPACT)
             {
-                _debugDraw.DebugDrawCompactHeightfieldSolid(rcBuilderResult.GetCompactHeightfield());
+                _debugDraw.DebugDrawCompactHeightfieldSolid(rcBuilderResult.CompactHeightfield);
             }
 
-            if (rcBuilderResult.GetCompactHeightfield() != null && drawMode == DrawMode.DRAWMODE_COMPACT_DISTANCE)
+            if (rcBuilderResult.CompactHeightfield.spans != null && drawMode == DrawMode.DRAWMODE_COMPACT_DISTANCE)
             {
-                _debugDraw.DebugDrawCompactHeightfieldDistance(rcBuilderResult.GetCompactHeightfield());
+                _debugDraw.DebugDrawCompactHeightfieldDistance(rcBuilderResult.CompactHeightfield);
             }
 
-            if (rcBuilderResult.GetCompactHeightfield() != null && drawMode == DrawMode.DRAWMODE_COMPACT_REGIONS)
+            if (rcBuilderResult.CompactHeightfield.spans  != null && drawMode == DrawMode.DRAWMODE_COMPACT_REGIONS)
             {
-                _debugDraw.DebugDrawCompactHeightfieldRegions(rcBuilderResult.GetCompactHeightfield());
+                _debugDraw.DebugDrawCompactHeightfieldRegions(rcBuilderResult.CompactHeightfield);
             }
 
             if (rcBuilderResult.Solid.spans != null && drawMode == DrawMode.DRAWMODE_VOXELS)
@@ -151,51 +151,51 @@ public class NavMeshRenderer
                 _debugDraw.Fog(false);
             }
 
-            if (rcBuilderResult.GetContourSet() != null && drawMode == DrawMode.DRAWMODE_RAW_CONTOURS)
+            if (rcBuilderResult.ContourSet != null && drawMode == DrawMode.DRAWMODE_RAW_CONTOURS)
             {
                 _debugDraw.DepthMask(false);
-                _debugDraw.DebugDrawRawContours(rcBuilderResult.GetContourSet(), 1f);
+                _debugDraw.DebugDrawRawContours(rcBuilderResult.ContourSet, 1f);
                 _debugDraw.DepthMask(true);
             }
 
-            if (rcBuilderResult.GetContourSet() != null && drawMode == DrawMode.DRAWMODE_BOTH_CONTOURS)
+            if (rcBuilderResult.ContourSet != null && drawMode == DrawMode.DRAWMODE_BOTH_CONTOURS)
             {
                 _debugDraw.DepthMask(false);
-                _debugDraw.DebugDrawRawContours(rcBuilderResult.GetContourSet(), 0.5f);
-                _debugDraw.DebugDrawContours(rcBuilderResult.GetContourSet());
+                _debugDraw.DebugDrawRawContours(rcBuilderResult.ContourSet, 0.5f);
+                _debugDraw.DebugDrawContours(rcBuilderResult.ContourSet);
                 _debugDraw.DepthMask(true);
             }
 
-            if (rcBuilderResult.GetContourSet() != null && drawMode == DrawMode.DRAWMODE_CONTOURS)
+            if (rcBuilderResult.ContourSet != null && drawMode == DrawMode.DRAWMODE_CONTOURS)
             {
                 _debugDraw.DepthMask(false);
-                _debugDraw.DebugDrawContours(rcBuilderResult.GetContourSet());
+                _debugDraw.DebugDrawContours(rcBuilderResult.ContourSet);
                 _debugDraw.DepthMask(true);
             }
 
-            if (rcBuilderResult.GetCompactHeightfield() != null && drawMode == DrawMode.DRAWMODE_REGION_CONNECTIONS)
+            if (rcBuilderResult.CompactHeightfield.spans != null && drawMode == DrawMode.DRAWMODE_REGION_CONNECTIONS)
             {
-                _debugDraw.DebugDrawCompactHeightfieldRegions(rcBuilderResult.GetCompactHeightfield());
+                _debugDraw.DebugDrawCompactHeightfieldRegions(rcBuilderResult.CompactHeightfield);
                 _debugDraw.DepthMask(false);
-                if (rcBuilderResult.GetContourSet() != null)
+                if (rcBuilderResult.ContourSet != null)
                 {
-                    _debugDraw.DebugDrawRegionConnections(rcBuilderResult.GetContourSet());
+                    _debugDraw.DebugDrawRegionConnections(rcBuilderResult.ContourSet);
                 }
 
                 _debugDraw.DepthMask(true);
             }
 
-            if (rcBuilderResult.GetMesh() != null && drawMode == DrawMode.DRAWMODE_POLYMESH)
+            if (rcBuilderResult.Mesh != null && drawMode == DrawMode.DRAWMODE_POLYMESH)
             {
                 _debugDraw.DepthMask(false);
-                _debugDraw.DebugDrawPolyMesh(rcBuilderResult.GetMesh());
+                _debugDraw.DebugDrawPolyMesh(rcBuilderResult.Mesh);
                 _debugDraw.DepthMask(true);
             }
 
-            if (rcBuilderResult.GetMeshDetail() != null && drawMode == DrawMode.DRAWMODE_POLYMESH_DETAIL)
+            if (rcBuilderResult.MeshDetail != null && drawMode == DrawMode.DRAWMODE_POLYMESH_DETAIL)
             {
                 _debugDraw.DepthMask(false);
-                _debugDraw.DebugDrawPolyMeshDetail(rcBuilderResult.GetMeshDetail());
+                _debugDraw.DebugDrawPolyMeshDetail(rcBuilderResult.MeshDetail);
                 _debugDraw.DepthMask(true);
             }
         }

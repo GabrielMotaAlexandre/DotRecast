@@ -85,7 +85,7 @@ public class TestTiledNavMeshBuilder
 
         foreach (RcBuilderResult result in rcResult)
         {
-            RcPolyMesh pmesh = result.GetMesh();
+            RcPolyMesh pmesh = result.Mesh;
             if (pmesh.npolys == 0)
             {
                 continue;
@@ -106,7 +106,7 @@ public class TestTiledNavMeshBuilder
                 polyCount = pmesh.npolys,
                 nvp = pmesh.nvp
             };
-            RcPolyMeshDetail dmesh = result.GetMeshDetail();
+            RcPolyMeshDetail dmesh = result.MeshDetail;
             option.detailMeshes = dmesh.meshes;
             option.detailVerts = dmesh.verts;
             option.detailVertsCount = dmesh.nverts;

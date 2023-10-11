@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
 
 namespace DotRecast.Recast
 {
-    public class RcConvexVolume
+    public struct RcConvexVolume
     {
         public float[] verts;
         public float hmin;
