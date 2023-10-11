@@ -476,9 +476,9 @@ namespace DotRecast.Detour
             }
 
             // Collect vertices.
-            float[] verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
-            float[] edged = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
-            float[] edget = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
+            var verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
+            var edged = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
+            var edget = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
             int nv = poly.vertCount;
             for (int i = 0; i < nv; ++i)
             {

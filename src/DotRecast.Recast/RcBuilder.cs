@@ -221,12 +221,12 @@ namespace DotRecast.Recast
             {
                 // Partition the walkable surface into simple regions without holes.
                 // Monotone partitioning does not need distancefield.
-                RcRegions.BuildRegionsMonotone(ref chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+                RcRegions.BuildRegions(ref chf, cfg.MinRegionArea, false, cfg.MergeRegionArea);
             }
             else
             {
                 // Partition the walkable surface into simple regions without holes.
-                RcRegions.BuildLayerRegions(ref chf, cfg.MinRegionArea);
+                RcRegions.BuildRegions(ref chf, cfg.MinRegionArea, true);
             }
 
             //

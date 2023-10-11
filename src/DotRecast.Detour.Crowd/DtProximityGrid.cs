@@ -109,10 +109,11 @@ namespace DotRecast.Detour.Crowd
 
             var agentsCount = dtCrowd.GetActiveAgents().Count;
 
-            var array = ArrayPool<bool>.Shared.Rent(agentsCount);
-            Array.Clear(array);
+            var neighbourExistArray = ArrayPool<bool>.Shared.Rent(agentsCount);
+            Span<bool> neighbourExist = neighbourExistArray;
+            neighbourExist.Clear();
 
-            array[skip.idx] = true;
+            neighbourExist[skip.idx] = true;
 
             for (int y = iminy; y <= imaxy; ++y)
             {
@@ -123,7 +124,7 @@ namespace DotRecast.Detour.Crowd
                     for (int iId = 0; iId != ids.length; iId++)
                     {
                         var agId = ids.ids.GetUnsafe(iId);
-                        ref var exist = ref array[agId];
+                        ref var exist = ref neighbourExist[agId];
 
                         neighbourAgentIds[exist ? agentsCount : count++] = agId;
                         exist = true;
@@ -132,7 +133,7 @@ namespace DotRecast.Detour.Crowd
             }
 
             neighbourAgentIds[count] = -1;
-            ArrayPool<bool>.Shared.Return(array);
+            ArrayPool<bool>.Shared.Return(neighbourExistArray);
         }
     }
 }

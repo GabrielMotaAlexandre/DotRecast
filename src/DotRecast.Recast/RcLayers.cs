@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -59,11 +60,10 @@ namespace DotRecast.Recast
             int[] srcReg = new int[chf.spanCount];
             Array.Fill(srcReg, 0xFF);
             int nsweeps = chf.width; // Math.Max(chf.width, chf.height);
-            RcSweepSpan[] sweeps = new RcSweepSpan[nsweeps];
-            for (int i = 0; i < sweeps.Length; i++)
-            {
-                sweeps[i] = new RcSweepSpan();
-            }
+
+            var sweepsArray = ArrayPool<RcSweepSpan>.Shared.Rent(nsweeps);
+            Span<RcSweepSpan> sweeps = sweepsArray;
+            sweeps.Clear();
 
             // Partition walkable area into monotone regions.
             int[] prevCount = new int[256];
@@ -170,6 +170,7 @@ namespace DotRecast.Recast
                     }
                 }
             }
+            ArrayPool<RcSweepSpan>.Shared.Return(sweepsArray);
 
             int nregs = regId;
             RcLayerRegion[] regs = new RcLayerRegion[nregs];
@@ -302,7 +303,7 @@ namespace DotRecast.Recast
 
                 int newId = ri.layerId;
 
-                for (;;)
+                while (true)
                 {
                     int oldId = 0xff;
 

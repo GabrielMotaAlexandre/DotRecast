@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 
 namespace DotRecast.Recast
@@ -1451,22 +1452,21 @@ namespace DotRecast.Recast
         /// @warning The distance field must be created using #rcBuildDistanceField before attempting to build regions.
         ///
         /// @see rcCompactHeightfield, rcCompactSpan, rcBuildDistanceField, rcBuildRegionsMonotone, rcConfig
-        public static void BuildRegionsMonotone(ref RcCompactHeightfield chf, int minRegionArea,
-            int mergeRegionArea)
+        public static void BuildRegions(ref RcCompactHeightfield chf, int minRegionArea, bool trueIsLayerElseMonotone, int mergeRegionArea = default)
         {
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
             int id = 1;
 
-            int[] srcReg = new int[chf.spanCount];
+            var srcRegArray = ArrayPool<int>.Shared.Rent(chf.spanCount);
+            Span<int> srcReg = srcRegArray;
+            srcReg.Clear();
 
             int nsweeps = Math.Max(chf.width, chf.height);
-            RcSweepSpan[] sweeps = new RcSweepSpan[nsweeps];
-            for (int i = 0; i < sweeps.Length; i++)
-            {
-                sweeps[i] = new RcSweepSpan();
-            }
+            var sweepsArray = ArrayPool<RcSweepSpan>.Shared.Rent(nsweeps);
+            Span<RcSweepSpan> sweeps = sweepsArray;
+            sweeps.Clear();
 
             // Mark border regions.
             if (borderSize > 0)
@@ -1491,7 +1491,7 @@ namespace DotRecast.Recast
             for (int y = borderSize; y < h - borderSize; ++y)
             {
                 // Collect spans from this row.
-                if (prev.Length < id * 2)
+                if (prev.Length <= id * 2)
                 {
                     prev = new int[id * 2];
                 }
@@ -1530,9 +1530,10 @@ namespace DotRecast.Recast
                         if (previd == 0)
                         {
                             previd = rid++;
-                            sweeps[previd].rid = previd;
-                            sweeps[previd].ns = 0;
-                            sweeps[previd].nei = 0;
+                            ref var sw = ref sweeps[previd];
+                            sw.rid = previd;
+                            sw.ns = 0;
+                            sw.nei = 0;
                         }
 
                         // -y
@@ -1594,8 +1595,18 @@ namespace DotRecast.Recast
                 }
             }
 
-            // Merge regions and filter out small regions.
-            chf.maxRegions = MergeAndFilterRegions(minRegionArea, mergeRegionArea, id, chf, srcReg);
+            ArrayPool<RcSweepSpan>.Shared.Return(sweepsArray);
+
+            if (trueIsLayerElseMonotone)
+            {
+                // Merge monotone regions to layers and remove small regions.
+                chf.maxRegions = MergeAndFilterLayerRegions(minRegionArea, id, chf, srcReg);
+            }
+            else
+            {
+                // Merge regions and filter out small regions.
+                chf.maxRegions = MergeAndFilterRegions(minRegionArea, mergeRegionArea, id, chf, srcReg);
+            }
 
             // Monotone partitioning does not generate overlapping regions.
             // Store the result out.
@@ -1603,6 +1614,8 @@ namespace DotRecast.Recast
             {
                 chf.spans[i].reg = srcReg[i];
             }
+
+            ArrayPool<int>.Shared.Return(srcRegArray);
         }
 
         /// @par
@@ -1720,157 +1733,6 @@ namespace DotRecast.Recast
             //}
 
             // Write the result out.
-            for (int i = 0; i < chf.spanCount; ++i)
-            {
-                chf.spans[i].reg = srcReg[i];
-            }
-        }
-
-        public static void BuildLayerRegions(ref RcCompactHeightfield chf, int minRegionArea)
-        {
-            int w = chf.width;
-            int h = chf.height;
-            int borderSize = chf.borderSize;
-            int id = 1;
-
-            Span<int> srcReg = new int[chf.spanCount];
-            int nsweeps = Math.Max(chf.width, chf.height);
-            RcSweepSpan[] sweeps = new RcSweepSpan[nsweeps];
-            for (int i = 0; i < sweeps.Length; i++)
-            {
-                sweeps[i] = new RcSweepSpan();
-            }
-
-            // Mark border regions.
-            if (borderSize > 0)
-            {
-                // Make sure border will not overflow.
-                int bw = Math.Min(w, borderSize);
-                int bh = Math.Min(h, borderSize);
-                // Paint regions
-                PaintRectRegion(0, bw, 0, h, id | RC_BORDER_REG, chf, srcReg);
-                id++;
-                PaintRectRegion(w - bw, w, 0, h, id | RC_BORDER_REG, chf, srcReg);
-                id++;
-                PaintRectRegion(0, w, 0, bh, id | RC_BORDER_REG, chf, srcReg);
-                id++;
-                PaintRectRegion(0, w, h - bh, h, id | RC_BORDER_REG, chf, srcReg);
-                id++;
-            }
-
-            int[] prev = new int[1024];
-
-            // Sweep one line at a time.
-            for (int y = borderSize; y < h - borderSize; ++y)
-            {
-                // Collect spans from this row.
-                if (prev.Length <= id * 2)
-                {
-                    prev = new int[id * 2];
-                }
-                else
-                {
-                    Array.Fill(prev, 0, 0, id - 0);
-                }
-
-                int rid = 1;
-
-                for (int x = borderSize; x < w - borderSize; ++x)
-                {
-                    RcCompactCell c = chf.cells[x + y * w];
-
-                    for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
-                    {
-                        RcCompactSpan s = chf.spans[i];
-                        if (chf.areas[i] == RC_NULL_AREA)
-                        {
-                            continue;
-                        }
-
-                        // -x
-                        int previd = 0;
-                        if (GetCon(s, 0) != RC_NOT_CONNECTED)
-                        {
-                            int ax = x + GetDirOffsetX(0);
-                            int ay = y + GetDirOffsetY(0);
-                            int ai = chf.cells[ax + ay * w].index + GetCon(s, 0);
-                            if ((srcReg[ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
-                            {
-                                previd = srcReg[ai];
-                            }
-                        }
-
-                        if (previd == 0)
-                        {
-                            previd = rid++;
-                            sweeps[previd].rid = previd;
-                            sweeps[previd].ns = 0;
-                            sweeps[previd].nei = 0;
-                        }
-
-                        // -y
-                        if (GetCon(s, 3) != RC_NOT_CONNECTED)
-                        {
-                            int ax = x + GetDirOffsetX(3);
-                            int ay = y + GetDirOffsetY(3);
-                            int ai = chf.cells[ax + ay * w].index + GetCon(s, 3);
-                            if (srcReg[ai] != 0 && (srcReg[ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
-                            {
-                                int nr = srcReg[ai];
-                                if (sweeps[previd].nei == 0 || sweeps[previd].nei == nr)
-                                {
-                                    sweeps[previd].nei = nr;
-                                    sweeps[previd].ns++;
-                                    if (prev.Length <= nr)
-                                    {
-                                        Array.Resize(ref prev, prev.Length * 2);
-                                    }
-
-                                    prev[nr]++;
-                                }
-                                else
-                                {
-                                    sweeps[previd].nei = RC_NULL_NEI;
-                                }
-                            }
-                        }
-
-                        srcReg[i] = previd;
-                    }
-                }
-
-                // Create unique ID.
-                for (int i = 1; i < rid; ++i)
-                {
-                    if (sweeps[i].nei != RC_NULL_NEI && sweeps[i].nei != 0 && prev[sweeps[i].nei] == sweeps[i].ns)
-                    {
-                        sweeps[i].id = sweeps[i].nei;
-                    }
-                    else
-                    {
-                        sweeps[i].id = id++;
-                    }
-                }
-
-                // Remap IDs
-                for (int x = borderSize; x < w - borderSize; ++x)
-                {
-                    RcCompactCell c = chf.cells[x + y * w];
-
-                    for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
-                    {
-                        if (srcReg[i] > 0 && srcReg[i] < rid)
-                        {
-                            srcReg[i] = sweeps[srcReg[i]].id;
-                        }
-                    }
-                }
-            }
-
-            // Merge monotone regions to layers and remove small regions.
-            chf.maxRegions = MergeAndFilterLayerRegions(minRegionArea, id, chf, srcReg);
-
-            // Store the result out.
             for (int i = 0; i < chf.spanCount; ++i)
             {
                 chf.spans[i].reg = srcReg[i];

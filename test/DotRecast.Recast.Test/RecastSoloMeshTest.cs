@@ -223,12 +223,12 @@ public class RecastSoloMeshTest
         {
             // Partition the walkable surface into simple regions without holes.
             // Monotone partitioning does not need distancefield.
-            RcRegions.BuildRegionsMonotone(ref m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+            RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, false, cfg.MergeRegionArea);
         }
         else
         {
             // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildLayerRegions(ref m_chf, cfg.MinRegionArea);
+            RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, true);
         }
 
         Assert.That(m_chf.maxDistance, Is.EqualTo(expDistance), "maxDistance");

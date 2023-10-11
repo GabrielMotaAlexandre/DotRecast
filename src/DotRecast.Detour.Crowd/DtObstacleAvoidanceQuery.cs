@@ -76,7 +76,7 @@ namespace DotRecast.Detour.Crowd
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddCircle(in System.Numerics.Vector2 pos, float rad, in System.Numerics.Vector2 vel, in System.Numerics.Vector2 dvel)
+        public void AddCircle(in Vector2 pos, float rad, in Vector2 vel, in Vector2 dvel)
         {
             if (m_ncircles >= m_maxCircles)
                 return;
@@ -89,7 +89,7 @@ namespace DotRecast.Detour.Crowd
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddSegment(in System.Numerics.Vector2 p, in System.Numerics.Vector2 q)
+        public void AddSegment(in Vector2 p, in Vector2 q)
         {
             if (m_nsegments >= m_maxSegments)
                 return;
@@ -99,7 +99,7 @@ namespace DotRecast.Detour.Crowd
             segment.q = q;
         }
 
-        private void Prepare(System.Numerics.Vector2 pos, System.Numerics.Vector2 dvel)
+        private void Prepare(Vector2 pos, Vector2 dvel)
         {
             // Prepare obstacles
             for (int i = 0; i < m_ncircles; ++i)
@@ -127,7 +127,7 @@ namespace DotRecast.Detour.Crowd
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static bool SweepCircleCircle(System.Numerics.Vector2 c0, float r0, System.Numerics.Vector2 v, System.Numerics.Vector2 c1, float r1, out float tmin, out float tmax)
+        private static bool SweepCircleCircle(Vector2 c0, float r0, Vector2 v, Vector2 c1, float r1, out float tmin, out float tmax)
         {
             const float EPS = 0.0001f;
 
@@ -166,7 +166,7 @@ namespace DotRecast.Detour.Crowd
      * @param minPenalty
      *            threshold penalty for early out
      */
-        private float ProcessSample(in System.Numerics.Vector2 vcand, float cs, in System.Numerics.Vector2 pos, float rad, in System.Numerics.Vector2 vel, in System.Numerics.Vector2 dvel,
+        private float ProcessSample(in Vector2 vcand, float cs, in Vector2 pos, float rad, in Vector2 vel, in Vector2 dvel,
             float minPenalty, DtObstacleAvoidanceDebugData debug)
         {
             // penalty for straying away from the desired and current velocities
@@ -269,7 +269,7 @@ namespace DotRecast.Detour.Crowd
                 // Avoid less when facing walls.
                 const float f = 2;
 
-                var snorm = new System.Numerics.Vector2(-sdir.Y, sdir.X);
+                var snorm = new Vector2(-sdir.Y, sdir.X);
 
                 float dvcand = Vector3Extensions.Perp2D(vcand, sdir);
 
@@ -341,7 +341,7 @@ namespace DotRecast.Detour.Crowd
         //    return ns;
         //}
 
-        public void SampleVelocityAdaptive(System.Numerics.Vector2 pos, float rad, float vmax, System.Numerics.Vector2 vel, System.Numerics.Vector2 dvel, out System.Numerics.Vector2 nvel,
+        public void SampleVelocityAdaptive(Vector2 pos, float rad, float vmax, Vector2 vel, Vector2 dvel, out Vector2 nvel,
             DtObstacleAvoidanceParams option,
             DtObstacleAvoidanceDebugData debug)
         {
@@ -374,12 +374,12 @@ namespace DotRecast.Detour.Crowd
             var rotc = di * MathF.Cos(ang);
             var rots = di * MathF.Sin(ang);
 
-            ReadOnlySpan<System.Numerics.Vector2> ddir = stackalloc System.Numerics.Vector2[] { di, new System.Numerics.Vector2(rotc.X - rots.Y, rots.X + rotc.Y) };
+            ReadOnlySpan<Vector2> ddir = stackalloc System.Numerics.Vector2[] { di, new Vector2(rotc.X - rots.Y, rots.X + rotc.Y) };
 
             var pat = ArrayPool<float>.Shared.Rent((ndivs * nrings + 1) * 2);
 
             // Always add sample at zero
-            pat.UnsafeAs<float, System.Numerics.Vector2>() = default;
+            pat.UnsafeAs<float, Vector2>() = default;
 
             //var preCalculated = (nd % 2) == 0;
             //const int preCalculatedInt = 0; // Unsafe.As<bool, int>(ref preCalculated);
@@ -393,7 +393,7 @@ namespace DotRecast.Detour.Crowd
                 int last2 = last1;
 
                 var r = (nr - j) * nrInverted;
-                pat.UnsafeAs<float, System.Numerics.Vector2>(npat) = ddir[j % 2] * r; // npat == 1 + (end + preCalculatedInt + 1) * j
+                pat.UnsafeAs<float, Vector2>(npat) = ddir[j % 2] * r; // npat == 1 + (end + preCalculatedInt + 1) * j
 
                 npat++;
 
@@ -432,11 +432,11 @@ namespace DotRecast.Detour.Crowd
             for (int k = 0; k < depth; ++k)
             {
                 float minPenalty = float.MaxValue;
-                System.Numerics.Vector2 bvel = default;
+                Vector2 bvel = default;
 
                 for (int i = 0; i < npat; ++i)
                 {
-                    var vcand = nvel + pat.UnsafeAs<float, System.Numerics.Vector2>(i) * cr;
+                    var vcand = nvel + pat.UnsafeAs<float, Vector2>(i) * cr;
 
                     if (vcand.LengthSquared() > RcMath.Sqr(vmax + 0.001f))
                         continue;

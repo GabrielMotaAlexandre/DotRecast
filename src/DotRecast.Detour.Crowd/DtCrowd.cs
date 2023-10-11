@@ -1059,7 +1059,7 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                System.Numerics.Vector2 dvel;
+                Vector2 dvel;
 
                 if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
                 {
@@ -1089,11 +1089,11 @@ namespace DotRecast.Detour.Crowd
                     float separationWeight = ag.option.separationWeight;
 
                     var w = 0;
-                    System.Numerics.Vector2 disp = default;
+                    Vector2 disp = default;
 
                     foreach (var nei in ag.Neighbors)
                     {
-                        System.Numerics.Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
+                        Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
                         float distSqr = diff.LengthSquared();
                         if (distSqr < 0.00001f)
@@ -1225,7 +1225,7 @@ namespace DotRecast.Detour.Crowd
 
                     foreach (var nei in ag.Neighbors)
                     {
-                        System.Numerics.Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
+                        Vector2 diff = (ag.npos - nei.npos).AsVector2XZ();
 
                         float dist = diff.LengthSquared();
                         if (dist > RcMath.Sqr(ag.option.radius + nei.option.radius))
@@ -1238,7 +1238,7 @@ namespace DotRecast.Detour.Crowd
                         if (dist < 0.0001f)
                         {
                             // Agents on top of each other, try to choose diverging separation directions.
-                            diff = ag.idx > nei.idx ? new System.Numerics.Vector2(-ag.dvel.Y, ag.dvel.X) : new System.Numerics.Vector2(ag.dvel.Y, -ag.dvel.X);
+                            diff = ag.idx > nei.idx ? new Vector2(-ag.dvel.Y, ag.dvel.X) : new Vector2(ag.dvel.Y, -ag.dvel.X);
 
                             pen = 0.01f;
                         }
