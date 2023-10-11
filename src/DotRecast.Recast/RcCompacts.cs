@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
 */
 
 using System;
-
+using System.Diagnostics;
 using static DotRecast.Recast.RcConstants;
 
 
@@ -76,27 +76,29 @@ namespace DotRecast.Recast
             {
                 for (int x = 0; x < w; ++x)
                 {
-                    RcSpan s = hf.spans[x + y * w];
+                    var list = hf.spans[x + y * w];
                     // If there are no spans at this cell, just leave the data to index=0, count=0.
-                    if (s == null)
+                    if (list == null)
                         continue;
-                    
+
+                    Debug.Assert(list.Count > 0);
+
                     int tmpIdx = idx;
                     int tmpCount = 0;
-                    while (s != null)
+                    for (int i = 0; i < list.Count; i++)
                     {
-                        if (s.area != RC_NULL_AREA)
+                        var span = list[i];
+                        if (span.area != RC_NULL_AREA)
                         {
-                            int bot = s.smax;
-                            int top = s.next != null ? s.next.smin : MAX_HEIGHT;
+                            int bot = span.smax;
+                            var hasNext = i + 1 < list.Count;
+                            int top = hasNext ? list[i + 1].smin : MAX_HEIGHT;
                             chf.spans[idx].y = Math.Clamp(bot, 0, MAX_HEIGHT);
                             chf.spans[idx].h = Math.Clamp(top - bot, 0, MAX_HEIGHT);
-                            chf.areas[idx] = s.area;
+                            chf.areas[idx] = span.area;
                             idx++;
                             tmpCount++;
                         }
-
-                        s = s.next;
                     }
 
                     chf.cells[x + y * w] = new RcCompactCell(tmpIdx, tmpCount);
@@ -164,18 +166,21 @@ namespace DotRecast.Recast
 
         private static int GetHeightFieldSpanCount(RcHeightfield hf)
         {
-            int w = hf.width;
-            int h = hf.height;
-            int spanCount = 0;
+            var w = hf.width;
+            var h = hf.height;
+            var spanCount = 0;
             for (int y = 0; y < h; ++y)
             {
                 for (int x = 0; x < w; ++x)
                 {
-                    for (RcSpan s = hf.spans[x + y * w]; s != null; s = s.next)
-                    {
-                        if (s.area != RC_NULL_AREA)
-                            spanCount++;
-                    }
+                    var list = hf.spans[x + y * w];
+                    if (list != null)
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var span = list[i];
+                            if (span.area != RC_NULL_AREA)
+                                spanCount++;
+                        }
                 }
             }
 

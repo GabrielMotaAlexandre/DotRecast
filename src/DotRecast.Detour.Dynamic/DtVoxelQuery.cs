@@ -147,17 +147,17 @@ namespace DotRecast.Detour.Dynamic
                         float y2 = start.Y + ty * (tMin + Math.Min(tMaxX, tMaxZ)) - hf.bmin.Y;
                         float ymin = Math.Min(y1, y2) / hf.ch;
                         float ymax = Math.Max(y1, y2) / hf.ch;
-                        RcSpan span = hf.spans[sx + sz * hf.width];
-                        while (span != null)
-                        {
-                            if (span.smin <= ymin && span.smax >= ymax)
+                        var list = hf.spans[sx + sz * hf.width];
+                        if (list != null)
+                            for (int i = 0; i < list.Count; i++)
                             {
-                                hit = Math.Min(1, tMin + t);
-                                return true;
+                                var span = list[i];
+                                if (span.smin <= ymin && span.smax >= ymax)
+                                {
+                                    hit = Math.Min(1, tMin + t);
+                                    return true;
+                                }
                             }
-
-                            span = span.next;
-                        }
                     }
 
                     if ((dx > 0 ? sx >= ex : sx <= ex) && (dz > 0 ? sz >= ez : sz <= ez))

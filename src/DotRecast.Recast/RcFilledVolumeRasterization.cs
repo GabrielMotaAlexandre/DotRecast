@@ -220,7 +220,7 @@ namespace DotRecast.Recast
                         {
                             int ismin = Math.Clamp(smin, 0, SPAN_MAX_HEIGHT);
                             int ismax = Math.Clamp(smax, ismin + 1, SPAN_MAX_HEIGHT);
-                            RcRasterizations.AddSpan(hf, x, z, ismin, ismax, area, flagMergeThr);
+                            RcRasterizations.AddSpan(hf, x, z, new(ismin, ismax, area), flagMergeThr);
                         }
                     }
                 }

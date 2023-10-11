@@ -81,7 +81,7 @@ public class RecastDemo : IRecastDemoChannel
 
     private bool _mouseOverMenu;
     private bool pan;
-    private bool movedDuringPan;
+    //private bool movedDuringPan;
     private bool rotate;
     private bool movedDuringRotate;
     private float scrollZoom;
@@ -105,7 +105,7 @@ public class RecastDemo : IRecastDemoChannel
     private float _moveAccel;
 
     private int[] viewport;
-    private bool markerPositionSet;
+    //private bool markerPositionSet;
     private Vector3 markerPosition;
 
     private RcToolsetView toolset;
@@ -179,10 +179,10 @@ public class RecastDemo : IRecastDemoChannel
             cameraPos.X += 0.1f * dy * modelviewMatrix.M12;
             cameraPos.Y += 0.1f * dy * modelviewMatrix.M22;
             cameraPos.Z += 0.1f * dy * modelviewMatrix.M32;
-            if (dx * dx + dy * dy > 3 * 3)
-            {
-                movedDuringPan = true;
-            }
+            //if (dx * dx + dy * dy > 3 * 3)
+            //{
+            //    movedDuringPan = true;
+            //}
         }
     }
 
@@ -209,7 +209,7 @@ public class RecastDemo : IRecastDemoChannel
                 {
                     // Pan view
                     pan = true;
-                    movedDuringPan = false;
+                    //movedDuringPan = false;
                     origMousePos[0] = mousePos[0];
                     origMousePos[1] = mousePos[1];
                     origCameraPos.X = cameraPos.X;
@@ -777,7 +777,7 @@ public class RecastDemo : IRecastDemoChannel
             if (0 != (_modState & KeyModState.Control))
             {
                 // Marker
-                markerPositionSet = true;
+                //markerPositionSet = true;
                 markerPosition.X = rayStart.X + (rayEnd.X - rayStart.X) * hitTime;
                 markerPosition.Y = rayStart.Y + (rayEnd.Y - rayStart.Y) * hitTime;
                 markerPosition.Z = rayStart.Z + (rayEnd.Z - rayStart.Z) * hitTime;
@@ -797,13 +797,13 @@ public class RecastDemo : IRecastDemoChannel
                 }
             }
         }
-        else
-        {
-            if (0 != (_modState & KeyModState.Control))
-            {
-                // Marker
-                markerPositionSet = false;
-            }
-        }
+        //else
+        //{
+        //    if (0 != (_modState & KeyModState.Control))
+        //    {
+        //        // Marker
+        //        markerPositionSet = false;
+        //    }
+        //}
     }
 }

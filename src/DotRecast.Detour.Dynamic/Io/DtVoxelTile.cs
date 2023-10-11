@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Collections.Generic;
 using System.Numerics;
 using DotRecast.Core;
 using DotRecast.Recast;
@@ -80,30 +81,16 @@ namespace DotRecast.Detour.Dynamic.Io
             {
                 for (int x = 0; x < width; x++)
                 {
-                    RcSpan prev = null;
                     int spanCount = RcByteUtils.GetShortBE(spanData, position);
                     position += 2;
                     for (int s = 0; s < spanCount; s++)
                     {
-                        RcSpan span = new()
-                        {
-                            smin = RcByteUtils.GetIntBE(spanData, position)
-                        };
-                        position += 4;
-                        span.smax = RcByteUtils.GetIntBE(spanData, position);
-                        position += 4;
-                        span.area = RcByteUtils.GetIntBE(spanData, position);
-                        position += 4;
-                        if (prev == null)
-                        {
-                            hf.spans[pz + x] = span;
-                        }
-                        else
-                        {
-                            prev.next = span;
-                        }
+                        RcSpan span = new(RcByteUtils.GetIntBE(spanData, position), RcByteUtils.GetIntBE(spanData, position += 4), RcByteUtils.GetIntBE(spanData, position += 4));
 
-                        prev = span;
+                        position += 4;
+                        var list = hf.spans[pz + x] ??= new List<RcSpan>();
+
+                        list.Add(span);
                     }
                 }
             }
@@ -119,30 +106,15 @@ namespace DotRecast.Detour.Dynamic.Io
             {
                 for (int x = 0; x < width; x++)
                 {
-                    RcSpan prev = null;
                     int spanCount = RcByteUtils.GetShortLE(spanData, position);
                     position += 2;
                     for (int s = 0; s < spanCount; s++)
                     {
-                        RcSpan span = new()
-                        {
-                            smin = RcByteUtils.GetIntLE(spanData, position)
-                        };
+                        RcSpan span = new(RcByteUtils.GetIntLE(spanData, position), RcByteUtils.GetIntLE(spanData, position += 4), RcByteUtils.GetIntLE(spanData, position += 4));
                         position += 4;
-                        span.smax = RcByteUtils.GetIntLE(spanData, position);
-                        position += 4;
-                        span.area = RcByteUtils.GetIntLE(spanData, position);
-                        position += 4;
-                        if (prev == null)
-                        {
-                            hf.spans[pz + x] = span;
-                        }
-                        else
-                        {
-                            prev.next = span;
-                        }
 
-                        prev = span;
+                        var list = hf.spans[pz + x] ??= new List<RcSpan>();
+                        list.Add(span);
                     }
                 }
             }
@@ -158,12 +130,14 @@ namespace DotRecast.Detour.Dynamic.Io
             {
                 for (int x = 0; x < heightfield.width; x++)
                 {
-                    RcSpan span = heightfield.spans[pz + x];
-                    while (span != null)
+                    var list = heightfield.spans[pz + x];
+                    if (list != null)
                     {
-                        counts[pz + x]++;
-                        totalCount++;
-                        span = span.next;
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            counts[pz + x]++;
+                            totalCount++;
+                        }
                     }
                 }
             }
@@ -175,14 +149,15 @@ namespace DotRecast.Detour.Dynamic.Io
                 for (int x = 0; x < heightfield.width; x++)
                 {
                     position = RcByteUtils.PutShort(counts[pz + x], data, position, order);
-                    RcSpan span = heightfield.spans[pz + x];
-                    while (span != null)
-                    {
-                        position = RcByteUtils.PutInt(span.smin, data, position, order);
-                        position = RcByteUtils.PutInt(span.smax, data, position, order);
-                        position = RcByteUtils.PutInt(span.area, data, position, order);
-                        span = span.next;
-                    }
+                    var list = heightfield.spans[pz + x];
+                    if (list != null)
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var span = list[i];
+                            position = RcByteUtils.PutInt(span.smin, data, position, order);
+                            position = RcByteUtils.PutInt(span.smax, data, position, order);
+                            position = RcByteUtils.PutInt(span.area, data, position, order);
+                        }
                 }
             }
 

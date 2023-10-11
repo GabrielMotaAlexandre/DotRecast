@@ -791,12 +791,14 @@ public class RecastDebugDraw : DebugDraw
             {
                 float fx = orig.X + x * cs;
                 float fz = orig.Z + y * cs;
-                RcSpan s = hf.spans[x + y * w];
-                while (s != null)
-                {
-                    AppendBox(fx, orig.Y + s.smin * ch, fz, fx + cs, orig.Y + s.smax * ch, fz + cs, fcol);
-                    s = s.next;
-                }
+
+                var list = hf.spans[x + y * w];
+
+                if (list != null)
+                    foreach(var span in list)
+                    {
+                        AppendBox(fx, orig.Y + span.smin * ch, fz, fx + cs, orig.Y + span.smax * ch, fz + cs, fcol);
+                    }
             }
         }
 
@@ -823,25 +825,27 @@ public class RecastDebugDraw : DebugDraw
             {
                 float fx = orig.X + x * cs;
                 float fz = orig.Z + y * cs;
-                RcSpan s = hf.spans[x + y * w];
-                while (s != null)
-                {
-                    if (s.area == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_WALKABLE)
-                    {
-                        fcol[0] = DuRGBA(64, 128, 160, 255);
-                    }
-                    else if (s.area == RcConstants.RC_NULL_AREA)
-                    {
-                        fcol[0] = DuRGBA(64, 64, 64, 255);
-                    }
-                    else
-                    {
-                        fcol[0] = DuMultCol(AreaToCol(s.area), 200);
-                    }
 
-                    AppendBox(fx, orig.Y + s.smin * ch, fz, fx + cs, orig.Y + s.smax * ch, fz + cs, fcol);
-                    s = s.next;
-                }
+                var list = hf.spans[x + y * w];
+
+                if (list != null)
+                    foreach (var span in list)
+                    {
+                        if (span.area == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_WALKABLE)
+                        {
+                            fcol[0] = DuRGBA(64, 128, 160, 255);
+                        }
+                        else if (span.area == RcConstants.RC_NULL_AREA)
+                        {
+                            fcol[0] = DuRGBA(64, 64, 64, 255);
+                        }
+                        else
+                        {
+                            fcol[0] = DuMultCol(AreaToCol(span.area), 200);
+                        }
+
+                        AppendBox(fx, orig.Y + span.smin * ch, fz, fx + cs, orig.Y + span.smax * ch, fz + cs, fcol);
+                    }
             }
         }
 

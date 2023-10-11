@@ -18,6 +18,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace DotRecast.Recast
@@ -44,7 +45,7 @@ namespace DotRecast.Recast
         public readonly float ch;
 
         /** Heightfield of spans (width*height). */
-        public readonly RcSpan[] spans;
+        public readonly List<RcSpan>[] spans;
 
         /** Border size in cell units */
         public readonly int borderSize;
@@ -58,7 +59,7 @@ namespace DotRecast.Recast
             this.cs = cs;
             this.ch = ch;
             this.borderSize = borderSize;
-            spans = new RcSpan[width * height];
+            spans = new List<RcSpan>[width * height];
         }
     }
 }

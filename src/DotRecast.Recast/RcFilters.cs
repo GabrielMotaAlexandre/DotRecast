@@ -47,26 +47,31 @@ namespace DotRecast.Recast
             {
                 for (int x = 0; x < w; ++x)
                 {
-                    RcSpan ps = null;
                     bool previousWalkable = false;
                     int previousArea = RC_NULL_AREA;
 
-                    for (RcSpan s = solid.spans[x + y * w]; s != null; ps = s, s = s.next)
-                    {
-                        bool walkable = s.area != RC_NULL_AREA;
-                        // If current span is not walkable, but there is walkable
-                        // span just below it, mark the span above it walkable too.
-                        if (!walkable && previousWalkable)
-                        {
-                            if (Math.Abs(s.smax - ps.smax) <= walkableClimb)
-                                s.area = previousArea;
-                        }
+                    int prevSpanMax = default;
 
-                        // Copy walkable flag so that it cannot propagate
-                        // past multiple non-walkable objects.
-                        previousWalkable = walkable;
-                        previousArea = s.area;
-                    }
+                    var list = solid.spans[x + y * w];
+                    if (list != null)
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var span = list[i];
+                            bool walkable = span.area != RC_NULL_AREA;
+                            // If current span is not walkable, but there is walkable
+                            // span just below it, mark the span above it walkable too.
+                            if (!walkable && previousWalkable)
+                            {
+                                if (Math.Abs(span.smax - prevSpanMax) <= walkableClimb)
+                                    list[i] = new(span.smin, span.smax, previousArea);
+                            }
+
+                            // Copy walkable flag so that it cannot propagate
+                            // past multiple non-walkable objects.
+                            previousWalkable = walkable;
+                            previousArea = span.area;
+                            prevSpanMax = span.smax;
+                        }
                 }
             }
         }
@@ -91,75 +96,90 @@ namespace DotRecast.Recast
             {
                 for (int x = 0; x < w; ++x)
                 {
-                    for (RcSpan s = solid.spans[x + y * w]; s != null; s = s.next)
-                    {
-                        // Skip non walkable spans.
-                        if (s.area == RC_NULL_AREA)
-                            continue;
-
-                        var bot = s.smax;
-                        var top = s.next != null ? s.next.smin : SPAN_MAX_HEIGHT;
-
-                        // Find neighbours minimum height.
-                        int minh = SPAN_MAX_HEIGHT;
-
-                        // Min and max height of accessible neighbours.
-                        var asmin = s.smax;
-                        var asmax = s.smax;
-
-                        for (int dir = 0; dir < 4; ++dir)
+                    var list = solid.spans[x + y * w];
+                    if (list != null)
+                        for (int i = 0; i < list.Count; i++)
                         {
-                            int dx = x + GetDirOffsetX(dir);
-                            int dy = y + GetDirOffsetY(dir);
-                            // Skip neighbours which are out of bounds.
-                            if (dx < 0 || dy < 0 || dx >= w || dy >= h)
-                            {
-                                minh = Math.Min(minh, -walkableClimb - bot);
+                            var span = list[i];
+
+                            // Skip non walkable spans.
+                            if (span.area == RC_NULL_AREA)
                                 continue;
-                            }
 
-                            // From minus infinity to the first span.
-                            RcSpan ns = solid.spans[dx + dy * w];
-                            int nbot = -walkableClimb;
-                            int ntop = ns?.smin ?? SPAN_MAX_HEIGHT;
-                            // Skip neightbour if the gap between the spans is too small.
-                            if (Math.Min(top, ntop) - Math.Max(bot, nbot) > walkableHeight)
-                                minh = Math.Min(minh, nbot - bot);
+                            var bot = span.smax;
+                            var hasNext = i + 1 < list.Count;
+                            var top = hasNext ? list[i + 1!].smin : SPAN_MAX_HEIGHT;
 
-                            // Rest of the spans.
-                            for (ns = solid.spans[dx + dy * w]; ns != null; ns = ns.next)
+                            // Find neighbours minimum height.
+                            int minh = SPAN_MAX_HEIGHT;
+
+                            // Min and max height of accessible neighbours.
+                            var asmin = span.smax;
+                            var asmax = span.smax;
+
+                            for (int dir = 0; dir < 4; ++dir)
                             {
-                                nbot = ns.smax;
-                                ntop = ns.next != null ? ns.next.smin : SPAN_MAX_HEIGHT;
+                                int dx = x + GetDirOffsetX(dir);
+                                int dy = y + GetDirOffsetY(dir);
+                                // Skip neighbours which are out of bounds.
+                                if (dx < 0 || dy < 0 || dx >= w || dy >= h)
+                                {
+                                    minh = Math.Min(minh, -walkableClimb - bot);
+                                    continue;
+                                }
+
+                                // From minus infinity to the first span.
+                                var listMinus = solid.spans[dx + dy * w];
+                                var list2HasSpans = listMinus != null;
+
+                                int nbot = -walkableClimb;
+                                int ntop = list2HasSpans ? listMinus[0].smin : SPAN_MAX_HEIGHT;
+
                                 // Skip neightbour if the gap between the spans is too small.
                                 if (Math.Min(top, ntop) - Math.Max(bot, nbot) > walkableHeight)
                                 {
                                     minh = Math.Min(minh, nbot - bot);
+                                }
 
-                                    // Find min/max accessible neighbour height.
-                                    if (Math.Abs(nbot - bot) <= walkableClimb)
+                                // Rest of the spans.
+                                if (list2HasSpans)
+                                {
+                                    for (int i2 = 0; i2 < listMinus.Count; i2++)
                                     {
-                                        if (nbot < asmin)
-                                            asmin = nbot;
-                                        if (nbot > asmax)
-                                            asmax = nbot;
+                                        var ns = listMinus[i2];
+                                        nbot = ns.smax;
+                                        hasNext = i2 + 1 < listMinus.Count;
+                                        ntop = hasNext ? listMinus[i2 + 1].smin : SPAN_MAX_HEIGHT;
+                                        // Skip neightbour if the gap between the spans is too small.
+                                        if (Math.Min(top, ntop) - Math.Max(bot, nbot) > walkableHeight)
+                                        {
+                                            minh = Math.Min(minh, nbot - bot);
+
+                                            // Find min/max accessible neighbour height.
+                                            if (Math.Abs(nbot - bot) <= walkableClimb)
+                                            {
+                                                if (nbot < asmin)
+                                                    asmin = nbot;
+                                                if (nbot > asmax)
+                                                    asmax = nbot;
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        // The current span is close to a ledge if the drop to any
-                        // neighbour span is less than the walkableClimb.
-                        if (minh < -walkableClimb)
-                            s.area = RC_NULL_AREA;
+                            if (
+                                // The current span is close to a ledge if the drop to any
+                                // neighbour span is less than the walkableClimb.
+                                minh < -walkableClimb
+                                // If the difference between all neighbours is too large,
+                                // we are at steep slope, mark the span as ledge.
+                                || (asmax - asmin) > walkableClimb)
+                            {
+                                list[i] = new(span.smin, span.smax, RC_NULL_AREA);
+                            }
 
-                        // If the difference between all neighbours is too large,
-                        // we are at steep slope, mark the span as ledge.
-                        if ((asmax - asmin) > walkableClimb)
-                        {
-                            s.area = RC_NULL_AREA;
                         }
-                    }
                 }
             }
         }
@@ -181,13 +201,17 @@ namespace DotRecast.Recast
             {
                 for (int x = 0; x < w; ++x)
                 {
-                    for (RcSpan s = solid.spans[x + y * w]; s != null; s = s.next)
-                    {
-                        int bot = s.smax;
-                        int top = s.next != null ? s.next.smin : SPAN_MAX_HEIGHT;
-                        if ((top - bot) < walkableHeight)
-                            s.area = RC_NULL_AREA;
-                    }
+                    var list = solid.spans[x + y * w];
+                    if (list != null)
+                        for (int i = 0; i < list.Count; i++)
+                        {
+                            var span = list[i];
+                            int bot = span.smax;
+                            var hasNext = i + 1 != list.Count;
+                            int top = hasNext ? list[i + 1].smin : SPAN_MAX_HEIGHT;
+                            if ((top - bot) < walkableHeight)
+                                list[i] = new(span.smin, span.smax, RC_NULL_AREA);
+                        }
                 }
             }
         }

@@ -65,22 +65,21 @@ namespace DotRecast.Detour.Extras.Jumplink
                 return false;
             }
 
-            RcSpan s = solid.spans[ix + iz * w];
-            if (s == null)
+            var list = solid.spans[ix + iz * w];
+            if (list == null)
             {
                 return false;
             }
 
-            while (s != null)
+            for (int i = 0; i < list.Count; i++)
             {
-                float symin = orig.Y + s.smin * ch;
-                float symax = orig.Y + s.smax * ch;
+                var span = list[i];
+                float symin = orig.Y + span.smin * ch;
+                float symax = orig.Y + span.smax * ch;
                 if (OverlapRange(ymin, ymax, symin, symax))
                 {
                     return true;
                 }
-
-                s = s.next;
             }
 
             return false;

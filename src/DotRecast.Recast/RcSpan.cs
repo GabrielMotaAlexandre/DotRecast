@@ -21,18 +21,22 @@ freely, subject to the following restrictions:
 namespace DotRecast.Recast
 {
     /** Represents a span in a heightfield. */
-    public class RcSpan
+    public readonly struct RcSpan
     {
         /** The lower limit of the span. [Limit: &lt; smax] */
-        public int smin;
+        public readonly int smin;
 
         /** The upper limit of the span. [Limit: &lt;= SPAN_MAX_HEIGHT] */
-        public int smax;
+        public readonly int smax;
 
         /** The area id assigned to the span. */
-        public int area;
+        public readonly int area;
 
-        /** The next span higher up in column. */
-        public RcSpan next;
+        public RcSpan(int smin, int smax, int area)
+        {
+            this.smin = smin;
+            this.smax = smax;
+            this.area = area;
+        }
     }
 }

@@ -18,6 +18,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Collections.Generic;
+using System.Linq;
 using DotRecast.Recast;
 
 namespace DotRecast.Detour.Dynamic
@@ -40,27 +41,10 @@ namespace DotRecast.Detour.Dynamic
             {
                 for (int x = 0; x < source.width; x++)
                 {
-                    RcSpan span = source.spans[pz + x];
-                    RcSpan prevCopy = null;
-                    while (span != null)
+                    var list = source.spans[pz + x];
+                    if (list != null)
                     {
-                        RcSpan copy = new()
-                        {
-                            smin = span.smin,
-                            smax = span.smax,
-                            area = span.area
-                        };
-                        if (prevCopy == null)
-                        {
-                            clone.spans[pz + x] = copy;
-                        }
-                        else
-                        {
-                            prevCopy.next = copy;
-                        }
-
-                        prevCopy = copy;
-                        span = span.next;
+                        clone.spans[pz + x] = list.ToList();
                     }
                 }
             }

@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static DotRecast.Recast.RcConstants;
 
 namespace DotRecast.Recast
@@ -60,74 +61,48 @@ namespace DotRecast.Recast
         /// @param[in]	max					The new span's maximum cell index
         /// @param[in]	areaID				The new span's area type ID
         /// @param[in]	flagMergeThreshold	How close two spans maximum extents need to be to merge area type IDs
-        public static void AddSpan(RcHeightfield heightfield, int x, int y, int spanMin, int spanMax, int areaId, int flagMergeThreshold)
+        public static void AddSpan(RcHeightfield heightfield, int x, int y, RcSpan span, int flagMergeThreshold)
         {
             var idx = x + y * heightfield.width;
 
-            RcSpan span = new()
-            {
-                smin = spanMin,
-                smax = spanMax,
-                area = areaId,
-                next = null
-            };
-
             // Empty cell, add the first span.
-            if (heightfield.spans[idx] == null)
-            {
-                heightfield.spans[idx] = span;
-                return;
-            }
 
-            RcSpan prev = default;
-            RcSpan cur = heightfield.spans[idx];
+            var list = heightfield.spans[idx] ??= new System.Collections.Generic.List<RcSpan>();
+
+            /** spans ordered by higher up in column. */
+
+            int cur;
 
             // Insert and merge spans.
-            while (cur != null)
+            for (cur = 0; cur < list.Count;)
             {
-                if (cur.smin > span.smax)
+                var curSpan = list[cur];
+                if (curSpan.smin > span.smax)
                 {
                     // Current span is further than the new span, break.
                     break;
                 }
-                else if (cur.smax < span.smin)
+                else if (curSpan.smax < span.smin)
                 {
+                    cur++;
                     // Current span is before the new span advance.
-                    prev = cur;
-                    cur = cur.next;
+                    continue;
                 }
                 else
                 {
                     // Merge spans.
-                    span.smin = Math.Min(span.smin, cur.smin);
-                    span.smax = Math.Max(span.smax, cur.smax);
+                    var smax = Math.Max(span.smax, curSpan.smax);
 
-                    // Merge flags.
-                    if (Math.Abs(span.smax - cur.smax) <= flagMergeThreshold)
-                        span.area = Math.Max(span.area, cur.area);
+                    // Merge flags
+                    span = new RcSpan(Math.Min(span.smin, curSpan.smin), smax, Math.Abs(smax - curSpan.smax) <= flagMergeThreshold ? Math.Max(span.area, curSpan.area) : span.area);
 
                     // Remove current span.
-                    RcSpan next = cur.next;
-                    if (prev != null)
-                        prev.next = next;
-                    else
-                        heightfield.spans[idx] = next;
-
-                    cur = next;
+                    list.RemoveAt(cur);
                 }
             }
 
-            // Insert new span.
-            if (prev != null)
-            {
-                span.next = prev.next;
-                prev.next = span;
-            }
-            else
-            {
-                span.next = heightfield.spans[idx];
-                heightfield.spans[idx] = span;
-            }
+            // insert between
+            list.Insert(cur, span);
         }
 
         /// Divides a convex polygon of max 12 vertices into two convex polygons
@@ -158,7 +133,7 @@ namespace DotRecast.Recast
             {
                 var dInvertA = d12LengthStackData[inVertA];
                 var dInvertB = d12LengthStackData[inVertB];
-                
+
                 ref var outVert1 = ref inVerts.GetUnsafe(outVerts1).UnsafeAs<float, Vector3>(outVerts1Count);
                 ref var outVert2 = ref inVerts.GetUnsafe(outVerts2).UnsafeAs<float, Vector3>(outVerts2Count);
                 ref var inVA = ref inVerts.GetUnsafe(inVertsOffset).UnsafeAs<float, Vector3>(inVertA);
@@ -343,7 +318,7 @@ namespace DotRecast.Recast
                     var spanMinCellIndex = Math.Clamp((int)MathF.Floor(spanMin * inverseCellHeight), 0, SPAN_MAX_HEIGHT);
                     var spanMaxCellIndex = Math.Clamp((int)MathF.Ceiling(spanMax * inverseCellHeight), spanMinCellIndex + 1, SPAN_MAX_HEIGHT);
 
-                    AddSpan(heightfield, x, z, spanMinCellIndex, spanMaxCellIndex, area, flagMergeThreshold);
+                    AddSpan(heightfield, x, z, new(spanMinCellIndex, spanMaxCellIndex, area), flagMergeThreshold);
                 }
             }
         }
