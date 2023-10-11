@@ -31,7 +31,7 @@ namespace DotRecast.Recast
     {
         const int RC_NULL_NEI = 0xffff;
 
-        public static int CalculateDistanceField(RcCompactHeightfield chf, int[] src)
+        public static int CalculateDistanceField(in RcCompactHeightfield chf, int[] src)
         {
             int maxDist;
             int w = chf.width;
@@ -212,11 +212,11 @@ namespace DotRecast.Recast
             return maxDist;
         }
 
-        private static int[] BoxBlur(RcCompactHeightfield chf, int thr, int[] src)
+        private static int[] BoxBlur(in RcCompactHeightfield chf, int thr, int[] src)
         {
             int w = chf.width;
             int h = chf.height;
-            int[] dst = new int[chf.spanCount];
+            var dst = new int[chf.spanCount];
 
             thr *= 2;
 
@@ -273,8 +273,7 @@ namespace DotRecast.Recast
             return dst;
         }
 
-        private static bool FloodRegion(int x, int y, int i, int level, int r, in RcCompactHeightfield chf, Span<int> srcReg,
-            Span<int> srcDist, List<int> stack)
+        private static bool FloodRegion(int x, int y, int i, int level, int r, in RcCompactHeightfield chf, Span<int> srcReg, Span<int> srcDist, List<int> stack)
         {
             int w = chf.width;
 
@@ -659,7 +658,7 @@ namespace DotRecast.Recast
             }
         }
 
-        private static bool MergeRegions(RcRegion rega, RcRegion regb)
+        private static bool MergeRegions(ref RcRegion rega, RcRegion regb)
         {
             int aid = rega.id;
             int bid = regb.id;
@@ -848,7 +847,7 @@ namespace DotRecast.Recast
             int h = chf.height;
 
             int nreg = maxRegionId + 1;
-            RcRegion[] regions = new RcRegion[nreg];
+            Span<RcRegion> regions = new RcRegion[nreg];
 
             // Construct regions
             for (int i = 0; i < nreg; ++i)
@@ -870,7 +869,7 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        RcRegion reg = regions[r];
+                        ref var reg = ref regions[r];
                         reg.spanCount++;
 
                         // Update floors.
@@ -929,7 +928,7 @@ namespace DotRecast.Recast
             List<int> trace = new(32);
             for (int i = 0; i < nreg; ++i)
             {
-                RcRegion reg = regions[i];
+                ref RcRegion reg = ref regions[i];
                 if (reg.id == 0 || (reg.id & RC_BORDER_REG) != 0)
                 {
                     continue;
@@ -974,7 +973,7 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        RcRegion neireg = regions[creg.connections[j]];
+                        ref RcRegion neireg = ref regions[creg.connections[j]];
                         if (neireg.visited)
                         {
                             continue;
@@ -1064,10 +1063,9 @@ namespace DotRecast.Recast
                     if (mergeId != reg.id)
                     {
                         int oldId = reg.id;
-                        RcRegion target = regions[mergeId];
 
                         // Merge neighbours.
-                        if (MergeRegions(target, reg))
+                        if (MergeRegions(ref regions[mergeId], reg))
                         {
                             // Fixup regions pointing to current region.
                             for (int j = 0; j < nreg; ++j)
@@ -1154,14 +1152,13 @@ namespace DotRecast.Recast
             }
         }
 
-        private static int MergeAndFilterLayerRegions(int minRegionArea, int maxRegionId,
-            RcCompactHeightfield chf, Span<int> srcReg)
+        private static int MergeAndFilterLayerRegions(int minRegionArea, int maxRegionId, in RcCompactHeightfield chf, Span<int> srcReg)
         {
             int w = chf.width;
             int h = chf.height;
 
             int nreg = maxRegionId + 1;
-            RcRegion[] regions = new RcRegion[nreg];
+            Span<RcRegion> regions = new RcRegion[nreg];
 
             // Construct regions
             for (int i = 0; i < nreg; ++i)
@@ -1188,7 +1185,7 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        RcRegion reg = regions[ri];
+                        ref RcRegion reg = ref regions[ri];
 
                         reg.spanCount++;
                         reg.areaType = chf.areas[i];
@@ -1248,7 +1245,7 @@ namespace DotRecast.Recast
             List<int> stack = new(32);
             for (int i = 1; i < nreg; ++i)
             {
-                RcRegion root = regions[i];
+                ref RcRegion root = ref regions[i];
                 // Skip already visited.
                 if (root.id != 0)
                 {
@@ -1272,7 +1269,7 @@ namespace DotRecast.Recast
                     for (int j = 0; j < ncons; ++j)
                     {
                         int nei = reg.connections[j];
-                        RcRegion regn = regions[nei];
+                        ref RcRegion regn = ref regions[nei];
                         // Skip already visited.
                         if (regn.id != 0)
                         {
@@ -1404,11 +1401,11 @@ namespace DotRecast.Recast
         {
             var src = new int[chf.spanCount];
 
-            int maxDist = CalculateDistanceField(chf, src);
+            int maxDist = CalculateDistanceField(in chf, src);
             chf.maxDistance = maxDist;
 
             // Blur
-            src = BoxBlur(chf, 1, src);
+            src = BoxBlur(in chf, 1, src);
 
             // Store distance.
             chf.dist = src;

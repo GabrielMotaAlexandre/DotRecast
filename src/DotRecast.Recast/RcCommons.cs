@@ -32,17 +32,6 @@ namespace DotRecast.Recast
         private static readonly int[] DirOffsetY = { 0, 1, 0, -1 };
         private static readonly int[] DirForOffset = { 3, 0, -1, 2, 1 };
 
-        /// Sets the neighbor connection data for the specified direction.
-        /// @param[in]		span			The span to update.
-        /// @param[in]		direction		The direction to set. [Limits: 0 <= value < 4]
-        /// @param[in]		neighborIndex	The index of the neighbor span.
-        public static void SetCon(RcCompactSpan span, int direction, int neighborIndex)
-        {
-            int shift = direction * 6;
-            int con = span.con;
-            span.con = (con & ~(0x3f << shift)) | ((neighborIndex & 0x3f) << shift);
-        }
-
         /// Gets neighbor connection data for the specified direction.
         /// @param[in]		span		The span to check.
         /// @param[in]		direction	The direction to check. [Limits: 0 <= value < 4]
@@ -125,7 +114,7 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcHeightfield, rcClearUnwalkableTriangles, rcRasterizeTriangles
-        public static int[] MarkWalkableTriangles(float walkableSlopeAngle, ReadOnlySpan<Vector3> verts, int[] tris, RcAreaModification areaMod)
+        public static int[] MarkWalkableTriangles(float walkableSlopeAngle, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, RcAreaModification areaMod)
         {
             int[] areas = new int[tris.Length / 3];
             float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180.0f * Math.PI);

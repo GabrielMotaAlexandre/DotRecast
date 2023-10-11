@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
 namespace DotRecast.Recast
 {
     /** Represents a span of unobstructed space within a compact heightfield. */
-    public class RcCompactSpan
+    public struct RcCompactSpan
     {
         /** The lower extent of the span. (Measured from the heightfield's base.) */
         public int y;
@@ -34,5 +34,15 @@ namespace DotRecast.Recast
 
         /** The height of the span. (Measured from #y.) */
         public int h;
+
+        /// Sets the neighbor connection data for the specified direction.
+        /// @param[in]		span			The span to update.
+        /// @param[in]		direction		The direction to set. [Limits: 0 <= value < 4]
+        /// @param[in]		neighborIndex	The index of the neighbor span.
+        public void SetCon(int direction, int neighborIndex)
+        {
+            int shift = direction * 6;
+            con = (con & ~(0x3f << shift)) | ((neighborIndex & 0x3f) << shift);
+        }
     }
 }

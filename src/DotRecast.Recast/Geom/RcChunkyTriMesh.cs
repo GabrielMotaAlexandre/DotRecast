@@ -21,13 +21,13 @@ freely, subject to the following restrictions:
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace DotRecast.Recast.Geom
 {
     public class RcChunkyTriMesh
     {
         private readonly List<RcChunkyTriMeshNode> nodes;
-        private readonly int ntris;
         private readonly int maxTrisPerChunk;
 
         private static void CalcExtends(BoundsItem[] items, int imin, int imax, ref Vector2 bmin, ref Vector2 bmax)
@@ -128,7 +128,6 @@ namespace DotRecast.Recast.Geom
             int nchunks = (ntris + trisPerChunk - 1) / trisPerChunk;
 
             nodes = new List<RcChunkyTriMeshNode>(nchunks);
-            this.ntris = ntris;
 
             // Build tree
             BoundsItem[] items = new BoundsItem[ntris];
@@ -185,15 +184,13 @@ namespace DotRecast.Recast.Geom
             }
         }
 
-        private static bool CheckOverlapRect(float[] amin, float[] amax, Vector2 bmin, Vector2 bmax)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CheckOverlapRect(Vector2 amin, Vector2 amax, Vector2 bmin, Vector2 bmax)
         {
-            bool overlap = true;
-            overlap = (amin[0] > bmax.X || amax[0] < bmin.X) ? false : overlap;
-            overlap = (amin[1] > bmax.Y || amax[1] < bmin.Y) ? false : overlap;
-            return overlap;
+            return amin.X <= bmax.X && amax.X >= bmin.X && amin.Y <= bmax.Y && amax.Y >= bmin.Y;
         }
 
-        public List<RcChunkyTriMeshNode> GetChunksOverlappingRect(float[] bmin, float[] bmax)
+        public List<RcChunkyTriMeshNode> GetChunksOverlappingRect(Vector2 bmin, Vector2 bmax)
         {
             // Traverse tree
             List<RcChunkyTriMeshNode> ids = new();

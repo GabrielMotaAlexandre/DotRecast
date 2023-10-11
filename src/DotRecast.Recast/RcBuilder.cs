@@ -163,7 +163,7 @@ namespace DotRecast.Recast
             // Step 1. Rasterize input polygon soup.
             //
             RcHeightfield solid = RcVoxelizations.BuildSolidHeightfield(geom, builderCfg);
-            return Build(builderCfg.tileX, builderCfg.tileZ, geom, cfg, solid);
+            return Build(builderCfg.tileX, builderCfg.tileZ, geom, cfg, in solid);
         }
 
         public static RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, RcConfig cfg, in RcHeightfield solid)
@@ -234,7 +234,7 @@ namespace DotRecast.Recast
             //
 
             // Create contours.
-            RcContourSet cset = RcContours.BuildContours(chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen, RcConstants.RC_CONTOUR_TESS_WALL_EDGES);
+            RcContourSet cset = RcContours.BuildContours(in chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen, RcConstants.RC_CONTOUR_TESS_WALL_EDGES);
 
             //
             // Step 6. Build polygons mesh from contours.

@@ -50,24 +50,18 @@ namespace DotRecast.Recast
 
                 if (cfg.UseTiles)
                 {
-                    float[] tbmin = new float[2];
-                    float[] tbmax = new float[2];
-                    tbmin[0] = builderCfg.bmin.X;
-                    tbmin[1] = builderCfg.bmin.Z;
-                    tbmax[0] = builderCfg.bmax.X;
-                    tbmax[1] = builderCfg.bmax.Z;
-                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(tbmin, tbmax);
+                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(builderCfg.bmin.AsVector2XZ(), builderCfg.bmax.AsVector2XZ());
                     foreach (RcChunkyTriMeshNode node in nodes)
                     {
-                        int[] tris = node.tris;
-                        int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
+                        var tris = node.tris;
+                        var m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
                         RcRasterizations.RasterizeTriangles(in solid, verts, tris, m_triareas, cfg.WalkableClimb);
                     }
                 }
                 else
                 {
-                    int[] tris = geom.Triangles;
-                    int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
+                    var tris = geom.Triangles;
+                    var m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
                     RcRasterizations.RasterizeTriangles(in solid, verts, tris, m_triareas, cfg.WalkableClimb);
                 }
             }

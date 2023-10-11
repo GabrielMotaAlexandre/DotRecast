@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DotRecast.Recast
 {
-    public class RcRegion
+    public struct RcRegion
     {
         public int spanCount; // Number of spans belonging to this region
         public int id; // ID of the region
@@ -12,8 +12,8 @@ namespace DotRecast.Recast
         public bool overlap;
         public bool connectsToBorder;
         public int ymin, ymax;
-        public List<int> connections;
-        public List<int> floors;
+        public readonly List<int> connections;
+        public readonly List<int> floors;
 
         public RcRegion(int i)
         {

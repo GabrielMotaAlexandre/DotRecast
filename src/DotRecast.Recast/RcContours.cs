@@ -709,7 +709,7 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcAllocContourSet, rcCompactHeightfield, rcContourSet, rcConfig
-        public static RcContourSet BuildContours(RcCompactHeightfield chf, float maxError, int maxEdgeLen,
+        public static RcContourSet BuildContours(in RcCompactHeightfield chf, float maxError, int maxEdgeLen,
             int buildFlags)
         {
             int w = chf.width;
