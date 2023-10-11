@@ -111,13 +111,13 @@ namespace DotRecast.Detour.Dynamic.Io
             };
             foreach (RcBuilderResult r in results)
             {
-                f.tiles.Add(new DtVoxelTile(r.tileX, r.tileZ, r.GetSolidHeightfield()));
-                f.bounds[0] = Math.Min(f.bounds[0], r.GetSolidHeightfield().bmin.X);
-                f.bounds[1] = Math.Min(f.bounds[1], r.GetSolidHeightfield().bmin.Y);
-                f.bounds[2] = Math.Min(f.bounds[2], r.GetSolidHeightfield().bmin.Z);
-                f.bounds[3] = Math.Max(f.bounds[3], r.GetSolidHeightfield().bmax.X);
-                f.bounds[4] = Math.Max(f.bounds[4], r.GetSolidHeightfield().bmax.Y);
-                f.bounds[5] = Math.Max(f.bounds[5], r.GetSolidHeightfield().bmax.Z);
+                f.tiles.Add(new DtVoxelTile(r.tileX, r.tileZ, r.Solid));
+                f.bounds[0] = Math.Min(f.bounds[0], r.Solid.bmin.X);
+                f.bounds[1] = Math.Min(f.bounds[1], r.Solid.bmin.Y);
+                f.bounds[2] = Math.Min(f.bounds[2], r.Solid.bmin.Z);
+                f.bounds[3] = Math.Max(f.bounds[3], r.Solid.bmax.X);
+                f.bounds[4] = Math.Max(f.bounds[4], r.Solid.bmax.Y);
+                f.bounds[5] = Math.Max(f.bounds[5], r.Solid.bmax.Z);
             }
 
             return f;

@@ -32,7 +32,7 @@ namespace DotRecast.Recast
         private const float EPSILON = 0.00001f;
         private static readonly int[] BOX_EDGES = new[] { 0, 1, 0, 2, 0, 4, 1, 3, 1, 5, 2, 3, 2, 6, 3, 7, 4, 5, 4, 6, 5, 7, 6, 7 };
 
-        public static void RasterizeSphere(RcHeightfield hf, Vector3 center, float radius, int area, int flagMergeThr)
+        public static void RasterizeSphere(in RcHeightfield hf, Vector3 center, float radius, int area, int flagMergeThr)
         {
             float[] bounds =
             {
@@ -43,7 +43,7 @@ namespace DotRecast.Recast
                 rectangle => IntersectSphere(rectangle, center, radius * radius));
         }
 
-        public static void RasterizeCapsule(RcHeightfield hf, Vector3 start, Vector3 end, float radius, int area, int flagMergeThr)
+        public static void RasterizeCapsule(in RcHeightfield hf, Vector3 start, Vector3 end, float radius, int area, int flagMergeThr)
         {
             float[] bounds =
             {
@@ -56,7 +56,7 @@ namespace DotRecast.Recast
                 rectangle => IntersectCapsule(rectangle, start, end, axis, radius * radius));
         }
 
-        public static void RasterizeCylinder(RcHeightfield hf, Vector3 start, Vector3 end, float radius, int area, int flagMergeThr)
+        public static void RasterizeCylinder(in RcHeightfield hf, Vector3 start, Vector3 end, float radius, int area, int flagMergeThr)
         {
             float[] bounds =
             {
@@ -69,7 +69,7 @@ namespace DotRecast.Recast
                 rectangle => IntersectCylinder(rectangle, start, end, axis, radius * radius));
         }
 
-        public static void RasterizeBox(RcHeightfield hf, Vector3 center, Vector3[] halfEdges, int area, int flagMergeThr)
+        public static void RasterizeBox(in RcHeightfield hf, Vector3 center, Vector3[] halfEdges, int area, int flagMergeThr)
         {
             Vector3[] normals =
             {
@@ -115,10 +115,10 @@ namespace DotRecast.Recast
                                                                + vertices[vi * 3 + 2] * planes[i][2];
             }
 
-            RasterizationFilledShape(hf, bounds, area, flagMergeThr, rectangle => IntersectBox(rectangle, vertices, planes));
+            RasterizationFilledShape(in hf, bounds, area, flagMergeThr, rectangle => IntersectBox(rectangle, vertices, planes));
         }
 
-        public static void RasterizeConvex(RcHeightfield hf, float[] vertices, int[] triangles, int area, int flagMergeThr)
+        public static void RasterizeConvex(in RcHeightfield hf, float[] vertices, int[] triangles, int area, int flagMergeThr)
         {
             float[] bounds = new float[] { vertices[0], vertices[1], vertices[2], vertices[0], vertices[1], vertices[2] };
             for (int i = 0; i < vertices.Length; i += 3)
@@ -167,7 +167,7 @@ namespace DotRecast.Recast
                 triBounds[j][3] = Math.Max(Math.Max(vertices[a + 2], vertices[b + 2]), vertices[c + 2]);
             }
 
-            RasterizationFilledShape(hf, bounds, area, flagMergeThr,
+            RasterizationFilledShape(in hf, bounds, area, flagMergeThr,
                 rectangle => IntersectConvex(rectangle, triangles, vertices, planes, triBounds));
         }
 
@@ -177,7 +177,7 @@ namespace DotRecast.Recast
             planes[p][3] = planes[p][0] * vertices[vert] + planes[p][1] * vertices[vert + 1] + planes[p][2] * vertices[vert + 2];
         }
 
-        private static void RasterizationFilledShape(RcHeightfield hf, float[] bounds, int area, int flagMergeThr,
+        private static void RasterizationFilledShape(in RcHeightfield hf, float[] bounds, int area, int flagMergeThr,
             Func<float[], float[]> intersection)
         {
             if (!OverlapBounds(hf.bmin, hf.bmax, bounds))

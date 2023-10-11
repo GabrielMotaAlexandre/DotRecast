@@ -139,7 +139,7 @@ public class RecastSoloMeshTest
             // If your input data is multiple meshes, you can transform them here, calculate
             // the are type for each of the meshes and rasterize them.
             int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
-            RcRasterizations.RasterizeTriangles(m_solid, verts, tris, m_triareas, cfg.WalkableClimb);
+            RcRasterizations.RasterizeTriangles(in m_solid, verts, tris, m_triareas, cfg.WalkableClimb);
         }
 
         //
@@ -149,9 +149,9 @@ public class RecastSoloMeshTest
         // Once all geometry is rasterized, we do initial pass of filtering to
         // remove unwanted overhangs caused by the conservative rasterization
         // as well as filter spans where the character cannot possibly stand.
-        RcFilters.FilterLowHangingWalkableObstacles(cfg.WalkableClimb, m_solid);
-        RcFilters.FilterLedgeSpans(cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
-        RcFilters.FilterWalkableLowHeightSpans(cfg.WalkableHeight, m_solid);
+        RcFilters.FilterLowHangingWalkableObstacles(cfg.WalkableClimb, in m_solid);
+        RcFilters.FilterLedgeSpans(cfg.WalkableHeight, cfg.WalkableClimb, in m_solid);
+        RcFilters.FilterWalkableLowHeightSpans(cfg.WalkableHeight, in m_solid);
 
         //
         // Step 4. Partition walkable surface to simple regions.
@@ -160,7 +160,7 @@ public class RecastSoloMeshTest
         // Compact the heightfield so that it is faster to handle from now on.
         // This will result more cache coherent data as well as the neighbours
         // between walkable cells will be calculated.
-        RcCompactHeightfield m_chf = RcCompacts.BuildCompactHeightfield(cfg.WalkableHeight, cfg.WalkableClimb, m_solid);
+        RcCompactHeightfield m_chf = RcCompacts.BuildCompactHeightfield(cfg.WalkableHeight, cfg.WalkableClimb, in m_solid);
 
         // Erode the walkable area by agent radius.
         ErodeWalkableArea(cfg.WalkableRadius, m_chf);

@@ -24,7 +24,7 @@ using System.Numerics;
 namespace DotRecast.Recast
 {
     /** Represents a heightfield layer within a layer set. */
-    public class RcHeightfield
+    public readonly struct RcHeightfield
     {
         /** The width of the heightfield. (Along the x-axis in cell units.) */
         public readonly int width;
@@ -36,7 +36,7 @@ namespace DotRecast.Recast
         public readonly Vector3 bmin;
 
         /** The maximum bounds in world space. [(x, y, z)] */
-        public Vector3 bmax;
+        public readonly Vector3 bmax;
 
         /** The size of each cell. (On the xz-plane.) */
         public readonly float cs;
@@ -60,6 +60,18 @@ namespace DotRecast.Recast
             this.ch = ch;
             this.borderSize = borderSize;
             spans = new List<RcSpan>[width * height];
+        }
+
+        public RcHeightfield(int width, int height, Vector3 bmin, Vector3 bmax, float cs, float ch, int borderSize, List<RcSpan>[] spans)
+        {
+            this.width = width;
+            this.height = height;
+            this.bmin = bmin;
+            this.bmax = bmax;
+            this.cs = cs;
+            this.ch = ch;
+            this.borderSize = borderSize;
+            this.spans = spans;
         }
     }
 }

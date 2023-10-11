@@ -766,7 +766,7 @@ public class RecastDebugDraw : DebugDraw
         End();
     }
 
-    public void DebugDrawHeightfieldSolid(RcHeightfield hf)
+    public void DebugDrawHeightfieldSolid(in RcHeightfield hf)
     {
         if (!FrustumTest(hf.bmin, hf.bmax))
         {
@@ -805,7 +805,7 @@ public class RecastDebugDraw : DebugDraw
         End();
     }
 
-    public void DebugDrawHeightfieldWalkable(RcHeightfield hf)
+    public void DebugDrawHeightfieldWalkable(in RcHeightfield hf)
     {
         Vector3 orig = hf.bmin;
         float cs = hf.cs;

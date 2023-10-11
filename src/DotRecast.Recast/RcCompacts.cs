@@ -40,8 +40,8 @@ namespace DotRecast.Recast
         ///
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
-        /// @see rcAllocCompactHeightfield, rcHeightfield, rcCompactHeightfield, rcConfig
-        public static RcCompactHeightfield BuildCompactHeightfield(int walkableHeight, int walkableClimb, RcHeightfield hf)
+        /// @see rcAllocCompactHeightfield, in RcHeightfield, rcCompactHeightfield, rcConfig
+        public static RcCompactHeightfield BuildCompactHeightfield(int walkableHeight, int walkableClimb, in RcHeightfield hf)
         {
             RcCompactHeightfield chf = new();
             int w = hf.width;
@@ -164,7 +164,7 @@ namespace DotRecast.Recast
             return chf;
         }
 
-        private static int GetHeightFieldSpanCount(RcHeightfield hf)
+        private static int GetHeightFieldSpanCount(in RcHeightfield hf)
         {
             var w = hf.width;
             var h = hf.height;

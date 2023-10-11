@@ -63,20 +63,23 @@ namespace DotRecast.Detour.Dynamic
         {
             ICollection<long> rasterizedColliders = checkpoint != null
                 ? checkpoint.colliders
-                : RcImmutableArray<long>.Empty;
+                : Array.Empty<long>();
 
-            RcHeightfield heightfield = checkpoint != null
+            RcHeightfield source = checkpoint != null
                 ? checkpoint.heightfield
                 : voxelTile.Heightfield();
 
+            var bmaxY = source.bmax.Y;
             foreach (var (cid, c) in colliders)
             {
                 if (!rasterizedColliders.Contains(cid))
                 {
-                    heightfield.bmax.Y = Math.Max(heightfield.bmax.Y, c.Bounds()[4] + heightfield.ch * 2);
-                    c.Rasterize(heightfield);
+                    bmaxY = Math.Max(source.bmax.Y, c.Bounds()[4] + source.ch * 2);
+                    c.Rasterize(source);
                 }
             }
+
+            RcHeightfield heightfield = new(source.width, source.height, source.bmin, new System.Numerics.Vector3(source.bmax.X, bmaxY, source.bmax.Z), source.cs, source.ch, source.borderSize, source.spans);
 
             if (config.enableCheckpoints)
             {
@@ -86,8 +89,7 @@ namespace DotRecast.Detour.Dynamic
             return heightfield;
         }
 
-        private RcBuilderResult BuildRecast(RcBuilder builder, DtDynamicNavMeshConfig config, DtVoxelTile vt,
-            RcHeightfield heightfield)
+        private RcBuilderResult BuildRecast(RcBuilder builder, DtDynamicNavMeshConfig config, DtVoxelTile vt, in RcHeightfield heightfield)
         {
             RcConfig rcConfig = new(
                 config.useTiles, config.tileSizeX, config.tileSizeZ,

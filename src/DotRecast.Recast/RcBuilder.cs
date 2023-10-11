@@ -166,7 +166,7 @@ namespace DotRecast.Recast
             return Build(builderCfg.tileX, builderCfg.tileZ, geom, cfg, solid);
         }
 
-        public static RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, RcConfig cfg, RcHeightfield solid)
+        public static RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, RcConfig cfg, in RcHeightfield solid)
         {
             FilterHeightfield(solid, cfg);
             RcCompactHeightfield chf = BuildCompactHeightfield(geom, cfg, solid);
@@ -255,7 +255,7 @@ namespace DotRecast.Recast
         /*
          * Step 2. Filter walkable surfaces.
          */
-        private static void FilterHeightfield(RcHeightfield solid, RcConfig cfg)
+        private static void FilterHeightfield(in RcHeightfield solid, RcConfig cfg)
         {
             // Once all geometry is rasterized, we do initial pass of filtering to
             // remove unwanted overhangs caused by the conservative rasterization
@@ -279,7 +279,7 @@ namespace DotRecast.Recast
         /*
          * Step 3. Partition walkable surface to simple regions.
          */
-        private static RcCompactHeightfield BuildCompactHeightfield(IInputGeomProvider geom, RcConfig cfg, RcHeightfield solid)
+        private static RcCompactHeightfield BuildCompactHeightfield(IInputGeomProvider geom, RcConfig cfg, in RcHeightfield solid)
         {
             // Compact the heightfield so that it is faster to handle from now on.
             // This will result more cache coherent data as well as the neighbours

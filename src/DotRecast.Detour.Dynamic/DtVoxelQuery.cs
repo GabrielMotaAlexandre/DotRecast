@@ -111,7 +111,7 @@ namespace DotRecast.Detour.Dynamic
         private bool TraversHeightfield(int x, int z, Vector3 start, Vector3 end, float tMin, float tMax, out float hit)
         {
             RcHeightfield hf = heightfieldProvider.Invoke(x, z);
-            if (null != hf)
+            if (hf.spans != null)
             {
                 float tx = end.X - start.X;
                 float ty = end.Y - start.Y;

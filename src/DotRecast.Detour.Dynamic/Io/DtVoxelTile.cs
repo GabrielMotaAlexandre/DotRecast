@@ -54,7 +54,7 @@ namespace DotRecast.Detour.Dynamic.Io
             spanData = ToByteArray(buffer, width, depth, DtVoxelFile.PREFERRED_BYTE_ORDER);
         }
 
-        public DtVoxelTile(int tileX, int tileZ, RcHeightfield heightfield)
+        public DtVoxelTile(int tileX, int tileZ, in RcHeightfield heightfield)
         {
             this.tileX = tileX;
             this.tileZ = tileZ;
@@ -122,7 +122,7 @@ namespace DotRecast.Detour.Dynamic.Io
             return hf;
         }
 
-        private static byte[] SerializeSpans(RcHeightfield heightfield, RcByteOrder order)
+        private static byte[] SerializeSpans(in RcHeightfield heightfield, RcByteOrder order)
         {
             int[] counts = new int[heightfield.width * heightfield.height];
             int totalCount = 0;

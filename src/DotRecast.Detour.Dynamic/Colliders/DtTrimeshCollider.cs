@@ -60,7 +60,7 @@ namespace DotRecast.Detour.Dynamic.Colliders
             return bounds;
         }
 
-        public override void Rasterize(RcHeightfield hf)
+        public override void Rasterize(in RcHeightfield hf)
         {
             var vert = MemoryMarshal.Cast<float, Vector3>(vertices.AsSpan());
 

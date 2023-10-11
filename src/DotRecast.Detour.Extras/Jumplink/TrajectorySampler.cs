@@ -7,7 +7,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     class TrajectorySampler
     {
-        public void Sample(JumpLinkBuilderConfig acfg, RcHeightfield heightfield, EdgeSampler es)
+        public void Sample(JumpLinkBuilderConfig acfg, in RcHeightfield heightfield, EdgeSampler es)
         {
             int nsamples = es.start.gsamples.Length;
             for (int i = 0; i < nsamples; ++i)
@@ -21,7 +21,7 @@ namespace DotRecast.Detour.Extras.Jumplink
                         continue;
                     }
 
-                    if (!SampleTrajectory(acfg, heightfield, ssmp.p, esmp.p, es.trajectory))
+                    if (!SampleTrajectory(acfg, in heightfield, ssmp.p, esmp.p, es.trajectory))
                     {
                         continue;
                     }
@@ -32,7 +32,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             }
         }
 
-        private bool SampleTrajectory(JumpLinkBuilderConfig acfg, RcHeightfield solid, Vector3 pa, Vector3 pb, Trajectory tra)
+        private bool SampleTrajectory(JumpLinkBuilderConfig acfg, in RcHeightfield solid, Vector3 pa, Vector3 pb, Trajectory tra)
         {
             float cs = Math.Min(acfg.cellSize, acfg.cellHeight);
             float d = Vector3Extensions.Dist2D(pa, pb) + Math.Abs(pa.Y - pb.Y);
@@ -50,7 +50,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             return true;
         }
 
-        private static bool CheckHeightfieldCollision(RcHeightfield solid, float x, float ymin, float ymax, float z)
+        private static bool CheckHeightfieldCollision(in RcHeightfield solid, float x, float ymin, float ymax, float z)
         {
             int w = solid.width;
             int h = solid.height;

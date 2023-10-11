@@ -50,7 +50,7 @@ public class VoxelQueryTest
 
         hfProvider
             .Setup(e => e.Invoke(It.IsAny<int>(), It.IsAny<int>()))
-            .Returns((RcHeightfield)null)
+            .Returns((RcHeightfield)default)
             .Callback<int, int>((x, z) =>
             {
                 captorX.Add(x);

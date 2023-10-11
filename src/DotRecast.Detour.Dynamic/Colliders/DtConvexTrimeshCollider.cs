@@ -42,7 +42,7 @@ namespace DotRecast.Detour.Dynamic.Colliders
             this.triangles = triangles;
         }
 
-        public override void Rasterize(RcHeightfield hf)
+        public override void Rasterize(in RcHeightfield hf)
         {
             RcFilledVolumeRasterization.RasterizeConvex(hf, vertices, triangles, area,
                 (int)Math.Floor(flagMergeThreshold / hf.ch));

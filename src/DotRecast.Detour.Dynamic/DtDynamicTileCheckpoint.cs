@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DotRecast.Recast;
@@ -28,13 +29,13 @@ namespace DotRecast.Detour.Dynamic
         public readonly RcHeightfield heightfield;
         public readonly ISet<long> colliders;
 
-        public DtDynamicTileCheckpoint(RcHeightfield heightfield, ISet<long> colliders)
+        public DtDynamicTileCheckpoint(in RcHeightfield heightfield, ISet<long> colliders)
         {
             this.colliders = colliders;
             this.heightfield = Clone(heightfield);
         }
 
-        private static RcHeightfield Clone(RcHeightfield source)
+        private static RcHeightfield Clone(in RcHeightfield source)
         {
             RcHeightfield clone = new(source.width, source.height, source.bmin, source.bmax, source.cs, source.ch, source.borderSize);
             for (int z = 0, pz = 0; z < source.height; z++, pz += source.width)

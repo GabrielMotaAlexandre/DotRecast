@@ -88,7 +88,7 @@ namespace DotRecast.Detour.Dynamic
 
         private RcHeightfield LookupHeightfield(int x, int z)
         {
-            return GetTileAt(x, z)?.checkpoint.heightfield;
+            return GetTileAt(x, z)?.checkpoint.heightfield ?? default;
         }
 
         public long AddCollider(IDtCollider collider)

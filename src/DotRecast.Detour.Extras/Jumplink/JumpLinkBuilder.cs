@@ -42,7 +42,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         {
             EdgeSampler es = edgeSamplerFactory.Get(acfg, type, edge);
             groundSampler.Sample(acfg, result, es);
-            trajectorySampler.Sample(acfg, result.GetSolidHeightfield(), es);
+            trajectorySampler.Sample(acfg, in result.Solid, es);
             JumpSegment[] jumpSegments = jumpSegmentBuilder.Build(acfg, es);
             return BuildJumpLinks(acfg, es, jumpSegments);
         }

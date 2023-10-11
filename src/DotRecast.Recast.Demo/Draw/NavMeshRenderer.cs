@@ -137,17 +137,17 @@ public class NavMeshRenderer
                 _debugDraw.DebugDrawCompactHeightfieldRegions(rcBuilderResult.GetCompactHeightfield());
             }
 
-            if (rcBuilderResult.GetSolidHeightfield() != null && drawMode == DrawMode.DRAWMODE_VOXELS)
+            if (rcBuilderResult.Solid.spans != null && drawMode == DrawMode.DRAWMODE_VOXELS)
             {
                 _debugDraw.Fog(true);
-                _debugDraw.DebugDrawHeightfieldSolid(rcBuilderResult.GetSolidHeightfield());
+                _debugDraw.DebugDrawHeightfieldSolid(rcBuilderResult.Solid);
                 _debugDraw.Fog(false);
             }
 
-            if (rcBuilderResult.GetSolidHeightfield() != null && drawMode == DrawMode.DRAWMODE_VOXELS_WALKABLE)
+            if (rcBuilderResult.Solid.spans != null && drawMode == DrawMode.DRAWMODE_VOXELS_WALKABLE)
             {
                 _debugDraw.Fog(true);
-                _debugDraw.DebugDrawHeightfieldWalkable(rcBuilderResult.GetSolidHeightfield());
+                _debugDraw.DebugDrawHeightfieldWalkable(rcBuilderResult.Solid);
                 _debugDraw.Fog(false);
             }
 

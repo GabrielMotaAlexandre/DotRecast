@@ -38,7 +38,7 @@ namespace DotRecast.Detour.Dynamic.Colliders
             this.radius = radius;
         }
 
-        public override void Rasterize(RcHeightfield hf)
+        public override void Rasterize(in RcHeightfield hf)
         {
             RcFilledVolumeRasterization.RasterizeCapsule(hf, start, end, radius, area, (int)Math.Floor(flagMergeThreshold / hf.ch));
         }

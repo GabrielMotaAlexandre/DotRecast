@@ -532,7 +532,7 @@ public class RecastDemo : IRecastDemoChannel
             {
                 foreach (RcBuilderResult result in _sample.GetRecastResults())
                 {
-                    if (result.GetSolidHeightfield() != null)
+                    if (result.Solid.spans != null)
                     {
                         if (!hasBound)
                         {
@@ -541,15 +541,15 @@ public class RecastDemo : IRecastDemoChannel
                         }
 
                         bminN = new Vector3(
-                            Math.Min(bminN.X, result.GetSolidHeightfield().bmin.X),
-                            Math.Min(bminN.Y, result.GetSolidHeightfield().bmin.Y),
-                            Math.Min(bminN.Z, result.GetSolidHeightfield().bmin.Z)
+                            Math.Min(bminN.X, result.Solid.bmin.X),
+                            Math.Min(bminN.Y, result.Solid.bmin.Y),
+                            Math.Min(bminN.Z, result.Solid.bmin.Z)
                         );
 
                         bmaxN = new Vector3(
-                            Math.Max(bmaxN.X, result.GetSolidHeightfield().bmax.X),
-                            Math.Max(bmaxN.Y, result.GetSolidHeightfield().bmax.Y),
-                            Math.Max(bmaxN.Z, result.GetSolidHeightfield().bmax.Z)
+                            Math.Max(bmaxN.X, result.Solid.bmax.X),
+                            Math.Max(bmaxN.Y, result.Solid.bmax.Y),
+                            Math.Max(bmaxN.Z, result.Solid.bmax.Z)
                         );
 
                         hasBound = true;

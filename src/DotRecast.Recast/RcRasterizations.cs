@@ -61,7 +61,7 @@ namespace DotRecast.Recast
         /// @param[in]	max					The new span's maximum cell index
         /// @param[in]	areaID				The new span's area type ID
         /// @param[in]	flagMergeThreshold	How close two spans maximum extents need to be to merge area type IDs
-        public static void AddSpan(RcHeightfield heightfield, int x, int y, RcSpan span, int flagMergeThreshold)
+        public static void AddSpan(in RcHeightfield heightfield, int x, int y, RcSpan span, int flagMergeThreshold)
         {
             var idx = x + y * heightfield.width;
 
@@ -199,7 +199,7 @@ namespace DotRecast.Recast
         /// @param[in] 	flagMergeThreshold	The threshold in which area flags will be merged 
         /// @returns true if the operation completes successfully.  false if there was an error adding spans to the heightfield.
         [SkipLocalsInit]
-        private static void RasterizeTri(ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area, RcHeightfield heightfield,
+        private static void RasterizeTri(ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area, in RcHeightfield heightfield,
             Vector3 heightfieldBBMin, Vector3 heightfieldBBMax,
             float cellSize, float inverseCellSize, float inverseCellHeight,
             int flagMergeThreshold)
@@ -344,7 +344,7 @@ namespace DotRecast.Recast
      *            The distance where the walkable flag is favored over the non-walkable flag. [Limit: >= 0] [Units: vx]
      * @see Heightfield
      */
-        public static void RasterizeTriangle(RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area,
+        public static void RasterizeTriangle(in RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area,
             int flagMergeThreshold)
         {
             float inverseCellSize = 1.0f / heightfield.cs;
@@ -371,7 +371,7 @@ namespace DotRecast.Recast
      *            The distance where the walkable flag is favored over the non-walkable flag. [Limit: >= 0] [Units: vx]
      * @see Heightfield
      */
-        public static void RasterizeTriangles(RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, ReadOnlySpan<int> areaIds,
+        public static void RasterizeTriangles(in RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, ReadOnlySpan<int> areaIds,
             int flagMergeThreshold)
         {
             float inverseCellSize = 1.0f / heightfield.cs;

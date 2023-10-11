@@ -9,13 +9,13 @@ namespace DotRecast.Recast
         private readonly RcContourSet cs;
         private readonly RcPolyMesh pmesh;
         private readonly RcPolyMeshDetail dmesh;
-        private readonly RcHeightfield solid;
+        public readonly RcHeightfield Solid;
 
-        public RcBuilderResult(int tileX, int tileZ, RcHeightfield solid, RcCompactHeightfield chf, RcContourSet cs, RcPolyMesh pmesh, RcPolyMeshDetail dmesh)
+        public RcBuilderResult(int tileX, int tileZ, in RcHeightfield solid, RcCompactHeightfield chf, RcContourSet cs, RcPolyMesh pmesh, RcPolyMeshDetail dmesh)
         {
             this.tileX = tileX;
             this.tileZ = tileZ;
-            this.solid = solid;
+            this.Solid = solid;
             this.chf = chf;
             this.cs = cs;
             this.pmesh = pmesh;
@@ -40,11 +40,6 @@ namespace DotRecast.Recast
         public RcContourSet GetContourSet()
         {
             return cs;
-        }
-
-        public RcHeightfield GetSolidHeightfield()
-        {
-            return solid;
         }
     }
 }
