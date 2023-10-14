@@ -88,6 +88,7 @@ namespace DotRecast.Recast
             var v3 = Vector3Extensions.Sub(verts, p3, p1);
 
             float cp = Vcross(v2, v3);
+
             if (Math.Abs(cp) > EPS)
             {
                 float v2Sq = Vector2.Dot(v2, v2);
@@ -143,38 +144,27 @@ namespace DotRecast.Recast
 
         private static float DistancePtSeg(ReadOnlySpan<float> verts, int pt, int p, int q)
         {
-            float pqx = verts[q + 0] - verts[p + 0];
-            float pqy = verts[q + 1] - verts[p + 1];
-            float pqz = verts[q + 2] - verts[p + 2];
-            float dx = verts[pt + 0] - verts[p + 0];
-            float dy = verts[pt + 1] - verts[p + 1];
-            float dz = verts[pt + 2] - verts[p + 2];
-            float d = pqx * pqx + pqy * pqy + pqz * pqz;
-            float t = pqx * dx + pqy * dy + pqz * dz;
+            var pVert = verts.GetUnsafeNotReadonly(p).UnsafeAs<float, Vector3>();
+            var pq = verts.GetUnsafeNotReadonly(q).UnsafeAs<float, Vector3>() - pVert;
+
+            var ptVert = verts.GetUnsafeNotReadonly(pt).UnsafeAs<float, Vector3>();
+
+            float d = pq.LengthSquared();
+            float t = Vector3.Dot(pq, ptVert - pVert);
             if (d > 0)
             {
                 t /= d;
             }
 
-            if (t < 0)
-            {
-                t = 0;
-            }
-            else if (t > 1)
-            {
-                t = 1;
-            }
+            t = Mathf.Clamp01(t);
 
-            dx = verts[p + 0] + t * pqx - verts[pt + 0];
-            dy = verts[p + 1] + t * pqy - verts[pt + 1];
-            dz = verts[p + 2] + t * pqz - verts[pt + 2];
 
-            return dx * dx + dy * dy + dz * dz;
+            return (pVert + t * pq - ptVert).LengthSquared();
         }
 
         private static float DistancePtSeg2d(in Vector3 verts, ReadOnlySpan<float> poly, int p, int q)
         {
-            float pqx = poly[q + 0] - poly[p + 0];
+            float pqx = poly[q] - poly[p];
             float pqz = poly[q + 2] - poly[p + 2];
             var pq = new Vector2(pqx, pqz);
 
@@ -197,7 +187,7 @@ namespace DotRecast.Recast
 
         private static float DistancePtSeg2d(ReadOnlySpan<float> verts, int pt, ReadOnlySpan<float> poly, int p, int q)
         {
-            return DistancePtSeg2d(verts.GetUnsafeNotReadonly(pt).UnsafeAs<float, Vector3>(), poly, p, q);
+            return DistancePtSeg2d(in verts.GetUnsafeNotReadonly(pt).UnsafeAs<float, Vector3>(), poly, p, q);
         }
 
         private static float DistToTriMesh(Vector3 p, ReadOnlySpan<float> verts, List<int> tris)
@@ -957,7 +947,7 @@ namespace DotRecast.Recast
                         // which are cause by symmetrical data from the grid structure.
                         var pt = new Vector3(
                             samples[s] * sampleDist + GetJitterX(i) * cs0_1,
-                            samples[s + 1] * chf.ch, 
+                            samples[s + 1] * chf.ch,
                             samples[s + 2] * sampleDist + GetJitterY(i) * cs0_1);
 
                         var d = DistToTriMesh(pt, verts, tris);

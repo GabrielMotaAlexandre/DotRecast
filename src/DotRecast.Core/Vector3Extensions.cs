@@ -254,13 +254,6 @@ namespace System.Numerics
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly T GetUnsafe<T>(this ReadOnlySpan<T> array, int index = 0) where T : struct
-        {
-            return ref array.GetReference().UnsafeAdd(index);
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetUnsafeNotReadonly<T>(this ReadOnlySpan<T> array, int index = 0) where T : struct
         {
             return ref array.GetReference().UnsafeAdd(index);
