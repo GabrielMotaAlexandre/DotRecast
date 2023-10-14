@@ -22,7 +22,7 @@ using System.Numerics;
 
 namespace DotRecast.Recast
 {
-    public class RcBuilderConfig
+    public readonly struct RcBuilderConfig
     {
         public readonly RcConfig cfg;
 

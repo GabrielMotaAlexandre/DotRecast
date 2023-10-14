@@ -27,7 +27,7 @@ namespace DotRecast.Recast
 {
     public static class RcVoxelizations
     {
-        public static RcHeightfield BuildSolidHeightfield(IInputGeomProvider geomProvider, RcBuilderConfig builderCfg)
+        public static RcHeightfield BuildSolidHeightfield(IInputGeomProvider geomProvider, in RcBuilderConfig builderCfg)
         {
             RcConfig cfg = builderCfg.cfg;
 

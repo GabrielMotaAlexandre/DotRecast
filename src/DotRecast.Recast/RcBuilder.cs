@@ -156,13 +156,13 @@ namespace DotRecast.Recast
             return result;
         }
 
-        public static RcBuilderResult Build(IInputGeomProvider geom, RcBuilderConfig builderCfg)
+        public static RcBuilderResult Build(IInputGeomProvider geom, in RcBuilderConfig builderCfg)
         {
             RcConfig cfg = builderCfg.cfg;
             //
             // Step 1. Rasterize input polygon soup.
             //
-            RcHeightfield solid = RcVoxelizations.BuildSolidHeightfield(geom, builderCfg);
+            RcHeightfield solid = RcVoxelizations.BuildSolidHeightfield(geom, in builderCfg);
             return Build(builderCfg.tileX, builderCfg.tileZ, geom, cfg, in solid);
         }
 
