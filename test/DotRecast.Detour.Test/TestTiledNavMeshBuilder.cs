@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 */
 
 using System.Collections.Generic;
+using System.Numerics;
 using DotRecast.Recast;
 using DotRecast.Recast.Geom;
 
@@ -59,7 +60,7 @@ public class TestTiledNavMeshBuilder
         // Create empty nav mesh
         DtNavMeshParams navMeshParams = new()
         {
-            orig = geom.GetMeshBoundsMin(),
+            orig = geom.GetMeshBoundsMin().AsVector2XZ(),
             tileWidth = tileSize * cellSize,
             tileHeight = tileSize * cellSize,
             maxTiles = 128,

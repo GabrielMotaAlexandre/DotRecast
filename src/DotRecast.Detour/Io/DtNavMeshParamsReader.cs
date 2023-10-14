@@ -8,8 +8,8 @@ namespace DotRecast.Detour.Io
         {
             DtNavMeshParams option = new();
             option.orig.X = bb.GetFloat();
+            bb.GetFloat();
             option.orig.Y = bb.GetFloat();
-            option.orig.Z = bb.GetFloat();
             option.tileWidth = bb.GetFloat();
             option.tileHeight = bb.GetFloat();
             option.maxTiles = bb.GetInt();

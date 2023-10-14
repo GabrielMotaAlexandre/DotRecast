@@ -62,7 +62,7 @@ public class MeshSetReaderWriterTest
             magic = NavMeshSetHeader.NAVMESHSET_MAGIC,
             version = NavMeshSetHeader.NAVMESHSET_VERSION
         };
-        header.option.orig = geom.GetMeshBoundsMin();
+        header.option.orig = geom.GetMeshBoundsMin().AsVector2XZ();
         header.option.tileWidth = m_tileSize * m_cellSize;
         header.option.tileHeight = m_tileSize * m_cellSize;
         header.option.maxTiles = m_maxTiles;

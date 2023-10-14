@@ -53,8 +53,6 @@ namespace DotRecast.Detour
 
         private readonly DtNavMeshParams m_params;
 
-        private readonly Vector3 m_orig;
-
         /// < Origin of the tile (0,0)
         // float m_orig[3]; ///< Origin of the tile (0,0)
         private readonly float m_tileWidth;
@@ -88,7 +86,6 @@ namespace DotRecast.Detour
         public DtNavMesh(DtNavMeshParams option, int maxVertsPerPoly)
         {
             m_params = option;
-            m_orig = option.orig;
             m_tileWidth = option.tileWidth;
             m_tileHeight = option.tileHeight;
             // Init tiles
@@ -110,7 +107,7 @@ namespace DotRecast.Detour
         {
             DtNavMeshParams option = new()
             {
-                orig = data.header.bmin,
+                orig = data.header.bmin.AsVector2XZ(),
                 tileWidth = data.header.bmax.X - data.header.bmin.X,
                 tileHeight = data.header.bmax.Z - data.header.bmin.Z,
                 maxTiles = 1,
@@ -251,7 +248,7 @@ namespace DotRecast.Detour
         public void CalcTileLoc(in Vector3 pos, out int tx, out int ty)
         {
             tx = (int)Math.Floor((pos.X - m_params.orig.X) / m_tileWidth);
-            ty = (int)Math.Floor((pos.Z - m_params.orig.Z) / m_tileHeight);
+            ty = (int)Math.Floor((pos.Z - m_params.orig.Y) / m_tileHeight);
         }
 
         /// Gets the tile and polygon for the specified polygon reference.

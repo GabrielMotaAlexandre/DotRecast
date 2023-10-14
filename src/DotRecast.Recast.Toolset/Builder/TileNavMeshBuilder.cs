@@ -18,6 +18,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 using DotRecast.Detour;
 using DotRecast.Recast.Geom;
@@ -104,7 +105,7 @@ namespace DotRecast.Recast.Toolset.Builder
         {
             DtNavMeshParams navMeshParams = new()
             {
-                orig = geom.GetMeshBoundsMin(),
+                orig = geom.GetMeshBoundsMin().AsVector2XZ(),
                 tileWidth = tileSize * cellSize,
                 tileHeight = tileSize * cellSize,
 

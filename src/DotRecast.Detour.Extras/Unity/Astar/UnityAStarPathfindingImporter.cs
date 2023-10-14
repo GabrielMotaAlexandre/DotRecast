@@ -66,8 +66,8 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     tileHeight = graphMeta.tileSizeZ * graphMeta.cellSize
                 };
                 option.orig.X = -0.5f * graphMeta.forcedBoundsSize.x + graphMeta.forcedBoundsCenter.x;
-                option.orig.Y = -0.5f * graphMeta.forcedBoundsSize.y + graphMeta.forcedBoundsCenter.y;
-                option.orig.Z = -0.5f * graphMeta.forcedBoundsSize.z + graphMeta.forcedBoundsCenter.z;
+                //option.orig.Y = -0.5f * graphMeta.forcedBoundsSize.y + graphMeta.forcedBoundsCenter.y;
+                option.orig.Y = -0.5f * graphMeta.forcedBoundsSize.z + graphMeta.forcedBoundsCenter.z;
                 DtNavMesh mesh = new(option, 3);
                 foreach (DtMeshData t in graphMeshData.tiles)
                 {

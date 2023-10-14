@@ -36,7 +36,7 @@ public class VoxelQueryTest
 {
     private const int TILE_WIDTH = 100;
     private const int TILE_DEPTH = 90;
-    private static readonly Vector3 ORIGIN = new(50, 10, 40);
+    private static readonly Vector2 ORIGIN = new(50, 40);
 
 
     [Test]

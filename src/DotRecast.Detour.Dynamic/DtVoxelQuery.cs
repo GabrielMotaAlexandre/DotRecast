@@ -30,12 +30,12 @@ namespace DotRecast.Detour.Dynamic
  */
     public class DtVoxelQuery
     {
-        private readonly Vector3 origin;
+        private readonly Vector2 origin;
         private readonly float tileWidth;
         private readonly float tileDepth;
         private readonly Func<int, int, RcHeightfield> heightfieldProvider;
 
-        public DtVoxelQuery(Vector3 origin, float tileWidth, float tileDepth, Func<int, int, RcHeightfield> heightfieldProvider)
+        public DtVoxelQuery(Vector2 origin, float tileWidth, float tileDepth, Func<int, int, RcHeightfield> heightfieldProvider)
         {
             this.origin = origin;
             this.tileWidth = tileWidth;
@@ -56,11 +56,11 @@ namespace DotRecast.Detour.Dynamic
         private bool TraverseTiles(Vector3 start, Vector3 end, out float hit)
         {
             float relStartX = start.X - origin.X;
-            float relStartZ = start.Z - origin.Z;
+            float relStartZ = start.Z - origin.Y;
             int sx = (int)Math.Floor(relStartX / tileWidth);
             int sz = (int)Math.Floor(relStartZ / tileDepth);
             int ex = (int)Math.Floor((end.X - origin.X) / tileWidth);
-            int ez = (int)Math.Floor((end.Z - origin.Z) / tileDepth);
+            int ez = (int)Math.Floor((end.Z - origin.Y) / tileDepth);
             int dx = ex - sx;
             int dz = ez - sz;
             int stepX = dx < 0 ? -1 : 1;
