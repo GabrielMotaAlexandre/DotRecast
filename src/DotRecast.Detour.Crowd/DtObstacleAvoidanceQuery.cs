@@ -24,6 +24,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using DotRecast.Core;
 using DotRecast.Detour.Crowd.Tracking;
+using UnityEngine;
 
 namespace DotRecast.Detour.Crowd
 {
@@ -194,7 +195,7 @@ namespace DotRecast.Detour.Crowd
                 var vab = vabPre - cir.vel;
 
                 // Side
-                side += DtUtils.Clamp01(MathF.Min(System.Numerics.Vector2.Dot(cir.dp, vab) / 2 + 0.5f, System.Numerics.Vector2.Dot(cir.np, vab) * 2));
+                side += Mathf.Clamp01(MathF.Min(System.Numerics.Vector2.Dot(cir.dp, vab) / 2 + 0.5f, System.Numerics.Vector2.Dot(cir.np, vab) * 2));
 
                 if (!SweepCircleCircle(pos, rad, vab, cir.p, cir.rad, out var htmin, out var htmax))
                     continue;
@@ -229,7 +230,7 @@ namespace DotRecast.Detour.Crowd
                 var t = System.Numerics.Vector2.Dot(sdir, w);
 
                 float d = sdir.LengthSquared();
-                t = DtUtils.Clamp01(t / (d > 0 ? d : 1));
+                t = Mathf.Clamp01(t / (d > 0 ? d : 1));
 
                 var distSqr = (t * sdir - w).LengthSquared();
 

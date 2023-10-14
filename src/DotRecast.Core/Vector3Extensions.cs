@@ -177,21 +177,15 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Copy(float[] @out, int n, float[] @in, int m)
-        {
-            @out.GetUnsafe(n).UnsafeAs<float, Vector3>() = @in.GetUnsafe(m).UnsafeAs<float, Vector3>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Copy(Span<float> @out, int n, Span<float> @in, int m)
         {
             @out.GetUnsafe(n).UnsafeAs<float, Vector3>() = @in.GetUnsafe(m).UnsafeAs<float, Vector3>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Sub(ref Vector3 e0, float[] verts, int i, int j)
+        public static Vector2 Sub(ReadOnlySpan<float> verts, int i, int j)
         {
-            e0 = verts.GetUnsafe(i).UnsafeAs<float, Vector3>() - verts.GetUnsafe(j).UnsafeAs<float, Vector3>();
+            return verts.GetUnsafeNotReadonly(i).UnsafeAs<float, Vector3>().AsVector2XZ() - verts.GetUnsafeNotReadonly(j).UnsafeAs<float, Vector3>().AsVector2XZ();
         }
 
         public static void Cross(ref Vector3 dest, Vector3 v1, Vector3 v2)
@@ -204,20 +198,6 @@ namespace System.Numerics
     {
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T GetUnsafe<T>(this T[] array, int index)
-        {
-            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T GetUnsafe<T>(this Span<T> array, int index)
-        {
-            return ref Unsafe.Add(ref MemoryMarshal.GetReference(array), index);
-        }
-
-        [Pure]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetReference<T>(this T[] array)
         {
             return ref MemoryMarshal.GetArrayDataReference(array);
@@ -225,30 +205,72 @@ namespace System.Numerics
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TTo UnsafeAs<T, TTo>(this T[] array) where T : struct where TTo : struct
+        public static ref T GetReference<T>(this Span<T> array)
         {
-            return ref array.UnsafeAs<T, TTo>(0);
+            return ref MemoryMarshal.GetReference(array);
         }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TTo UnsafeAs<T, TTo>(this T[] array, int index) where T : struct where TTo : struct
+        private static ref T GetReference<T>(this ReadOnlySpan<T> array)
         {
-            return ref Unsafe.As<T, TTo>(ref array.GetReference()).UnsafeAdd(index);
+            return ref MemoryMarshal.GetReference(array);
         }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TTo UnsafeAs<T, TTo>(this Span<T> array, int index) where T : struct where TTo : struct
+        public static ref TTo UnsafeAs<T, TTo>(this T[] array, int index = 0) where T : struct where TTo : struct
         {
-            return ref Unsafe.As<T, TTo>(ref MemoryMarshal.GetReference(array)).UnsafeAdd(index);
+            return ref array.GetReference().UnsafeAs<T, TTo>().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref TTo UnsafeAs<T, TTo>(this Span<T> array, int index = 0) where T : struct where TTo : struct
+        {
+            return ref array.GetReference().UnsafeAs<T, TTo>().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref readonly TTo UnsafeAs<T, TTo>(this ReadOnlySpan<T> array, int index = 0) where T : struct where TTo : struct
+        {
+            return ref array.GetReference().UnsafeAs<T, TTo>().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetUnsafe<T>(this T[] array, int index = 0) where T : struct
+        {
+            return ref array.GetReference().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetUnsafe<T>(this Span<T> array, int index = 0) where T : struct
+        {
+            return ref array.GetReference().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref readonly T GetUnsafe<T>(this ReadOnlySpan<T> array, int index = 0) where T : struct
+        {
+            return ref array.GetReference().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetUnsafeNotReadonly<T>(this ReadOnlySpan<T> array, int index = 0) where T : struct
+        {
+            return ref array.GetReference().UnsafeAdd(index);
         }
 
         [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref TTo UnsafeAs<T, TTo>(ref this T value, int index = 0) where T : struct where TTo : struct
         {
-            return ref Unsafe.Add(ref Unsafe.As<T, TTo>(ref value), index);
+            return ref Unsafe.As<T, TTo>(ref value).UnsafeAdd(index);
         }
 
         [Pure]
@@ -284,6 +306,50 @@ namespace UnityEngine
         {
             this.x = x;
             this.y = y;
+        }
+    }
+
+    public readonly struct Vector3Int
+    {
+        public readonly int x;
+        public readonly int y;
+        public readonly int z;
+
+        public Vector3Int(int x, int y, int z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    public readonly struct Vector4Int
+    {
+        public readonly int x;
+        public readonly int y;
+        public readonly int z;
+        public readonly int w;
+
+        public Vector4Int(int x, int y, int z, int w)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.w = w;
+        }
+    }
+
+    public static class Mathf
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Clamp01(float value)
+        {
+            if (value < 0)
+                return 0;
+            else if (value > 1)
+                return 1;
+            else
+                return value;
         }
     }
 }
