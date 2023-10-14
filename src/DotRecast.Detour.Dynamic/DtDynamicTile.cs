@@ -79,7 +79,7 @@ namespace DotRecast.Detour.Dynamic
                 }
             }
 
-            RcHeightfield heightfield = new(source.width, source.height, source.bmin, new System.Numerics.Vector3(source.bmax.X, bmaxY, source.bmax.Z), source.cs, source.ch, source.borderSize, source.spans);
+            var heightfield = new RcHeightfield(source.width, source.height, source.bmin, new System.Numerics.Vector3(source.bmax.X, bmaxY, source.bmax.Z), source.cs, source.ch, source.borderSize, source.spans);
 
             if (config.enableCheckpoints)
             {
