@@ -1,16 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DotRecast.Recast
 {
-    public class RcPotentialDiagonalComparer : IComparer<RcPotentialDiagonal>
+    public struct RcPotentialDiagonalComparer : IComparer<RcPotentialDiagonal>
     {
         public static readonly RcPotentialDiagonalComparer Shared = new();
 
-        private RcPotentialDiagonalComparer()
-        {
-        }
-
-        public int Compare(RcPotentialDiagonal va, RcPotentialDiagonal vb)
+        public readonly int Compare(RcPotentialDiagonal va, RcPotentialDiagonal vb)
         {
             RcPotentialDiagonal a = va;
             RcPotentialDiagonal b = vb;

@@ -101,7 +101,7 @@ namespace DotRecast.Detour.Dynamic
                 config.maxEdgeLen, config.maxSimplificationError,
                 Math.Min(DtDynamicNavMesh.MAX_VERTS_PER_POLY, config.vertsPerPoly),
                 config.detailSampleDistance, config.detailSampleMaxError,
-                true, true, true, null, true);
+                true, true, true, default, true);
             RcBuilderResult r = RcBuilder.Build(vt.tileX, vt.tileZ, null, rcConfig, heightfield);
             if (config.keepIntermediateResults)
             {
