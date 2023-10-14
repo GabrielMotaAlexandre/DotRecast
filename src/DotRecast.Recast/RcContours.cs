@@ -28,7 +28,7 @@ namespace DotRecast.Recast
 
     public static class RcContours
     {
-        private static int GetCornerHeight(int x, int y, int i, int dir, RcCompactHeightfield chf, out bool isBorderVertex)
+        private static int GetCornerHeight(int x, int y, int i, int dir, in RcCompactHeightfield chf, out bool isBorderVertex)
         {
             isBorderVertex = false;
 
@@ -107,7 +107,7 @@ namespace DotRecast.Recast
             return ch;
         }
 
-        private static void WalkContour(int x, int y, int i, RcCompactHeightfield chf, int[] flags, List<int> points)
+        private static void WalkContour(int x, int y, int i, in RcCompactHeightfield chf, int[] flags, List<int> points)
         {
             // Choose the first non-connected edge
             int dir = 0;

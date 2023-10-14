@@ -52,7 +52,7 @@ namespace DotRecast.Recast
             return (amin > bmax || amax < bmin) ? false : true;
         }
 
-        public static RcHeightfieldLayerSet BuildHeightfieldLayers(RcCompactHeightfield chf, int walkableHeight)
+        public static RcHeightfieldLayerSet BuildHeightfieldLayers(in RcCompactHeightfield chf, int walkableHeight)
         {
             int w = chf.width;
             int h = chf.height;

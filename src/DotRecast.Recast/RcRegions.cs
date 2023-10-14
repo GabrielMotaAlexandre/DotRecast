@@ -732,7 +732,7 @@ namespace DotRecast.Recast
             return reg.connections.Contains(0);
         }
 
-        private static bool IsSolidEdge(RcCompactHeightfield chf, ReadOnlySpan<int> srcReg, int x, int y, int i, int dir)
+        private static bool IsSolidEdge(in RcCompactHeightfield chf, ReadOnlySpan<int> srcReg, int x, int y, int i, int dir)
         {
             RcCompactSpan s = chf.spans[i];
             int r;
@@ -751,7 +751,7 @@ namespace DotRecast.Recast
             return r != srcReg[i];
         }
 
-        private static void WalkContour(int x, int y, int i, int dir, RcCompactHeightfield chf, ReadOnlySpan<int> srcReg,
+        private static void WalkContour(int x, int y, int i, int dir, in RcCompactHeightfield chf, ReadOnlySpan<int> srcReg,
             List<int> cont)
         {
             int startDir = dir;
@@ -841,7 +841,7 @@ namespace DotRecast.Recast
             }
         }
 
-        private static int MergeAndFilterRegions(int minRegionArea, int mergeRegionSize, int maxRegionId, RcCompactHeightfield chf, Span<int> srcReg)
+        private static int MergeAndFilterRegions(int minRegionArea, int mergeRegionSize, int maxRegionId, in RcCompactHeightfield chf, Span<int> srcReg)
         {
             int w = chf.width;
             int h = chf.height;
@@ -1411,7 +1411,7 @@ namespace DotRecast.Recast
             chf.dist = src;
         }
 
-        private static void PaintRectRegion(int minx, int maxx, int miny, int maxy, int regId, RcCompactHeightfield chf, Span<int> srcReg)
+        private static void PaintRectRegion(int minx, int maxx, int miny, int maxy, int regId, in RcCompactHeightfield chf, Span<int> srcReg)
         {
             int w = chf.width;
             for (int y = miny; y < maxy; ++y)

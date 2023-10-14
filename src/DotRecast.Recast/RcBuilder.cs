@@ -247,7 +247,7 @@ namespace DotRecast.Recast
             // on each polygon.
             //
             RcPolyMeshDetail dmesh = cfg.BuildMeshDetail
-                ? RcMeshDetails.BuildPolyMeshDetail(pmesh, chf, cfg.DetailSampleDist, cfg.DetailSampleMaxError)
+                ? RcMeshDetails.BuildPolyMeshDetail(pmesh, in chf, cfg.DetailSampleDist, cfg.DetailSampleMaxError)
                 : null;
             return new RcBuilderResult(tileX, tileZ, solid, chf, cset, pmesh, dmesh);
         }

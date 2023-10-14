@@ -473,7 +473,7 @@ public class RecastDebugDraw : DebugDraw
         End();
     }
 
-    public void DebugDrawCompactHeightfieldSolid(RcCompactHeightfield chf)
+    public void DebugDrawCompactHeightfieldSolid(in RcCompactHeightfield chf)
     {
         float cs = chf.cs;
         float ch = chf.ch;

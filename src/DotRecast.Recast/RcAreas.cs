@@ -337,7 +337,7 @@ namespace DotRecast.Recast
         /// @param[in]		boxMaxBounds		The maximum extents of the bounding box. [(x, y, z)] [Units: wu]
         /// @param[in]		areaId				The area id to apply. [Limit: <= #RC_WALKABLE_AREA]
         /// @param[in,out]	compactHeightfield	A populated compact heightfield.
-        public static void MarkBoxArea(float[] boxMinBounds, float[] boxMaxBounds, RcAreaModification areaId, RcCompactHeightfield compactHeightfield)
+        public static void MarkBoxArea(float[] boxMinBounds, float[] boxMaxBounds, RcAreaModification areaId, in RcCompactHeightfield compactHeightfield)
         {
             int xSize = compactHeightfield.width;
             int zSize = compactHeightfield.height;

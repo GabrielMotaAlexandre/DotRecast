@@ -994,7 +994,7 @@ namespace DotRecast.Recast
             return nverts;
         }
 
-        static void SeedArrayWithPolyCenter(RcCompactHeightfield chf, int[] meshpoly, int poly, int npoly,
+        static void SeedArrayWithPolyCenter(in RcCompactHeightfield chf, int[] meshpoly, int poly, int npoly,
             int[] verts, int bs, in RcHeightPatch hp, List<int> array)
         {
             // Note: Reads to the compact heightfield are offset by border size (bs)
@@ -1144,7 +1144,7 @@ namespace DotRecast.Recast
             queue.Add(v3);
         }
 
-        static void GetHeightData(RcCompactHeightfield chf, int[] meshpolys, int poly, int npoly, int[] verts,
+        static void GetHeightData(in RcCompactHeightfield chf, int[] meshpolys, int poly, int npoly, int[] verts,
             int bs, in RcHeightPatch hp, int region)
         {
             // Note: Reads to the compact heightfield are offset by border size (bs)
@@ -1296,7 +1296,7 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcAllocPolyMeshDetail, rcPolyMesh, rcCompactHeightfield, rcPolyMeshDetail, rcConfig
-        public static RcPolyMeshDetail BuildPolyMeshDetail(RcPolyMesh mesh, RcCompactHeightfield chf, float sampleDist, float sampleMaxError)
+        public static RcPolyMeshDetail BuildPolyMeshDetail(RcPolyMesh mesh, in RcCompactHeightfield chf, float sampleDist, float sampleMaxError)
         {
             if (mesh.nverts == 0 || mesh.npolys == 0)
             {
@@ -1406,7 +1406,7 @@ namespace DotRecast.Recast
                 hp.ymin = bounds[i * 4 + 2];
                 hp.width = bounds[i * 4 + 1] - bounds[i * 4];
                 hp.height = bounds[i * 4 + 3] - bounds[i * 4 + 2];
-                GetHeightData(chf, mesh.polys, p, npoly, mesh.verts, borderSize, hp, mesh.regs[i]);
+                GetHeightData(in chf, mesh.polys, p, npoly, mesh.verts, borderSize, hp, mesh.regs[i]);
 
                 // Build detail mesh.
                 int nverts = BuildPolyDetail(poly, npoly, sampleDist, sampleMaxError, heightSearchRadius, in chf, in hp, verts, tris);
