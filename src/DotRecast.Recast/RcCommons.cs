@@ -92,15 +92,15 @@ namespace DotRecast.Recast
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CalcGridSize(Vector2 bmin, Vector2 bmax, float cs, out int sizeX, out int sizeZ)
+        public static void CalcGridSize(Vector3 bmin, Vector3 bmax, float cs, out int sizeX, out int sizeZ)
         {
             sizeX = (int)((bmax.X - bmin.X) / cs + 0.5f);
-            sizeZ = (int)((bmax.Y - bmin.Y) / cs + 0.5f);
+            sizeZ = (int)((bmax.Z - bmin.Z) / cs + 0.5f);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CalcTileCount(Vector2 bmin, Vector2 bmax, float cs, int tileSizeX, int tileSizeZ, out int tw, out int td)
+        public static void CalcTileCount(Vector3 bmin, Vector3 bmax, float cs, int tileSizeX, int tileSizeZ, out int tw, out int td)
         {
             CalcGridSize(bmin, bmax, cs, out var gw, out var gd);
             tw = (gw + tileSizeX - 1) / tileSizeX;

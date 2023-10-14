@@ -36,16 +36,16 @@ namespace DotRecast.Recast
         public readonly int height;
 
         /** The minimum bounds of the field's AABB. [(x, y, z)] [Units: wu] **/
-        public readonly Vector2 bmin;
+        public readonly Vector3 bmin;
 
         /** The maximum bounds of the field's AABB. [(x, y, z)] [Units: wu] **/
-        public readonly Vector2 bmax;
+        public readonly Vector3 bmax;
 
-        public RcBuilderConfig(RcConfig cfg, Vector2 bmin, Vector2 bmax) : this(cfg, bmin, bmax, 0, 0)
+        public RcBuilderConfig(RcConfig cfg, Vector3 bmin, Vector3 bmax) : this(cfg, bmin, bmax, 0, 0)
         {
         }
 
-        public RcBuilderConfig(RcConfig cfg, Vector2 bmin, Vector2 bmax, int tileX, int tileZ)
+        public RcBuilderConfig(RcConfig cfg, Vector3 bmin, Vector3 bmax, int tileX, int tileZ)
         {
             this.tileX = tileX;
             this.tileZ = tileZ;
@@ -57,9 +57,9 @@ namespace DotRecast.Recast
                 float tsx = cfg.TileSizeX * cfg.Cs;
                 float tsz = cfg.TileSizeZ * cfg.Cs;
                 this.bmin.X += tileX * tsx;
-                this.bmin.Y += tileZ * tsz;
+                this.bmin.Z += tileZ * tsz;
                 this.bmax.X = this.bmin.X + tsx;
-                this.bmax.Y = this.bmin.Y + tsz;
+                this.bmax.Z = this.bmin.Z + tsz;
                 
                 // Expand the heighfield bounding box by border size to find the extents of geometry we need to build this tile.
                 //
@@ -84,9 +84,9 @@ namespace DotRecast.Recast
                 // or use the bounding box below to only pass in a sliver of each of the 8 neighbours.
                 
                 this.bmin.X -= cfg.BorderSize * cfg.Cs;
-                this.bmin.Y -= cfg.BorderSize * cfg.Cs;
+                this.bmin.Z -= cfg.BorderSize * cfg.Cs;
                 this.bmax.X += cfg.BorderSize * cfg.Cs;
-                this.bmax.Y += cfg.BorderSize * cfg.Cs;
+                this.bmax.Z += cfg.BorderSize * cfg.Cs;
                 width = cfg.TileSizeX + cfg.BorderSize * 2;
                 height = cfg.TileSizeZ + cfg.BorderSize * 2;
             }
