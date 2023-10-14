@@ -63,7 +63,6 @@ namespace DotRecast.Recast
             return (float)Math.Sqrt(VdistSq2(p, verts, q));
         }
 
-
         private static float Vcross2(ReadOnlySpan<float> verts, int p1, int p2, int p3)
         {
             float u1 = verts[p2 + 0] - verts[p1 + 0];
@@ -81,11 +80,13 @@ namespace DotRecast.Recast
 
         private static float CircumCircle(ReadOnlySpan<float> verts, int p1, int p2, int p3, ref Vector3 c)
         {
+            c = verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>();
+
             const float EPS = 1e-6f;
             // Calculate the circle relative to p1, to avoid some precision issues.
             // v1 is 0
-            var v2 = Vector3Extensions.Sub(verts, p2, p1);
-            var v3 = Vector3Extensions.Sub(verts, p3, p1);
+            var v2 = verts.GetUnsafeNotReadonly(p2).UnsafeAs<float, Vector3>().AsVector2XZ() - verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>().AsVector2XZ();
+            var v3 = verts.GetUnsafeNotReadonly(p3).UnsafeAs<float, Vector3>().AsVector2XZ() - verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>().AsVector2XZ();
 
             float cp = Vcross(v2, v3);
 
@@ -94,19 +95,16 @@ namespace DotRecast.Recast
                 float v2Sq = Vector2.Dot(v2, v2);
                 float v3Sq = Vector2.Dot(v3, v3);
 
-                c = new Vector3(
+                var d = new Vector3(
                     (v2Sq * (v3.Y) + v3Sq * (-v2.Y)) / (2 * cp),
                     0,
                     (v2Sq * (-v3.X) + v3Sq * (v2.X)) / (2 * cp));
 
-                var d = (float)Math.Sqrt((-c).LengthSquared());
+                c += d;
 
-                c += verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>();
-
-                return d;
+                return (float)Math.Sqrt(d.LengthSquared());
             }
 
-            c = verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>();
             return 0;
         }
 
@@ -208,7 +206,7 @@ namespace DotRecast.Recast
             return dmin == float.MaxValue ? -1 : dmin;
         }
 
-        private static float DistToPoly(int nvert, float[] verts, Vector3 p)
+        private static float DistToPoly(int nvert, ReadOnlySpan<float> verts, Vector3 p)
         {
             float dmin = float.MaxValue;
             int i, j;
@@ -359,11 +357,11 @@ namespace DotRecast.Recast
         {
             float a1 = Vcross2(verts, a, b, d);
             float a2 = Vcross2(verts, a, b, c);
-            if (a1 * a2 < 0.0f)
+            if (a1 * a2 < 0)
             {
                 float a3 = Vcross2(verts, c, d, a);
                 float a4 = a3 + a2 - a1;
-                if (a3 * a4 < 0.0f)
+                if (a3 * a4 < 0)
                 {
                     return true;
                 }
@@ -569,12 +567,12 @@ namespace DotRecast.Recast
                 {
                     // Right
                     int t = edges[e + 2] * 4;
-                    if (tris[t + 0] == -1)
+                    if (tris[t] == -1)
                     {
                         tris[t + 0] = edges[e + 1];
                         tris[t + 1] = edges[e + 0];
                     }
-                    else if (tris[t + 0] == edges[e + 0])
+                    else if (tris[t] == edges[e])
                     {
                         tris[t + 2] = edges[e + 1];
                     }
@@ -714,7 +712,7 @@ namespace DotRecast.Recast
             return (((i * 0xd8163841) & 0xffff) / 65535.0f * 2.0f) - 1.0f;
         }
 
-        static int BuildPolyDetail(float[] @in, int nin, float sampleDist, float sampleMaxError, int heightSearchRadius,
+        static int BuildPolyDetail(ReadOnlySpan<float> @in, int nin, float sampleDist, float sampleMaxError, int heightSearchRadius,
             in RcCompactHeightfield chf, in RcHeightPatch hp,
             Span<float> verts,
             List<int> tris)
@@ -728,7 +726,7 @@ namespace DotRecast.Recast
 
             for (int i = 0; i < nin; ++i)
             {
-                Vector3Extensions.Copy(verts, i * 3, @in, i * 3);
+                verts.UnsafeAs<float, Vector3>(i) = @in.UnsafeAs<float, Vector3>(i);
             }
 
             tris.Clear();
@@ -843,7 +841,7 @@ namespace DotRecast.Recast
                     {
                         for (int k = nidx - 2; k > 0; --k)
                         {
-                            Vector3Extensions.Copy(verts, nverts * 3, edge, idx[k] * 3);
+                            verts.UnsafeAs<float, Vector3>(nverts) = edge.UnsafeAs<float, Vector3>(idx[k]);
                             hull[nhull++] = nverts;
                             nverts++;
                         }
@@ -852,7 +850,7 @@ namespace DotRecast.Recast
                     {
                         for (int k = 1; k < nidx - 1; ++k)
                         {
-                            Vector3Extensions.Copy(verts, nverts * 3, edge, idx[k] * 3);
+                            verts.UnsafeAs<float, Vector3>(nverts) = edge.UnsafeAs<float, Vector3>(idx[k]);
                             hull[nhull++] = nverts;
                             nverts++;
                         }

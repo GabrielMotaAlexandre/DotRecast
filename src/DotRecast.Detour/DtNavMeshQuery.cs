@@ -659,14 +659,14 @@ namespace DotRecast.Detour
                     }
 
                     // Calc polygon bounds.
-                    int v = p.verts[0] * 3;
+                    int v = p.verts[0];
                     bmin.Set(tile.data.verts, v);
                     bmax.Set(tile.data.verts, v);
                     for (int j = 1; j < p.vertCount; ++j)
                     {
-                        v = p.verts[j] * 3;
-                        bmin.Min(tile.data.verts, v);
-                        bmax.Max(tile.data.verts, v);
+                        v = p.verts[j];
+                        bmin.Min(tile.data.verts, v * 3);
+                        bmax.Max(tile.data.verts, v * 3);
                     }
 
                     if (DtUtils.OverlapBounds(qmin, qmax, bmin, bmax))
@@ -3032,8 +3032,8 @@ namespace DotRecast.Detour
                         continue;
                     }
 
-                    int ivj = poly.verts[j] * 3;
-                    int ivi = poly.verts[i] * 3;
+                    var ivj = poly.verts[j];
+                    var ivi = poly.verts[i];
                     var seg = new RcSegmentVert();
                     seg.vmin.Set(tile.data.verts, ivj);
                     seg.vmax.Set(tile.data.verts, ivi);

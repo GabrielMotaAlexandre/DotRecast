@@ -160,13 +160,12 @@ namespace DotRecast.Detour
                     int ndv = option.detailMeshes[i * 4 + 1];
                     Vector3 bmin = new();
                     Vector3 bmax = new();
-                    int dv = vb * 3;
-                    bmin.Set(option.detailVerts, dv);
-                    bmax.Set(option.detailVerts, dv);
+                    bmin.Set(option.detailVerts, vb);
+                    bmax.Set(option.detailVerts, vb);
                     for (int j = 1; j < ndv; j++)
                     {
-                        bmin.Min(option.detailVerts, dv + j * 3);
-                        bmax.Max(option.detailVerts, dv + j * 3);
+                        bmin.Min(option.detailVerts, vb * 3 + j * 3);
+                        bmax.Max(option.detailVerts, vb * 3 + j * 3);
                     }
 
                     // BV-tree uses cs for all dimensions

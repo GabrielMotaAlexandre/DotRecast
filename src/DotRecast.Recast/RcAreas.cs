@@ -449,10 +449,10 @@ namespace DotRecast.Recast
 
             var bmin = verts.UnsafeAs<float, Vector3>();
             var bmax = bmin;
-            for (int i = 3; i < verts.Length; i += 3)
+            for (int i = 1, end = verts.Length / 3; i < end; i++)
             {
-                bmin.Min(verts, i);
-                bmax.Max(verts, i);
+                bmin.Min(verts, i * 3);
+                bmax.Max(verts, i * 3);
             }
 
             bmin.Y = minY;

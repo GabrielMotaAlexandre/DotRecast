@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace DotRecast.Detour
 {
@@ -53,10 +54,10 @@ namespace DotRecast.Detour
 
             do
             {
-                a.Set(p, 3 * (ai % n));
-                b.Set(q, 3 * (bi % m));
-                a1.Set(p, 3 * ((ai + n - 1) % n)); // prev a
-                b1.Set(q, 3 * ((bi + m - 1) % m)); // prev b
+                a.Set(p, (ai % n));
+                b.Set(q, (bi % m));
+                a1.Set(p, ((ai + n - 1) % n)); // prev a
+                b1.Set(q, ((bi + m - 1) % m)); // prev b
 
                 Vector3 A = a - a1;
                 Vector3 B = b - b1;
@@ -86,8 +87,21 @@ namespace DotRecast.Detour
 
                 /*-----Advance rules-----*/
 
+                /// Derives the dot product of two vectors on the xz-plane. (@p u . @p v)
+                /// @param[in] u A vector [(x, y, z)]
+                /// @param[in] v A vector [(x, y, z)]
+                /// @return The dot product on the xz-plane.
+                ///
+                /// The vectors are projected onto the xz-plane, so the y-values are
+                /// ignored.
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static float Dot2D(Vector3 vector, Vector3 v)
+                {
+                    return vector.X * v.X + vector.Z * v.Z;
+                }
+
                 /* Special case: A & B overlap and oppositely oriented. */
-                if (code == Intersection.Overlap && A.Dot2D(B) < 0)
+                if (code == Intersection.Overlap && Dot2D(A, B) < 0)
                 {
                     ii = AddVertex(inters, ii, ip);
                     ii = AddVertex(inters, ii, iq);

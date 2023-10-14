@@ -30,28 +30,15 @@ namespace System.Numerics
             return new Vector2(vector.X, vector.Z);
         }
 
-        public static Vector3 Of(float[] f, int idx)
+        public static Vector3 Of(ReadOnlySpan<float> f, int idx)
         {
-            return f.GetUnsafe(idx).UnsafeAs<float, Vector3>();
+            return f.GetUnsafeNotReadonly(idx).UnsafeAs<float, Vector3>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Set(this ref Vector3 vector, float[] @in, int i)
         {
-            vector = @in.GetUnsafe(i).UnsafeAs<float, Vector3>();
-        }
-
-        /// Derives the dot product of two vectors on the xz-plane. (@p u . @p v)
-        /// @param[in] u A vector [(x, y, z)]
-        /// @param[in] v A vector [(x, y, z)]
-        /// @return The dot product on the xz-plane.
-        ///
-        /// The vectors are projected onto the xz-plane, so the y-values are
-        /// ignored.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Dot2D(this ref Vector3 vector, Vector3 v)
-        {
-            return vector.X * v.X + vector.Z * v.Z;
+            vector = @in.GetUnsafe().UnsafeAs<float, Vector3>(i);
         }
 
         /// Normalizes the vector.
@@ -78,13 +65,13 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Min(this ref Vector3 vector, float[] @in, int i)
+        public static void Min(this ref Vector3 vector, ReadOnlySpan<float> @in, int i)
         {
-            vector.Min(new Vector3(@in[i], @in[i + 1], @in[i + 2]));
+            vector.Min(@in.GetUnsafeNotReadonly(i).UnsafeAs<float, Vector3>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Min(this ref Vector3 vector, Vector3 b)
+        public static void Min(this ref Vector3 vector, in Vector3 b)
         {
             vector = Vector3.Min(vector, b);
         }
@@ -96,9 +83,9 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Max(this ref Vector3 vector, float[] @in, int i)
+        public static void Max(this ref Vector3 vector, ReadOnlySpan<float> @in, int i)
         {
-            vector.Max(new Vector3(@in[i], @in[i + 1], @in[i + 2]));
+            vector.Max(@in.GetUnsafeNotReadonly(i).UnsafeAs<float, Vector3>());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -174,18 +161,6 @@ namespace System.Numerics
         public static bool IsFinite2D(Vector3 v)
         {
             return float.IsFinite(v.X) && float.IsFinite(v.Z);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Copy(Span<float> @out, int n, Span<float> @in, int m)
-        {
-            @out.GetUnsafe(n).UnsafeAs<float, Vector3>() = @in.GetUnsafe(m).UnsafeAs<float, Vector3>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector2 Sub(ReadOnlySpan<float> verts, int i, int j)
-        {
-            return verts.GetUnsafeNotReadonly(i).UnsafeAs<float, Vector3>().AsVector2XZ() - verts.GetUnsafeNotReadonly(j).UnsafeAs<float, Vector3>().AsVector2XZ();
         }
 
         public static void Cross(ref Vector3 dest, Vector3 v1, Vector3 v2)

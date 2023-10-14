@@ -395,14 +395,14 @@ namespace DotRecast.Detour
                     }
 
                     // Calc polygon bounds.
-                    int v = p.verts[0] * 3;
+                    int v = p.verts[0];
                     bmin.Set(tile.data.verts, v);
                     bmax.Set(tile.data.verts, v);
                     for (int j = 1; j < p.vertCount; ++j)
                     {
-                        v = p.verts[j] * 3;
-                        bmin.Min(tile.data.verts, v);
-                        bmax.Max(tile.data.verts, v);
+                        v = p.verts[j];
+                        bmin.Min(tile.data.verts, v * 3);
+                        bmax.Max(tile.data.verts, v * 3);
                     }
 
                     if (DtUtils.OverlapBounds(qmin, qmax, bmin, bmax))
@@ -1286,7 +1286,7 @@ namespace DotRecast.Detour
                         v[k + 1].Y = tile.data.verts[poly.verts[j + k] * 3 + 1];
                         v[k + 1].Z = tile.data.verts[poly.verts[j + k] * 3 + 2];
                     }
-                    
+
                     if (DtUtils.ClosestHeightPointTriangle(pos, v[0], v[1], v[2], out var h))
                     {
                         height = h;
