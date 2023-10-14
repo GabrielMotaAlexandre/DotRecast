@@ -34,7 +34,7 @@ namespace DotRecast.Detour.Dynamic.Io
         public const int VERSION_EXPORTER_RECAST4J = 0x1000;
         public const int VERSION_COMPRESSION_LZ4 = 0x0100;
         public int version;
-        public int partition = RcPartitionType.WATERSHED.Value;
+        public RcPartition partition = RcPartition.WATERSHED;
         public bool filterLowHangingObstacles = true;
         public bool filterLedgeSpans = true;
         public bool filterWalkableLowHeightSpans = true;
@@ -67,7 +67,7 @@ namespace DotRecast.Detour.Dynamic.Io
         {
             return new RcConfig(useTiles, tileSizeX, tileSizeZ,
                 tile.borderSize,
-                RcPartitionType.OfValue(partition),
+                partition,
                 cellSize, tile.cellHeight,
                 walkableSlopeAngle, walkableHeight, walkableRadius, walkableClimb,
                 minRegionArea, regionMergeArea,

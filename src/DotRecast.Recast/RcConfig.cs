@@ -26,7 +26,7 @@ namespace DotRecast.Recast
     /// @ingroup recast
     public class RcConfig
     {
-        public readonly int Partition;
+        public readonly RcPartition Partition;
 
         public readonly bool UseTiles;
 
@@ -156,7 +156,7 @@ namespace DotRecast.Recast
             TileSizeX = tileSizeX;
             TileSizeZ = tileSizeZ;
             BorderSize = borderSize;
-            Partition = RcPartitionType.Of(partition).Value;
+            Partition = partition;
             Cs = cellSize;
             Ch = cellHeight;
             WalkableSlopeAngle = agentMaxSlope;

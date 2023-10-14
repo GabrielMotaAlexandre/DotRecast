@@ -381,7 +381,10 @@ namespace DotRecast.Recast
             // Find number of unique layers.
             layerId = 0;
             for (int i = 0; i < nregs; ++i)
+            {
                 remap[regs[i].layerId] = 1;
+            }
+
             for (int i = 0; i < 256; ++i)
             {
                 if (remap[i] != 0)
@@ -409,9 +412,9 @@ namespace DotRecast.Recast
 
             // Build contracted bbox for layers.
             Vector3 bmin = chf.bmin;
-            Vector3 bmax = chf.bmax;
             bmin.X += borderSize * chf.cs;
             bmin.Z += borderSize * chf.cs;
+            Vector3 bmax = chf.bmax;
             bmax.X -= borderSize * chf.cs;
             bmax.Z -= borderSize * chf.cs;
 
@@ -542,7 +545,6 @@ namespace DotRecast.Recast
                     layer.miny = layer.maxy = 0;
             }
 
-            // ctx->StopTimer(RC_TIMER_BUILD_LAYERS);
             return lset;
         }
     }

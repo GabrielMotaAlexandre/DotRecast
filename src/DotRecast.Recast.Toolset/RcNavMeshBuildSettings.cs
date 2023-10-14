@@ -1,4 +1,4 @@
-﻿namespace DotRecast.Recast.Toolset
+namespace DotRecast.Recast.Toolset
 {
     public class RcNavMeshBuildSettings
     {
@@ -16,7 +16,7 @@
         public int minRegionSize = 8;
         public int mergedRegionSize = 20;
 
-        public int partitioning = RcPartitionType.WATERSHED.Value;
+        public RcPartition partitioning = RcPartition.WATERSHED;
 
         public bool filterLowHangingObstacles = true;
         public bool filterLedgeSpans = true;

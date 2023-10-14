@@ -77,7 +77,7 @@ namespace DotRecast.Recast.Toolset.Tools
             RcConfig cfg = new(
                 true, settings.tileSize, settings.tileSize,
                 RcConfig.CalcBorder(settings.agentRadius, settings.cellSize),
-                RcPartitionType.OfValue(settings.partitioning),
+                settings.partitioning,
                 settings.cellSize, settings.cellHeight,
                 settings.agentMaxSlope, settings.agentHeight, settings.agentRadius, settings.agentMaxClimb,
                 settings.minRegionSize * settings.minRegionSize * settings.cellSize * settings.cellSize,

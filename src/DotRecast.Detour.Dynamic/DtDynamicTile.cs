@@ -94,7 +94,7 @@ namespace DotRecast.Detour.Dynamic
             RcConfig rcConfig = new(
                 config.useTiles, config.tileSizeX, config.tileSizeZ,
                 vt.borderSize,
-                RcPartitionType.OfValue(config.partition),
+                config.partition,
                 vt.cellSize, vt.cellHeight,
                 config.walkableSlopeAngle, config.walkableHeight, config.walkableRadius, config.walkableClimb,
                 config.minRegionArea, config.regionMergeArea,

@@ -47,7 +47,7 @@ public class DynamicUpdateSampleTool : ISampleTool
     private float cellSize = 0.3f;
 
     // build config
-    private int partitioning = RcPartitionType.WATERSHED.Value;
+    private RcPartition partitioning = RcPartition.WATERSHED;
     private float walkableSlopeAngle = 45f;
     private float walkableHeight = 2f;
     private float walkableRadius = 0.6f;
@@ -178,11 +178,15 @@ public class DynamicUpdateSampleTool : ISampleTool
 
             ImGui.Text("Partitioning");
             ImGui.Separator();
-            RcPartitionType.Values.ForEach(partition =>
+            Enum.GetValues<RcPartition>().ForEach(partition =>
             {
-                var label = partition.Name.Substring(0, 1).ToUpper()
-                            + partition.Name.Substring(1).ToLower();
-                ImGui.RadioButton(label, ref partitioning, partition.Value);
+                var name = Enum.GetName(partition);
+                var label = name.Substring(0, 1).ToUpper()
+                            + name.Substring(1).ToLower();
+
+                int part = (int)partitioning;
+                ImGui.RadioButton(label, ref part, (int)partition);
+                partitioning = (RcPartition)part;
             });
             ImGui.NewLine();
 

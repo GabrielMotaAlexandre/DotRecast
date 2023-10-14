@@ -35,7 +35,7 @@ namespace DotRecast.Recast.Toolset.Builder
         {
             return Build(geom,
                 settings.tileSize,
-                RcPartitionType.OfValue(settings.partitioning),
+                settings.partitioning,
                 settings.cellSize, settings.cellHeight,
                 settings.agentMaxSlope, settings.agentHeight, settings.agentRadius, settings.agentMaxClimb,
                 settings.minRegionSize, settings.mergedRegionSize,

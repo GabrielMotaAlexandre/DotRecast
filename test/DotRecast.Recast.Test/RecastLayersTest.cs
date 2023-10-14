@@ -38,7 +38,7 @@ public class RecastLayersTest
     private const int m_vertsPerPoly = 6;
     private const float m_detailSampleDist = 6.0f;
     private const float m_detailSampleMaxError = 1.0f;
-    private readonly int m_partitionType = RcPartitionType.WATERSHED.Value;
+    private readonly RcPartition m_partitionType = RcPartition.WATERSHED;
     private const int m_tileSize = 48;
 
     [Test]
@@ -143,7 +143,7 @@ public class RecastLayersTest
         
         RcConfig cfg = new(true, m_tileSize, m_tileSize,
             RcConfig.CalcBorder(m_agentRadius, m_cellSize),
-            RcPartitionType.OfValue(m_partitionType),
+            m_partitionType,
             m_cellSize, m_cellHeight,
             m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
             m_regionMinArea, m_regionMergeArea,
