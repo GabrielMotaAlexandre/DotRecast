@@ -85,8 +85,9 @@ namespace DotRecast.Recast
             const float EPS = 1e-6f;
             // Calculate the circle relative to p1, to avoid some precision issues.
             // v1 is 0
-            var v2 = verts.GetUnsafeNotReadonly(p2).UnsafeAs<float, Vector3>().AsVector2XZ() - verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>().AsVector2XZ();
-            var v3 = verts.GetUnsafeNotReadonly(p3).UnsafeAs<float, Vector3>().AsVector2XZ() - verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>().AsVector2XZ();
+            var p1Vector = verts.GetUnsafeNotReadonly(p1).UnsafeAs<float, Vector3>().AsVector2XZ();
+            var v2 = verts.GetUnsafeNotReadonly(p2).UnsafeAs<float, Vector3>().AsVector2XZ() - p1Vector;
+            var v3 = verts.GetUnsafeNotReadonly(p3).UnsafeAs<float, Vector3>().AsVector2XZ() - p1Vector;
 
             float cp = Vcross(v2, v3);
 

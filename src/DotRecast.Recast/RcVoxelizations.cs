@@ -50,7 +50,7 @@ namespace DotRecast.Recast
 
                 if (cfg.UseTiles)
                 {
-                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(builderCfg.bmin.AsVector2XZ(), builderCfg.bmax.AsVector2XZ());
+                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(builderCfg.bmin, builderCfg.bmax);
                     foreach (RcChunkyTriMeshNode node in nodes)
                     {
                         var tris = node.tris;
