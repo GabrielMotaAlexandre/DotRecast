@@ -684,20 +684,20 @@ namespace DotRecast.Recast
         //     return c;
         // }
 
-        // TODO (graham): This is duplicated in the ConvexVolumeTool in RecastDemo
         /// Checks if a point is contained within a polygon
         ///
         /// @param[in]	numVerts	Number of vertices in the polygon
         /// @param[in]	verts		The polygon vertices
         /// @param[in]	point		The point to check
         /// @returns true if the point lies within the polygon, false otherwise.
-        public static bool PointInPoly(float[] verts, Vector3 point)
+        public static bool PointInPoly(ReadOnlySpan<float> verts, Vector3 point)
         {
             bool inPoly = false;
-            for (int i = 0, j = verts.Length / 3 - 1; i < verts.Length / 3; j = i++)
+            for (int i = 0, end = verts.Length / 3, j = end - 1; i < end; j = i++)
             {
-                Vector3 vi = new(verts[i * 3], verts[i * 3 + 1], verts[i * 3 + 2]);
-                Vector3 vj = new(verts[j * 3], verts[j * 3 + 1], verts[j * 3 + 2]);
+                var vi = verts.UnsafeAs<float, Vector3>(i);
+                var vj = verts.UnsafeAs<float, Vector3>(j);
+
                 if (vi.Z > point.Z == vj.Z > point.Z)
                 {
                     continue;
@@ -771,8 +771,8 @@ namespace DotRecast.Recast
                 // Average the two segment normals to get the proportional miter offset for B.
                 // This isn't normalized because it's defining the distance and direction the corner will need to be
                 // adjusted proportionally to the edge offsets to properly miter the adjoining edges.
-                float cornerMiterX = (prevSegmentNormX + currSegmentNormX) * 0.5f;
-                float cornerMiterZ = (prevSegmentNormZ + currSegmentNormZ) * 0.5f;
+                float cornerMiterX = (prevSegmentNormX + currSegmentNormX) / 2;
+                float cornerMiterZ = (prevSegmentNormZ + currSegmentNormZ) / 2;
                 float cornerMiterSqMag = RcMath.Sqr(cornerMiterX) + RcMath.Sqr(cornerMiterZ);
 
                 // If the magnitude of the segment normal average is less than about .69444,
