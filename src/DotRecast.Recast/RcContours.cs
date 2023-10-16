@@ -20,6 +20,9 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace DotRecast.Recast
 {
@@ -107,7 +110,7 @@ namespace DotRecast.Recast
             return ch;
         }
 
-        private static void WalkContour(int x, int y, int i, in RcCompactHeightfield chf, int[] flags, List<int> points)
+        private static void WalkContour(int x, int y, int i, in RcCompactHeightfield chf, Span<int> flags, List<int> points)
         {
             // Choose the first non-connected edge
             int dir = 0;
@@ -443,7 +446,7 @@ namespace DotRecast.Recast
             }
         }
 
-        private static int CalcAreaOfPolygon2D(int[] verts, int nverts)
+        private static int CalcAreaOfPolygon2D(ReadOnlySpan<int> verts, int nverts)
         {
             int area = 0;
             for (int i = 0, j = nverts - 1; i < nverts; j = i++)
@@ -456,10 +459,11 @@ namespace DotRecast.Recast
             return (area + 1) / 2;
         }
 
-        private static bool IntersectSegContour(int d0, int d1, int i, int n, int[] verts, int[] d0verts, int[] d1verts)
+        [SkipLocalsInit]
+        private static bool IntersectSegContour(int d0, int d1, int i, int n, ReadOnlySpan<int> verts, ReadOnlySpan<int> d0verts, ReadOnlySpan<int> d1verts)
         {
             // For each edge (k,k+1) of P
-            int[] pverts = new int[4 * 4];
+            Span<int> pverts = stackalloc int[4 * 4];
             for (int g = 0; g < 4; g++)
             {
                 pverts[g] = d0verts[d0 + g];
@@ -495,12 +499,13 @@ namespace DotRecast.Recast
             return false;
         }
 
-        private static bool InCone(int i, int n, int[] verts, int pj, int[] vertpj)
+        [SkipLocalsInit]
+        private static bool InCone(int i, int n, ReadOnlySpan<int> verts, int pj, ReadOnlySpan<int> vertpj)
         {
             int pi = i * 4;
             int pi1 = RcMeshs.Next(i, n) * 4;
             int pin1 = RcMeshs.Prev(i, n) * 4;
-            int[] pverts = new int[4 * 4];
+            Span<int> pverts = stackalloc int[4 * 4];
             for (int g = 0; g < 4; g++)
             {
                 pverts[g] = verts[pi + g];
@@ -554,24 +559,14 @@ namespace DotRecast.Recast
             // Copy contour A.
             for (int i = 0; i <= ca.nverts; ++i)
             {
-                int dst = nv * 4;
-                int src = (ia + i) % ca.nverts * 4;
-                verts[dst + 0] = ca.verts[src + 0];
-                verts[dst + 1] = ca.verts[src + 1];
-                verts[dst + 2] = ca.verts[src + 2];
-                verts[dst + 3] = ca.verts[src + 3];
+                verts.UnsafeAs<int, Vector4Int>(nv) = ca.verts.GetUnsafe((ia + i) % ca.nverts * 4).UnsafeAs<int, Vector4Int>();
                 nv++;
             }
 
             // Copy contour B
             for (int i = 0; i <= cb.nverts; ++i)
             {
-                int dst = nv * 4;
-                int src = (ib + i) % cb.nverts * 4;
-                verts[dst + 0] = cb.verts[src + 0];
-                verts[dst + 1] = cb.verts[src + 1];
-                verts[dst + 2] = cb.verts[src + 2];
-                verts[dst + 3] = cb.verts[src + 3];
+                verts.UnsafeAs<int, Vector4Int>(nv) = cb.verts.GetUnsafe((ib + i) % cb.nverts * 4).UnsafeAs<int, Vector4Int>();
                 nv++;
             }
 
@@ -583,7 +578,7 @@ namespace DotRecast.Recast
         }
 
         // Finds the lowest leftmost vertex of a contour.
-        private static int[] FindLeftMostVertex(RcContour contour)
+        private static Vector3Int FindLeftMostVertex(RcContour contour)
         {
             int minx = contour.verts[0];
             int minz = contour.verts[2];
@@ -600,7 +595,7 @@ namespace DotRecast.Recast
                 }
             }
 
-            return new int[] { minx, minz, leftmost };
+            return new Vector3Int(minx, minz, leftmost);
         }
 
         private static void MergeRegionHoles(RcContourRegion region)
@@ -608,10 +603,10 @@ namespace DotRecast.Recast
             // Sort holes from left to right.
             for (int i = 0; i < region.nholes; i++)
             {
-                int[] minleft = FindLeftMostVertex(region.holes[i].contour);
-                region.holes[i].minx = minleft[0];
-                region.holes[i].minz = minleft[1];
-                region.holes[i].leftmost = minleft[2];
+                var minLeft = FindLeftMostVertex(region.holes[i].contour);
+                region.holes[i].minx = minLeft.x;
+                region.holes[i].minz = minLeft.y;
+                region.holes[i].leftmost = minLeft.z;
             }
 
             Array.Sort(region.holes, RcContourHoleComparer.Shared);
@@ -649,7 +644,7 @@ namespace DotRecast.Recast
                         {
                             int dx = outline.verts[j * 4 + 0] - hole.verts[corner + 0];
                             int dz = outline.verts[j * 4 + 2] - hole.verts[corner + 2];
-                            diags[ndiags] = new (j, dx * dx + dz * dz);
+                            diags[ndiags] = new(j, dx * dx + dz * dz);
                             ndiags++;
                         }
                     }
@@ -709,9 +704,10 @@ namespace DotRecast.Recast
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
-            RcContourSet cset = new(in config, in chf);
+            var cset = new RcContourSet(in config, in chf);
 
-            int[] flags = new int[chf.spanCount];
+            using var tempFlags = ArrayPool.RentClean<int>(chf.spanCount);
+            Span<int> flags = tempFlags.Buffer;
 
             // Mark boundaries.
             for (int y = 0; y < h; ++y)
@@ -773,8 +769,8 @@ namespace DotRecast.Recast
                         verts.Clear();
                         simplified.Clear();
 
-                        WalkContour(x, y, i, chf, flags, verts);
-                        
+                        WalkContour(x, y, i, in chf, flags, verts);
+
                         SimplifyContour(verts, simplified, config.MaxSimplificationError, config.MaxEdgeLen, buildFlags);
                         RemoveDegenerateSegments(simplified);
 
@@ -830,7 +826,10 @@ namespace DotRecast.Recast
             if (cset.Conts.Count > 0)
             {
                 // Calculate winding of all polygons.
-                int[] winding = new int[cset.Conts.Count];
+
+                using var windingTemp = ArrayPool.Rent<int>(cset.Conts.Count);
+                Span<int> winding = windingTemp.Buffer;
+
                 int nholes = 0;
                 for (int i = 0; i < cset.Conts.Count; ++i)
                 {
@@ -910,8 +909,7 @@ namespace DotRecast.Recast
                             // The region does not have an outline.
                             // This can happen if the contour becaomes selfoverlapping because of
                             // too aggressive simplification settings.
-                            throw new Exception("rcBuildContours: Bad outline for region " + i
-                                                                                           + ", contour simplification is likely too aggressive.");
+                            throw new Exception($"rcBuildContours: Bad outline for region {i}, contour simplification is likely too aggressive.");
                         }
                     }
                 }

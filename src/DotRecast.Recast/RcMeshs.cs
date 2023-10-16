@@ -163,7 +163,7 @@ namespace DotRecast.Recast
             return i + 1 < n ? i + 1 : 0;
         }
 
-        private static int Area2(int[] verts, int a, int b, int c)
+        private static int Area2(ReadOnlySpan<int> verts, int a, int b, int c)
         {
             return (verts[b + 0] - verts[a + 0]) * (verts[c + 2] - verts[a + 2])
                    - (verts[c + 0] - verts[a + 0]) * (verts[b + 2] - verts[a + 2]);
@@ -171,17 +171,17 @@ namespace DotRecast.Recast
 
         // Returns true iff c is strictly to the left of the directed
         // line through a to b.
-        public static bool Left(int[] verts, int a, int b, int c)
+        public static bool Left(ReadOnlySpan<int> verts, int a, int b, int c)
         {
             return Area2(verts, a, b, c) < 0;
         }
 
-        public static bool LeftOn(int[] verts, int a, int b, int c)
+        public static bool LeftOn(ReadOnlySpan<int> verts, int a, int b, int c)
         {
             return Area2(verts, a, b, c) <= 0;
         }
 
-        private static bool Collinear(int[] verts, int a, int b, int c)
+        private static bool Collinear(ReadOnlySpan<int> verts, int a, int b, int c)
         {
             return Area2(verts, a, b, c) == 0;
         }
@@ -189,7 +189,7 @@ namespace DotRecast.Recast
         // Returns true iff ab properly intersects cd: they share
         // a point interior to both segments. The properness of the
         // intersection is ensured by using strict leftness.
-        private static bool IntersectProp(int[] verts, int a, int b, int c, int d)
+        private static bool IntersectProp(ReadOnlySpan<int> verts, int a, int b, int c, int d)
         {
             // Eliminate improper cases.
             if (Collinear(verts, a, b, c) || Collinear(verts, a, b, d) || Collinear(verts, c, d, a)
@@ -201,7 +201,7 @@ namespace DotRecast.Recast
 
         // Returns T iff (a,b,c) are collinear and point c lies
         // on the closed segment ab.
-        private static bool Between(int[] verts, int a, int b, int c)
+        private static bool Between(ReadOnlySpan<int> verts, int a, int b, int c)
         {
             if (!Collinear(verts, a, b, c))
                 return false;
@@ -216,7 +216,7 @@ namespace DotRecast.Recast
         }
 
         // Returns true iff segments ab and cd intersect, properly or improperly.
-        public static bool Intersect(int[] verts, int a, int b, int c, int d)
+        public static bool Intersect(ReadOnlySpan<int> verts, int a, int b, int c, int d)
         {
             if (IntersectProp(verts, a, b, c, d))
                 return true;
@@ -228,14 +228,14 @@ namespace DotRecast.Recast
             return false;
         }
 
-        public static bool VEqual(int[] verts, int a, int b)
+        public static bool VEqual(ReadOnlySpan<int> verts, int a, int b)
         {
-            return verts[a + 0] == verts[b + 0] && verts[a + 2] == verts[b + 2];
+            return verts[a] == verts[b] && verts[a + 2] == verts[b + 2];
         }
 
         // Returns T iff (v_i, v_j) is a proper internal *or* external
         // diagonal of P, *ignoring edges incident to v_i and v_j*.
-        private static bool Diagonalie(int i, int j, int n, int[] verts, int[] indices)
+        private static bool Diagonalie(int i, int j, int n, ReadOnlySpan<int> verts, ReadOnlySpan<int> indices)
         {
             int d0 = (indices[i] & 0x0fffffff) * 4;
             int d1 = (indices[j] & 0x0fffffff) * 4;

@@ -16,6 +16,8 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -261,6 +263,38 @@ namespace System.Numerics
     }
 #pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+
+    public static class ArrayPool
+    {
+        public static TempArray<T> Rent<T>(int minimumLength)
+        {
+            return new TempArray<T>(ArrayPool<T>.Shared.Rent(minimumLength));
+        }
+
+        public static TempArray<T> RentClean<T>(int minimumLength)
+        {
+            var ar = Rent<T>(minimumLength);
+
+            Array.Clear(ar.Buffer);
+
+            return ar;
+        }
+    }
+
+    public readonly struct TempArray<T> : IDisposable
+    {
+        public TempArray(T[] buffer)
+        {
+            Buffer = buffer;
+        }
+
+        public T[] Buffer { get; }
+
+        public readonly void Dispose()
+        {
+            ArrayPool<T>.Shared.Return(Buffer);
+        }
+    }
 }
 
 namespace UnityEngine
