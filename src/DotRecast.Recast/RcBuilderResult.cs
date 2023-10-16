@@ -1,3 +1,6 @@
+using System.Numerics;
+using UnityEngine;
+
 namespace DotRecast.Recast
 {
     public class RcBuilderResult
@@ -11,10 +14,10 @@ namespace DotRecast.Recast
         public readonly RcPolyMeshDetail MeshDetail;
         public readonly RcHeightfield Solid;
 
-        public RcBuilderResult(int tileX, int tileZ, in RcHeightfield solid, RcCompactHeightfield chf, RcContourSet cs, RcPolyMesh pmesh, RcPolyMeshDetail dmesh)
+        public RcBuilderResult(Vector2Int tile, in RcHeightfield solid, RcCompactHeightfield chf, RcContourSet cs, RcPolyMesh pmesh, RcPolyMeshDetail dmesh)
         {
-            this.tileX = tileX;
-            this.tileZ = tileZ;
+            this.tileX = tile.x;
+            this.tileZ = tile.y;
             Solid = solid;
             CompactHeightfield = chf;
             ContourSet = cs;

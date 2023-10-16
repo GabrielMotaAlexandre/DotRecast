@@ -523,17 +523,17 @@ public class RecastDebugDraw : DebugDraw
     {
         float alpha = 1f;
 
-        Vector3 orig = cset.bmin;
-        float cs = cset.cs;
-        float ch = cset.ch;
+        Vector3 orig = cset.Bmin;
+        float cs = cset.Cs;
+        float ch = cset.Ch;
 
         int color = DuRGBA(0, 0, 0, 196);
 
         Begin(DebugDrawPrimitives.LINES, 2.0f);
 
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            RcContour cont = cset.conts[i];
+            RcContour cont = cset.Conts[i];
             Vector3 pos = GetContourCenter(cont, orig, cs, ch);
             for (int j = 0; j < cont.nverts; ++j)
             {
@@ -558,9 +558,9 @@ public class RecastDebugDraw : DebugDraw
 
         Begin(DebugDrawPrimitives.POINTS, 7.0f);
 
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            RcContour cont = cset.conts[i];
+            RcContour cont = cset.Conts[i];
             int col = DuDarkenCol(DuIntToCol(cont.reg, a));
             Vector3 pos = GetContourCenter(cont, orig, cs, ch);
             Vertex(pos, col);
@@ -602,11 +602,11 @@ public class RecastDebugDraw : DebugDraw
 
     private static RcContour FindContourFromSet(RcContourSet cset, int reg)
     {
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            if (cset.conts[i].reg == reg)
+            if (cset.Conts[i].reg == reg)
             {
-                return cset.conts[i];
+                return cset.Conts[i];
             }
         }
 
@@ -615,17 +615,17 @@ public class RecastDebugDraw : DebugDraw
 
     public void DebugDrawRawContours(RcContourSet cset, float alpha)
     {
-        Vector3 orig = cset.bmin;
-        float cs = cset.cs;
-        float ch = cset.ch;
+        Vector3 orig = cset.Bmin;
+        float cs = cset.Cs;
+        float ch = cset.Ch;
 
         char a = (char)(alpha * 255.0f);
 
         Begin(DebugDrawPrimitives.LINES, 2.0f);
 
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            RcContour c = cset.conts[i];
+            RcContour c = cset.Conts[i];
             int color = DuIntToCol(c.reg, a);
 
             for (int j = 0; j < c.nrverts; ++j)
@@ -659,9 +659,9 @@ public class RecastDebugDraw : DebugDraw
 
         Begin(DebugDrawPrimitives.POINTS, 2.0f);
 
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            RcContour c = cset.conts[i];
+            RcContour c = cset.Conts[i];
             int color = DuDarkenCol(DuIntToCol(c.reg, a));
 
             for (int j = 0; j < c.nrverts; ++j)
@@ -691,17 +691,17 @@ public class RecastDebugDraw : DebugDraw
     public void DebugDrawContours(RcContourSet cset)
     {
         float alpha = 1f;
-        Vector3 orig = cset.bmin;
-        float cs = cset.cs;
-        float ch = cset.ch;
+        Vector3 orig = cset.Bmin;
+        float cs = cset.Cs;
+        float ch = cset.Ch;
 
         char a = (char)(alpha * 255.0f);
 
         Begin(DebugDrawPrimitives.LINES, 2.5f);
 
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            RcContour c = cset.conts[i];
+            RcContour c = cset.Conts[i];
             if (c.nverts == 0)
             {
                 continue;
@@ -737,9 +737,9 @@ public class RecastDebugDraw : DebugDraw
 
         Begin(DebugDrawPrimitives.POINTS, 3.0f);
 
-        for (int i = 0; i < cset.conts.Count; ++i)
+        for (int i = 0; i < cset.Conts.Count; ++i)
         {
-            RcContour c = cset.conts[i];
+            RcContour c = cset.Conts[i];
             int color = DuDarkenCol(DuIntToCol(c.reg, a));
 
             for (int j = 0; j < c.nverts; ++j)

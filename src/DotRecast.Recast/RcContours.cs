@@ -704,34 +704,12 @@ namespace DotRecast.Recast
         /// See the #rcConfig documentation for more information on the configuration parameters.
         ///
         /// @see rcAllocContourSet, rcCompactHeightfield, rcContourSet, rcConfig
-        public static RcContourSet BuildContours(in RcCompactHeightfield chf, float maxError, int maxEdgeLen,
-            int buildFlags)
+        public static RcContourSet BuildContours(in RcConfig config, in RcCompactHeightfield chf, int buildFlags)
         {
             int w = chf.width;
             int h = chf.height;
             int borderSize = chf.borderSize;
-            RcContourSet cset = new()
-            {
-                bmin = chf.bmin,
-                bmax = chf.bmax
-            };
-
-            if (borderSize > 0)
-            {
-                // If the heightfield was build with bordersize, remove the offset.
-                float pad = borderSize * chf.cs;
-                cset.bmin.X += pad;
-                cset.bmin.Z += pad;
-                cset.bmax.X -= pad;
-                cset.bmax.Z -= pad;
-            }
-
-            cset.cs = chf.cs;
-            cset.ch = chf.ch;
-            cset.width = chf.width - chf.borderSize * 2;
-            cset.height = chf.height - chf.borderSize * 2;
-            cset.borderSize = chf.borderSize;
-            cset.maxError = maxError;
+            RcContourSet cset = new(in config, in chf);
 
             int[] flags = new int[chf.spanCount];
 
@@ -796,8 +774,8 @@ namespace DotRecast.Recast
                         simplified.Clear();
 
                         WalkContour(x, y, i, chf, flags, verts);
-
-                        SimplifyContour(verts, simplified, maxError, maxEdgeLen, buildFlags);
+                        
+                        SimplifyContour(verts, simplified, config.MaxSimplificationError, config.MaxEdgeLen, buildFlags);
                         RemoveDegenerateSegments(simplified);
 
                         // Store region->contour remap info.
@@ -805,7 +783,7 @@ namespace DotRecast.Recast
                         if (simplified.Count / 4 >= 3)
                         {
                             RcContour cont = new();
-                            cset.conts.Add(cont);
+                            cset.Conts.Add(cont);
 
                             cont.nverts = simplified.Count / 4;
                             cont.verts = new int[simplified.Count];
@@ -849,14 +827,14 @@ namespace DotRecast.Recast
             }
 
             // Merge holes if needed.
-            if (cset.conts.Count > 0)
+            if (cset.Conts.Count > 0)
             {
                 // Calculate winding of all polygons.
-                int[] winding = new int[cset.conts.Count];
+                int[] winding = new int[cset.Conts.Count];
                 int nholes = 0;
-                for (int i = 0; i < cset.conts.Count; ++i)
+                for (int i = 0; i < cset.Conts.Count; ++i)
                 {
-                    RcContour cont = cset.conts[i];
+                    RcContour cont = cset.Conts[i];
                     // If the contour is wound backwards, it is a hole.
                     winding[i] = CalcAreaOfPolygon2D(cont.verts, cont.nverts) < 0 ? -1 : 1;
                     if (winding[i] < 0)
@@ -874,9 +852,9 @@ namespace DotRecast.Recast
                         regions[i] = new RcContourRegion();
                     }
 
-                    for (int i = 0; i < cset.conts.Count; ++i)
+                    for (int i = 0; i < cset.Conts.Count; ++i)
                     {
-                        var contour = cset.conts[i];
+                        var contour = cset.Conts[i];
                         // Positively would contours are outlines, negative holes.
                         if (winding[i] > 0)
                         {
@@ -908,9 +886,9 @@ namespace DotRecast.Recast
                         }
                     }
 
-                    for (int i = 0; i < cset.conts.Count; ++i)
+                    for (int i = 0; i < cset.Conts.Count; ++i)
                     {
-                        RcContour cont = cset.conts[i];
+                        RcContour cont = cset.Conts[i];
                         RcContourRegion reg = regions[cont.reg];
                         if (winding[i] < 0)
                             reg.holes[reg.nholes++].contour = cont;

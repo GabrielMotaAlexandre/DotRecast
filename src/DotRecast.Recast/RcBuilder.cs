@@ -121,15 +121,14 @@ namespace DotRecast.Recast
 
         public static RcBuilderResult Build(IInputGeomProvider geom, in RcBuilderConfig builderCfg)
         {
-            RcConfig cfg = builderCfg.cfg;
             //
             // Step 1. Rasterize input polygon soup.
             //
             RcHeightfield solid = RcVoxelizations.BuildSolidHeightfield(geom, in builderCfg);
-            return Build(builderCfg.tileX, builderCfg.tileZ, geom, cfg, in solid);
+            return Build(builderCfg.tileX, builderCfg.tileZ, geom, in builderCfg.cfg, in solid);
         }
 
-        public static RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, RcConfig cfg, in RcHeightfield solid)
+        public static RcBuilderResult Build(int tileX, int tileZ, IInputGeomProvider geom, in RcConfig cfg, in RcHeightfield solid)
         {
             FilterHeightfield(in solid, cfg);
             RcCompactHeightfield chf = BuildCompactHeightfield(geom, cfg, in solid);
@@ -197,7 +196,7 @@ namespace DotRecast.Recast
             //
 
             // Create contours.
-            RcContourSet cset = RcContours.BuildContours(in chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen, RcConstants.RC_CONTOUR_TESS_WALL_EDGES);
+            RcContourSet cset = RcContours.BuildContours(in cfg, in chf, RcConstants.RC_CONTOUR_TESS_WALL_EDGES);
 
             //
             // Step 6. Build polygons mesh from contours.
@@ -212,7 +211,7 @@ namespace DotRecast.Recast
             RcPolyMeshDetail dmesh = cfg.BuildMeshDetail
                 ? RcMeshDetails.BuildPolyMeshDetail(pmesh, in chf, cfg.DetailSampleDist, cfg.DetailSampleMaxError)
                 : null;
-            return new RcBuilderResult(tileX, tileZ, solid, chf, cset, pmesh, dmesh);
+            return new RcBuilderResult(new UnityEngine.Vector2Int(tileX, tileZ), solid, chf, cset, pmesh, dmesh);
         }
 
         /*

@@ -238,10 +238,9 @@ public class RecastSoloMeshTest
         //
 
         // Create contours.
-        RcContourSet m_cset = RcContours.BuildContours(m_chf, cfg.MaxSimplificationError, cfg.MaxEdgeLen,
-            RC_CONTOUR_TESS_WALL_EDGES);
+        RcContourSet m_cset = RcContours.BuildContours(in cfg, in m_chf, RC_CONTOUR_TESS_WALL_EDGES);
 
-        Assert.That(m_cset.conts.Count, Is.EqualTo(expContours), "Contours");
+        Assert.That(m_cset.Conts.Count, Is.EqualTo(expContours), "Contours");
         //
         // Step 6. Build polygons mesh from contours.
         //

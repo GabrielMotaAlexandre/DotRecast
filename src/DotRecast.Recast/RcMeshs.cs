@@ -969,25 +969,25 @@ namespace DotRecast.Recast
         {
             RcPolyMesh mesh = new()
             {
-                bmin = cset.bmin,
-                bmax = cset.bmax,
-                cs = cset.cs,
-                ch = cset.ch,
-                borderSize = cset.borderSize,
-                maxEdgeError = cset.maxError
+                bmin = cset.Bmin,
+                bmax = cset.Bmax,
+                cs = cset.Cs,
+                ch = cset.Ch,
+                borderSize = cset.BorderSize,
+                maxEdgeError = cset.MaxSimplificationError
             };
 
             int maxVertices = 0;
             int maxTris = 0;
             int maxVertsPerCont = 0;
-            for (int i = 0; i < cset.conts.Count; ++i)
+            for (int i = 0; i < cset.Conts.Count; ++i)
             {
                 // Skip null contours.
-                if (cset.conts[i].nverts < 3)
+                if (cset.Conts[i].nverts < 3)
                     continue;
-                maxVertices += cset.conts[i].nverts;
-                maxTris += cset.conts[i].nverts - 2;
-                maxVertsPerCont = Math.Max(maxVertsPerCont, cset.conts[i].nverts);
+                maxVertices += cset.Conts[i].nverts;
+                maxTris += cset.Conts[i].nverts - 2;
+                maxVertsPerCont = Math.Max(maxVertsPerCont, cset.Conts[i].nverts);
             }
 
             if (maxVertices >= 0xfffe)
@@ -1020,9 +1020,9 @@ namespace DotRecast.Recast
 
             int tmpPoly = maxVertsPerCont * nvp;
 
-            for (int i = 0; i < cset.conts.Count; ++i)
+            for (int i = 0; i < cset.Conts.Count; ++i)
             {
-                RcContour cont = cset.conts[i];
+                RcContour cont = cset.Conts[i];
 
                 // Skip null contours.
                 if (cont.nverts < 3)
@@ -1161,7 +1161,7 @@ namespace DotRecast.Recast
             // Find portal edges
             if (mesh.borderSize > 0)
             {
-                int w = cset.width;
+                int w = cset.Width;
                 int h = cset.height;
                 for (int i = 0; i < mesh.npolys; ++i)
                 {
