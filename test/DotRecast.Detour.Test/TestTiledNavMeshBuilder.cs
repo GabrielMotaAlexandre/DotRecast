@@ -79,8 +79,8 @@ public class TestTiledNavMeshBuilder
             detailSampleDist, detailSampleMaxError,
             true, true, true,
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilder rcBuilder = new();
-        List<RcBuilderResult> rcResult = rcBuilder.BuildTiles(geom, cfg, null);
+        
+        List<RcBuilderResult> rcResult = RcBuilder.BuildTiles(geom, cfg);
 
         // Add tiles to nav mesh
 

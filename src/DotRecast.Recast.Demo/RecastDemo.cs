@@ -446,8 +446,8 @@ public class RecastDemo : IRecastDemoChannel
         if (_sample.GetInputGeom() != null)
         {
             var settings = _sample.GetSettings();
-            Vector3 bmin = _sample.GetInputGeom().GetMeshBoundsMin();
-            Vector3 bmax = _sample.GetInputGeom().GetMeshBoundsMax();
+            var bmin = _sample.GetInputGeom().GetMeshBoundsMin().AsVector2XZ();
+            var bmax = _sample.GetInputGeom().GetMeshBoundsMax().AsVector2XZ();
             RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out var gw, out var gh);
             settingsView.SetVoxels(gw, gh);
             settingsView.SetTiles(TileNavMeshBuilder.GetTiles(_sample.GetInputGeom(), settings.cellSize, settings.tileSize));

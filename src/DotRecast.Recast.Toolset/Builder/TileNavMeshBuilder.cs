@@ -97,8 +97,10 @@ namespace DotRecast.Recast.Toolset.Builder
                 detailSampleDist, detailSampleMaxError,
                 filterLowHangingObstacles, filterLedgeSpans, filterWalkableLowHeightSpans,
                 SampleAreaModifications.SAMPLE_AREAMOD_WALKABLE, true);
-            RcBuilder rcBuilder = new();
-            return rcBuilder.BuildTiles(geom, cfg, Task.Factory);
+            
+            RcBuilder.BuildTilesAsync(geom, cfg, out var tiles);
+
+            return tiles;
         }
 
         public static DtNavMesh BuildNavMesh(IInputGeomProvider geom, List<DtMeshData> meshData, float cellSize, int tileSize, int vertsPerPoly)
@@ -158,7 +160,7 @@ namespace DotRecast.Recast.Toolset.Builder
 
         private static int GetTileBits(IInputGeomProvider geom, float cellSize, int tileSize)
         {
-            RcCommons.CalcGridSize(geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), cellSize, out var gw, out var gh);
+            RcCommons.CalcGridSize(geom.GetMeshBoundsMin().AsVector2XZ(), geom.GetMeshBoundsMax().AsVector2XZ(), cellSize, out var gw, out var gh);
             int tw = (gw + tileSize - 1) / tileSize;
             int th = (gh + tileSize - 1) / tileSize;
             int tileBits = Math.Min(DtUtils.Ilog2(DtUtils.NextPow2(tw * th)), 14);
@@ -167,7 +169,7 @@ namespace DotRecast.Recast.Toolset.Builder
 
         public static int[] GetTiles(DemoInputGeomProvider geom, float cellSize, int tileSize)
         {
-            RcCommons.CalcGridSize(geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), cellSize, out var gw, out var gh);
+            RcCommons.CalcGridSize(geom.GetMeshBoundsMin().AsVector2XZ(), geom.GetMeshBoundsMax().AsVector2XZ(), cellSize, out var gw, out var gh);
             int tw = (gw + tileSize - 1) / tileSize;
             int th = (gh + tileSize - 1) / tileSize;
             return new int[] { tw, th };

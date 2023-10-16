@@ -70,9 +70,9 @@ public class MeshSetReaderWriterTest
         header.numTiles = 0;
         DtNavMesh mesh = new(header.option, 6);
 
-        Vector3 bmin = geom.GetMeshBoundsMin();
-        Vector3 bmax = geom.GetMeshBoundsMax();
-        RcCommons.CalcTileCount(bmin, bmax, m_cellSize, m_tileSize, m_tileSize, out var tw, out var th);
+        var bmin = geom.GetMeshBoundsMin();
+        var bmax = geom.GetMeshBoundsMax();
+        RcCommons.CalcTileCount(bmin.AsVector2XZ(), bmax.AsVector2XZ(), m_cellSize, m_tileSize, m_tileSize, out var tw, out var th);
         for (int y = 0; y < th; ++y)
         {
             for (int x = 0; x < tw; ++x)

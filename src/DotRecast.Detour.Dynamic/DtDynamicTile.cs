@@ -44,12 +44,12 @@ namespace DotRecast.Detour.Dynamic
             this.voxelTile = voxelTile;
         }
 
-        public bool Build(RcBuilder builder, DtDynamicNavMeshConfig config)
+        public bool Build(DtDynamicNavMeshConfig config)
         {
             if (dirty)
             {
                 RcHeightfield heightfield = BuildHeightfield(config);
-                RcBuilderResult r = BuildRecast(builder, config, voxelTile, heightfield);
+                RcBuilderResult r = BuildRecast(config, voxelTile, heightfield);
                 DtNavMeshCreateParams option = NavMeshCreateParams(voxelTile.tileX, voxelTile.tileZ, voxelTile.cellSize,
                     voxelTile.cellHeight, config, r);
                 meshData = DtNavMeshBuilder.CreateNavMeshData(option);
@@ -89,7 +89,7 @@ namespace DotRecast.Detour.Dynamic
             return heightfield;
         }
 
-        private RcBuilderResult BuildRecast(RcBuilder builder, DtDynamicNavMeshConfig config, DtVoxelTile vt, in RcHeightfield heightfield)
+        private RcBuilderResult BuildRecast(DtDynamicNavMeshConfig config, DtVoxelTile vt, in RcHeightfield heightfield)
         {
             RcConfig rcConfig = new(
                 config.useTiles, config.tileSizeX, config.tileSizeZ,

@@ -33,7 +33,8 @@ namespace DotRecast.Recast
 
             // Allocate voxel heightfield where we rasterize our input data to.
             RcHeightfield solid = new(builderCfg.width, builderCfg.height, builderCfg.bmin, builderCfg.bmax, cfg.Cs, cfg.Ch, cfg.BorderSize);
-
+            var bmin = builderCfg.bmin.AsVector2XZ();
+            var bmax = builderCfg.bmax.AsVector2XZ();
             // Allocate array that can hold triangle area types.
             // If you have multiple meshes you need to process, allocate
             // and array which can hold the max number of triangles you need to
@@ -50,7 +51,7 @@ namespace DotRecast.Recast
 
                 if (cfg.UseTiles)
                 {
-                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(builderCfg.bmin.AsVector2XZ(), builderCfg.bmax.AsVector2XZ());
+                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(bmin, bmax);
                     foreach (RcChunkyTriMeshNode node in nodes)
                     {
                         var tris = node.tris;

@@ -98,7 +98,7 @@ public class RecastTileMeshTest
     public void TestPerformance()
     {
         IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
-        RcBuilder builder = new();
+
         RcConfig cfg = new(
             true, m_tileSize, m_tileSize,
             RcConfig.CalcBorder(m_agentRadius, m_cellSize),
@@ -113,20 +113,20 @@ public class RecastTileMeshTest
             SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
         for (int i = 0; i < 4; i++)
         {
-            Build(geom, builder, cfg, 1, true);
-            Build(geom, builder, cfg, 4, true);
+            Build(geom, cfg, 1, true);
+            Build(geom, cfg, 4, true);
         }
 
         long t1 = RcFrequency.Ticks;
         for (int i = 0; i < 4; i++)
         {
-            Build(geom, builder, cfg, 1, false);
+            Build(geom, cfg, 1, false);
         }
 
         long t2 = RcFrequency.Ticks;
         for (int i = 0; i < 4; i++)
         {
-            Build(geom, builder, cfg, 4, false);
+            Build(geom, cfg, 4, false);
         }
 
         long t3 = RcFrequency.Ticks;
@@ -134,12 +134,18 @@ public class RecastTileMeshTest
         Console.WriteLine(" Time MT : " + (t3 - t2) / TimeSpan.TicksPerMillisecond);
     }
 
-    private static void Build(IInputGeomProvider geom, RcBuilder builder, RcConfig cfg, int threads, bool validate)
+    private static void Build(IInputGeomProvider geom, RcConfig cfg, int threads, bool validate)
     {
-        CancellationTokenSource cts = new();
-        List<RcBuilderResult> tiles = new();
+        List<RcBuilderResult> tiles;
+        if (threads > 1)
+        {
+            RcBuilder.BuildTilesAsync(geom, cfg, out tiles);
+        }
+        else
+        {
+            tiles = RcBuilder.BuildTiles(geom, cfg);
+        }
 
-        _ = builder.BuildTilesAsync(geom, cfg, threads, tiles, Task.Factory, cts.Token);
         if (validate)
         {
             RcBuilderResult rcResult = GetTile(tiles, 7, 8);
@@ -160,16 +166,6 @@ public class RecastTileMeshTest
             rcResult = GetTile(tiles, 0, 8);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(6));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(15));
-        }
-
-        try
-        {
-            cts.Cancel();
-            //executor.AwaitTermination(1000, TimeUnit.HOURS);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
         }
     }
 

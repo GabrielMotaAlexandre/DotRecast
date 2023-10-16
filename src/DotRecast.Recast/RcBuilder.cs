@@ -31,76 +31,47 @@ namespace DotRecast.Recast
     using static RcCommons;
     using static RcAreas;
 
-    public class RcBuilder
+    public static class RcBuilder
     {
-        private readonly IRcBuilderProgressListener _progressListener;
-
-        public RcBuilder()
+        public static List<RcBuilderResult> BuildTiles(IInputGeomProvider geom, RcConfig cfg)
         {
-            _progressListener = null;
-        }
+            var bmin = geom.GetMeshBoundsMin();
+            var bmax = geom.GetMeshBoundsMax();
+            CalcTileCount(bmin.AsVector2XZ(), bmax.AsVector2XZ(), cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
 
-        public RcBuilder(IRcBuilderProgressListener progressListener)
-        {
-            _progressListener = progressListener;
-        }
-
-        public List<RcBuilderResult> BuildTiles(IInputGeomProvider geom, RcConfig cfg, TaskFactory taskFactory)
-        {
-            Vector3 bmin = geom.GetMeshBoundsMin();
-            Vector3 bmax = geom.GetMeshBoundsMax();
-            CalcTileCount(bmin, bmax, cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
-            List<RcBuilderResult> results = new();
-            if (null != taskFactory)
-            {
-                BuildMultiThreadAsync(geom, cfg, bmin, bmax, tw, th, results, taskFactory, default);
-            }
-            else
-            {
-                BuildSingleThreadAsync(geom, cfg, bmin, bmax, tw, th, results);
-            }
+            BuildSingleThreadAsync(geom, cfg, bmin, bmax, tw, th, out var results);
 
             return results;
         }
 
 
-        public Task BuildTilesAsync(IInputGeomProvider geom, RcConfig cfg, int threads, List<RcBuilderResult> results, TaskFactory taskFactory, CancellationToken cancellationToken)
+        public static Task BuildTilesAsync(IInputGeomProvider geom, RcConfig cfg, out List<RcBuilderResult> results)
         {
-            Vector3 bmin = geom.GetMeshBoundsMin();
-            Vector3 bmax = geom.GetMeshBoundsMax();
-            CalcTileCount(bmin, bmax, cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
-            Task task;
-            if (1 < threads)
-            {
-                task = BuildMultiThreadAsync(geom, cfg, bmin, bmax, tw, th, results, taskFactory, cancellationToken);
-            }
-            else
-            {
-                task = BuildSingleThreadAsync(geom, cfg, bmin, bmax, tw, th, results);
-            }
+            var bmin = geom.GetMeshBoundsMin();
+            var bmax = geom.GetMeshBoundsMax();
+            CalcTileCount(bmin.AsVector2XZ(), bmax.AsVector2XZ(), cfg.Cs, cfg.TileSizeX, cfg.TileSizeZ, out var tw, out var th);
 
-            return task;
+            return BuildMultiThreadAsync(geom, cfg, bmin, bmax, tw, th, out results);
         }
 
-        private Task BuildSingleThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
-            int tw, int th, List<RcBuilderResult> results)
+        private static Task BuildSingleThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
+            int tw, int th, out List<RcBuilderResult> results)
         {
-            RcAtomicInteger counter = new(0);
+            results = new List<RcBuilderResult>();
             for (int y = 0; y < th; ++y)
             {
                 for (int x = 0; x < tw; ++x)
                 {
-                    results.Add(BuildTile(geom, cfg, bmin, bmax, x, y, counter, tw * th));
+                    results.Add(BuildTile(geom, cfg, bmin, bmax, x, y));
                 }
             }
 
             return Task.CompletedTask;
         }
 
-        private Task BuildMultiThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax,
-            int tw, int th, List<RcBuilderResult> results, TaskFactory taskFactory, CancellationToken cancellationToken)
+        private static Task BuildMultiThreadAsync(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax, int tw, int th, out List<RcBuilderResult> results)
         {
-            RcAtomicInteger counter = new(0);
+            var resultsLocal = new List<RcBuilderResult>();
             CountdownEvent latch = new(tw * th);
             List<Task> tasks = new();
 
@@ -110,17 +81,14 @@ namespace DotRecast.Recast
                 {
                     int tx = x;
                     int ty = y;
-                    var task = taskFactory.StartNew(() =>
+                    var task = Task.Run(() =>
                     {
-                        if (cancellationToken.IsCancellationRequested)
-                            return;
-
                         try
                         {
-                            RcBuilderResult tile = BuildTile(geom, cfg, bmin, bmax, tx, ty, counter, tw * th);
-                            lock (results)
+                            RcBuilderResult tile = BuildTile(geom, cfg, bmin, bmax, tx, ty);
+                            lock (resultsLocal)
                             {
-                                results.Add(tile);
+                                resultsLocal.Add(tile);
                             }
                         }
                         catch (Exception e)
@@ -128,9 +96,8 @@ namespace DotRecast.Recast
                             Console.WriteLine(e);
                         }
 
-
                         latch.Signal();
-                    }, cancellationToken);
+                    });
 
                     tasks.Add(task);
                 }
@@ -143,17 +110,13 @@ namespace DotRecast.Recast
             catch (ThreadInterruptedException)
             {
             }
-
+            results = resultsLocal;
             return Task.WhenAll(tasks);
         }
 
-        public RcBuilderResult BuildTile(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax, int tx,
-            int ty, RcAtomicInteger counter, int total)
+        public static RcBuilderResult BuildTile(IInputGeomProvider geom, RcConfig cfg, Vector3 bmin, Vector3 bmax, int tx, int ty)
         {
-            RcBuilderResult result = Build(geom, new RcBuilderConfig(cfg, bmin, bmax, tx, ty));
-            _progressListener?.OnProgress(counter.IncrementAndGet(), total);
-
-            return result;
+            return Build(geom, new RcBuilderConfig(cfg, bmin, bmax, tx, ty));
         }
 
         public static RcBuilderResult Build(IInputGeomProvider geom, in RcBuilderConfig builderCfg)

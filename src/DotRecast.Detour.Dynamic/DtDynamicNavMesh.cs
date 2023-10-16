@@ -33,7 +33,6 @@ namespace DotRecast.Detour.Dynamic
     {
         public const int MAX_VERTS_PER_POLY = 6;
         public readonly DtDynamicNavMeshConfig config;
-        private readonly RcBuilder builder;
         private readonly Dictionary<long, DtDynamicTile> _tiles = new();
         private readonly DtNavMeshParams navMeshParams;
         private readonly BlockingCollection<IDtDaynmicTileJob> updateQueue = new();
@@ -58,7 +57,6 @@ namespace DotRecast.Detour.Dynamic
                 detailSampleDistance = voxelFile.detailSampleDistance,
                 detailSampleMaxError = voxelFile.detailSampleMaxError
             };
-            builder = new RcBuilder();
             navMeshParams = new DtNavMeshParams();
             navMeshParams.orig.X = voxelFile.bounds[0];
             navMeshParams.orig.Y = voxelFile.bounds[2];
@@ -218,7 +216,7 @@ namespace DotRecast.Detour.Dynamic
             {
                 walkableHeight = config.walkableHeight
             };
-            dirty |= tile.Build(builder, config);
+            dirty |= tile.Build(config);
         }
 
         private bool UpdateNavMesh()

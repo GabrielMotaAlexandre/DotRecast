@@ -19,8 +19,8 @@ namespace DotRecast.Recast.Toolset.Tools
             if (null == settings || null == geom || navMesh == null)
                 return;
 
-            var bmin = geom.GetMeshBoundsMin();
-            var bmax = geom.GetMeshBoundsMax();
+            var bmin = geom.GetMeshBoundsMin().AsVector2XZ();
+            var bmax = geom.GetMeshBoundsMax().AsVector2XZ();
             RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out int gw, out int gh);
 
             int ts = settings.tileSize;
@@ -42,8 +42,8 @@ namespace DotRecast.Recast.Toolset.Tools
             if (null == settings || null == geom || navMesh == null)
                 return;
 
-            var bmin = geom.GetMeshBoundsMin();
-            var bmax = geom.GetMeshBoundsMax();
+            var bmin = geom.GetMeshBoundsMin().AsVector2XZ();
+            var bmax = geom.GetMeshBoundsMax().AsVector2XZ();
             RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out int gw, out int gh);
 
             int ts = settings.tileSize;
@@ -90,8 +90,7 @@ namespace DotRecast.Recast.Toolset.Tools
             );
 
             var beginTick = RcFrequency.Ticks;
-            var rb = new RcBuilder();
-            var result = rb.BuildTile(geom, cfg, bmin, bmax, tx, ty, new RcAtomicInteger(0), 1);
+            var result = RcBuilder.BuildTile(geom, cfg, bmin, bmax, tx, ty);
 
             var meshData = TileNavMeshBuilder.BuildMeshData(geom, settings.cellSize, settings.cellHeight, settings.agentHeight, settings.agentRadius, settings.agentMaxClimb, RcImmutableArray.Create(result)
             ).FirstOrDefault();
