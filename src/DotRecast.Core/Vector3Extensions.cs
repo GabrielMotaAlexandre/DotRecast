@@ -268,14 +268,14 @@ namespace System.Numerics
     {
         public static TempArray<T> Rent<T>(int minimumLength)
         {
-            return new TempArray<T>(ArrayPool<T>.Shared.Rent(minimumLength));
+            return new TempArray<T>(ArrayPool<T>.Shared.Rent(minimumLength), minimumLength);
         }
 
         public static TempArray<T> RentClean<T>(int minimumLength)
         {
             var ar = Rent<T>(minimumLength);
 
-            Array.Clear(ar.Buffer);
+            ar.Buffer.Clear();
 
             return ar;
         }
@@ -283,16 +283,19 @@ namespace System.Numerics
 
     public readonly struct TempArray<T> : IDisposable
     {
-        public TempArray(T[] buffer)
+        public TempArray(T[] array, int length)
         {
-            Buffer = buffer;
+            Array = array;
+            Length = length;
         }
 
-        public T[] Buffer { get; }
+        public T[] Array { get; }
+        private int Length { get; }
+        public readonly Span<T> Buffer => Array.AsSpan(0, Length);
 
         public readonly void Dispose()
         {
-            ArrayPool<T>.Shared.Return(Buffer);
+            ArrayPool<T>.Shared.Return(Array);
         }
     }
 }

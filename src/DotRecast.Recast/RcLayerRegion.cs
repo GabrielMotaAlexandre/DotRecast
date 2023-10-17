@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DotRecast.Recast
 {
-    public class RcLayerRegion
+    public struct RcLayerRegion
     {
         public int id;
         public int layerId;

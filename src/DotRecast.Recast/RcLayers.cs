@@ -61,18 +61,19 @@ namespace DotRecast.Recast
             Array.Fill(srcReg, 0xFF);
             int nsweeps = chf.width; // Math.Max(chf.width, chf.height);
 
-            var sweepsArray = ArrayPool<RcSweepSpan>.Shared.Rent(nsweeps);
-            Span<RcSweepSpan> sweeps = sweepsArray;
-            sweeps.Clear();
+            using var sweepsArray = ArrayPool.RentClean<RcSweepSpan>(nsweeps);
+            Span<RcSweepSpan> sweeps = sweepsArray.Buffer;
 
             // Partition walkable area into monotone regions.
-            int[] prevCount = new int[256];
+            using var prevCountArray = ArrayPool.Rent<int>(nsweeps);
+            Span<int> prevCount = prevCountArray.Buffer;
+
             int regId = 0;
             // Sweep one line at a time.
             for (int y = borderSize; y < h - borderSize; ++y)
             {
                 // Collect spans from this row.
-                Array.Fill(prevCount, 0, 0, regId - 0);
+                prevCount.Clear();
                 int sweepId = 0;
 
                 for (int x = borderSize; x < w - borderSize; ++x)
@@ -170,11 +171,10 @@ namespace DotRecast.Recast
                     }
                 }
             }
-            ArrayPool<RcSweepSpan>.Shared.Return(sweepsArray);
 
             int nregs = regId;
-            RcLayerRegion[] regs = new RcLayerRegion[nregs];
-
+            using var regsArray = ArrayPool.Rent<RcLayerRegion>(nregs);
+            var regs = regsArray.Buffer;
             // Construct regions
             for (int i = 0; i < nregs; ++i)
             {
@@ -243,7 +243,7 @@ namespace DotRecast.Recast
 
             for (int i = 0; i < nregs; ++i)
             {
-                RcLayerRegion root = regs[i];
+                ref var root = ref regs[i];
                 // Skip already visited.
                 if (root.layerId != 0xff)
                     continue;
@@ -259,11 +259,11 @@ namespace DotRecast.Recast
                     // Pop front
                     int pop = stack[0]; // TODO : 여기에 stack 처럼 작동하게 했는데, 스택인지는 모르겠음
                     stack.RemoveAt(0);
-                    RcLayerRegion reg = regs[pop];
+                    ref readonly var reg = ref regs[pop];
 
                     foreach (int nei in reg.neis)
                     {
-                        RcLayerRegion regn = regs[nei];
+                        ref RcLayerRegion regn = ref regs[nei];
                         // Skip already visited.
                         if (regn.layerId != 0xff)
                             continue;
@@ -297,7 +297,7 @@ namespace DotRecast.Recast
 
             for (int i = 0; i < nregs; ++i)
             {
-                RcLayerRegion ri = regs[i];
+                ref RcLayerRegion ri = ref regs[i];
                 if (!ri.@base)
                     continue;
 
@@ -311,7 +311,7 @@ namespace DotRecast.Recast
                     {
                         if (i == j)
                             continue;
-                        RcLayerRegion rj = regs[j];
+                        var rj = regs[j];
                         if (!rj.@base)
                             continue;
 
@@ -358,7 +358,7 @@ namespace DotRecast.Recast
                     // Merge
                     for (int j = 0; j < nregs; ++j)
                     {
-                        RcLayerRegion rj = regs[j];
+                        ref var rj = ref regs[j];
                         if (rj.layerId == oldId)
                         {
                             rj.@base = false;
