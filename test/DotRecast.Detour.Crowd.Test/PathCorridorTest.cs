@@ -28,8 +28,7 @@ namespace DotRecast.Detour.Crowd.Test;
 [Parallelizable]
 public class PathCorridorTest
 {
-    private readonly DtPathCorridor corridor = new();
-    private readonly IDtQueryFilter filter = new DtQueryDefaultFilter();
+    private DtPathCorridor corridor = new();
 
     [SetUp]
     public void SetUp()
@@ -64,7 +63,7 @@ public class PathCorridorTest
             .Returns(() => DtStatus.DT_SUCCSESS);
 
         var path = new List<StraightPathItem>();
-        corridor.FindCorners(ref path, int.MaxValue, mockQuery.Object, filter);
+        corridor.FindCorners(ref path, int.MaxValue, mockQuery.Object);
         Assert.That(path.Count, Is.EqualTo(4));
         Assert.That(path, Is.EqualTo(straightPath));
     }
@@ -97,8 +96,8 @@ public class PathCorridorTest
             .Returns(() => DtStatus.DT_SUCCSESS);
 
         var path = new List<StraightPathItem>();
-        corridor.FindCorners(ref path, int.MaxValue, mockQuery.Object, filter);
-        Assert.That(path.Count, Is.EqualTo(2));
+        corridor.FindCorners(ref path, int.MaxValue, mockQuery.Object);
+        Assert.That(path, Has.Count.EqualTo(2));
         Assert.That(path, Is.EqualTo(new List<StraightPathItem> { straightPath[2], straightPath[3] }));
     }
 }

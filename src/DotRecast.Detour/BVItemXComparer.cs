@@ -6,7 +6,7 @@ namespace DotRecast.Detour
     {
         public static readonly BVItemXComparer Shared = new();
 
-        public int Compare(BVItem a, BVItem b)
+        public readonly int Compare(BVItem a, BVItem b)
         {
             return a.bmin[0].CompareTo(b.bmin[0]);
         }

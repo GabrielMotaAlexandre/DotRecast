@@ -25,9 +25,7 @@ using DotRecast.Core;
 
 namespace DotRecast.Detour.Crowd
 {
-
-
-    public class DtLocalBoundary
+    public struct DtLocalBoundary
     {
         public const int MAX_LOCAL_SEGS = 8;
 
@@ -48,7 +46,7 @@ namespace DotRecast.Detour.Crowd
             Segments.Clear();
         }
 
-        protected unsafe void AddSegment(float dist, RcSegmentVert s)
+        private void AddSegment(float dist, RcSegmentVert s)
         {
             // Insert neighbour based on the distance.
             DtSegment seg = new()
@@ -141,7 +139,7 @@ namespace DotRecast.Detour.Crowd
             }
         }
 
-        public bool IsValid(DtNavMeshQuery navquery, IDtQueryFilter filter)
+        public readonly bool IsValid(DtNavMeshQuery navquery, IDtQueryFilter filter)
         {
             if (m_polys.Count == 0)
             {
@@ -160,12 +158,12 @@ namespace DotRecast.Detour.Crowd
             return true;
         }
 
-        public Vector3 GetCenter()
+        public readonly Vector3 GetCenter()
         {
             return m_center;
         }
 
-        public int GetSegmentCount()
+        public readonly int GetSegmentCount()
         {
             return Segments.Count;
         }

@@ -26,8 +26,6 @@ using DotRecast.Core;
 
 namespace DotRecast.Detour.Crowd
 {
-
-
     /**
      * Represents a dynamic polygon corridor used to plan agent movement.
      *
@@ -65,25 +63,22 @@ namespace DotRecast.Detour.Crowd
      * replanning may be needed. E.g. If you move the target, check #GetLastPoly() to see if it is the expected polygon.
      *
      */
-    public class DtPathCorridor
+    public struct DtPathCorridor
     {
-        private Vector3 m_pos;
         /**
 * Gets the current position within the corridor. (In the first polygon.)
 *
 * @return The current position within the corridor.
 */
-        public Vector3 Pos => m_pos;
+        public Vector3 Pos { get; private set; }
         private Vector3 m_target;
-        private List<long> m_path;
-
+        private List<long> m_path = new();
 
         /**
      * Allocates the corridor's path buffer.
      */
         public DtPathCorridor()
         {
-            m_path = new List<long>();
         }
 
         /**
@@ -98,11 +93,11 @@ namespace DotRecast.Detour.Crowd
         {
             m_path.Clear();
             m_path.Add(refs);
-            m_pos = pos;
+            Pos = pos;
             m_target = pos;
         }
 
-        private static readonly float MIN_TARGET_DIST = RcMath.Sqr(0.01f);
+        private const float MIN_TARGET_DIST = 0.01f * 0.01f;
 
         /**
      * Finds the corners in the corridor from the position toward the target. (The straightened path.)
@@ -121,9 +116,10 @@ namespace DotRecast.Detour.Crowd
      * @param[in] navquery The query object used to build the corridor.
      * @return Corners
      */
-        public int FindCorners(ref List<StraightPathItem> corners, int maxCorners, DtNavMeshQuery navquery, IDtQueryFilter filter)
+        public readonly int FindCorners(ref List<StraightPathItem> corners, int maxCorners, DtNavMeshQuery navquery)
         {
-            var result = navquery.FindStraightPath(m_pos, m_target, m_path, ref corners, maxCorners, 0);
+            var result = navquery.FindStraightPath(Pos, m_target, m_path, ref corners, maxCorners, 0);
+            
             if (result.Succeeded())
             {
                 // Prune points in the beginning of the path which are too close.
@@ -131,7 +127,7 @@ namespace DotRecast.Detour.Crowd
                 foreach (StraightPathItem spi in corners)
                 {
                     if ((spi.flags & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0
-                        || Vector3Extensions.Dist2DSqr(spi.pos, m_pos) > MIN_TARGET_DIST)
+                        || Vector3Extensions.Dist2DSqr(spi.pos, Pos) > MIN_TARGET_DIST)
                     {
                         break;
                     }
@@ -187,7 +183,7 @@ namespace DotRecast.Detour.Crowd
         public void OptimizePathVisibility(Vector3 next, float pathOptimizationRange, DtNavMeshQuery navquery, IDtQueryFilter filter)
         {
             // Clamp the ray to max distance.
-            float dist = Vector3Extensions.Dist2D(m_pos, next);
+            float dist = Vector3Extensions.Dist2D(Pos, next);
 
             // If too close to the goal, do not try to optimize.
             if (dist < 0.01f)
@@ -200,10 +196,10 @@ namespace DotRecast.Detour.Crowd
             dist = MathF.Min(dist + 0.01f, pathOptimizationRange);
 
             // Adjust ray length.
-            var delta = next - m_pos;
-            Vector3 goal = m_pos + delta * (pathOptimizationRange / dist);
+            var delta = next - Pos;
+            Vector3 goal = Pos + delta * (pathOptimizationRange / dist);
 
-            var status = navquery.Raycast(m_path[0], m_pos, goal, filter, 0, 0, out var rayHit);
+            var status = navquery.Raycast(m_path[0], Pos, goal, filter, 0, 0, out var rayHit);
             if (status.Succeeded())
             {
                 if (rayHit.path.Count > 1 && rayHit.t > 0.99f)
@@ -237,7 +233,7 @@ namespace DotRecast.Detour.Crowd
             }
 
             var res = new List<long>();
-            navquery.InitSlicedFindPath(m_path[0], m_path[^1], m_pos, m_target, filter, 0);
+            navquery.InitSlicedFindPath(m_path[0], m_path[^1], Pos, m_target, filter, 0);
             navquery.UpdateSlicedFindPath(maxIterations, out var _);
             var status = navquery.FinalizeSlicedFindPathPartial(m_path, ref res);
 
@@ -277,7 +273,7 @@ namespace DotRecast.Detour.Crowd
             var startEnd = nav.GetOffMeshConnectionPolyEndPoints(refs[0], refs[1], ref startPos, ref endPos);
             if (startEnd.Succeeded())
             {
-                m_pos = endPos;
+                Pos = endPos;
                 return true;
             }
 
@@ -311,18 +307,19 @@ namespace DotRecast.Detour.Crowd
         {
             // Move along navmesh and update new position.
             var visited = new List<long>();
-            var status = navquery.MoveAlongSurface(m_path[0], m_pos, npos, filter, out var result, ref visited);
+            var status = navquery.MoveAlongSurface(m_path[0], Pos, npos, filter, out var result, ref visited);
             if (status.Succeeded())
             {
                 m_path = PathUtils.MergeCorridorStartMoved(m_path, visited);
 
                 // Adjust the position to stay on top of the navmesh.
-                m_pos = result;
                 status = navquery.GetPolyHeight(m_path[0], result, out var h);
                 if (status.Succeeded())
                 {
-                    m_pos.Y = h;
+                    result.Y = h;
                 }
+
+                Pos = result;
 
                 return true;
             }
@@ -386,7 +383,7 @@ namespace DotRecast.Detour.Crowd
 
         public void FixPathStart(long safeRef, Vector3 safePos)
         {
-            m_pos = safePos;
+            Pos = safePos;
             if (m_path.Count < 3 && m_path.Count > 0)
             {
                 long p = m_path[^1];
@@ -420,7 +417,7 @@ namespace DotRecast.Detour.Crowd
             else if (n == 0)
             {
                 // The first polyref is bad, use current safe values.
-                m_pos = new Vector3(safePos[0], safePos[1], safePos[2]);
+                Pos = new Vector3(safePos[0], safePos[1], safePos[2]);
                 m_path.Clear();
                 m_path.Add(safeRef);
             }
@@ -448,7 +445,7 @@ namespace DotRecast.Detour.Crowd
      *            The filter to apply to the operation.
      * @return
      */
-        public bool IsValid(int maxLookAhead, DtNavMeshQuery navquery, IDtQueryFilter filter)
+        public readonly bool IsValid(int maxLookAhead, DtNavMeshQuery navquery, IDtQueryFilter filter)
         {
             // Check that all polygons still pass query filter.
             int n = (int)MathF.Min(m_path.Count, maxLookAhead);
@@ -468,7 +465,7 @@ namespace DotRecast.Detour.Crowd
      *
      * @return The current target within the corridor.
      */
-        public Vector3 GetTarget()
+        public readonly Vector3 GetTarget()
         {
             return m_target;
         }
@@ -478,7 +475,7 @@ namespace DotRecast.Detour.Crowd
      *
      * @return The polygon reference id of the first polygon in the corridor. (Or zero if there is no path.)
      */
-        public long GetFirstPoly()
+        public readonly long GetFirstPoly()
         {
             return 0 == m_path.Count ? 0 : m_path[0];
         }
@@ -488,7 +485,7 @@ namespace DotRecast.Detour.Crowd
      *
      * @return The polygon reference id of the last polygon in the corridor. (Or zero if there is no path.)
      */
-        public long GetLastPoly()
+        public readonly long GetLastPoly()
         {
             return 0 == m_path.Count ? 0 : m_path[^1];
         }
@@ -496,7 +493,7 @@ namespace DotRecast.Detour.Crowd
         /**
      * The corridor's path.
      */
-        public List<long> GetPath()
+        public readonly List<long> GetPath()
         {
             return m_path;
         }
@@ -506,7 +503,7 @@ namespace DotRecast.Detour.Crowd
      *
      * @return The number of polygons in the current corridor path.
      */
-        public int GetPathCount()
+        public readonly int GetPathCount()
         {
             return m_path.Count;
         }
