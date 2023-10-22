@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Detour
 {
@@ -66,11 +67,11 @@ namespace DotRecast.Detour
         /// @param[in] bmax Maximum bounds of box B. [(x, y, z)]
         /// @return True if the two AABB's overlap.
         /// @see dtOverlapBounds
-        public static bool OverlapQuantBounds(Vector3 amin, Vector3 amax, int[] bmin, int[] bmax)
+        public static bool OverlapQuantBounds(Vector3 amin, Vector3 amax, in Vector3Int bmin, in Vector3Int bmax)
         {
-            bool overlap = ((int)amin.X & 0x7ffffffe) <= bmax[0] && ((((int)amax.X) + 1) | 1) >= bmin[0]
-                && ((int)amin.Y & 0x7ffffffe) <= bmax[1] && ((((int)amax.Y) + 1) | 1) >= bmin[1] 
-                && ((int)amin.Z & 0x7ffffffe) <= bmax[2] && ((((int)amax.Z) + 1) | 1) >= bmin[2];
+            bool overlap = ((int)amin.X & 0x7ffffffe) <= bmax.x && ((((int)amax.X) + 1) | 1) >= bmin.x
+                && ((int)amin.Y & 0x7ffffffe) <= bmax.y && ((((int)amax.Y) + 1) | 1) >= bmin.y
+                && ((int)amin.Z & 0x7ffffffe) <= bmax.z && ((((int)amax.Z) + 1) | 1) >= bmin.z;
 
             return overlap;
         }

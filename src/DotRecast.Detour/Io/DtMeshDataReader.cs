@@ -16,6 +16,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.IO;
 using System.Numerics;
 using DotRecast.Core;
@@ -206,36 +207,38 @@ namespace DotRecast.Detour.Io
 
         private static DtBVNode[] ReadBVTree(RcByteBuffer buf, DtMeshHeader header)
         {
+            Span<int> bmin = stackalloc int[3];
+            Span<int> bmax = stackalloc int[3];
+
             DtBVNode[] nodes = new DtBVNode[header.bvNodeCount];
             for (int i = 0; i < nodes.Length; i++)
             {
-                nodes[i] = new DtBVNode();
                 if (header.version < DtMeshHeader.DT_NAVMESH_VERSION_RECAST4J_32BIT_BVTREE)
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        nodes[i].bmin[j] = buf.GetShort() & 0xFFFF;
+                        bmin[j] = buf.GetShort() & 0xFFFF;
                     }
 
                     for (int j = 0; j < 3; j++)
                     {
-                        nodes[i].bmax[j] = buf.GetShort() & 0xFFFF;
+                        bmax[j] = buf.GetShort() & 0xFFFF;
                     }
                 }
                 else
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        nodes[i].bmin[j] = buf.GetInt();
+                        bmin[j] = buf.GetInt();
                     }
 
                     for (int j = 0; j < 3; j++)
                     {
-                        nodes[i].bmax[j] = buf.GetInt();
+                        bmax[j] = buf.GetInt();
                     }
                 }
 
-                nodes[i].i = buf.GetInt();
+                nodes[i] = new DtBVNode(bmin.UnsafeAs<int, Vector3Int>(), bmax.UnsafeAs<int, Vector3Int>(), buf.GetInt());
             }
 
             return nodes;

@@ -327,6 +327,19 @@ namespace UnityEngine
             this.y = y;
             this.z = z;
         }
+        public int this[int index]
+        {
+            get
+            {
+                return index switch
+                {
+                    0 => x,
+                    1 => y,
+                    2 => z,
+                    _ => 0,
+                };
+            }
+        }
     }
 
     public readonly struct Vector4Int

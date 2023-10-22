@@ -20,60 +20,65 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DotRecast.Detour
 {
-
-
     public static class DtNavMeshBuilder
     {
         const int MESH_NULL_IDX = 0xffff;
 
-
-        private static int[][] CalcExtends(BVItem[] items, int nitems, int imin, int imax)
+        private static void CalcExtends(BVItem[] items, int imin, int imax, out Vector3Int bmin, out Vector3Int bmax)
         {
-            int[] bmin = new int[3];
-            int[] bmax = new int[3];
-            bmin[0] = items[imin].bmin[0];
-            bmin[1] = items[imin].bmin[1];
-            bmin[2] = items[imin].bmin[2];
+            bmin = items[imin].bmin;
+            bmax = items[imin].bmax;
 
-            bmax[0] = items[imin].bmax[0];
-            bmax[1] = items[imin].bmax[1];
-            bmax[2] = items[imin].bmax[2];
+            int minX = bmin.x;
+            int minY = bmin.y;
+            int minZ = bmin.z;
+
+            int maxX = bmax.x;
+            int maxY = bmax.y;
+            int maxZ = bmax.z;
 
             for (int i = imin + 1; i < imax; ++i)
             {
                 BVItem it = items[i];
-                if (it.bmin[0] < bmin[0])
-                    bmin[0] = it.bmin[0];
-                if (it.bmin[1] < bmin[1])
-                    bmin[1] = it.bmin[1];
-                if (it.bmin[2] < bmin[2])
-                    bmin[2] = it.bmin[2];
 
-                if (it.bmax[0] > bmax[0])
-                    bmax[0] = it.bmax[0];
-                if (it.bmax[1] > bmax[1])
-                    bmax[1] = it.bmax[1];
-                if (it.bmax[2] > bmax[2])
-                    bmax[2] = it.bmax[2];
+                if (it.bmin.x < minX)
+                    minX = it.bmin.x;
+                if (it.bmin.y < minY)
+                    minY = it.bmin.y;
+                if (it.bmin.z < minZ)
+                    minZ = it.bmin.z;
+
+                if (it.bmax.x > maxX)
+                    maxX = it.bmax.x;
+                if (it.bmax.y > maxY)
+                    maxY = it.bmax.y;
+                if (it.bmax.z > maxZ)
+                    maxZ = it.bmax.z;
             }
 
-            return new int[][] { bmin, bmax };
+            bmin = new Vector3Int(minX, minY, minZ);
+            bmax = new Vector3Int(maxX, maxY, maxZ);
         }
 
-        private static int LongestAxis(int x, int y, int z)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int LongestAxis(in Vector3Int bmin, in Vector3Int bmax)
         {
             int axis = 0;
-            int maxVal = x;
+            int maxVal = bmax.x - bmin.x;
+            var y = bmax.y - bmin.y;
             if (y > maxVal)
             {
                 axis = 1;
                 maxVal = y;
             }
 
+            var z = bmax.z - bmin.z;
             if (z > maxVal)
             {
                 axis = 2;
@@ -85,33 +90,20 @@ namespace DotRecast.Detour
         public static int Subdivide(BVItem[] items, int nitems, int imin, int imax, int curNode, DtBVNode[] nodes)
         {
             int inum = imax - imin;
-            int icur = curNode;
-
-            DtBVNode node = new();
-            nodes[curNode++] = node;
+            int icur = curNode++;
+            ref var node = ref nodes[icur];
 
             if (inum == 1)
             {
                 // Leaf
-                node.bmin[0] = items[imin].bmin[0];
-                node.bmin[1] = items[imin].bmin[1];
-                node.bmin[2] = items[imin].bmin[2];
-
-                node.bmax[0] = items[imin].bmax[0];
-                node.bmax[1] = items[imin].bmax[1];
-                node.bmax[2] = items[imin].bmax[2];
-
-                node.i = items[imin].i;
+                node = new DtBVNode(items[imin].bmin, items[imin].bmax, items[imin].i);
             }
             else
             {
                 // Split
-                int[][] minmax = CalcExtends(items, nitems, imin, imax);
-                node.bmin = minmax[0];
-                node.bmax = minmax[1];
+                CalcExtends(items, imin, imax, out var bmin, out var bmax);
 
-                int axis = LongestAxis(node.bmax[0] - node.bmin[0], node.bmax[1] - node.bmin[1],
-                    node.bmax[2] - node.bmin[2]);
+                int axis = LongestAxis(in bmin, in bmax);
 
                 if (axis == 0)
                 {
@@ -138,7 +130,7 @@ namespace DotRecast.Detour
 
                 int iescape = curNode - icur;
                 // Negative index means escape.
-                node.i = -iescape;
+                node = new DtBVNode(bmin, bmax, -iescape);
             }
 
             return curNode;
@@ -151,9 +143,7 @@ namespace DotRecast.Detour
             BVItem[] items = new BVItem[option.polyCount];
             for (int i = 0; i < option.polyCount; i++)
             {
-                BVItem it = new();
-                items[i] = it;
-                it.i = i;
+                ref var it = ref items[i];
                 // Calc polygon bounds. Use detail meshes if available.
                 if (option.detailMeshes != null)
                 {
@@ -170,47 +160,55 @@ namespace DotRecast.Detour
                     }
 
                     // BV-tree uses cs for all dimensions
-                    it.bmin[0] = Math.Clamp((int)((bmin.X - option.bmin.X) * quantFactor), 0, int.MaxValue);
-                    it.bmin[1] = Math.Clamp((int)((bmin.Y - option.bmin.Y) * quantFactor), 0, int.MaxValue);
-                    it.bmin[2] = Math.Clamp((int)((bmin.Z - option.bmin.Z) * quantFactor), 0, int.MaxValue);
+                    var bminInt = new Vector3Int(Math.Clamp((int)((bmin.X - option.bmin.X) * quantFactor), 0, int.MaxValue),
+                        Math.Clamp((int)((bmin.Y - option.bmin.Y) * quantFactor), 0, int.MaxValue),
+                        Math.Clamp((int)((bmin.Z - option.bmin.Z) * quantFactor), 0, int.MaxValue));
 
-                    it.bmax[0] = Math.Clamp((int)((bmax.X - option.bmin.X) * quantFactor), 0, int.MaxValue);
-                    it.bmax[1] = Math.Clamp((int)((bmax.Y - option.bmin.Y) * quantFactor), 0, int.MaxValue);
-                    it.bmax[2] = Math.Clamp((int)((bmax.Z - option.bmin.Z) * quantFactor), 0, int.MaxValue);
+                    var bmaxInt = new Vector3Int(Math.Clamp((int)((bmax.X - option.bmin.X) * quantFactor), 0, int.MaxValue),
+                        Math.Clamp((int)((bmax.Y - option.bmin.Y) * quantFactor), 0, int.MaxValue),
+                        Math.Clamp((int)((bmax.Z - option.bmin.Z) * quantFactor), 0, int.MaxValue));
+
+                    it = new BVItem(bminInt, bmaxInt, i);
                 }
                 else
                 {
                     int p = i * option.nvp * 2;
-                    it.bmin[0] = it.bmax[0] = option.verts[option.polys[p] * 3 + 0];
-                    it.bmin[1] = it.bmax[1] = option.verts[option.polys[p] * 3 + 1];
-                    it.bmin[2] = it.bmax[2] = option.verts[option.polys[p] * 3 + 2];
+                    var bminX = option.verts[option.polys[p] * 3];
+                    var bminY = option.verts[option.polys[p] * 3 + 1];
+                    var bminZ = option.verts[option.polys[p] * 3 + 2];
+                    var bmaxX = bminX;
+                    var bmaxY = bminY;
+                    var bmaxZ = bminZ;
 
                     for (int j = 1; j < option.nvp; ++j)
                     {
                         if (option.polys[p + j] == MESH_NULL_IDX)
                             break;
+
                         int x = option.verts[option.polys[p + j] * 3 + 0];
                         int y = option.verts[option.polys[p + j] * 3 + 1];
                         int z = option.verts[option.polys[p + j] * 3 + 2];
 
-                        if (x < it.bmin[0])
-                            it.bmin[0] = x;
-                        if (y < it.bmin[1])
-                            it.bmin[1] = y;
-                        if (z < it.bmin[2])
-                            it.bmin[2] = z;
+                        if (x < bminX)
+                            bminX = x;
+                        if (y < bminY)
+                            bminY = y;
+                        if (z < bminZ)
+                            bminZ = z;
 
-                        if (x > it.bmax[0])
-                            it.bmax[0] = x;
-                        if (y > it.bmax[1])
-                            it.bmax[1] = y;
-                        if (z > it.bmax[2])
-                            it.bmax[2] = z;
+                        if (x > bmaxX)
+                            bmaxX = x;
+                        if (y > bmaxY)
+                            bmaxY = y;
+                        if (z > bmaxZ)
+                            bmaxZ = z;
                     }
 
                     // Remap y
-                    it.bmin[1] = (int)MathF.Floor(it.bmin[1] * option.ch * quantFactor);
-                    it.bmax[1] = (int)MathF.Ceiling(it.bmax[1] * option.ch * quantFactor);
+                    bminY = (int)MathF.Floor(bminY * option.ch * quantFactor);
+                    bmaxY = (int)MathF.Ceiling(bmaxY * option.ch * quantFactor);
+
+                    it = new BVItem(new Vector3Int(bminX, bminY, bminZ), new Vector3Int(bminX, bmaxY, bmaxZ), i);
                 }
             }
 

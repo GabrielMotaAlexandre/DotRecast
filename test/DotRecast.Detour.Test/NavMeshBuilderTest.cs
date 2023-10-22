@@ -35,19 +35,15 @@ public class NavMeshBuilderTest
     public void TestBVTree()
     {
         Assert.That(nmd.verts.Length / 3, Is.EqualTo(225));
-        Assert.That(nmd.polys.Length, Is.EqualTo(119));
+        Assert.That(nmd.polys, Has.Length.EqualTo(119));
         Assert.That(nmd.header.maxLinkCount, Is.EqualTo(457));
-        Assert.That(nmd.detailMeshes.Length, Is.EqualTo(118));
-        Assert.That(nmd.detailTris.Length, Is.EqualTo(291));
-        Assert.That(nmd.detailVerts.Length, Is.EqualTo(60));
-        Assert.That(nmd.offMeshCons.Length, Is.EqualTo(1));
+        Assert.That(nmd.detailMeshes, Has.Length.EqualTo(118));
+        Assert.That(nmd.detailTris, Has.Length.EqualTo(291));
+        Assert.That(nmd.detailVerts, Has.Length.EqualTo(60));
+        Assert.That(nmd.offMeshCons, Has.Length.EqualTo(1));
         Assert.That(nmd.header.offMeshBase, Is.EqualTo(118));
-        Assert.That(nmd.bvTree.Length, Is.EqualTo(236));
-        Assert.That(nmd.bvTree.Length, Is.GreaterThanOrEqualTo(nmd.header.bvNodeCount));
-        for (int i = 0; i < nmd.header.bvNodeCount; i++)
-        {
-            Assert.That(nmd.bvTree[i], Is.Not.Null);
-        }
+        Assert.That(nmd.bvTree, Has.Length.EqualTo(236));
+        Assert.That(nmd.bvTree, Has.Length.GreaterThanOrEqualTo(nmd.header.bvNodeCount));
 
         for (int i = 0; i < 6; i++)
         {

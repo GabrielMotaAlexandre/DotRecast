@@ -18,6 +18,8 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using UnityEngine;
+
 namespace DotRecast.Detour
 {
     /**
@@ -26,15 +28,22 @@ namespace DotRecast.Detour
  * @note This structure is rarely if ever used by the end user.
  * @see MeshTile
  */
-    public class DtBVNode
+    public readonly struct DtBVNode
     {
         /** Minimum bounds of the node's AABB. [(x, y, z)] */
-        public int[] bmin = new int[3];
+        public readonly Vector3Int bmin;
 
         /** Maximum bounds of the node's AABB. [(x, y, z)] */
-        public int[] bmax = new int[3];
+        public readonly Vector3Int bmax;
 
         /** The node's index. (Negative for escape sequence.) */
-        public int i;
+        public readonly int i;
+
+        public DtBVNode(Vector3Int bmin, Vector3Int bmax, int i)
+        {
+            this.bmin = bmin;
+            this.bmax = bmax;
+            this.i = i;
+        }
     }
 }

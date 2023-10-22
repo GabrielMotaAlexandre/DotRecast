@@ -41,20 +41,20 @@ public class MeshSetReaderTest
         Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
         List<DtMeshTile> tiles = mesh.GetTilesAt(4, 7);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(7));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(22 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(7));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(22 * 3));
         tiles = mesh.GetTilesAt(1, 6);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(7));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(26 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(7));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(26 * 3));
         tiles = mesh.GetTilesAt(6, 2);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(1));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(4 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(1));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(4 * 3));
         tiles = mesh.GetTilesAt(7, 6);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(8));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(24 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(8));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(24 * 3));
     }
 
     [Test]
@@ -70,20 +70,20 @@ public class MeshSetReaderTest
         Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
         List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(2));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(7 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(7 * 3));
         tiles = mesh.GetTilesAt(2, 9);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(2));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(9 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(9 * 3));
         tiles = mesh.GetTilesAt(4, 3);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(3));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(6 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(3));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(6 * 3));
         tiles = mesh.GetTilesAt(2, 8);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(5));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(17 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(5));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(17 * 3));
     }
 
     [Test]
@@ -99,19 +99,19 @@ public class MeshSetReaderTest
         Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
         List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(2));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(7 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(7 * 3));
         tiles = mesh.GetTilesAt(2, 9);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(2));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(9 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(9 * 3));
         tiles = mesh.GetTilesAt(4, 3);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(3));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(6 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(3));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(6 * 3));
         tiles = mesh.GetTilesAt(2, 8);
         Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys.Length, Is.EqualTo(5));
-        Assert.That(tiles[0].data.verts.Length, Is.EqualTo(17 * 3));
+        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(5));
+        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(17 * 3));
     }
 }

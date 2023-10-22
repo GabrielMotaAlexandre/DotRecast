@@ -458,9 +458,9 @@ public class RecastDebugDraw : DebugDraw
                 continue;
             }
 
-            AppendBoxWire(tile.data.header.bmin.X + n.bmin[0] * cs, tile.data.header.bmin.Y + n.bmin[1] * cs,
-                tile.data.header.bmin.Z + n.bmin[2] * cs, tile.data.header.bmin.X + n.bmax[0] * cs,
-                tile.data.header.bmin.Y + n.bmax[1] * cs, tile.data.header.bmin.Z + n.bmax[2] * cs,
+            AppendBoxWire(tile.data.header.bmin.X + n.bmin.x * cs, tile.data.header.bmin.Y + n.bmin.y * cs,
+                tile.data.header.bmin.Z + n.bmin.z * cs, tile.data.header.bmin.X + n.bmax.x * cs,
+                tile.data.header.bmin.Y + n.bmax.y * cs, tile.data.header.bmin.Z + n.bmax.z * cs,
                 DuRGBA(255, 255, 255, 128));
         }
 

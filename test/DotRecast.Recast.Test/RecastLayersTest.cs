@@ -51,7 +51,7 @@ public class RecastLayersTest
     public void TestDungeon()
     {
         RcHeightfieldLayerSet lset = Build("dungeon.obj", 3, 2);
-        Assert.That(lset.layers.Length, Is.EqualTo(1));
+        Assert.That(lset.layers, Has.Length.EqualTo(1));
         Assert.That(lset.layers[0].width, Is.EqualTo(48));
         Assert.That(lset.layers[0].hmin, Is.EqualTo(51));
         Assert.That(lset.layers[0].hmax, Is.EqualTo(67));
@@ -69,7 +69,7 @@ public class RecastLayersTest
     public void Test()
     {
         RcHeightfieldLayerSet lset = Build("nav_test.obj", 3, 2);
-        Assert.That(lset.layers.Length, Is.EqualTo(3));
+        Assert.That(lset.layers, Has.Length.EqualTo(3));
         Assert.That(lset.layers[0].width, Is.EqualTo(48));
         Assert.That(lset.layers[0].hmin, Is.EqualTo(13));
         Assert.That(lset.layers[0].hmax, Is.EqualTo(30));
@@ -111,7 +111,7 @@ public class RecastLayersTest
     public void Test2()
     {
         RcHeightfieldLayerSet lset = Build("nav_test.obj", 2, 4);
-        Assert.That(lset.layers.Length, Is.EqualTo(2));
+        Assert.That(lset.layers, Has.Length.EqualTo(2));
         Assert.That(lset.layers[0].width, Is.EqualTo(48));
         Assert.That(lset.layers[0].hmin, Is.EqualTo(13));
         Assert.That(lset.layers[0].hmax, Is.EqualTo(13));

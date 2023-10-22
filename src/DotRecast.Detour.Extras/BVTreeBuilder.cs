@@ -19,7 +19,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Numerics;
-
+using UnityEngine;
 
 namespace DotRecast.Detour.Extras
 {
@@ -35,26 +35,29 @@ namespace DotRecast.Detour.Extras
 
         private static int CreateBVTree(DtMeshData data, DtBVNode[] nodes, float quantFactor)
         {
-            BVItem[] items = new BVItem[data.header.polyCount];
+            Span<int> bmin = stackalloc int[3];
+            Span<int> bmax = stackalloc int[3];
+
+            var items = new BVItem[data.header.polyCount];
             for (int i = 0; i < data.header.polyCount; i++)
             {
-                BVItem it = new();
-                items[i] = it;
-                it.i = i;
-                var bmin = data.verts.UnsafeAs<float, Vector3>(data.polys[i].verts[0]);
-                var bmax = bmin;
+                var bminT = data.verts.UnsafeAs<float, Vector3>(data.polys[i].verts[0]);
+                var bmaxT = bminT;
                 for (int j = 1; j < data.polys[i].vertCount; j++)
                 {
-                    bmin.Min(data.verts, data.polys[i].verts[j] * 3);
-                    bmax.Max(data.verts, data.polys[i].verts[j] * 3);
+                    bminT.Min(data.verts, data.polys[i].verts[j] * 3);
+                    bmaxT.Max(data.verts, data.polys[i].verts[j] * 3);
                 }
 
-                it.bmin[0] = Math.Clamp((int)((bmin.X - data.header.bmin.X) * quantFactor), 0, 0x7fffffff);
-                it.bmin[1] = Math.Clamp((int)((bmin.Y - data.header.bmin.Y) * quantFactor), 0, 0x7fffffff);
-                it.bmin[2] = Math.Clamp((int)((bmin.Z - data.header.bmin.Z) * quantFactor), 0, 0x7fffffff);
-                it.bmax[0] = Math.Clamp((int)((bmax.X - data.header.bmin.X) * quantFactor), 0, 0x7fffffff);
-                it.bmax[1] = Math.Clamp((int)((bmax.Y - data.header.bmin.Y) * quantFactor), 0, 0x7fffffff);
-                it.bmax[2] = Math.Clamp((int)((bmax.Z - data.header.bmin.Z) * quantFactor), 0, 0x7fffffff);
+                bmin[0] = Math.Clamp((int)((bminT.X - data.header.bmin.X) * quantFactor), 0, 0x7fffffff);
+                bmin[1] = Math.Clamp((int)((bminT.Y - data.header.bmin.Y) * quantFactor), 0, 0x7fffffff);
+                bmin[2] = Math.Clamp((int)((bminT.Z - data.header.bmin.Z) * quantFactor), 0, 0x7fffffff);
+                bmax[0] = Math.Clamp((int)((bmaxT.X - data.header.bmin.X) * quantFactor), 0, 0x7fffffff);
+                bmax[1] = Math.Clamp((int)((bmaxT.Y - data.header.bmin.Y) * quantFactor), 0, 0x7fffffff);
+                bmax[2] = Math.Clamp((int)((bmaxT.Z - data.header.bmin.Z) * quantFactor), 0, 0x7fffffff);
+
+
+                items[i] = new BVItem(bmin.UnsafeAs<int, Vector3Int>(), bmax.UnsafeAs<int, Vector3Int>(), i);
             }
 
             return DtNavMeshBuilder.Subdivide(items, data.header.polyCount, 0, data.header.polyCount, 0, nodes);

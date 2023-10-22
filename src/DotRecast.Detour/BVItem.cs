@@ -1,9 +1,19 @@
-﻿namespace DotRecast.Detour
+using UnityEngine;
+
+namespace DotRecast.Detour
 {
+    // todoperf
     public class BVItem
     {
-        public readonly int[] bmin = new int[3];
-        public readonly int[] bmax = new int[3];
-        public int i;
-    };
+        public readonly Vector3Int bmin;
+        public readonly Vector3Int bmax;
+        public readonly int i;
+
+        public BVItem(Vector3Int bmin, Vector3Int bmax, int i)
+        {
+            this.bmin = bmin;
+            this.bmax = bmax;
+            this.i = i;
+        }
+    }
 }

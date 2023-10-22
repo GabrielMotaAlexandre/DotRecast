@@ -258,8 +258,8 @@ public class RecastSoloMeshTest
         RcPolyMeshDetail m_dmesh = RcMeshDetails.BuildPolyMeshDetail(m_pmesh, m_chf, cfg.DetailSampleDist,
             cfg.DetailSampleMaxError);
         Assert.That(m_dmesh.nmeshes, Is.EqualTo(expDetMeshes), "Mesh Detail Meshes");
-        Assert.That(m_dmesh.verts.Length, Is.EqualTo(expDetVerts), "Mesh Detail Verts");
-        Assert.That(m_dmesh.tris.Length, Is.EqualTo(expDetTris), "Mesh Detail Tris");
+        Assert.That(m_dmesh.verts, Has.Length.EqualTo(expDetVerts), "Mesh Detail Verts");
+        Assert.That(m_dmesh.tris, Has.Length.EqualTo(expDetTris), "Mesh Detail Tris");
         long time2 = RcFrequency.Ticks;
         Console.WriteLine(filename + " : " + partitionType + "  " + (time2 - time) / TimeSpan.TicksPerMillisecond + " ms");
         Console.WriteLine("           " + (time3 - time) / TimeSpan.TicksPerMillisecond + " ms");
