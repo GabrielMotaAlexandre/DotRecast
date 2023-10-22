@@ -149,7 +149,7 @@ namespace DotRecast.Detour
         /// @param[in] b Vertex B. [(x, y, z)]
         /// @param[in] c Vertex C. [(x, y, z)]
         /// @return The signed xz-plane area of the triangle.
-        public static float TriArea2D(float[] verts, int a, int b, int c)
+        public static float TriArea2D(ReadOnlySpan<float> verts, int a, int b, int c)
         {
             float abx = verts[b] - verts[a];
             float abz = verts[b + 2] - verts[a + 2];
@@ -178,7 +178,7 @@ namespace DotRecast.Detour
 
         // Returns a random point in a convex polygon.
         // Adapted from Graphics Gems article.
-        public static Vector3 RandomPointInConvexPoly(float[] pts, int npts, float[] areas, float s, float t)
+        public static Vector3 RandomPointInConvexPoly(ReadOnlySpan<float> pts, int npts, Span<float> areas, float s, float t)
         {
             // Calc triangle araes
             float areasum = 0.0f;
@@ -206,7 +206,7 @@ namespace DotRecast.Detour
                 acc += dacc;
             }
 
-            float v = (float)Math.Sqrt(t);
+            float v = MathF.Sqrt(t);
 
             float a = 1 - v;
             float b = (1 - u) * v;
@@ -277,7 +277,7 @@ namespace DotRecast.Detour
         /// @par
         ///
         /// All points are projected onto the xz-plane, so the y-values are ignored.
-        public static bool PointInPolygon(Vector3 pt, float[] verts, int nverts)
+        public static bool PointInPolygon(Vector3 pt, ReadOnlySpan<float> verts, int nverts)
         {
             // TODO: Replace pnpoly with triArea2D tests?
             int i, j;

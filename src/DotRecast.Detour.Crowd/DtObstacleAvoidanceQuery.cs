@@ -108,7 +108,7 @@ namespace DotRecast.Detour.Crowd
                 DtObstacleCircle cir = m_circles[i];
 
                 // Side
-                cir.dp = System.Numerics.Vector2.Normalize(cir.p - pos);
+                cir.dp = Vector2.Normalize(cir.p - pos);
 
                 var dv = cir.dvel - dvel;
 
@@ -144,7 +144,7 @@ namespace DotRecast.Detour.Crowd
             var c = s.LengthSquared() - r * r;
 
             // Overlap, calc time to exit.
-            var b = System.Numerics.Vector2.Dot(v, s);
+            var b = Vector2.Dot(v, s);
             var d = b * b - a * c;
             if (d < 0)
                 return false; // no intersection.
@@ -171,8 +171,8 @@ namespace DotRecast.Detour.Crowd
             float minPenalty, DtObstacleAvoidanceDebugData debug)
         {
             // penalty for straying away from the desired and current velocities
-            float vpen = m_params.weightDesVel * m_invVmax * System.Numerics.Vector2.Distance(vcand, dvel);
-            float vcpen = m_params.weightCurVel * m_invVmax * System.Numerics.Vector2.Distance(vcand, vel);
+            float vpen = m_params.weightDesVel * m_invVmax * Vector2.Distance(vcand, dvel);
+            float vcpen = m_params.weightCurVel * m_invVmax * Vector2.Distance(vcand, vel);
 
             // find the threshold hit time to bail out based on the early out penalty
             // (see how the penalty is calculated below to understand)
@@ -195,7 +195,7 @@ namespace DotRecast.Detour.Crowd
                 var vab = vabPre - cir.vel;
 
                 // Side
-                side += Mathf.Clamp01(MathF.Min(System.Numerics.Vector2.Dot(cir.dp, vab) / 2 + 0.5f, System.Numerics.Vector2.Dot(cir.np, vab) * 2));
+                side += Mathf.Clamp01(MathF.Min(Vector2.Dot(cir.dp, vab) / 2 + 0.5f, Vector2.Dot(cir.np, vab) * 2));
 
                 if (!SweepCircleCircle(pos, rad, vab, cir.p, cir.rad, out var htmin, out var htmax))
                     continue;
@@ -227,7 +227,7 @@ namespace DotRecast.Detour.Crowd
                 //var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
                 var sdir = seg.q - seg.p;
                 var w = pos - seg.p;
-                var t = System.Numerics.Vector2.Dot(sdir, w);
+                var t = Vector2.Dot(sdir, w);
 
                 float d = sdir.LengthSquared();
                 t = Mathf.Clamp01(t / (d > 0 ? d : 1));
@@ -278,7 +278,7 @@ namespace DotRecast.Detour.Crowd
 
                 float s = Vector3Extensions.Perp2D(vcand, w) / dvcand;
 
-                htmin = touch && System.Numerics.Vector2.Dot(snorm, vcand) < 0 ? float.MaxValue / f : (!touch && MathF.Abs(d) < 1e-6f || htmin < 0 || htmin > 1 || s < 0 || s > 1 ? float.MaxValue / f : htmin);
+                htmin = touch && Vector2.Dot(snorm, vcand) < 0 ? float.MaxValue / f : (!touch && MathF.Abs(d) < 1e-6f || htmin < 0 || htmin > 1 || s < 0 || s > 1 ? float.MaxValue / f : htmin);
 
                 // The closest obstacle is somewhere ahead of us, keep track of nearest obstacle.
                 tmin = MathF.Min(tmin, htmin * f);
@@ -366,7 +366,7 @@ namespace DotRecast.Detour.Crowd
             var sa = MathF.Sin(da);
 
             // desired direction
-            var di = System.Numerics.Vector2.Normalize(dvel);
+            var di = Vector2.Normalize(dvel);
 
             // DtRotate by da/2
             var ang = da / 2;

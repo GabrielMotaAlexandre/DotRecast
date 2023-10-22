@@ -39,7 +39,7 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Set(this ref Vector3 vector, float[] @in, int i)
+        public static void Set(this ref Vector3 vector, ReadOnlySpan<float> @in, int i)
         {
             vector = @in.UnsafeAs<float, Vector3>(i);
         }

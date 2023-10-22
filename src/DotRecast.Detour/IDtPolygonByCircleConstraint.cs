@@ -17,12 +17,13 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Numerics;
 
 namespace DotRecast.Detour
 {
     public interface IDtPolygonByCircleConstraint
     {
-        float[] Apply(float[] polyVerts, Vector3 circleCenter, float radius);
+        ReadOnlySpan<float> Apply(ReadOnlySpan<float> polyVerts, Vector3 circleCenter, float radius);
     }
 }

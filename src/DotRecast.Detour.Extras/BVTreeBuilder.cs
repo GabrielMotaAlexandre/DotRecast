@@ -33,7 +33,7 @@ namespace DotRecast.Detour.Extras
                 : CreateBVTree(data, data.bvTree, data.header.bvQuantFactor);
         }
 
-        private static int CreateBVTree(DtMeshData data, DtBVNode[] nodes, float quantFactor)
+        private static int CreateBVTree(DtMeshData data, Span<DtBVNode> nodes, float quantFactor)
         {
             Span<int> bmin = stackalloc int[3];
             Span<int> bmax = stackalloc int[3];

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace DotRecast.Detour
 {
     // todoperf
-    public class BVItem
+    public readonly struct BVItem
     {
         public readonly Vector3Int bmin;
         public readonly Vector3Int bmax;

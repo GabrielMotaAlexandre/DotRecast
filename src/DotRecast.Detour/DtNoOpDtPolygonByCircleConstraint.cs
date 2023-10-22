@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+using System;
+using System.Numerics;
 
 namespace DotRecast.Detour
 {
@@ -10,7 +11,7 @@ namespace DotRecast.Detour
         {
         }
 
-        public float[] Apply(float[] polyVerts, Vector3 circleCenter, float radius)
+        public ReadOnlySpan<float> Apply(ReadOnlySpan<float> polyVerts, Vector3 circleCenter, float radius)
         {
             return polyVerts;
         }

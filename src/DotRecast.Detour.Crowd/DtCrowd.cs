@@ -266,9 +266,9 @@ namespace DotRecast.Detour.Crowd
             ag.topologyOptTime = 0;
             ag.targetReplanTime = 0;
 
-            ag.dvel = System.Numerics.Vector2.Zero;
-            ag.nvel = System.Numerics.Vector2.Zero;
-            ag.vel = System.Numerics.Vector2.Zero;
+            ag.dvel = Vector2.Zero;
+            ag.nvel = Vector2.Zero;
+            ag.vel = Vector2.Zero;
             ag.npos = nearestPt;
 
             ag.desiredSpeed = 0;
@@ -353,7 +353,7 @@ namespace DotRecast.Detour.Crowd
             // Initialize request.
             agent.targetRef = 0;
             agent.targetPos = Vector3.Zero;
-            agent.dvel = System.Numerics.Vector2.Zero;
+            agent.dvel = Vector2.Zero;
             agent.targetPathQueryResult = null;
             agent.targetReplan = false;
             agent.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_NONE;
@@ -1017,7 +1017,7 @@ namespace DotRecast.Detour.Crowd
                 if (ag.OverOffmeshConnection(triggerRadius))
                 {
                     // Prepare to off-mesh connection.
-                    DtCrowdAgentAnimation anim = ag.animation;
+                    ref DtCrowdAgentAnimation anim = ref ag.animation;
 
                     // Adjust the path over the off-mesh connection.
                     long[] refs = new long[2];
@@ -1304,7 +1304,7 @@ namespace DotRecast.Detour.Crowd
 
             foreach (DtCrowdAgent ag in agents)
             {
-                DtCrowdAgentAnimation anim = ag.animation;
+                ref var anim = ref ag.animation;
                 if (!anim.active)
                 {
                     continue;
@@ -1335,8 +1335,8 @@ namespace DotRecast.Detour.Crowd
                 }
 
                 // Update velocity.
-                ag.vel = System.Numerics.Vector2.Zero;
-                ag.dvel = System.Numerics.Vector2.Zero;
+                ag.vel = Vector2.Zero;
+                ag.dvel = Vector2.Zero;
             }
         }
 

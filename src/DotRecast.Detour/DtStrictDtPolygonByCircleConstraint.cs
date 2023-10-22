@@ -31,7 +31,7 @@ namespace DotRecast.Detour
             return temp;
         }
 
-        public float[] Apply(float[] verts, Vector3 center, float radius)
+        public ReadOnlySpan<float> Apply(ReadOnlySpan<float> verts, Vector3 center, float radius)
         {
             float radiusSqr = radius * radius;
             int outsideVertex = -1;
@@ -50,8 +50,8 @@ namespace DotRecast.Detour
                 return verts;
             }
 
-            float[] qCircle = Circle(center, radius);
-            float[] intersection = ConvexConvexIntersection.Intersect(verts, qCircle);
+            var qCircle = Circle(center, radius);
+            var intersection = ConvexConvexIntersection.Intersect(verts, qCircle);
             if (intersection == null && DtUtils.PointInPolygon(center, verts, verts.Length / 3))
             {
                 // circle inside polygon

@@ -163,8 +163,8 @@ namespace DotRecast.Detour
             }
 
             // Randomly pick point on polygon.
-            float[] verts = new float[3 * m_nav.GetMaxVertsPerPoly()];
-            float[] areas = new float[m_nav.GetMaxVertsPerPoly()];
+            var verts = new float[3 * m_nav.GetMaxVertsPerPoly()];
+            var areas = new float[m_nav.GetMaxVertsPerPoly()];
             Array.Copy(tile.data.verts, poly.verts[0] * 3, verts, 0, 3);
             for (int j = 1; j < poly.vertCount; ++j)
             {
@@ -265,7 +265,7 @@ namespace DotRecast.Detour
 
             DtPoly randomPoly = null;
             long randomPolyRef = 0;
-            float[] randomPolyVerts = null;
+            ReadOnlySpan<float> randomPolyVerts = null;
 
             while (!m_openList.IsEmpty())
             {
@@ -288,7 +288,7 @@ namespace DotRecast.Detour
                         Array.Copy(bestTile.data.verts, bestPoly.verts[j] * 3, polyVerts, j * 3, 3);
                     }
 
-                    float[] constrainedVerts = constraint.Apply(polyVerts, centerPos, maxRadius);
+                    var constrainedVerts = constraint.Apply(polyVerts, centerPos, maxRadius);
                     if (constrainedVerts != null)
                     {
                         int vertCount = constrainedVerts.Length / 3;

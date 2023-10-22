@@ -30,7 +30,7 @@ namespace DotRecast.Detour
     {
         const int MESH_NULL_IDX = 0xffff;
 
-        private static void CalcExtends(BVItem[] items, int imin, int imax, out Vector3Int bmin, out Vector3Int bmax)
+        private static void CalcExtends(ReadOnlySpan<BVItem> items, int imin, int imax, out Vector3Int bmin, out Vector3Int bmax)
         {
             bmin = items[imin].bmin;
             bmax = items[imin].bmax;
@@ -87,7 +87,7 @@ namespace DotRecast.Detour
             return axis;
         }
 
-        public static int Subdivide(BVItem[] items, int nitems, int imin, int imax, int curNode, DtBVNode[] nodes)
+        public static int Subdivide(BVItem[] items, int nitems, int imin, int imax, int curNode, Span<DtBVNode> nodes)
         {
             int inum = imax - imin;
             int icur = curNode++;
@@ -140,7 +140,7 @@ namespace DotRecast.Detour
         {
             // Build tree
             float quantFactor = 1 / option.cs;
-            BVItem[] items = new BVItem[option.polyCount];
+            var items = new BVItem[option.polyCount];
             for (int i = 0; i < option.polyCount; i++)
             {
                 ref var it = ref items[i];
@@ -410,8 +410,8 @@ namespace DotRecast.Detour
             var navDMeshes = new DtPolyDetail[option.polyCount];
             var navDVerts = new Vector3[uniqueDetailVertCount];
             var navDTris = new Vector4Int[detailTriCount];
-            DtBVNode[] navBvtree = new DtBVNode[bvTreeSize];
-            DtOffMeshConnection[] offMeshCons = new DtOffMeshConnection[storedOffMeshConCount];
+            var navBvtree = new DtBVNode[bvTreeSize];
+            var offMeshCons = new DtOffMeshConnection[storedOffMeshConCount];
 
             // Store header
             header.magic = DtMeshHeader.DT_NAVMESH_MAGIC;
