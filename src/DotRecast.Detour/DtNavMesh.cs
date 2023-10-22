@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Detour
 {
@@ -1125,9 +1126,9 @@ namespace DotRecast.Detour
                 DtPolyDetail pd = tile.data.detailMeshes[ip];
                 for (int i = 0; i < pd.triCount; i++)
                 {
-                    int ti = (pd.triBase + i) * 4;
-                    int[] tris = tile.data.detailTris;
-                    if (onlyBoundary && (tris[ti + 3] & ANY_BOUNDARY_EDGE) == 0)
+                    int ti = pd.triBase + i;
+                    var tris = tile.data.detailTris;
+                    if (onlyBoundary && (tris[ti].w & ANY_BOUNDARY_EDGE) == 0)
                     {
                         continue;
                     }
@@ -1135,9 +1136,9 @@ namespace DotRecast.Detour
                     Vector3[] v = new Vector3[3];
                     for (int j = 0; j < 3; ++j)
                     {
-                        if (tris[ti + j] < poly.vertCount)
+                        if (tris[ti][j] < poly.vertCount)
                         {
-                            int index = poly.verts[tris[ti + j]] * 3;
+                            int index = poly.verts[tris[ti][j]] * 3;
                             v[j] = new Vector3
                             {
                                 X = tile.data.verts[index],
@@ -1147,20 +1148,15 @@ namespace DotRecast.Detour
                         }
                         else
                         {
-                            int index = (pd.vertBase + (tris[ti + j] - poly.vertCount)) * 3;
-                            v[j] = new Vector3
-                            {
-                                X = tile.data.detailVerts[index],
-                                Y = tile.data.detailVerts[index + 1],
-                                Z = tile.data.detailVerts[index + 2]
-                            };
+                            int index = pd.vertBase + (tris[ti][j] - poly.vertCount);
+                            v[j] = tile.data.detailVerts[index];
                         }
                     }
 
                     for (int k = 0, j = 2; k < 3; j = k++)
                     {
-                        if ((GetDetailTriEdgeFlags(tris[ti + 3], j) & DT_DETAIL_EDGE_BOUNDARY) == 0
-                            && (onlyBoundary || tris[ti + j] < tris[ti + k]))
+                        if ((GetDetailTriEdgeFlags(tris[ti].w, j) & DT_DETAIL_EDGE_BOUNDARY) == 0
+                            && (onlyBoundary || tris[ti][j] < tris[ti][k]))
                         {
                             // Only looking at boundary edges and this is internal, or
                             // this is an inner edge that we will see again or have already seen.
@@ -1236,13 +1232,14 @@ namespace DotRecast.Detour
                 DtPolyDetail pd = tile.data.detailMeshes[ip];
                 for (int j = 0; j < pd.triCount; ++j)
                 {
-                    int t = (pd.triBase + j) * 4;
+                    int t = pd.triBase + j;
                     Vector3[] v = new Vector3[3];
                     for (int k = 0; k < 3; ++k)
                     {
-                        if (tile.data.detailTris[t + k] < poly.vertCount)
+                        var tri = tile.data.detailTris.GetUnsafe(t).UnsafeAs < Vector4Int, int>(k);
+                        if (tri < poly.vertCount)
                         {
-                            int index = poly.verts[tile.data.detailTris[t + k]] * 3;
+                            int index = poly.verts[tri] * 3;
                             v[k] = new Vector3
                             {
                                 X = tile.data.verts[index],
@@ -1252,13 +1249,8 @@ namespace DotRecast.Detour
                         }
                         else
                         {
-                            int index = (pd.vertBase + (tile.data.detailTris[t + k] - poly.vertCount)) * 3;
-                            v[k] = new Vector3
-                            {
-                                X = tile.data.detailVerts[index],
-                                Y = tile.data.detailVerts[index + 1],
-                                Z = tile.data.detailVerts[index + 2]
-                            };
+                            int index = pd.vertBase + (tri - poly.vertCount);
+                            v[k] = tile.data.detailVerts[index];
                         }
                     }
 

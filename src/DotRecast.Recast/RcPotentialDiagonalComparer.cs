@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace DotRecast.Recast
 {
-    public struct RcPotentialDiagonalComparer : IComparer<RcPotentialDiagonal>
+    public readonly struct RcPotentialDiagonalComparer : IComparer<RcPotentialDiagonal>
     {
         public static readonly RcPotentialDiagonalComparer Shared = new();
 

@@ -210,7 +210,7 @@ namespace DotRecast.Recast
             //
             RcPolyMeshDetail dmesh = cfg.BuildMeshDetail
                 ? RcMeshDetails.BuildPolyMeshDetail(pmesh, in chf, cfg.DetailSampleDist, cfg.DetailSampleMaxError)
-                : null;
+                : default;
             return new RcBuilderResult(new UnityEngine.Vector2Int(tileX, tileZ), solid, chf, cset, pmesh, dmesh);
         }
 

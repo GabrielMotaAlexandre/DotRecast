@@ -30,7 +30,7 @@ namespace DotRecast.Recast
             hitTime = 0f;
             foreach (RcBuilderResult result in results)
             {
-                if (result.MeshDetail != null)
+                if (result.MeshDetail.IsValid)
                 {
                     if (Raycast(result.Mesh, result.MeshDetail, src, dst, out hitTime))
                     {
@@ -45,7 +45,7 @@ namespace DotRecast.Recast
         private static bool Raycast(RcPolyMesh poly, RcPolyMeshDetail meshDetail, Vector3 sp, Vector3 sq, out float hitTime)
         {
             hitTime = 0;
-            if (meshDetail != null)
+            if (meshDetail.IsValid)
             {
                 for (int i = 0; i < meshDetail.nmeshes; ++i)
                 {
@@ -53,17 +53,12 @@ namespace DotRecast.Recast
                     int bverts = meshDetail.meshes[m];
                     int btris = meshDetail.meshes[m + 2];
                     int ntris = meshDetail.meshes[m + 3];
-                    int verts = bverts * 3;
-                    int tris = btris * 4;
                     for (int j = 0; j < ntris; ++j)
                     {
                         Vector3[] vs = new Vector3[3];
-                        for (int k = 0; k < 3; ++k)
-                        {
-                            vs[k].X = meshDetail.verts[verts + meshDetail.tris[tris + j * 4 + k] * 3];
-                            vs[k].Y = meshDetail.verts[verts + meshDetail.tris[tris + j * 4 + k] * 3 + 1];
-                            vs[k].Z = meshDetail.verts[verts + meshDetail.tris[tris + j * 4 + k] * 3 + 2];
-                        }
+                        vs[0] = meshDetail.verts[bverts + meshDetail.tris[btris + j].x];
+                        vs[1] = meshDetail.verts[bverts + meshDetail.tris[btris + j].y];
+                        vs[2] = meshDetail.verts[bverts + meshDetail.tris[btris + j].z];
 
                         if (Intersections.IntersectSegmentTriangle(sp, sq, vs[0], vs[1], vs[2], out hitTime))
                         {

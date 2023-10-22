@@ -24,7 +24,7 @@ namespace DotRecast.Recast.Toolset.Builder
 {
     public class SoloNavMeshBuilder
     {
-        public NavMeshBuildResult Build(DemoInputGeomProvider geom, RcNavMeshBuildSettings settings)
+        public static NavMeshBuildResult Build(DemoInputGeomProvider geom, RcNavMeshBuildSettings settings)
         {
             return Build(geom,
                 settings.partitioning,

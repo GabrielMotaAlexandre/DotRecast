@@ -18,7 +18,9 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Collections.Generic;
 using System.Numerics;
+using UnityEngine;
 
 namespace DotRecast.Detour
 {
@@ -26,6 +28,7 @@ namespace DotRecast.Detour
     /// @ingroup detour
     public class DtNavMeshCreateParams
     {
+        // todoperf
         /// @name Polygon Mesh Attributes
         /// Used to create the base navigation graph.
         /// See #rcPolyMesh for details related to these attributes.
@@ -46,10 +49,8 @@ namespace DotRecast.Detour
         /// 
         public int[] detailMeshes; // < The height detail sub-mesh data. [Size: 4 * #polyCount]
 
-        public float[] detailVerts; // < The detail mesh vertices. [Size: 3 * #detailVertsCount] [Unit: wu]
-        public int detailVertsCount; // < The number of vertices in the detail mesh.
-        public int[] detailTris; // < The detail mesh triangles. [Size: 4 * #detailTriCount]
-        public int detailTriCount; // < The number of triangles in the detail mesh.
+        public Vector3[] detailVerts; // < The detail mesh vertices. [Size: 3 * #detailVertsCount] [Unit: wu]
+        public Vector4Int[] detailTris; // < The detail mesh triangles. [Size: 4 * #detailTriCount]
 
         /// @}
         /// @name Off-Mesh Connections Attributes (Optional)

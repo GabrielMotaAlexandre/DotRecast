@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 namespace DotRecast.Detour
 {
+    // todoperf
     /** Defines the location of detail sub-mesh data within a dtMeshTile. */
     public class DtPolyDetail
     {

@@ -18,30 +18,30 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Collections.Generic;
+using System.Numerics;
+using UnityEngine;
+
 namespace DotRecast.Recast
 {
     /**
  * Contains triangle meshes that represent detailed height data associated with the polygons in its associated polygon
  * mesh object.
  */
-    public class RcPolyMeshDetail
+    public readonly struct RcPolyMeshDetail
     {
         /** The sub-mesh data. [Size: 4*#nmeshes] */
-        public int[] meshes;
+        public readonly int[] meshes { get; init; }
 
         /** The mesh vertices. [Size: 3*#nverts] */
-        public float[] verts;
+        public readonly Vector3[] verts { get; init; }
 
         /** The mesh triangles. [Size: 4*#ntris] */
-        public int[] tris;
+        public readonly Vector4Int[] tris { get; init; }
 
         /** The number of sub-meshes defined by #meshes. */
-        public int nmeshes;
+        public readonly int nmeshes { get; init; }
 
-        /** The number of vertices in #verts. */
-        public int nverts;
-
-        /** The number of triangles in #tris. */
-        public int ntris;
+        public readonly bool IsValid => meshes != null;
     }
 }

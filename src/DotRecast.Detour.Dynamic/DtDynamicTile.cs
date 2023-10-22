@@ -22,10 +22,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using DotRecast.Core;
 using DotRecast.Detour.Dynamic.Colliders;
 using DotRecast.Detour.Dynamic.Io;
 using DotRecast.Recast;
+using UnityEngine;
 
 namespace DotRecast.Detour.Dynamic
 {
@@ -151,13 +154,11 @@ namespace DotRecast.Detour.Dynamic
             option.polyFlags = m_pmesh.flags;
             option.polyCount = m_pmesh.npolys;
             option.nvp = m_pmesh.nvp;
-            if (m_dmesh != null)
+            if (m_dmesh.IsValid)
             {
                 option.detailMeshes = m_dmesh.meshes;
                 option.detailVerts = m_dmesh.verts;
-                option.detailVertsCount = m_dmesh.nverts;
                 option.detailTris = m_dmesh.tris;
-                option.detailTriCount = m_dmesh.ntris;
             }
 
             option.walkableHeight = config.walkableHeight;

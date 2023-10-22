@@ -106,7 +106,7 @@ namespace DotRecast.Detour.Io
             return header;
         }
 
-        private void ReadTiles(RcByteBuffer bb, bool is32Bit, NavMeshSetHeader header, bool cCompatibility, DtNavMesh mesh)
+        private static void ReadTiles(RcByteBuffer bb, bool is32Bit, NavMeshSetHeader header, bool cCompatibility, DtNavMesh mesh)
         {
             // Read tiles.
             for (int i = 0; i < header.numTiles; ++i)

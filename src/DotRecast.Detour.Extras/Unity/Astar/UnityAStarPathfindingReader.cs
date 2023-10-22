@@ -39,7 +39,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
         private readonly GraphConnectionReader graphConnectionReader = new();
         private readonly NodeLink2Reader nodeLink2Reader = new();
 
-        public GraphData Read(FileStream zipFile)
+        public static GraphData Read(FileStream zipFile)
         {
             using ZipArchive file = new(zipFile);
             // Read meta file and check version and graph type

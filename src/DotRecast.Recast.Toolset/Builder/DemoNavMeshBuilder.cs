@@ -24,13 +24,11 @@ namespace DotRecast.Recast.Toolset.Builder
             option.polyFlags = pmesh.flags;
             option.polyCount = pmesh.npolys;
             option.nvp = pmesh.nvp;
-            if (dmesh != null)
+            if (dmesh.IsValid)
             {
                 option.detailMeshes = dmesh.meshes;
                 option.detailVerts = dmesh.verts;
-                option.detailVertsCount = dmesh.nverts;
                 option.detailTris = dmesh.tris;
-                option.detailTriCount = dmesh.ntris;
             }
 
             option.walkableHeight = agentHeight;

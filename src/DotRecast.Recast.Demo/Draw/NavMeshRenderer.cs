@@ -192,7 +192,7 @@ public class NavMeshRenderer
                 _debugDraw.DepthMask(true);
             }
 
-            if (rcBuilderResult.MeshDetail != null && drawMode == DrawMode.DRAWMODE_POLYMESH_DETAIL)
+            if (rcBuilderResult.MeshDetail.IsValid && drawMode == DrawMode.DRAWMODE_POLYMESH_DETAIL)
             {
                 _debugDraw.DepthMask(false);
                 _debugDraw.DebugDrawPolyMeshDetail(rcBuilderResult.MeshDetail);

@@ -40,10 +40,10 @@ namespace DotRecast.Detour.Extras.Jumplink
 
         private List<JumpLink> ProcessEdge(JumpLinkBuilderConfig acfg, RcBuilderResult result, JumpLinkType type, JumpEdge edge)
         {
-            EdgeSampler es = edgeSamplerFactory.Get(acfg, type, edge);
+            EdgeSampler es = EdgeSamplerFactory.Get(acfg, type, edge);
             groundSampler.Sample(acfg, result, es);
             trajectorySampler.Sample(acfg, in result.Solid, es);
-            JumpSegment[] jumpSegments = jumpSegmentBuilder.Build(acfg, es);
+            JumpSegment[] jumpSegments = JumpSegmentBuilder.Build(acfg, es);
             return BuildJumpLinks(acfg, es, jumpSegments);
         }
 

@@ -26,6 +26,7 @@ using static DotRecast.Recast.RcConstants;
 using static DotRecast.Recast.RcCommons;
 using UnityEngine;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace DotRecast.Recast
 {
@@ -97,9 +98,9 @@ namespace DotRecast.Recast
                 float v3Sq = Vector2.Dot(v3, v3);
 
                 var d = new Vector3(
-                    (v2Sq * (v3.Y) + v3Sq * (-v2.Y)) / (2 * cp),
+                    (v2Sq * v3.Y + v3Sq * (-v2.Y)) / (2 * cp),
                     0,
-                    (v2Sq * (-v3.X) + v3Sq * (v2.X)) / (2 * cp));
+                    (v2Sq * (-v3.X) + v3Sq * v2.X) / (2 * cp));
 
                 c += d;
 
@@ -1170,6 +1171,7 @@ namespace DotRecast.Recast
                     {
                         int x = hp.xmin + hx + bs;
                         RcCompactCell c = chf.cells[x + y * chf.width];
+
                         for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
                         {
                             RcCompactSpan s = chf.spans[i];
@@ -1301,29 +1303,27 @@ namespace DotRecast.Recast
         {
             if (mesh.nverts == 0 || mesh.npolys == 0)
             {
-                return null;
+                return default;
             }
 
             int nvp = mesh.nvp;
             int borderSize = mesh.borderSize;
             int heightSearchRadius = (int)Math.Max(1, Math.Ceiling(mesh.maxEdgeError));
 
-            List<int> tris = new(512);
-            float[] verts = new float[256 * 3];
+            List<int> tempTris = new(512);
+            float[] tempVerts = new float[256 * 3];
             int nPolyVerts = 0;
             int maxhw = 0, maxhh = 0;
 
-            int[] bounds = new int[mesh.npolys * 4];
+            Vector4Int[] bounds = new Vector4Int[mesh.npolys];
             float[] poly = new float[nvp * 3];
 
             // Find max size for a polygon area.
             for (int i = 0; i < mesh.npolys; ++i)
             {
+                ref var bound = ref bounds[i];
                 int p = i * nvp * 2;
-                //bounds[i * 4 + 0] = chf.width;
-                //bounds[i * 4 + 1] = 0;
-                //bounds[i * 4 + 2] = chf.height;
-                //bounds[i * 4 + 3] = 0;
+
                 for (int j = 0; j < nvp; ++j)
                 {
                     if (mesh.polys[p + j] == RC_MESH_NULL_IDX)
@@ -1335,46 +1335,42 @@ namespace DotRecast.Recast
                     var vert0 = mesh.verts[v];
                     var vert2 = mesh.verts[v + 2];
 
-                    var bound = new Vector4Int(
-                        Math.Min(bounds[i * 4], vert0),
-                        Math.Max(bounds[i * 4 + 1], vert0),
-                        Math.Min(bounds[i * 4 + 2], vert2),
-                        Math.Max(bounds[i * 4 + 3], vert2));
-
-                    bounds.UnsafeAs<int, Vector4Int>(i) = bound;
+                    bound = new Vector4Int(
+                        Math.Min(bound.x, vert0),
+                        Math.Max(bound.y, vert0),
+                        Math.Min(bound.z, vert2),
+                        Math.Max(bound.w, vert2));
 
                     nPolyVerts++;
                 }
 
-                bounds[i * 4] = Math.Max(0, bounds[i * 4] - 1);
-                bounds[i * 4 + 1] = Math.Min(chf.width, bounds[i * 4 + 1] + 1);
-                bounds[i * 4 + 2] = Math.Max(0, bounds[i * 4 + 2] - 1);
-                bounds[i * 4 + 3] = Math.Min(chf.height, bounds[i * 4 + 3] + 1);
-                if (bounds[i * 4] >= bounds[i * 4 + 1] || bounds[i * 4 + 2] >= bounds[i * 4 + 3])
+                bound = new Vector4Int(
+                   Math.Max(0, bound.x - 1),
+                   Math.Min(chf.width, bound.y + 1),
+                   Math.Max(0, bound.z - 1),
+                   Math.Min(chf.height, bound.w + 1));
+
+                if (bound.x >= bound.y || bound.z >= bound.w)
                 {
                     continue;
                 }
 
-                maxhw = Math.Max(maxhw, bounds[i * 4 + 1] - bounds[i * 4]);
-                maxhh = Math.Max(maxhh, bounds[i * 4 + 3] - bounds[i * 4 + 2]);
+                maxhw = Math.Max(maxhw, bound.y - bound.x);
+                maxhh = Math.Max(maxhh, bound.w - bound.z);
             }
 
-            RcHeightPatch hp = new();
-            hp.data = new int[maxhw * maxhh];
-
-            RcPolyMeshDetail dmesh = new();
-            dmesh.nmeshes = mesh.npolys;
-            dmesh.nverts = 0;
-            dmesh.ntris = 0;
-            dmesh.meshes = new int[dmesh.nmeshes * 4];
+            RcHeightPatch hp = new()
+            {
+                data = new int[maxhw * maxhh]
+            };
 
             int vcap = nPolyVerts + nPolyVerts / 2;
             int tcap = vcap * 2;
 
-            dmesh.nverts = 0;
-            dmesh.verts = new float[vcap * 3];
-            dmesh.ntris = 0;
-            dmesh.tris = new int[tcap * 4];
+
+            var meshes = new int[mesh.npolys * 4];
+            var tris = new List<Vector4Int>(tcap * 4);
+            var verts = new List<Vector3>(vcap * 3);
 
             var meshCs = mesh.cs;
             var meshCh = mesh.ch;
@@ -1402,93 +1398,57 @@ namespace DotRecast.Recast
                     npoly++;
                 }
 
+                var bound = bounds[i];
                 // Get the height data from the area of the polygon.
-                hp.xmin = bounds[i * 4 + 0];
-                hp.ymin = bounds[i * 4 + 2];
-                hp.width = bounds[i * 4 + 1] - bounds[i * 4];
-                hp.height = bounds[i * 4 + 3] - bounds[i * 4 + 2];
+                hp.xmin = bound.x;
+                hp.ymin = bound.z;
+                hp.width = bound.y - bound.x;
+                hp.height = bound.w - bound.z;
                 GetHeightData(in chf, mesh.polys, p, npoly, mesh.verts, borderSize, hp, mesh.regs[i]);
 
                 // Build detail mesh.
-                int nverts = BuildPolyDetail(poly, npoly, sampleDist, sampleMaxError, heightSearchRadius, in chf, in hp, verts, tris);
+                int nverts = BuildPolyDetail(poly, npoly, sampleDist, sampleMaxError, heightSearchRadius, in chf, in hp, tempVerts, tempTris);
 
                 // Move detail verts to world space.
                 for (int j = 0; j < nverts; ++j)
                 {
-                    verts.UnsafeAs<float, Vector3>(j) += orig;
+                    tempVerts.UnsafeAs<float, Vector3>(j) += orig;
                 }
 
                 // Offset poly too, will be used to flag checking.
                 for (int j = 0; j < npoly; ++j)
                 {
-                    poly[j * 3 + 0] += orig.X;
-                    poly[j * 3 + 1] += orig.Y;
-                    poly[j * 3 + 2] += orig.Z;
+                    poly.UnsafeAs<float, Vector3>(j) += orig;
                 }
 
                 // Store detail submesh.
-                int ntris = tris.Count / 4;
+                int ntris = tempTris.Count / 4;
 
-                dmesh.meshes[i * 4 + 0] = dmesh.nverts;
-                dmesh.meshes[i * 4 + 1] = nverts;
-                dmesh.meshes[i * 4 + 2] = dmesh.ntris;
-                dmesh.meshes[i * 4 + 3] = ntris;
-
-                // Store vertices, allocate more memory if necessary.
-                if (dmesh.nverts + nverts > vcap)
-                {
-                    while (dmesh.nverts + nverts > vcap)
-                    {
-                        vcap += 256;
-                    }
-
-                    float[] newv = new float[vcap * 3];
-                    if (dmesh.nverts != 0)
-                    {
-                        Array.Copy(dmesh.verts, 0, newv, 0, 3 * dmesh.nverts);
-                    }
-
-                    dmesh.verts = newv;
-                }
+                meshes.UnsafeAs<int, Vector4Int>(i) = new Vector4Int(verts.Count, nverts, tris.Count, ntris);
 
                 for (int j = 0; j < nverts; ++j)
                 {
-                    dmesh.verts[dmesh.nverts * 3 + 0] = verts[j * 3 + 0];
-                    dmesh.verts[dmesh.nverts * 3 + 1] = verts[j * 3 + 1];
-                    dmesh.verts[dmesh.nverts * 3 + 2] = verts[j * 3 + 2];
-                    dmesh.nverts++;
-                }
-
-                // Store triangles, allocate more memory if necessary.
-                if (dmesh.ntris + ntris > tcap)
-                {
-                    while (dmesh.ntris + ntris > tcap)
-                    {
-                        tcap += 256;
-                    }
-
-                    int[] newt = new int[tcap * 4];
-                    if (dmesh.ntris != 0)
-                    {
-                        Array.Copy(dmesh.tris, 0, newt, 0, 4 * dmesh.ntris);
-                    }
-
-                    dmesh.tris = newt;
+                    verts.Add(tempVerts.UnsafeAs<float, Vector3>(j));
                 }
 
                 for (int j = 0; j < ntris; ++j)
                 {
                     int t = j * 4;
-                    dmesh.tris[dmesh.ntris * 4 + 0] = tris[t + 0];
-                    dmesh.tris[dmesh.ntris * 4 + 1] = tris[t + 1];
-                    dmesh.tris[dmesh.ntris * 4 + 2] = tris[t + 2];
-                    dmesh.tris[dmesh.ntris * 4 + 3] = GetTriFlags(verts, tris[t + 0] * 3, tris[t + 1] * 3,
-                        tris[t + 2] * 3, poly, npoly);
-                    dmesh.ntris++;
+                    tris.Add(new Vector4Int(
+                        tempTris[t + 0],
+                        tempTris[t + 1],
+                        tempTris[t + 2],
+                        GetTriFlags(tempVerts, tempTris[t] * 3, tempTris[t + 1] * 3, tempTris[t + 2] * 3, poly, npoly)));
                 }
             }
 
-            return dmesh;
+            return new RcPolyMeshDetail()
+            {
+                nmeshes = mesh.npolys,
+                meshes = meshes.ToArray(),
+                tris = tris.ToArray(),
+                verts = verts.ToArray()
+            };
         }
     }
 }

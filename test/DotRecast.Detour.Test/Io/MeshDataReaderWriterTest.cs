@@ -71,7 +71,7 @@ public class MeshDataReaderWriterTest
 
         using var br = new BinaryReader(ms);
         DtMeshDataReader reader = new();
-        DtMeshData readData = reader.Read(br, VERTS_PER_POLYGON);
+        DtMeshData readData = DtMeshDataReader.Read(br, VERTS_PER_POLYGON);
 
         Assert.That(readData.header.vertCount, Is.EqualTo(meshData.header.vertCount));
         Assert.That(readData.header.polyCount, Is.EqualTo(meshData.header.polyCount));

@@ -54,10 +54,10 @@ namespace DotRecast.Detour
 
             do
             {
-                a.Set(p, (ai % n));
-                b.Set(q, (bi % m));
-                a1.Set(p, ((ai + n - 1) % n)); // prev a
-                b1.Set(q, ((bi + m - 1) % m)); // prev b
+                a.Set(p, ai % n);
+                b.Set(q, bi % m);
+                a1.Set(p, (ai + n - 1) % n); // prev a
+                b1.Set(q, (bi + m - 1) % m); // prev b
 
                 Vector3 A = a - a1;
                 Vector3 B = b - b1;

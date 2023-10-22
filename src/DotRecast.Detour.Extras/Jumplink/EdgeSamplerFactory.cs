@@ -5,7 +5,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     class EdgeSamplerFactory
     {
-        public EdgeSampler Get(JumpLinkBuilderConfig acfg, JumpLinkType type, JumpEdge edge)
+        public static EdgeSampler Get(JumpLinkBuilderConfig acfg, JumpLinkType type, JumpEdge edge)
         {
             EdgeSampler es;
             switch (type.Bit)

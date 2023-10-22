@@ -18,6 +18,9 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System.Numerics;
+using UnityEngine;
+
 namespace DotRecast.Detour
 {
     public class DtMeshData
@@ -25,6 +28,7 @@ namespace DotRecast.Detour
         /** The tile header. */
         public DtMeshHeader header;
 
+        // todoperf
         /** The tile vertices. [Size: MeshHeader::vertCount] */
         public float[] verts;
 
@@ -35,13 +39,13 @@ namespace DotRecast.Detour
         public DtPolyDetail[] detailMeshes;
 
         /** The detail mesh's unique vertices. [(x, y, z) * MeshHeader::detailVertCount] */
-        public float[] detailVerts;
+        public Vector3[] detailVerts;
 
         /**
          * The detail mesh's triangles. [(vertA, vertB, vertC) * MeshHeader::detailTriCount] See DetailTriEdgeFlags and
          * NavMesh::getDetailTriEdgeFlags.
          */
-        public int[] detailTris;
+        public Vector4Int[] detailTris;
 
         /**
          * The tile bounding volume nodes. [Size: MeshHeader::bvNodeCount] (Will be null if bounding volumes are disabled.)

@@ -110,9 +110,7 @@ public class TestTiledNavMeshBuilder
             RcPolyMeshDetail dmesh = result.MeshDetail;
             option.detailMeshes = dmesh.meshes;
             option.detailVerts = dmesh.verts;
-            option.detailVertsCount = dmesh.nverts;
             option.detailTris = dmesh.tris;
-            option.detailTriCount = dmesh.ntris;
             option.walkableHeight = agentHeight;
             option.walkableRadius = agentRadius;
             option.walkableClimb = agentMaxClimb;

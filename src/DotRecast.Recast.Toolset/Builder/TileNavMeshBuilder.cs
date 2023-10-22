@@ -45,7 +45,7 @@ namespace DotRecast.Recast.Toolset.Builder
                 settings.filterLowHangingObstacles, settings.filterLedgeSpans, settings.filterWalkableLowHeightSpans);
         }
 
-        public NavMeshBuildResult Build(IInputGeomProvider geom,
+        public static NavMeshBuildResult Build(IInputGeomProvider geom,
             int tileSize,
             RcPartition partitionType,
             float cellSize, float cellHeight,

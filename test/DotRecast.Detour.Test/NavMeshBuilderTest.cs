@@ -38,8 +38,8 @@ public class NavMeshBuilderTest
         Assert.That(nmd.polys.Length, Is.EqualTo(119));
         Assert.That(nmd.header.maxLinkCount, Is.EqualTo(457));
         Assert.That(nmd.detailMeshes.Length, Is.EqualTo(118));
-        Assert.That(nmd.detailTris.Length / 4, Is.EqualTo(291));
-        Assert.That(nmd.detailVerts.Length / 3, Is.EqualTo(60));
+        Assert.That(nmd.detailTris.Length, Is.EqualTo(291));
+        Assert.That(nmd.detailVerts.Length, Is.EqualTo(60));
         Assert.That(nmd.offMeshCons.Length, Is.EqualTo(1));
         Assert.That(nmd.header.offMeshBase, Is.EqualTo(118));
         Assert.That(nmd.bvTree.Length, Is.EqualTo(236));

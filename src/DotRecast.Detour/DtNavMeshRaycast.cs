@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 
 using System.Numerics;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Detour
 {
@@ -63,10 +64,10 @@ namespace DotRecast.Detour
                     Vector3[] verts = new Vector3[3];
                     for (int j = 0; j < pd.triCount; ++j)
                     {
-                        int t = (pd.triBase + j) * 4;
+                        int t = pd.triBase + j;
                         for (int k = 0; k < 3; ++k)
                         {
-                            int v = tile.data.detailTris[t + k];
+                            int v = tile.data.detailTris.GetUnsafe(t).UnsafeAs<Vector4Int, int>(k);
                             if (v < p.vertCount)
                             {
                                 verts[k].X = tile.data.verts[p.verts[v] * 3];
@@ -75,9 +76,7 @@ namespace DotRecast.Detour
                             }
                             else
                             {
-                                verts[k].X = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3];
-                                verts[k].Y = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 1];
-                                verts[k].Z = tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 2];
+                                verts[k] = tile.data.detailVerts[pd.vertBase + v - p.vertCount];
                             }
                         }
 

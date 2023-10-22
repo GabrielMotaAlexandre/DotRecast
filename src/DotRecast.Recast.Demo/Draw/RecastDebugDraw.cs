@@ -24,6 +24,7 @@ using System.Numerics;
 using DotRecast.Detour;
 using DotRecast.Recast.Toolset.Builder;
 using Silk.NET.OpenGL;
+using UnityEngine;
 
 namespace DotRecast.Recast.Demo.Draw;
 
@@ -260,10 +261,10 @@ public class RecastDebugDraw : DebugDraw
             {
                 for (int j = 0; j < pd.triCount; ++j)
                 {
-                    int t = (pd.triBase + j) * 4;
+                    int t = pd.triBase + j;
                     for (int k = 0; k < 3; ++k)
                     {
-                        int v = tile.data.detailTris[t + k];
+                        int v = tile.data.detailTris.GetUnsafe(t).UnsafeAs<Vector4Int, int>(k);
                         if (v < p.vertCount)
                         {
                             Vertex(tile.data.verts[p.verts[v] * 3], tile.data.verts[p.verts[v] * 3 + 1],
@@ -271,9 +272,7 @@ public class RecastDebugDraw : DebugDraw
                         }
                         else
                         {
-                            Vertex(tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3],
-                                tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 1],
-                                tile.data.detailVerts[(pd.vertBase + v - p.vertCount) * 3 + 2], col);
+                            Vertex(tile.data.detailVerts[pd.vertBase + v - p.vertCount], col);
                         }
                     }
                 }
@@ -374,7 +373,7 @@ public class RecastDebugDraw : DebugDraw
                         Vector3[] tv = new Vector3[3];
                         for (int m = 0; m < 3; ++m)
                         {
-                            int v = tile.data.detailTris[t + m];
+                            int v = tile.data.detailTris.GetUnsafe(t).UnsafeAs<Vector4Int, int>(m);
                             if (v < p.vertCount)
                             {
                                 tv[m] = new Vector3(
@@ -384,20 +383,16 @@ public class RecastDebugDraw : DebugDraw
                             }
                             else
                             {
-                                tv[m] = new Vector3(
-                                    tile.data.detailVerts[(pd.vertBase + (v - p.vertCount)) * 3],
-                                    tile.data.detailVerts[(pd.vertBase + (v - p.vertCount)) * 3 + 1],
-                                    tile.data.detailVerts[(pd.vertBase + (v - p.vertCount)) * 3 + 2]
-                                );
+                                tv[m] = tile.data.detailVerts[pd.vertBase + (v - p.vertCount)];
                             }
                         }
 
                         for (int m = 0, n = 2; m < 3; n = m++)
                         {
-                            if ((DtNavMesh.GetDetailTriEdgeFlags(tile.data.detailTris[t + 3], n) & DtNavMesh.DT_DETAIL_EDGE_BOUNDARY) == 0)
+                            if ((DtNavMesh.GetDetailTriEdgeFlags(tile.data.detailTris[t].w, n) & DtNavMesh.DT_DETAIL_EDGE_BOUNDARY) == 0)
                                 continue;
 
-                            if (((tile.data.detailTris[t + 3] >> (n * 2)) & 0x3) == 0)
+                            if (((tile.data.detailTris[t].w >> (n * 2)) & 0x3) == 0)
                             {
                                 continue; // Skip inner detail edges.
                             }
@@ -795,7 +790,7 @@ public class RecastDebugDraw : DebugDraw
                 var list = hf.spans[x + y * w];
 
                 if (list != null)
-                    foreach(var span in list)
+                    foreach (var span in list)
                     {
                         AppendBox(fx, orig.Y + span.smin * ch, fz, fx + cs, orig.Y + span.smax * ch, fz + cs, fcol);
                     }
@@ -1089,22 +1084,18 @@ public class RecastDebugDraw : DebugDraw
             int bverts = dmesh.meshes[m];
             int btris = dmesh.meshes[m + 2];
             int ntris = dmesh.meshes[m + 3];
-            int verts = bverts * 3;
-            int tris = btris * 4;
+            int verts = bverts;
+            int tris = btris;
 
             int color = DuIntToCol(i, 192);
 
             for (int j = 0; j < ntris; ++j)
             {
-                Vertex(dmesh.verts[verts + dmesh.tris[tris + j * 4 + 0] * 3],
-                    dmesh.verts[verts + dmesh.tris[tris + j * 4 + 0] * 3 + 1],
-                    dmesh.verts[verts + dmesh.tris[tris + j * 4 + 0] * 3 + 2], color);
-                Vertex(dmesh.verts[verts + dmesh.tris[tris + j * 4 + 1] * 3],
-                    dmesh.verts[verts + dmesh.tris[tris + j * 4 + 1] * 3 + 1],
-                    dmesh.verts[verts + dmesh.tris[tris + j * 4 + 1] * 3 + 2], color);
-                Vertex(dmesh.verts[verts + dmesh.tris[tris + j * 4 + 2] * 3],
-                    dmesh.verts[verts + dmesh.tris[tris + j * 4 + 2] * 3 + 1],
-                    dmesh.verts[verts + dmesh.tris[tris + j * 4 + 2] * 3 + 2], color);
+                var tri = dmesh.tris[tris + j];
+
+                Vertex(dmesh.verts[verts + tri.x], color);
+                Vertex(dmesh.verts[verts + tri.y], color);
+                Vertex(dmesh.verts[verts + tri.z], color);
             }
         }
 
@@ -1119,26 +1110,22 @@ public class RecastDebugDraw : DebugDraw
             int bverts = dmesh.meshes[m];
             int btris = dmesh.meshes[m + 2];
             int ntris = dmesh.meshes[m + 3];
-            int verts = bverts * 3;
-            int tris = btris * 4;
+            int verts = bverts;
+            int tris = btris;
 
             for (int j = 0; j < ntris; ++j)
             {
-                int t = tris + j * 4;
+                int t = tris + j;
                 for (int k = 0, kp = 2; k < 3; kp = k++)
                 {
-                    int ef = (dmesh.tris[t + 3] >> (kp * 2)) & 0x3;
+                    int ef = (dmesh.tris[t].w >> (kp * 2)) & 0x3;
                     if (ef == 0)
                     {
                         // Internal edge
-                        if (dmesh.tris[t + kp] < dmesh.tris[t + k])
+                        if (dmesh.tris[t][kp] < dmesh.tris[t][k])
                         {
-                            Vertex(dmesh.verts[verts + dmesh.tris[t + kp] * 3],
-                                dmesh.verts[verts + dmesh.tris[t + kp] * 3 + 1],
-                                dmesh.verts[verts + dmesh.tris[t + kp] * 3 + 2], coli);
-                            Vertex(dmesh.verts[verts + dmesh.tris[t + k] * 3],
-                                dmesh.verts[verts + dmesh.tris[t + k] * 3 + 1],
-                                dmesh.verts[verts + dmesh.tris[t + k] * 3 + 2], coli);
+                            Vertex(dmesh.verts[verts + dmesh.tris[t][kp]], coli);
+                            Vertex(dmesh.verts[verts + dmesh.tris[t][k]], coli);
                         }
                     }
                 }
@@ -1156,24 +1143,20 @@ public class RecastDebugDraw : DebugDraw
             int bverts = dmesh.meshes[m];
             int btris = dmesh.meshes[m + 2];
             int ntris = dmesh.meshes[m + 3];
-            int verts = bverts * 3;
-            int tris = btris * 4;
+            int verts = bverts;
+            int tris = btris;
 
             for (int j = 0; j < ntris; ++j)
             {
-                int t = tris + j * 4;
+                int t = tris + j;
                 for (int k = 0, kp = 2; k < 3; kp = k++)
                 {
-                    int ef = (dmesh.tris[t + 3] >> (kp * 2)) & 0x3;
+                    int ef = (dmesh.tris[t].w >> (kp * 2)) & 0x3;
                     if (ef != 0)
                     {
                         // Ext edge
-                        Vertex(dmesh.verts[verts + dmesh.tris[t + kp] * 3],
-                            dmesh.verts[verts + dmesh.tris[t + kp] * 3 + 1],
-                            dmesh.verts[verts + dmesh.tris[t + kp] * 3 + 2], cole);
-                        Vertex(dmesh.verts[verts + dmesh.tris[t + k] * 3],
-                            dmesh.verts[verts + dmesh.tris[t + k] * 3 + 1],
-                            dmesh.verts[verts + dmesh.tris[t + k] * 3 + 2], cole);
+                        Vertex(dmesh.verts[verts + dmesh.tris[t][kp]], cole);
+                        Vertex(dmesh.verts[verts + dmesh.tris[t][k]], cole);
                     }
                 }
             }
@@ -1188,11 +1171,10 @@ public class RecastDebugDraw : DebugDraw
             int m = i * 4;
             int bverts = dmesh.meshes[m];
             int nverts = dmesh.meshes[m + 1];
-            int verts = bverts * 3;
             for (int j = 0; j < nverts; ++j)
             {
-                Vertex(dmesh.verts[verts + j * 3], dmesh.verts[verts + j * 3 + 1], dmesh.verts[verts + j * 3 + 2],
-                    colv);
+                var vert = dmesh.verts[bverts + j];
+                Vertex(vert, colv);
             }
         }
 

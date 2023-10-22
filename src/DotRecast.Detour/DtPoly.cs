@@ -31,6 +31,7 @@ namespace DotRecast.Detour
         
         public readonly int index;
 
+        // todoperf
         /** The indices of the polygon's vertices. The actual vertices are located in MeshTile::verts. */
         public readonly int[] verts;
 

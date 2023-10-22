@@ -32,7 +32,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             }
         }
 
-        private bool SampleTrajectory(JumpLinkBuilderConfig acfg, in RcHeightfield solid, Vector3 pa, Vector3 pb, Trajectory tra)
+        private static bool SampleTrajectory(JumpLinkBuilderConfig acfg, in RcHeightfield solid, Vector3 pa, Vector3 pb, Trajectory tra)
         {
             float cs = Math.Min(acfg.cellSize, acfg.cellHeight);
             float d = Vector3Extensions.Dist2D(pa, pb) + Math.Abs(pa.Y - pb.Y);

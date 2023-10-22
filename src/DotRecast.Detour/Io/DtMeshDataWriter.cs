@@ -17,7 +17,9 @@ freely, subject to the following restrictions:
 */
 
 using System.IO;
+using System.Numerics;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Detour.Io
 {
@@ -66,11 +68,22 @@ namespace DotRecast.Detour.Io
             WriteOffMeshCons(stream, data, order);
         }
 
-        private void WriteVerts(BinaryWriter stream, float[] verts, int count, RcByteOrder order)
+        private static void WriteVerts(BinaryWriter stream, float[] verts, int count, RcByteOrder order)
         {
             for (int i = 0; i < count * 3; i++)
             {
                 Write(stream, verts[i], order);
+            }
+        }
+
+        private static void WriteVerts(BinaryWriter stream, Vector3[] verts, int count, RcByteOrder order)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var vert = verts[i];
+                Write(stream, vert.X, order);
+                Write(stream, vert.Y, order);
+                Write(stream, vert.Z, order);
             }
         }
 
@@ -118,7 +131,7 @@ namespace DotRecast.Detour.Io
         {
             for (int i = 0; i < data.header.detailTriCount * 4; i++)
             {
-                Write(stream, (byte)data.detailTris[i]);
+                Write(stream, (byte)data.detailTris.UnsafeAs<Vector4Int, int>(i));
             }
         }
 
@@ -155,7 +168,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        private void WriteOffMeshCons(BinaryWriter stream, DtMeshData data, RcByteOrder order)
+        private static void WriteOffMeshCons(BinaryWriter stream, DtMeshData data, RcByteOrder order)
         {
             for (int i = 0; i < data.header.offMeshConCount; i++)
             {

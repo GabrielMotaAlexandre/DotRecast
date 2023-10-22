@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 using System;
 using System.Buffers;
 using System.Diagnostics.Contracts;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -40,7 +41,7 @@ namespace System.Numerics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Set(this ref Vector3 vector, float[] @in, int i)
         {
-            vector = @in.GetUnsafe().UnsafeAs<float, Vector3>(i);
+            vector = @in.UnsafeAs<float, Vector3>(i);
         }
 
         /// Normalizes the vector.
@@ -73,7 +74,7 @@ namespace System.Numerics
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Min(this ref Vector3 vector, in Vector3 b)
+        public static void Min(this ref Vector3 vector, Vector3 b)
         {
             vector = Vector3.Min(vector, b);
         }
@@ -341,6 +342,21 @@ namespace UnityEngine
             this.y = y;
             this.z = z;
             this.w = w;
+        }
+
+        public int this[int index]
+        {
+            get
+            {
+                return index switch
+                {
+                    0 => x,
+                    1 => y,
+                    2 => z,
+                    3 => w,
+                    _ => 0,
+                };
+            }
         }
     }
 

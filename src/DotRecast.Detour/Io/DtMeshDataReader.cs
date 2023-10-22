@@ -17,7 +17,9 @@ freely, subject to the following restrictions:
 */
 
 using System.IO;
+using System.Numerics;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Detour.Io
 {
@@ -25,24 +27,24 @@ namespace DotRecast.Detour.Io
     {
         public const int DT_POLY_DETAIL_SIZE = 10;
 
-        public DtMeshData Read(BinaryReader stream, int maxVertPerPoly)
+        public static DtMeshData Read(BinaryReader stream, int maxVertPerPoly)
         {
             RcByteBuffer buf = IOUtils.ToByteBuffer(stream);
             return Read(buf, maxVertPerPoly, false);
         }
 
-        public DtMeshData Read(RcByteBuffer buf, int maxVertPerPoly)
+        public static DtMeshData Read(RcByteBuffer buf, int maxVertPerPoly)
         {
             return Read(buf, maxVertPerPoly, false);
         }
 
-        public DtMeshData Read32Bit(BinaryReader stream, int maxVertPerPoly)
+        public static DtMeshData Read32Bit(BinaryReader stream, int maxVertPerPoly)
         {
             RcByteBuffer buf = IOUtils.ToByteBuffer(stream);
             return Read(buf, maxVertPerPoly, true);
         }
 
-        public DtMeshData Read32Bit(RcByteBuffer buf, int maxVertPerPoly)
+        public static DtMeshData Read32Bit(RcByteBuffer buf, int maxVertPerPoly)
         {
             return Read(buf, maxVertPerPoly, true);
         }
@@ -91,7 +93,7 @@ namespace DotRecast.Detour.Io
             header.walkableHeight = buf.GetFloat();
             header.walkableRadius = buf.GetFloat();
             header.walkableClimb = buf.GetFloat();
-            
+
             header.bmin.X = buf.GetFloat();
             header.bmin.Y = buf.GetFloat();
             header.bmin.Z = buf.GetFloat();
@@ -109,7 +111,7 @@ namespace DotRecast.Detour.Io
             }
 
             data.detailMeshes = ReadPolyDetails(buf, header, cCompatibility);
-            data.detailVerts = ReadVerts(buf, header.detailVertCount);
+            data.detailVerts = ReadVertsVector3(buf, header.detailVertCount);
             data.detailTris = ReadDTris(buf, header);
             data.bvTree = ReadBVTree(buf, header);
             data.offMeshCons = ReadOffMeshCons(buf, header);
@@ -130,6 +132,17 @@ namespace DotRecast.Detour.Io
             for (int i = 0; i < verts.Length; i++)
             {
                 verts[i] = buf.GetFloat();
+            }
+
+            return verts;
+        }
+
+        private static Vector3[] ReadVertsVector3(RcByteBuffer buf, int count)
+        {
+            Vector3[] verts = new Vector3[count];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(buf.GetFloat(), buf.GetFloat(), buf.GetFloat());
             }
 
             return verts;
@@ -185,12 +198,12 @@ namespace DotRecast.Detour.Io
             return polys;
         }
 
-        private static int[] ReadDTris(RcByteBuffer buf, DtMeshHeader header)
+        private static Vector4Int[] ReadDTris(RcByteBuffer buf, DtMeshHeader header)
         {
-            int[] tris = new int[4 * header.detailTriCount];
+            Vector4Int[] tris = new Vector4Int[header.detailTriCount];
             for (int i = 0; i < tris.Length; i++)
             {
-                tris[i] = buf.Get() & 0xFF;
+                tris[i] = new Vector4Int(buf.Get() & 0xFF, buf.Get() & 0xFF, buf.Get() & 0xFF, buf.Get() & 0xFF);
             }
 
             return tris;

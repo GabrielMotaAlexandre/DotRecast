@@ -18,8 +18,9 @@ freely, subject to the following restrictions:
 
 using System;
 using System.IO.Compression;
-
+using System.Numerics;
 using DotRecast.Core;
+using UnityEngine;
 
 namespace DotRecast.Detour.Extras.Unity.Astar
 {
@@ -79,8 +80,8 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     int nodeCount = buffer.GetInt();
                     DtPoly[] nodes = new DtPoly[nodeCount];
                     DtPolyDetail[] detailNodes = new DtPolyDetail[nodeCount];
-                    float[] detailVerts = Array.Empty<float>();
-                    int[] detailTris = new int[4 * nodeCount];
+                    var detailVerts = Array.Empty<Vector3>();
+                    Vector4Int[] detailTris = new Vector4Int[nodeCount];
                     int vertMask = GetVertMask(vertsCount);
                     float ymin = float.PositiveInfinity;
                     float ymax = float.NegativeInfinity;
@@ -110,12 +111,9 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                             triBase = i,
                             triCount = 1
                         };
-                        detailTris[4 * i] = 0;
-                        detailTris[4 * i + 1] = 1;
-                        detailTris[4 * i + 2] = 2;
                         // Bit for each edge that belongs to poly boundary, basically all edges marked as boundary as it is
                         // a triangle
-                        detailTris[4 * i + 3] = (1 << 4) | (1 << 2) | 1;
+                        detailTris[4] = new Vector4Int(0,1,2, (1 << 4) | (1 << 2) | 1);
                     }
 
                     tiles[tileIndex].verts = verts;

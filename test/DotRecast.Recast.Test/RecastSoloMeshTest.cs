@@ -258,8 +258,8 @@ public class RecastSoloMeshTest
         RcPolyMeshDetail m_dmesh = RcMeshDetails.BuildPolyMeshDetail(m_pmesh, m_chf, cfg.DetailSampleDist,
             cfg.DetailSampleMaxError);
         Assert.That(m_dmesh.nmeshes, Is.EqualTo(expDetMeshes), "Mesh Detail Meshes");
-        Assert.That(m_dmesh.nverts, Is.EqualTo(expDetVerts), "Mesh Detail Verts");
-        Assert.That(m_dmesh.ntris, Is.EqualTo(expDetTris), "Mesh Detail Tris");
+        Assert.That(m_dmesh.verts.Length, Is.EqualTo(expDetVerts), "Mesh Detail Verts");
+        Assert.That(m_dmesh.tris.Length, Is.EqualTo(expDetTris), "Mesh Detail Tris");
         long time2 = RcFrequency.Ticks;
         Console.WriteLine(filename + " : " + partitionType + "  " + (time2 - time) / TimeSpan.TicksPerMillisecond + " ms");
         Console.WriteLine("           " + (time3 - time) / TimeSpan.TicksPerMillisecond + " ms");
@@ -314,10 +314,10 @@ public class RecastSoloMeshTest
             string filePath = Path.Combine("test-output", filename);
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             using StreamWriter fw = new(filePath);
-            for (int v = 0; v < dmesh.nverts; v++)
+            for (int v = 0; v < dmesh.verts.Length; v++)
             {
                 fw.Write(
-                    "v " + dmesh.verts[v * 3] + " " + dmesh.verts[v * 3 + 1] + " " + dmesh.verts[v * 3 + 2] + "\n");
+                    "v " + dmesh.verts[v].X + " " + dmesh.verts[v].Y + " " + dmesh.verts[v].Z + "\n");
             }
 
             for (int m = 0; m < dmesh.nmeshes; m++)
@@ -326,9 +326,9 @@ public class RecastSoloMeshTest
                 int tfirst = dmesh.meshes[m * 4 + 2];
                 for (int f = 0; f < dmesh.meshes[m * 4 + 3]; f++)
                 {
-                    fw.Write("f " + (vfirst + dmesh.tris[(tfirst + f) * 4] + 1) + " "
-                             + (vfirst + dmesh.tris[(tfirst + f) * 4 + 1] + 1) + " "
-                             + (vfirst + dmesh.tris[(tfirst + f) * 4 + 2] + 1) + "\n");
+                    fw.Write("f " + (vfirst + dmesh.tris[tfirst + f].x + 1) + " "
+                             + (vfirst + dmesh.tris[tfirst + f].y + 1) + " "
+                             + (vfirst + dmesh.tris[tfirst + f].z + 1) + "\n");
                 }
             }
 

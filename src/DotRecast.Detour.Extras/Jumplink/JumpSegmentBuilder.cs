@@ -6,7 +6,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     class JumpSegmentBuilder
     {
-        public JumpSegment[] Build(JumpLinkBuilderConfig acfg, EdgeSampler es)
+        public static JumpSegment[] Build(JumpLinkBuilderConfig acfg, EdgeSampler es)
         {
             int n = es.end[0].gsamples.Length;
             int[][] sampleGrid = RcArrayUtils.Of<int>(n, es.end.Count);

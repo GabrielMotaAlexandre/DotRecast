@@ -673,7 +673,7 @@ public class RecastDemo : IRecastDemoChannel
         }
         else
         {
-            buildResult = soloNavMeshBuilder.Build(geom, settings);
+            buildResult = SoloNavMeshBuilder.Build(geom, settings);
         }
 
         if (!buildResult.Success)

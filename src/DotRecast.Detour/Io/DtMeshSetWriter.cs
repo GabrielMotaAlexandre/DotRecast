@@ -49,7 +49,7 @@ namespace DotRecast.Detour.Io
             }
 
             Write(stream, numTiles, order);
-            paramWriter.Write(stream, mesh.GetParams(), order);
+            DtNavMeshParamWriter.Write(stream, mesh.GetParams(), order);
             if (!cCompatibility)
             {
                 Write(stream, mesh.GetMaxVertsPerPoly(), order);

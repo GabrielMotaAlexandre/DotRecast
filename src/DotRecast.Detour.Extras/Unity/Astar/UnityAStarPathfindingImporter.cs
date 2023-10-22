@@ -35,7 +35,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
 
         public DtNavMesh[] Load(FileStream zipFile)
         {
-            GraphData graphData = reader.Read(zipFile);
+            GraphData graphData = UnityAStarPathfindingReader.Read(zipFile);
             Meta meta = graphData.meta;
             NodeLink2[] nodeLinks2 = graphData.nodeLinks2;
             DtNavMesh[] meshes = new DtNavMesh[meta.graphs];

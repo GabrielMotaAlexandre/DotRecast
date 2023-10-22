@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Numerics;
+using UnityEngine;
 
 namespace DotRecast.Detour
 {
@@ -158,14 +159,14 @@ namespace DotRecast.Detour
                 {
                     int vb = option.detailMeshes[i * 4 + 0];
                     int ndv = option.detailMeshes[i * 4 + 1];
-                    Vector3 bmin = new();
-                    Vector3 bmax = new();
-                    bmin.Set(option.detailVerts, vb);
-                    bmax.Set(option.detailVerts, vb);
+                    Vector3 bmin = option.detailVerts[vb];
+                    Vector3 bmax = bmin;
+
                     for (int j = 1; j < ndv; j++)
                     {
-                        bmin.Min(option.detailVerts, vb * 3 + j * 3);
-                        bmax.Max(option.detailVerts, vb * 3 + j * 3);
+                        var vert = option.detailVerts[vb + j];
+                        bmin.Min(vert);
+                        bmax.Max(vert);
                     }
 
                     // BV-tree uses cs for all dimensions
@@ -208,8 +209,8 @@ namespace DotRecast.Detour
                     }
 
                     // Remap y
-                    it.bmin[1] = (int)Math.Floor(it.bmin[1] * option.ch * quantFactor);
-                    it.bmax[1] = (int)Math.Ceiling(it.bmax[1] * option.ch * quantFactor);
+                    it.bmin[1] = (int)MathF.Floor(it.bmin[1] * option.ch * quantFactor);
+                    it.bmax[1] = (int)MathF.Ceiling(it.bmax[1] * option.ch * quantFactor);
                 }
             }
 
@@ -229,27 +230,18 @@ namespace DotRecast.Detour
             outcode |= (pt.X < bmin.X) ? XM : 0;
             outcode |= (pt.Z < bmin.Z) ? ZM : 0;
 
-            switch (outcode)
+            return outcode switch
             {
-                case XP:
-                    return 0;
-                case XP | ZP:
-                    return 1;
-                case ZP:
-                    return 2;
-                case XM | ZP:
-                    return 3;
-                case XM:
-                    return 4;
-                case XM | ZM:
-                    return 5;
-                case ZM:
-                    return 6;
-                case XP | ZM:
-                    return 7;
-            }
-
-            return 0xff;
+                XP => 0,
+                XP | ZP => 1,
+                ZP => 2,
+                XM | ZP => 3,
+                XM => 4,
+                XM | ZM => 5,
+                ZM => 6,
+                XP | ZM => 7,
+                _ => 0xff,
+            };
         }
 
         /**
@@ -286,13 +278,13 @@ namespace DotRecast.Detour
                 float hmin = float.MaxValue;
                 float hmax = -float.MaxValue;
 
-                if (option.detailVerts != null && option.detailVertsCount != 0)
+                if (option.detailVerts != null && option.detailVerts.Length != 0)
                 {
-                    for (int i = 0; i < option.detailVertsCount; ++i)
+                    for (int i = 0; i < option.detailVerts.Length; ++i)
                     {
-                        float h = option.detailVerts[i * 3 + 1];
-                        hmin = Math.Min(hmin, h);
-                        hmax = Math.Max(hmax, h);
+                        var h = option.detailVerts[i].Y;
+                        hmin = MathF.Min(hmin, h);
+                        hmax = MathF.Max(hmax, h);
                     }
                 }
                 else
@@ -301,8 +293,8 @@ namespace DotRecast.Detour
                     {
                         int iv = i * 3;
                         float h = option.bmin.Y + option.verts[iv + 1] * option.ch;
-                        hmin = Math.Min(hmin, h);
-                        hmax = Math.Max(hmax, h);
+                        hmin = MathF.Min(hmin, h);
+                        hmax = MathF.Max(hmax, h);
                     }
                 }
 
@@ -375,7 +367,7 @@ namespace DotRecast.Detour
             {
                 // Has detail mesh, count unique detail vertex count and use input
                 // detail tri count.
-                detailTriCount = option.detailTriCount;
+                detailTriCount = option.detailTris.Length;
                 for (int i = 0; i < option.polyCount; ++i)
                 {
                     int p = i * nvp * 2;
@@ -414,11 +406,12 @@ namespace DotRecast.Detour
 
             int bvTreeSize = option.buildBvTree ? option.polyCount * 2 : 0;
             DtMeshHeader header = new();
+            // todoperf 
             float[] navVerts = new float[3 * totVertCount];
             DtPoly[] navPolys = new DtPoly[totPolyCount];
             DtPolyDetail[] navDMeshes = new DtPolyDetail[option.polyCount];
-            float[] navDVerts = new float[3 * uniqueDetailVertCount];
-            int[] navDTris = new int[4 * detailTriCount];
+            var navDVerts = new Vector3[uniqueDetailVertCount];
+            var navDTris = new Vector4Int[detailTriCount];
             DtBVNode[] navBvtree = new DtBVNode[bvTreeSize];
             DtOffMeshConnection[] offMeshCons = new DtOffMeshConnection[storedOffMeshConCount];
 
@@ -558,13 +551,13 @@ namespace DotRecast.Detour
                     // nav poly verts.
                     if (ndv - nv != 0)
                     {
-                        Array.Copy(option.detailVerts, (vb + nv) * 3, navDVerts, vbase * 3, 3 * (ndv - nv));
+                        Array.Copy(option.detailVerts, vb + nv, navDVerts, vbase, ndv - nv);
                         vbase += ndv - nv;
                     }
                 }
 
                 // Store triangles.
-                Array.Copy(option.detailTris, 0, navDTris, 0, 4 * option.detailTriCount);
+                Array.Copy(option.detailTris, 0, navDTris, 0, option.detailTris.Length);
             }
             else
             {
@@ -583,15 +576,17 @@ namespace DotRecast.Detour
                     for (int j = 2; j < nv; ++j)
                     {
                         int t = tbase * 4;
-                        navDTris[t + 0] = 0;
-                        navDTris[t + 1] = j - 1;
-                        navDTris[t + 2] = j;
+
                         // Bit for each edge that belongs to poly boundary.
-                        navDTris[t + 3] = 1 << 2;
+                        const int edge = 1 << 2;
+                        int w = edge;
                         if (j == 2)
-                            navDTris[t + 3] |= 1 << 0;
+                            w |= 1 << 0;
                         if (j == nv - 1)
-                            navDTris[t + 3] |= 1 << 4;
+                            w |= 1 << 4;
+
+                        navDTris[t] = new Vector4Int(0, j - 1, j, w);
+
                         tbase++;
                     }
                 }
