@@ -49,7 +49,7 @@ namespace DotRecast.Core
             // dividing by d until intersection has been found to pierce triangle
             Vector3 ap = sp - a;
             t = Vector3.Dot(ap, norm);
-            if (t < 0.0f)
+            if (t < 0)
             {
                 return false;
             }
@@ -62,13 +62,14 @@ namespace DotRecast.Core
             // Compute barycentric coordinate components and test if within bounds
             Vector3 e = Vector3.Cross(qp, ap);
             v = Vector3.Dot(ac, e);
-            if (v < 0.0f || v > d)
+            if (v < 0 || v > d)
             {
                 return false;
             }
 
             w = -Vector3.Dot(ab, e);
-            if (w < 0.0f || v + w > d)
+
+            if (w < 0 || v + w > d)
             {
                 return false;
             }

@@ -257,23 +257,22 @@ public class RecastDebugDraw : DebugDraw
         if (tile.data.detailMeshes != null)
         {
             DtPolyDetail pd = tile.data.detailMeshes[index];
-            if (pd != null)
+            //if (pd != null)
+
+            for (int j = 0; j < pd.triCount; ++j)
             {
-                for (int j = 0; j < pd.triCount; ++j)
+                int t = pd.triBase + j;
+                for (int k = 0; k < 3; ++k)
                 {
-                    int t = pd.triBase + j;
-                    for (int k = 0; k < 3; ++k)
+                    int v = tile.data.detailTris.GetUnsafe(t).UnsafeAs<Vector4Int, int>(k);
+                    if (v < p.vertCount)
                     {
-                        int v = tile.data.detailTris.GetUnsafe(t).UnsafeAs<Vector4Int, int>(k);
-                        if (v < p.vertCount)
-                        {
-                            Vertex(tile.data.verts[p.verts[v] * 3], tile.data.verts[p.verts[v] * 3 + 1],
-                                tile.data.verts[p.verts[v] * 3 + 2], col);
-                        }
-                        else
-                        {
-                            Vertex(tile.data.detailVerts[pd.vertBase + v - p.vertCount], col);
-                        }
+                        Vertex(tile.data.verts[p.verts[v] * 3], tile.data.verts[p.verts[v] * 3 + 1],
+                            tile.data.verts[p.verts[v] * 3 + 2], col);
+                    }
+                    else
+                    {
+                        Vertex(tile.data.detailVerts[pd.vertBase + v - p.vertCount], col);
                     }
                 }
             }

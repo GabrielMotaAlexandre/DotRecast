@@ -93,24 +93,19 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                         };
 
                         // XXX: What can we do with the penalty?
-                        _ = buffer.GetInt();
+                        buffer.GetInt();
                         nodes[i].flags = buffer.GetInt();
                         nodes[i].verts[0] = buffer.GetInt() & vertMask;
                         nodes[i].verts[1] = buffer.GetInt() & vertMask;
                         nodes[i].verts[2] = buffer.GetInt() & vertMask;
-                        ymin = Math.Min(ymin, verts[nodes[i].verts[0] * 3 + 1]);
-                        ymin = Math.Min(ymin, verts[nodes[i].verts[1] * 3 + 1]);
-                        ymin = Math.Min(ymin, verts[nodes[i].verts[2] * 3 + 1]);
-                        ymax = Math.Max(ymax, verts[nodes[i].verts[0] * 3 + 1]);
-                        ymax = Math.Max(ymax, verts[nodes[i].verts[1] * 3 + 1]);
-                        ymax = Math.Max(ymax, verts[nodes[i].verts[2] * 3 + 1]);
-                        detailNodes[i] = new DtPolyDetail
-                        {
-                            vertBase = 0,
-                            vertCount = 0,
-                            triBase = i,
-                            triCount = 1
-                        };
+                        ymin = MathF.Min(ymin, verts[nodes[i].verts[0] * 3 + 1]);
+                        ymin = MathF.Min(ymin, verts[nodes[i].verts[1] * 3 + 1]);
+                        ymin = MathF.Min(ymin, verts[nodes[i].verts[2] * 3 + 1]);
+                        ymax = MathF.Max(ymax, verts[nodes[i].verts[0] * 3 + 1]);
+                        ymax = MathF.Max(ymax, verts[nodes[i].verts[1] * 3 + 1]);
+                        ymax = MathF.Max(ymax, verts[nodes[i].verts[2] * 3 + 1]);
+                        detailNodes[i] = new DtPolyDetail(0, i, 0, 1);
+
                         // Bit for each edge that belongs to poly boundary, basically all edges marked as boundary as it is
                         // a triangle
                         detailTris[4] = new Vector4Int(0,1,2, (1 << 4) | (1 << 2) | 1);

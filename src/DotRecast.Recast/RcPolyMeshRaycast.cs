@@ -17,6 +17,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using DotRecast.Core;
@@ -55,12 +56,11 @@ namespace DotRecast.Recast
                     int ntris = meshDetail.meshes[m + 3];
                     for (int j = 0; j < ntris; ++j)
                     {
-                        Vector3[] vs = new Vector3[3];
-                        vs[0] = meshDetail.verts[bverts + meshDetail.tris[btris + j].x];
-                        vs[1] = meshDetail.verts[bverts + meshDetail.tris[btris + j].y];
-                        vs[2] = meshDetail.verts[bverts + meshDetail.tris[btris + j].z];
-
-                        if (Intersections.IntersectSegmentTriangle(sp, sq, vs[0], vs[1], vs[2], out hitTime))
+                        if (Intersections.IntersectSegmentTriangle(sp, sq,
+                            meshDetail.verts[bverts + meshDetail.tris[btris + j].x],
+                            meshDetail.verts[bverts + meshDetail.tris[btris + j].y],
+                            meshDetail.verts[bverts + meshDetail.tris[btris + j].z],
+                            out hitTime))
                         {
                             return true;
                         }
@@ -70,6 +70,7 @@ namespace DotRecast.Recast
             else
             {
                 // TODO: check PolyMesh instead
+                throw new NotSupportedException();
             }
 
             return false;

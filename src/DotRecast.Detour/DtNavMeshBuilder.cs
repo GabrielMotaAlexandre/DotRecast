@@ -407,9 +407,9 @@ namespace DotRecast.Detour
             int bvTreeSize = option.buildBvTree ? option.polyCount * 2 : 0;
             DtMeshHeader header = new();
             // todoperf 
-            float[] navVerts = new float[3 * totVertCount];
-            DtPoly[] navPolys = new DtPoly[totPolyCount];
-            DtPolyDetail[] navDMeshes = new DtPolyDetail[option.polyCount];
+            var navVerts = new float[3 * totVertCount];
+            var navPolys = new DtPoly[totPolyCount];
+            var navDMeshes = new DtPolyDetail[option.polyCount];
             var navDVerts = new Vector3[uniqueDetailVertCount];
             var navDTris = new Vector4Int[detailTriCount];
             DtBVNode[] navBvtree = new DtBVNode[bvTreeSize];
@@ -538,15 +538,12 @@ namespace DotRecast.Detour
                 int vbase = 0;
                 for (int i = 0; i < option.polyCount; ++i)
                 {
-                    DtPolyDetail dtl = new();
-                    navDMeshes[i] = dtl;
-                    int vb = option.detailMeshes[i * 4 + 0];
+                    int vb = option.detailMeshes[i * 4];
                     int ndv = option.detailMeshes[i * 4 + 1];
                     int nv = navPolys[i].vertCount;
-                    dtl.vertBase = vbase;
-                    dtl.vertCount = ndv - nv;
-                    dtl.triBase = option.detailMeshes[i * 4 + 2];
-                    dtl.triCount = option.detailMeshes[i * 4 + 3];
+
+                    navDMeshes[i] = new(vbase, option.detailMeshes[i * 4 + 2], ndv - nv, option.detailMeshes[i * 4 + 3]);
+
                     // Copy vertices except the first 'nv' verts which are equal to
                     // nav poly verts.
                     if (ndv - nv != 0)
@@ -565,13 +562,9 @@ namespace DotRecast.Detour
                 int tbase = 0;
                 for (int i = 0; i < option.polyCount; ++i)
                 {
-                    DtPolyDetail dtl = new();
-                    navDMeshes[i] = dtl;
                     int nv = navPolys[i].vertCount;
-                    dtl.vertBase = 0;
-                    dtl.vertCount = 0;
-                    dtl.triBase = tbase;
-                    dtl.triCount = nv - 2;
+                    navDMeshes[i] = new(0, tbase, 0, nv - 2);
+
                     // Triangulate polygon (local indices).
                     for (int j = 2; j < nv; ++j)
                     {

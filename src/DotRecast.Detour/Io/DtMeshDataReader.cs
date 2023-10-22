@@ -182,13 +182,8 @@ namespace DotRecast.Detour.Io
             DtPolyDetail[] polys = new DtPolyDetail[header.detailMeshCount];
             for (int i = 0; i < polys.Length; i++)
             {
-                polys[i] = new DtPolyDetail
-                {
-                    vertBase = buf.GetInt(),
-                    triBase = buf.GetInt(),
-                    vertCount = buf.Get() & 0xFF,
-                    triCount = buf.Get() & 0xFF
-                };
+                polys[i] = new DtPolyDetail(buf.GetInt(), buf.GetInt(), buf.Get() & 0xFF, buf.Get() & 0xFF);
+
                 if (cCompatibility)
                 {
                     buf.GetShort(); // C struct padding
