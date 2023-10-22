@@ -82,7 +82,7 @@ namespace DotRecast.Detour.Crowd
             if (m_ncircles >= m_maxCircles)
                 return;
 
-            DtObstacleCircle cir = m_circles[m_ncircles++];
+            ref var cir = ref m_circles[m_ncircles++];
             cir.p = pos;
             cir.rad = rad;
             cir.vel = vel;
@@ -95,9 +95,7 @@ namespace DotRecast.Detour.Crowd
             if (m_nsegments >= m_maxSegments)
                 return;
 
-            ref var segment = ref m_segments[m_nsegments++];
-            segment.p = p;
-            segment.q = q;
+            m_segments[m_nsegments++] = new DtObstacleSegment(p, q);
         }
 
         private void Prepare(Vector2 pos, Vector2 dvel)
@@ -105,7 +103,7 @@ namespace DotRecast.Detour.Crowd
             // Prepare obstacles
             for (int i = 0; i < m_ncircles; ++i)
             {
-                DtObstacleCircle cir = m_circles[i];
+                ref var cir = ref m_circles[i];
 
                 // Side
                 cir.dp = Vector2.Normalize(cir.p - pos);
@@ -189,7 +187,7 @@ namespace DotRecast.Detour.Crowd
 
             for (int i = 0; i != m_ncircles; i++)
             {
-                DtObstacleCircle cir = m_circles[i];
+                var cir = m_circles[i];
 
                 // RVO
                 var vab = vabPre - cir.vel;
@@ -222,7 +220,7 @@ namespace DotRecast.Detour.Crowd
 
             for (int i = 0; i < m_nsegments; ++i)
             {
-                DtObstacleSegment seg = m_segments[i];
+                var seg = m_segments[i];
 
                 //var distSqr = DtUtils.DistancePtSegSqr2D(pos, seg.p, seg.q, out _);
                 var sdir = seg.q - seg.p;
