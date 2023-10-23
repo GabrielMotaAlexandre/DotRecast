@@ -136,11 +136,11 @@ namespace DotRecast.Recast.Geom
 
                 var e0 = new Vector3();
                 var e1 = new Vector3();
-                e0.X = vertices[v1 + 0] - vertices[v0 + 0];
+                e0.X = vertices[v1] - vertices[v0];
                 e0.Y = vertices[v1 + 1] - vertices[v0 + 1];
                 e0.Z = vertices[v1 + 2] - vertices[v0 + 2];
 
-                e1.X = vertices[v2 + 0] - vertices[v0 + 0];
+                e1.X = vertices[v2] - vertices[v0];
                 e1.Y = vertices[v2 + 1] - vertices[v0 + 1];
                 e1.Z = vertices[v2 + 2] - vertices[v0 + 2];
 

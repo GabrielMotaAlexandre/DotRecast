@@ -151,16 +151,16 @@ public class DebugDraw
 
         for (int i = 0, j = CYLINDER_NUM_SEG - 1; i < CYLINDER_NUM_SEG; j = i++)
         {
-            Vertex(cx + cylinderDir[j * 2 + 0] * rx, miny, cz + cylinderDir[j * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[j * 2 + 0] * rx, maxy, cz + cylinderDir[j * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, maxy, cz + cylinderDir[i * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[j * 2 ] * rx, miny, cz + cylinderDir[j * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[j * 2 ] * rx, maxy, cz + cylinderDir[j * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, maxy, cz + cylinderDir[i * 2 + 1] * rz, col);
         }
 
         for (int i = 0; i < CYLINDER_NUM_SEG; i += CYLINDER_NUM_SEG / 4)
         {
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, maxy, cz + cylinderDir[i * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, maxy, cz + cylinderDir[i * 2 + 1] * rz, col);
         }
     }
 
@@ -322,8 +322,8 @@ public class DebugDraw
 
         for (int i = 0, j = CIRCLE_NUM_SEG - 1; i < CIRCLE_NUM_SEG; j = i++)
         {
-            Vertex(x + circeDir[j * 2 + 0] * r, y, z + circeDir[j * 2 + 1] * r, col);
-            Vertex(x + circeDir[i * 2 + 0] * r, y, z + circeDir[i * 2 + 1] * r, col);
+            Vertex(x + circeDir[j * 2 ] * r, y, z + circeDir[j * 2 + 1] * r, col);
+            Vertex(x + circeDir[i * 2 ] * r, y, z + circeDir[i * 2 + 1] * r, col);
         }
     }
 
@@ -423,28 +423,28 @@ public class DebugDraw
         for (int i = 2; i < CYLINDER_NUM_SEG; ++i)
         {
             int a = 0, b = i - 1, c = i;
-            Vertex(cx + cylinderDir[a * 2 + 0] * rx, miny, cz + cylinderDir[a * 2 + 1] * rz, col2);
-            Vertex(cx + cylinderDir[b * 2 + 0] * rx, miny, cz + cylinderDir[b * 2 + 1] * rz, col2);
-            Vertex(cx + cylinderDir[c * 2 + 0] * rx, miny, cz + cylinderDir[c * 2 + 1] * rz, col2);
+            Vertex(cx + cylinderDir[a * 2 ] * rx, miny, cz + cylinderDir[a * 2 + 1] * rz, col2);
+            Vertex(cx + cylinderDir[b * 2 ] * rx, miny, cz + cylinderDir[b * 2 + 1] * rz, col2);
+            Vertex(cx + cylinderDir[c * 2 ] * rx, miny, cz + cylinderDir[c * 2 + 1] * rz, col2);
         }
 
         for (int i = 2; i < CYLINDER_NUM_SEG; ++i)
         {
             int a = 0, b = i, c = i - 1;
-            Vertex(cx + cylinderDir[a * 2 + 0] * rx, maxy, cz + cylinderDir[a * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[b * 2 + 0] * rx, maxy, cz + cylinderDir[b * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[c * 2 + 0] * rx, maxy, cz + cylinderDir[c * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[a * 2 ] * rx, maxy, cz + cylinderDir[a * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[b * 2 ] * rx, maxy, cz + cylinderDir[b * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[c * 2 ] * rx, maxy, cz + cylinderDir[c * 2 + 1] * rz, col);
         }
 
         for (int i = 0, j = CYLINDER_NUM_SEG - 1; i < CYLINDER_NUM_SEG; j = i++)
         {
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col2);
-            Vertex(cx + cylinderDir[j * 2 + 0] * rx, miny, cz + cylinderDir[j * 2 + 1] * rz, col2);
-            Vertex(cx + cylinderDir[j * 2 + 0] * rx, maxy, cz + cylinderDir[j * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col2);
+            Vertex(cx + cylinderDir[j * 2 ] * rx, miny, cz + cylinderDir[j * 2 + 1] * rz, col2);
+            Vertex(cx + cylinderDir[j * 2 ] * rx, maxy, cz + cylinderDir[j * 2 + 1] * rz, col);
 
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col2);
-            Vertex(cx + cylinderDir[j * 2 + 0] * rx, maxy, cz + cylinderDir[j * 2 + 1] * rz, col);
-            Vertex(cx + cylinderDir[i * 2 + 0] * rx, maxy, cz + cylinderDir[i * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, miny, cz + cylinderDir[i * 2 + 1] * rz, col2);
+            Vertex(cx + cylinderDir[j * 2 ] * rx, maxy, cz + cylinderDir[j * 2 + 1] * rz, col);
+            Vertex(cx + cylinderDir[i * 2 ] * rx, maxy, cz + cylinderDir[i * 2 + 1] * rz, col);
         }
     }
 

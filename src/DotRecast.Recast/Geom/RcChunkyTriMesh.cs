@@ -138,7 +138,7 @@ namespace DotRecast.Recast.Geom
                 BoundsItem it = items[i] = new BoundsItem();
                 it.i = i;
                 // Calc triangle XZ bounds.
-                it.bmin.X = it.bmax.X = verts[tris[t] * 3 + 0];
+                it.bmin.X = it.bmax.X = verts[tris[t] * 3];
                 it.bmin.Y = it.bmax.Y = verts[tris[t] * 3 + 2];
                 for (int j = 1; j < 3; ++j)
                 {

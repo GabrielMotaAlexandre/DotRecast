@@ -42,7 +42,7 @@ namespace DotRecast.Recast
 
         private static float VdistSq2(ReadOnlySpan<float> verts, int p, int q)
         {
-            float dx = verts[q + 0] - verts[p + 0];
+            float dx = verts[q] - verts[p];
             float dy = verts[q + 2] - verts[p + 2];
             return dx * dx + dy * dy;
         }
@@ -54,7 +54,7 @@ namespace DotRecast.Recast
 
         private static float VdistSq2(Vector3 p, ReadOnlySpan<float> verts, int q)
         {
-            float dx = verts[q + 0] - p.X;
+            float dx = verts[q] - p.X;
             float dy = verts[q + 2] - p.Z;
             return dx * dx + dy * dy;
         }
@@ -66,9 +66,9 @@ namespace DotRecast.Recast
 
         private static float Vcross2(ReadOnlySpan<float> verts, int p1, int p2, int p3)
         {
-            float u1 = verts[p2 + 0] - verts[p1 + 0];
+            float u1 = verts[p2] - verts[p1];
             float v1 = verts[p2 + 2] - verts[p1 + 2];
-            float u2 = verts[p3 + 0] - verts[p1 + 0];
+            float u2 = verts[p3] - verts[p1];
             float v2 = verts[p3 + 2] - verts[p1 + 2];
             return u1 * v2 - v1 * u2;
         }
@@ -168,7 +168,7 @@ namespace DotRecast.Recast
             float pqz = poly[q + 2] - poly[p + 2];
             var pq = new Vector2(pqx, pqz);
 
-            float dx = verts.X - poly[p + 0];
+            float dx = verts.X - poly[p];
             float dz = verts.Z - poly[p + 2];
             float d = pq.LengthSquared();
             float t = pqx * dx + pqz * dz;
@@ -195,7 +195,7 @@ namespace DotRecast.Recast
             float dmin = float.MaxValue;
             for (int i = 0, ntris = tris.Count / 4; i < ntris; ++i)
             {
-                int va = tris[i * 4 + 0] * 3;
+                int va = tris[i * 4] * 3;
                 int vb = tris[i * 4 + 1] * 3;
                 int vc = tris[i * 4 + 2] * 3;
                 float d = DistPtTri(p, verts, va, vb, vc);
@@ -217,8 +217,8 @@ namespace DotRecast.Recast
             {
                 int vi = i * 3;
                 int vj = j * 3;
-                if (((verts[vi + 2] > p.Z) != (verts[vj + 2] > p.Z)) && (p.X < (verts[vj + 0] - verts[vi + 0])
-                        * (p.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi + 0]))
+                if (((verts[vi + 2] > p.Z) != (verts[vj + 2] > p.Z)) && (p.X < (verts[vj] - verts[vi])
+                        * (p.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi]))
                 {
                     c = !c;
                 }
@@ -316,7 +316,7 @@ namespace DotRecast.Recast
             for (int i = 0; i < edges.Count / 4; i++)
             {
                 int e = i * 4;
-                if ((edges[e + 0] == s && edges[e + 1] == t) || (edges[e + 0] == t && edges[e + 1] == s))
+                if ((edges[e] == s && edges[e + 1] == t) || (edges[e] == t && edges[e + 1] == s))
                 {
                     return i;
                 }
@@ -345,11 +345,11 @@ namespace DotRecast.Recast
 
         private static void UpdateLeftFace(List<int> edges, int e, int s, int t, int f)
         {
-            if (edges[e + 0] == s && edges[e + 1] == t && edges[e + 2] == EV_UNDEF)
+            if (edges[e] == s && edges[e + 1] == t && edges[e + 2] == EV_UNDEF)
             {
                 edges[e + 2] = f;
             }
-            else if (edges[e + 1] == s && edges[e + 0] == t && edges[e + 3] == EV_UNDEF)
+            else if (edges[e + 1] == s && edges[e] == t && edges[e + 3] == EV_UNDEF)
             {
                 edges[e + 3] = f;
             }
@@ -376,7 +376,7 @@ namespace DotRecast.Recast
         {
             for (int i = 0; i < edges.Count / 4; ++i)
             {
-                int s0 = edges[i * 4 + 0];
+                int s0 = edges[i * 4];
                 int t0 = edges[i * 4 + 1];
                 // Same or connected edges do not overlap.
                 if (s0 == s1 || s0 == t1 || t0 == s1 || t0 == t1)
@@ -403,13 +403,13 @@ namespace DotRecast.Recast
             int s, t;
             if (edges[edge + 2] == EV_UNDEF)
             {
-                s = edges[edge + 0];
+                s = edges[edge];
                 t = edges[edge + 1];
             }
             else if (edges[edge + 3] == EV_UNDEF)
             {
                 s = edges[edge + 1];
-                t = edges[edge + 0];
+                t = edges[edge];
             }
             else
             {
@@ -550,16 +550,16 @@ namespace DotRecast.Recast
                 {
                     // Left face
                     int t = edges[e + 3] * 4;
-                    if (tris[t + 0] == -1)
+                    if (tris[t] == -1)
                     {
-                        tris[t + 0] = edges[e + 0];
+                        tris[t] = edges[e];
                         tris[t + 1] = edges[e + 1];
                     }
-                    else if (tris[t + 0] == edges[e + 1])
+                    else if (tris[t] == edges[e + 1])
                     {
-                        tris[t + 2] = edges[e + 0];
+                        tris[t + 2] = edges[e];
                     }
-                    else if (tris[t + 1] == edges[e + 0])
+                    else if (tris[t + 1] == edges[e])
                     {
                         tris[t + 2] = edges[e + 1];
                     }
@@ -571,8 +571,8 @@ namespace DotRecast.Recast
                     int t = edges[e + 2] * 4;
                     if (tris[t] == -1)
                     {
-                        tris[t + 0] = edges[e + 1];
-                        tris[t + 1] = edges[e + 0];
+                        tris[t] = edges[e + 1];
+                        tris[t + 1] = edges[e];
                     }
                     else if (tris[t] == edges[e])
                     {
@@ -580,7 +580,7 @@ namespace DotRecast.Recast
                     }
                     else if (tris[t + 1] == edges[e + 1])
                     {
-                        tris[t + 2] = edges[e + 0];
+                        tris[t + 2] = edges[e];
                     }
                 }
             }
@@ -588,11 +588,11 @@ namespace DotRecast.Recast
             for (int i = 0; i < tris.Count / 4; ++i)
             {
                 int t = i * 4;
-                if (tris[t + 0] == -1 || tris[t + 1] == -1 || tris[t + 2] == -1)
+                if (tris[t] == -1 || tris[t + 1] == -1 || tris[t + 2] == -1)
                 {
                     Console.Error.WriteLine("Dangling! " + tris[t] + " " + tris[t + 1] + "  " + tris[t + 2]);
                     // ctx.Log(RC_LOG_WARNING, "delaunayHull: Removing dangling face %d [%d,%d,%d].", i, t.x,t.y,t.z);
-                    tris[t + 0] = tris[^4];
+                    tris[t] = tris[^4];
                     tris[t + 1] = tris[^3];
                     tris[t + 2] = tris[^2];
                     tris[t + 3] = tris[^1];
@@ -751,7 +751,7 @@ namespace DotRecast.Recast
                     bool swapped = false;
                     // Make sure the segments are always handled in same order
                     // using lexological sort or else there will be seams.
-                    if (Math.Abs(@in[vj + 0] - @in[vi + 0]) < 1e-6f)
+                    if (Math.Abs(@in[vj] - @in[vi]) < 1e-6f)
                     {
                         if (@in[vj + 2] > @in[vi + 2])
                         {
@@ -761,7 +761,7 @@ namespace DotRecast.Recast
                     }
                     else
                     {
-                        if (@in[vj + 0] > @in[vi + 0])
+                        if (@in[vj] > @in[vi])
                         {
                             (vj, vi) = (vi, vj);
                             swapped = true;
@@ -769,7 +769,7 @@ namespace DotRecast.Recast
                     }
 
                     // Create samples along the edge.
-                    float dx = @in[vi + 0] - @in[vj + 0];
+                    float dx = @in[vi] - @in[vj];
                     float dy = @in[vi + 1] - @in[vj + 1];
                     float dz = @in[vi + 2] - @in[vj + 2];
                     float d = (float)Math.Sqrt(dx * dx + dz * dz);
@@ -788,10 +788,10 @@ namespace DotRecast.Recast
                     {
                         float u = k / (float)nn;
                         int pos = k * 3;
-                        edge[pos + 0] = @in[vj + 0] + dx * u;
+                        edge[pos] = @in[vj] + dx * u;
                         edge[pos + 1] = @in[vj + 1] + dy * u;
                         edge[pos + 2] = @in[vj + 2] + dz * u;
-                        edge[pos + 1] = GetHeight(edge[pos + 0], edge[pos + 1], edge[pos + 2], cs, ics, chf.ch,
+                        edge[pos + 1] = GetHeight(edge[pos], edge[pos + 1], edge[pos + 2], cs, ics, chf.ch,
                             heightSearchRadius, hp) * chf.ch;
                     }
 
@@ -1011,7 +1011,7 @@ namespace DotRecast.Recast
             {
                 for (int k = 0; k < 9 && dmin > 0; ++k)
                 {
-                    int ax = verts[meshpoly[poly + j] * 3 + 0] + offset[k * 2 + 0];
+                    int ax = verts[meshpoly[poly + j] * 3] + offset[k * 2];
                     int ay = verts[meshpoly[poly + j] * 3 + 1];
                     int az = verts[meshpoly[poly + j] * 3 + 2] + offset[k * 2 + 1];
                     if (ax < hp.xmin || ax >= hp.xmin + hp.width || az < hp.ymin || az >= hp.ymin + hp.height)
@@ -1039,7 +1039,7 @@ namespace DotRecast.Recast
             int pcx = 0, pcy = 0;
             for (int j = 0; j < npoly; ++j)
             {
-                pcx += verts[meshpoly[poly + j] * 3 + 0];
+                pcx += verts[meshpoly[poly + j] * 3];
                 pcy += verts[meshpoly[poly + j] * 3 + 2];
             }
 
@@ -1226,7 +1226,7 @@ namespace DotRecast.Recast
             // sample wrong heights.
             while (head * 3 < queue.Count)
             {
-                int cx = queue[head * 3 + 0];
+                int cx = queue[head * 3];
                 int cy = queue[head * 3 + 1];
                 int ci = queue[head * 3 + 2];
                 head++;
@@ -1435,7 +1435,7 @@ namespace DotRecast.Recast
                 {
                     int t = j * 4;
                     tris.Add(new Vector4Int(
-                        tempTris[t + 0],
+                        tempTris[t],
                         tempTris[t + 1],
                         tempTris[t + 2],
                         GetTriFlags(tempVerts, tempTris[t] * 3, tempTris[t + 1] * 3, tempTris[t + 2] * 3, poly, npoly)));

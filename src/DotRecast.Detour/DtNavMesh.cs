@@ -965,20 +965,10 @@ namespace DotRecast.Detour
             }
             else if (side == 2 || side == 6)
             {
-                if (verts[va + 0] < verts[vb + 0])
-                {
-                    bmin.X = verts[va + 0];
-                    bmin.Y = verts[va + 1];
-                    bmax.X = verts[vb + 0];
-                    bmax.Y = verts[vb + 1];
-                }
-                else
-                {
-                    bmin.X = verts[vb + 0];
-                    bmin.Y = verts[vb + 1];
-                    bmax.X = verts[va + 0];
-                    bmax.Y = verts[va + 1];
-                }
+                var minIsVa = verts[va] < verts[vb];
+
+                bmin = verts.GetUnsafe(minIsVa ? va : vb).UnsafeAs<float, Vector2>();
+                bmax = verts.GetUnsafe(minIsVa ? vb : va).UnsafeAs<float, Vector2>();
             }
         }
 
@@ -1227,7 +1217,7 @@ namespace DotRecast.Detour
                     Vector3[] v = new Vector3[3];
                     for (int k = 0; k < 3; ++k)
                     {
-                        var tri = tile.data.detailTris.GetUnsafe(t).UnsafeAs < Vector4Int, int>(k);
+                        var tri = tile.data.detailTris.GetUnsafe(t).UnsafeAs<Vector4Int, int>(k);
                         if (tri < poly.vertCount)
                         {
                             int index = poly.verts[tri] * 3;

@@ -182,7 +182,7 @@ namespace DotRecast.Recast
                         {
                             // (1,0)
                             var aX = x + 1; // GetDirOffset
-                            var aY = z + 0;
+                            var aY = z;
                             var aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 2);
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
                             var newDistance = Math.Min(distanceToBoundary[aIndex] + 2, 255);
@@ -194,7 +194,7 @@ namespace DotRecast.Recast
                             // (1,1)
                             if (GetCon(aSpan, 1) != RC_NOT_CONNECTED)
                             {
-                                var bX = aX + 0; // GetDirOffset
+                                var bX = aX; // GetDirOffset
                                 var bY = aY + 1;
                                 var bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 1);
                                 newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
@@ -208,7 +208,7 @@ namespace DotRecast.Recast
                         if (GetCon(span, 1) != RC_NOT_CONNECTED)
                         {
                             // (0,1)
-                            var aX = x + 0; // GetDirOffset
+                            var aX = x; // GetDirOffset
                             var aY = z + 1;
                             var aIndex = compactHeightfield.cells[aX + aY * xSize].index + GetCon(span, 1);
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
@@ -222,7 +222,7 @@ namespace DotRecast.Recast
                             if (GetCon(aSpan, 0) != RC_NOT_CONNECTED)
                             {
                                 var bX = aX - 1; // GetDirOffset
-                                var bY = aY + 0;
+                                var bY = aY;
                                 var bIndex = compactHeightfield.cells[bX + bY * xSize].index + GetCon(aSpan, 0);
                                 newDistance = Math.Min(distanceToBoundary[bIndex] + 3, 255);
                                 if (newDistance < distanceToBoundary[i])
@@ -297,7 +297,7 @@ namespace DotRecast.Recast
                             int aIndex = compactHeightfield.cells[aX + aZ * zStride].index + GetCon(span, dir);
                             if (compactHeightfield.areas[aIndex] != RC_NULL_AREA)
                             {
-                                neighborAreas[dir * 2 + 0] = compactHeightfield.areas[aIndex];
+                                neighborAreas[dir * 2] = compactHeightfield.areas[aIndex];
                             }
 
                             RcCompactSpan aSpan = compactHeightfield.spans[aIndex];
@@ -798,12 +798,12 @@ namespace DotRecast.Recast
                     // Move each bevel vertex out proportional to the given offset.
                     float d = (1f - (prevSegmentDir.X * currSegmentDir.X + prevSegmentDir.Z * currSegmentDir.Z)) * 0.5f;
 
-                    outVerts[numOutVerts * 3 + 0] = vertB.X + (-prevSegmentNormX + prevSegmentDir.X * d) * offset;
+                    outVerts[numOutVerts * 3] = vertB.X + (-prevSegmentNormX + prevSegmentDir.X * d) * offset;
                     outVerts[numOutVerts * 3 + 1] = vertB.Y;
                     outVerts[numOutVerts * 3 + 2] = vertB.Z + (-prevSegmentNormZ + prevSegmentDir.Z * d) * offset;
                     numOutVerts++;
 
-                    outVerts[numOutVerts * 3 + 0] = vertB.X + (-currSegmentNormX - currSegmentDir.X * d) * offset;
+                    outVerts[numOutVerts * 3] = vertB.X + (-currSegmentNormX - currSegmentDir.X * d) * offset;
                     outVerts[numOutVerts * 3 + 1] = vertB.Y;
                     outVerts[numOutVerts * 3 + 2] = vertB.Z + (-currSegmentNormZ - currSegmentDir.Z * d) * offset;
                     numOutVerts++;
@@ -816,7 +816,7 @@ namespace DotRecast.Recast
                     }
 
                     // Move B along the miter direction by the specified offset.
-                    outVerts[numOutVerts * 3 + 0] = vertB.X - cornerMiterX * offset;
+                    outVerts[numOutVerts * 3] = vertB.X - cornerMiterX * offset;
                     outVerts[numOutVerts * 3 + 1] = vertB.Y;
                     outVerts[numOutVerts * 3 + 2] = vertB.Z - cornerMiterZ * offset;
                     numOutVerts++;

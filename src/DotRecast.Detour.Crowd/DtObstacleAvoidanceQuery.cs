@@ -28,8 +28,6 @@ using UnityEngine;
 
 namespace DotRecast.Detour.Crowd
 {
-
-
     public class DtObstacleAvoidanceQuery
     {
         public const int DT_MAX_PATTERN_DIVS = 32;

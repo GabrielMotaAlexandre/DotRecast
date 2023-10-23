@@ -303,9 +303,9 @@ public class NavMeshRenderer
             int col = DebugDraw.DuDarkenCol(DebugDraw.DuTransCol(DebugDraw.AreaToCol(vol.areaMod.GetMaskedValue()), 220));
             for (int j = 0; j < vol.verts.Length; j += 3)
             {
-                _debugDraw.Vertex(vol.verts[j + 0], vol.verts[j + 1] + 0.1f, vol.verts[j + 2], col);
-                _debugDraw.Vertex(vol.verts[j + 0], vol.hmin, vol.verts[j + 2], col);
-                _debugDraw.Vertex(vol.verts[j + 0], vol.hmax, vol.verts[j + 2], col);
+                _debugDraw.Vertex(vol.verts[j ], vol.verts[j + 1] + 0.1f, vol.verts[j + 2], col);
+                _debugDraw.Vertex(vol.verts[j ], vol.hmin, vol.verts[j + 2], col);
+                _debugDraw.Vertex(vol.verts[j ], vol.hmax, vol.verts[j + 2], col);
             }
         }
 

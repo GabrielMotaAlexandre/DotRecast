@@ -147,7 +147,7 @@ namespace DotRecast.Detour
                 // Calc polygon bounds. Use detail meshes if available.
                 if (option.detailMeshes != null)
                 {
-                    int vb = option.detailMeshes[i * 4 + 0];
+                    int vb = option.detailMeshes[i * 4];
                     int ndv = option.detailMeshes[i * 4 + 1];
                     Vector3 bmin = option.detailVerts[vb];
                     Vector3 bmax = bmin;
@@ -185,7 +185,7 @@ namespace DotRecast.Detour
                         if (option.polys[p + j] == MESH_NULL_IDX)
                             break;
 
-                        int x = option.verts[option.polys[p + j] * 3 + 0];
+                        int x = option.verts[option.polys[p + j] * 3];
                         int y = option.verts[option.polys[p + j] * 3 + 1];
                         int z = option.verts[option.polys[p + j] * 3 + 2];
 
@@ -305,28 +305,28 @@ namespace DotRecast.Detour
 
                 for (int i = 0; i < option.offMeshConCount; ++i)
                 {
-                    var p0 = Vector3Extensions.Of(option.offMeshConVerts, (i * 2 + 0) * 3);
+                    var p0 = Vector3Extensions.Of(option.offMeshConVerts, (i * 2) * 3);
                     var p1 = Vector3Extensions.Of(option.offMeshConVerts, (i * 2 + 1) * 3);
 
-                    offMeshConClass[i * 2 + 0] = ClassifyOffMeshPoint(p0, bmin, bmax);
+                    offMeshConClass[i * 2] = ClassifyOffMeshPoint(p0, bmin, bmax);
                     offMeshConClass[i * 2 + 1] = ClassifyOffMeshPoint(p1, bmin, bmax);
 
                     // Zero out off-mesh start positions which are not even
                     // potentially touching the mesh.
-                    if (offMeshConClass[i * 2 + 0] is 0xff)
+                    if (offMeshConClass[i * 2] is 0xff)
                     {
                         if (p0.Y < bmin.Y || p0.Y > bmax.Y)
-                            offMeshConClass[i * 2 + 0] = 0;
+                            offMeshConClass[i * 2] = 0;
                     }
 
                     // Count how many links should be allocated for off-mesh
                     // connections.
-                    if (offMeshConClass[i * 2 + 0] is 0xff)
+                    if (offMeshConClass[i * 2] is 0xff)
                         offMeshConLinkCount++;
                     if (offMeshConClass[i * 2 + 1] is 0xff)
                         offMeshConLinkCount++;
 
-                    if (offMeshConClass[i * 2 + 0] is 0xff)
+                    if (offMeshConClass[i * 2] is 0xff)
                         storedOffMeshConCount++;
                 }
             }
@@ -455,7 +455,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < option.offMeshConCount; ++i)
             {
                 // Only store connections which start from this tile.
-                if (offMeshConClass[i * 2 + 0] is 0xff)
+                if (offMeshConClass[i * 2] is 0xff)
                 {
                     int linkv = i * 2 * 3;
                     int v = (offMeshVertsBase + n * 2) * 3;
@@ -512,7 +512,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < option.offMeshConCount; ++i)
             {
                 // Only store connections which start from this tile.
-                if (offMeshConClass[i * 2 + 0] is 0xff)
+                if (offMeshConClass[i * 2] is 0xff)
                 {
                     DtPoly p = new(offMeshPolyBase + n, nvp);
                     navPolys[offMeshPolyBase + n] = p;
@@ -596,7 +596,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < option.offMeshConCount; ++i)
             {
                 // Only store connections which start from this tile.
-                if (offMeshConClass[i * 2 + 0] is 0xff)
+                if (offMeshConClass[i * 2] is 0xff)
                 {
                     DtOffMeshConnection con = new();
                     offMeshCons[n] = con;

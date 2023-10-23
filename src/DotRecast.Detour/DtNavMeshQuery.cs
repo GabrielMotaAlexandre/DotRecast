@@ -2670,7 +2670,7 @@ namespace DotRecast.Detour
 
                     // Expand to neighbour
                     m_nav.GetTileAndPolyByRefUnsafe(neighbourRef, out var neighbourTile, out var neighbourPoly);
-                    
+
                     // Do not advance if the polygon is excluded by the filter.
                     if (!filter.PassFilter(neighbourRef, neighbourTile, neighbourPoly))
                     {
@@ -3212,7 +3212,7 @@ namespace DotRecast.Detour
                     // Hit wall, update radius.
                     radiusSqr = distSqr;
                     // Calculate hit pos.
-                    hitPos.X = bestTile.data.verts[vj + 0] + (bestTile.data.verts[vi + 0] - bestTile.data.verts[vj + 0]) * tseg;
+                    hitPos.X = bestTile.data.verts[vj] + (bestTile.data.verts[vi] - bestTile.data.verts[vj]) * tseg;
                     hitPos.Y = bestTile.data.verts[vj + 1] + (bestTile.data.verts[vi + 1] - bestTile.data.verts[vj + 1]) * tseg;
                     hitPos.Z = bestTile.data.verts[vj + 2] + (bestTile.data.verts[vi + 2] - bestTile.data.verts[vj + 2]) * tseg;
                     hasBestV = true;

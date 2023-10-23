@@ -92,13 +92,13 @@ namespace DotRecast.Recast
                 float s0 = (i & 1) != 0 ? 1f : -1f;
                 float s1 = (i & 2) != 0 ? 1f : -1f;
                 float s2 = (i & 4) != 0 ? 1f : -1f;
-                vertices[i * 3 + 0] = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
+                vertices[i * 3] = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
                 vertices[i * 3 + 1] = center.Y + s0 * halfEdges[0].Y + s1 * halfEdges[1].Y + s2 * halfEdges[2].Y;
                 vertices[i * 3 + 2] = center.Z + s0 * halfEdges[0].Z + s1 * halfEdges[1].Z + s2 * halfEdges[2].Z;
-                bounds[0] = Math.Min(bounds[0], vertices[i * 3 + 0]);
+                bounds[0] = Math.Min(bounds[0], vertices[i * 3]);
                 bounds[1] = Math.Min(bounds[1], vertices[i * 3 + 1]);
                 bounds[2] = Math.Min(bounds[2], vertices[i * 3 + 2]);
-                bounds[3] = Math.Max(bounds[3], vertices[i * 3 + 0]);
+                bounds[3] = Math.Max(bounds[3], vertices[i * 3]);
                 bounds[4] = Math.Max(bounds[4], vertices[i * 3 + 1]);
                 bounds[5] = Math.Max(bounds[5], vertices[i * 3 + 2]);
             }

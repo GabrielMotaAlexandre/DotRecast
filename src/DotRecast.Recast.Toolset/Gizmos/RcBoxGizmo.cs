@@ -40,7 +40,7 @@ namespace DotRecast.Recast.Toolset.Gizmos
                 float s0 = (i & 1) != 0 ? 1f : -1f;
                 float s1 = (i & 2) != 0 ? 1f : -1f;
                 float s2 = (i & 4) != 0 ? 1f : -1f;
-                vertices[i * 3 + 0] = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
+                vertices[i * 3] = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
                 vertices[i * 3 + 1] = center.Y + s0 * halfEdges[0].Y + s1 * halfEdges[1].Y + s2 * halfEdges[2].Y;
                 vertices[i * 3 + 2] = center.Z + s0 * halfEdges[0].Z + s1 * halfEdges[1].Z + s2 * halfEdges[2].Z;
             }

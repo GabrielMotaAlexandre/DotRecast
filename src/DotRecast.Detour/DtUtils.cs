@@ -286,8 +286,8 @@ namespace DotRecast.Detour
             {
                 int vi = i * 3;
                 int vj = j * 3;
-                if (((verts[vi + 2] > pt.Z) != (verts[vj + 2] > pt.Z)) && (pt.X < (verts[vj + 0] - verts[vi + 0])
-                        * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi + 0]))
+                if (((verts[vi + 2] > pt.Z) != (verts[vj + 2] > pt.Z)) && (pt.X < (verts[vj ] - verts[vi ])
+                        * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi ]))
                 {
                     c = !c;
                 }
@@ -306,7 +306,7 @@ namespace DotRecast.Detour
                 int vi = i * 3;
                 int vj = j * 3;
                 if (((verts[vi + 2] > pt.Z) != (verts[vj + 2] > pt.Z)) &&
-                    (pt.X < (verts[vj + 0] - verts[vi + 0]) * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi + 0]))
+                    (pt.X < (verts[vj ] - verts[vi ]) * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi ]))
                 {
                     c = !c;
                 }

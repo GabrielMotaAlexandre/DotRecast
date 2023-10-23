@@ -579,7 +579,7 @@ public class RecastDebugDraw : DebugDraw
         for (int i = 0; i < cont.nverts; ++i)
         {
             int v = i * 4;
-            center.X += cont.verts[v + 0];
+            center.X += cont.verts[v ];
             center.Y += cont.verts[v + 1];
             center.Z += cont.verts[v + 2];
         }
@@ -967,7 +967,7 @@ public class RecastDebugDraw : DebugDraw
                     break;
                 }
 
-                vi[0] = mesh.polys[p + 0];
+                vi[0] = mesh.polys[p ];
                 vi[1] = mesh.polys[p + j - 1];
                 vi[2] = mesh.polys[p + j];
                 for (int k = 0; k < 3; ++k)

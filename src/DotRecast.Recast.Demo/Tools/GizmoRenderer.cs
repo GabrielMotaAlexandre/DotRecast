@@ -69,7 +69,7 @@ public static class GizmoRenderer
         float[] vertices = new float[8 * 3];
         for (int i = 0; i < 8; i++)
         {
-            vertices[i * 3 + 0] = Vector3.Dot(RcBoxGizmo.VERTS[i], trX) + box.center.X;
+            vertices[i * 3] = Vector3.Dot(RcBoxGizmo.VERTS[i], trX) + box.center.X;
             vertices[i * 3 + 1] = Vector3.Dot(RcBoxGizmo.VERTS[i], trY) + box.center.Y;
             vertices[i * 3 + 2] = Vector3.Dot(RcBoxGizmo.VERTS[i], trZ) + box.center.Z;
         }

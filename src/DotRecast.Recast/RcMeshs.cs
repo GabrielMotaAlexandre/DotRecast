@@ -56,7 +56,7 @@ namespace DotRecast.Recast
                         break;
                     int v0 = polys[t + j];
                     int v1 = (j + 1 >= vertsPerPoly || polys[t + j + 1] == RC_MESH_NULL_IDX)
-                        ? polys[t + 0]
+                        ? polys[t]
                         : polys[t + j + 1];
                     if (v0 < v1)
                     {
@@ -85,7 +85,7 @@ namespace DotRecast.Recast
                         break;
                     int v0 = polys[t + j];
                     int v1 = (j + 1 >= vertsPerPoly || polys[t + j + 1] == RC_MESH_NULL_IDX)
-                        ? polys[t + 0]
+                        ? polys[t]
                         : polys[t + j + 1];
                     if (v0 > v1)
                     {
@@ -135,7 +135,7 @@ namespace DotRecast.Recast
             while (i != -1)
             {
                 int v = i * 3;
-                if (verts[v + 0] == x && (Math.Abs(verts[v + 1] - y) <= 2) && verts[v + 2] == z)
+                if (verts[v] == x && (Math.Abs(verts[v + 1] - y) <= 2) && verts[v + 2] == z)
                     return i;
                 i = nextVert[i]; // next
             }
@@ -144,7 +144,7 @@ namespace DotRecast.Recast
             i = nv;
             nv++;
             int v2 = i * 3;
-            verts[v2 + 0] = x;
+            verts[v2] = x;
             verts[v2 + 1] = y;
             verts[v2 + 2] = z;
             nextVert[i] = firstVert[bucket];
@@ -165,8 +165,8 @@ namespace DotRecast.Recast
 
         private static int Area2(ReadOnlySpan<int> verts, int a, int b, int c)
         {
-            return (verts[b + 0] - verts[a + 0]) * (verts[c + 2] - verts[a + 2])
-                   - (verts[c + 0] - verts[a + 0]) * (verts[b + 2] - verts[a + 2]);
+            return (verts[b] - verts[a]) * (verts[c + 2] - verts[a + 2])
+                   - (verts[c] - verts[a]) * (verts[b + 2] - verts[a + 2]);
         }
 
         // Returns true iff c is strictly to the left of the directed
@@ -207,9 +207,9 @@ namespace DotRecast.Recast
                 return false;
 
             // If ab not vertical, check betweenness on x; else on y.
-            if (verts[a + 0] != verts[b + 0])
-                return ((verts[a + 0] <= verts[c + 0]) && (verts[c + 0] <= verts[b + 0])) ||
-                       ((verts[a + 0] >= verts[c + 0]) && (verts[c + 0] >= verts[b + 0]));
+            if (verts[a] != verts[b])
+                return ((verts[a] <= verts[c]) && (verts[c] <= verts[b])) ||
+                       ((verts[a] >= verts[c]) && (verts[c] >= verts[b]));
 
             return ((verts[a + 2] <= verts[c + 2]) && (verts[c + 2] <= verts[b + 2])) ||
                    ((verts[a + 2] >= verts[c + 2]) && (verts[c + 2] >= verts[b + 2]));
@@ -360,7 +360,7 @@ namespace DotRecast.Recast
                         int p0 = (indices[minIdx] & 0x0fffffff) * 4;
                         int p2 = (indices[Next(nextIdx1, n)] & 0x0fffffff) * 4;
 
-                        int dx = verts[p2 + 0] - verts[p0 + 0];
+                        int dx = verts[p2] - verts[p0];
                         int dy = verts[p2 + 2] - verts[p0 + 2];
                         int len = dx * dx + dy * dy;
 
@@ -392,7 +392,7 @@ namespace DotRecast.Recast
                         {
                             int p0 = (indices[minIdx] & 0x0fffffff) * 4;
                             int p2 = (indices[Next(nextIdx2, n)] & 0x0fffffff) * 4;
-                            int dx = verts[p2 + 0] - verts[p0 + 0];
+                            int dx = verts[p2] - verts[p0];
                             int dy = verts[p2 + 2] - verts[p0 + 2];
                             int len = dx * dx + dy * dy;
 
@@ -460,8 +460,8 @@ namespace DotRecast.Recast
 
         private static bool Uleft(int[] verts, int a, int b, int c)
         {
-            return (verts[b + 0] - verts[a + 0]) * (verts[c + 2] - verts[a + 2])
-                - (verts[c + 0] - verts[a + 0]) * (verts[b + 2] - verts[a + 2]) < 0;
+            return (verts[b] - verts[a]) * (verts[c + 2] - verts[a + 2])
+                - (verts[c] - verts[a]) * (verts[b + 2] - verts[a + 2]) < 0;
         }
 
         private static int GetPolyMergeValue(int[] polys, int pa, int pb, int[] verts, out int ea, out int eb, int nvp)
@@ -530,7 +530,7 @@ namespace DotRecast.Recast
             va = polys[pa + ea];
             vb = polys[pa + (ea + 1) % na];
 
-            int dx = verts[va * 3 + 0] - verts[vb * 3 + 0];
+            int dx = verts[va * 3] - verts[vb * 3];
             int dy = verts[va * 3 + 2] - verts[vb * 3 + 2];
 
             return (dx * dx) + (dy * dy);
@@ -653,7 +653,7 @@ namespace DotRecast.Recast
                         if (!exists)
                         {
                             int e = nedges * 3;
-                            edges[e + 0] = a;
+                            edges[e] = a;
                             edges[e + 1] = b;
                             edges[e + 2] = 1;
                             nedges++;
@@ -723,7 +723,7 @@ namespace DotRecast.Recast
                         if (mesh.polys[p + j] != rem && mesh.polys[p + k] != rem)
                         {
                             int e = nedges * 4;
-                            edges[e + 0] = mesh.polys[p + k];
+                            edges[e] = mesh.polys[p + k];
                             edges[e + 1] = mesh.polys[p + j];
                             edges[e + 2] = mesh.regs[i];
                             edges[e + 3] = mesh.areas[i];
@@ -749,7 +749,7 @@ namespace DotRecast.Recast
             // Remove vertex.
             for (int i = rem; i < mesh.nverts - 1; ++i)
             {
-                mesh.verts[i * 3 + 0] = mesh.verts[(i + 1) * 3 + 0];
+                mesh.verts[i * 3] = mesh.verts[(i + 1) * 3];
                 mesh.verts[i * 3 + 1] = mesh.verts[(i + 1) * 3 + 1];
                 mesh.verts[i * 3 + 2] = mesh.verts[(i + 1) * 3 + 2];
             }
@@ -768,8 +768,8 @@ namespace DotRecast.Recast
 
             for (int i = 0; i < nedges; ++i)
             {
-                if (edges[i * 4 + 0] > rem)
-                    edges[i * 4 + 0]--;
+                if (edges[i * 4] > rem)
+                    edges[i * 4]--;
                 if (edges[i * 4 + 1] > rem)
                     edges[i * 4 + 1]--;
             }
@@ -789,7 +789,7 @@ namespace DotRecast.Recast
 
                 for (int i = 0; i < nedges; ++i)
                 {
-                    int ea = edges[i * 4 + 0];
+                    int ea = edges[i * 4];
                     int eb = edges[i * 4 + 1];
                     int r = edges[i * 4 + 2];
                     int a = edges[i * 4 + 3];
@@ -814,7 +814,7 @@ namespace DotRecast.Recast
                     if (add)
                     {
                         // The edge segment was added, remove it.
-                        edges[i * 4 + 0] = edges[(nedges - 1) * 4 + 0];
+                        edges[i * 4] = edges[(nedges - 1) * 4];
                         edges[i * 4 + 1] = edges[(nedges - 1) * 4 + 1];
                         edges[i * 4 + 2] = edges[(nedges - 1) * 4 + 2];
                         edges[i * 4 + 3] = edges[(nedges - 1) * 4 + 3];
@@ -838,7 +838,7 @@ namespace DotRecast.Recast
             for (int i = 0; i < nhole; ++i)
             {
                 int pi = hole[i];
-                tverts[i * 4 + 0] = mesh.verts[pi * 3 + 0];
+                tverts[i * 4] = mesh.verts[pi * 3];
                 tverts[i * 4 + 1] = mesh.verts[pi * 3 + 1];
                 tverts[i * 4 + 2] = mesh.verts[pi * 3 + 2];
                 tverts[i * 4 + 3] = 0;
@@ -866,20 +866,20 @@ namespace DotRecast.Recast
             for (int j = 0; j < ntris; ++j)
             {
                 int t = j * 3;
-                if (tris[t + 0] != tris[t + 1] && tris[t + 0] != tris[t + 2] && tris[t + 1] != tris[t + 2])
+                if (tris[t] != tris[t + 1] && tris[t] != tris[t + 2] && tris[t + 1] != tris[t + 2])
                 {
-                    polys[npolys * nvp + 0] = hole[tris[t + 0]];
+                    polys[npolys * nvp] = hole[tris[t]];
                     polys[npolys * nvp + 1] = hole[tris[t + 1]];
                     polys[npolys * nvp + 2] = hole[tris[t + 2]];
 
                     // If this polygon covers multiple region types then
                     // mark it as such
-                    if (hreg[tris[t + 0]] != hreg[tris[t + 1]] || hreg[tris[t + 1]] != hreg[tris[t + 2]])
+                    if (hreg[tris[t]] != hreg[tris[t + 1]] || hreg[tris[t + 1]] != hreg[tris[t + 2]])
                         pregs[npolys] = RC_MULTIPLE_REGS;
                     else
-                        pregs[npolys] = hreg[tris[t + 0]];
+                        pregs[npolys] = hreg[tris[t]];
 
-                    pareas[npolys] = harea[tris[t + 0]];
+                    pareas[npolys] = harea[tris[t]];
                     npolys++;
                 }
             }
@@ -890,7 +890,7 @@ namespace DotRecast.Recast
             // Merge polygons.
             if (nvp > 3)
             {
-                for (;;)
+                for (; ; )
                 {
                     // Find best polygons to merge.
                     int bestMergeVal = 0;
@@ -1043,7 +1043,7 @@ namespace DotRecast.Recast
                 for (int j = 0; j < cont.nverts; ++j)
                 {
                     int v = j * 4;
-                    indices[j] = AddVertex(cont.verts[v + 0], cont.verts[v + 1], cont.verts[v + 2],
+                    indices[j] = AddVertex(cont.verts[v], cont.verts[v + 1], cont.verts[v + 2],
                         mesh.verts, firstVert, nextVert, ref mesh.nverts);
 
                     if ((cont.verts[v + 3] & RC_BORDER_VERTEX) != 0)
@@ -1059,9 +1059,9 @@ namespace DotRecast.Recast
                 for (int j = 0; j < ntris; ++j)
                 {
                     int t = j * 3;
-                    if (tris[t + 0] != tris[t + 1] && tris[t + 0] != tris[t + 2] && tris[t + 1] != tris[t + 2])
+                    if (tris[t] != tris[t + 1] && tris[t] != tris[t + 2] && tris[t + 1] != tris[t + 2])
                     {
-                        polys[npolys * nvp + 0] = indices[tris[t + 0]];
+                        polys[npolys * nvp] = indices[tris[t]];
                         polys[npolys * nvp + 1] = indices[tris[t + 1]];
                         polys[npolys * nvp + 2] = indices[tris[t + 2]];
                         npolys++;
@@ -1074,7 +1074,7 @@ namespace DotRecast.Recast
                 // Merge polygons.
                 if (nvp > 3)
                 {
-                    for (;;)
+                    for (; ; )
                     {
                         // Find best polygons to merge.
                         int bestMergeVal = 0;
@@ -1179,11 +1179,11 @@ namespace DotRecast.Recast
                         int va = mesh.polys[p + j] * 3;
                         int vb = mesh.polys[p + nj] * 3;
 
-                        if (mesh.verts[va + 0] is 0 && mesh.verts[vb + 0] is 0)
+                        if (mesh.verts[va] is 0 && mesh.verts[vb] is 0)
                             mesh.polys[p + nvp + j] = 0x8000 | 0;
                         else if (mesh.verts[va + 2] == h && mesh.verts[vb + 2] == h)
                             mesh.polys[p + nvp + j] = 0x8000 | 1;
-                        else if (mesh.verts[va + 0] == w && mesh.verts[vb + 0] == w)
+                        else if (mesh.verts[va] == w && mesh.verts[vb] == w)
                             mesh.polys[p + nvp + j] = 0x8000 | 2;
                         else if (mesh.verts[va + 2] is 0 && mesh.verts[vb + 2] is 0)
                             mesh.polys[p + nvp + j] = 0x8000 | 3;
@@ -1270,7 +1270,7 @@ namespace DotRecast.Recast
                 for (int j = 0; j < pmesh.nverts; ++j)
                 {
                     int v = j * 3;
-                    vremap[j] = AddVertex(pmesh.verts[v + 0] + ox, pmesh.verts[v + 1], pmesh.verts[v + 2] + oz,
+                    vremap[j] = AddVertex(pmesh.verts[v] + ox, pmesh.verts[v + 1], pmesh.verts[v + 2] + oz,
                         mesh.verts, firstVert, nextVert, ref mesh.nverts);
                 }
 

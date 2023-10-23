@@ -246,7 +246,7 @@ namespace DotRecast.Recast
                     bool areaBorders = (points[i * 4 + 3] & RC_AREA_BORDER) != (points[ii * 4 + 3] & RC_AREA_BORDER);
                     if (differentRegs || areaBorders)
                     {
-                        simplified.Add(points[i * 4 + 0]);
+                        simplified.Add(points[i * 4]);
                         simplified.Add(points[i * 4 + 1]);
                         simplified.Add(points[i * 4 + 2]);
                         simplified.Add(i);
@@ -269,7 +269,7 @@ namespace DotRecast.Recast
                 int uri = 0;
                 for (int i = 0; i < points.Count; i += 4)
                 {
-                    int x = points[i + 0];
+                    int x = points[i];
                     int y = points[i + 1];
                     int z = points[i + 2];
                     if (x < llx || (x == llx && z < llz))
@@ -307,11 +307,11 @@ namespace DotRecast.Recast
             {
                 int ii = (i + 1) % (simplified.Count / 4);
 
-                int ax = simplified[i * 4 + 0];
+                int ax = simplified[i * 4];
                 int az = simplified[i * 4 + 2];
                 int ai = simplified[i * 4 + 3];
 
-                int bx = simplified[ii * 4 + 0];
+                int bx = simplified[ii * 4];
                 int bz = simplified[ii * 4 + 2];
                 int bi = simplified[ii * 4 + 3];
 
@@ -343,7 +343,7 @@ namespace DotRecast.Recast
                 {
                     while (ci != endi)
                     {
-                        float d = DistancePtSeg(points[ci * 4 + 0], points[ci * 4 + 2], ax, az, bx, bz);
+                        float d = DistancePtSeg(points[ci * 4], points[ci * 4 + 2], ax, az, bx, bz);
                         if (d > maxd)
                         {
                             maxd = d;
@@ -359,7 +359,7 @@ namespace DotRecast.Recast
                 if (maxi != -1 && maxd > (maxError * maxError))
                 {
                     // Add the point.
-                    simplified.Insert((i + 1) * 4 + 0, points[maxi * 4 + 0]);
+                    simplified.Insert((i + 1) * 4, points[maxi * 4]);
                     simplified.Insert((i + 1) * 4 + 1, points[maxi * 4 + 1]);
                     simplified.Insert((i + 1) * 4 + 2, points[maxi * 4 + 2]);
                     simplified.Insert((i + 1) * 4 + 3, maxi);
@@ -377,11 +377,11 @@ namespace DotRecast.Recast
                 {
                     int ii = (i + 1) % (simplified.Count / 4);
 
-                    int ax = simplified[i * 4 + 0];
+                    int ax = simplified[i * 4];
                     int az = simplified[i * 4 + 2];
                     int ai = simplified[i * 4 + 3];
 
-                    int bx = simplified[ii * 4 + 0];
+                    int bx = simplified[ii * 4];
                     int bz = simplified[ii * 4 + 2];
                     int bi = simplified[ii * 4 + 3];
 
@@ -423,7 +423,7 @@ namespace DotRecast.Recast
                     if (maxi != -1)
                     {
                         // Add the point.
-                        simplified.Insert((i + 1) * 4 + 0, points[maxi * 4 + 0]);
+                        simplified.Insert((i + 1) * 4, points[maxi * 4]);
                         simplified.Insert((i + 1) * 4 + 1, points[maxi * 4 + 1]);
                         simplified.Insert((i + 1) * 4 + 2, points[maxi * 4 + 2]);
                         simplified.Insert((i + 1) * 4 + 3, maxi);
@@ -453,7 +453,7 @@ namespace DotRecast.Recast
             {
                 int vi = i * 4;
                 int vj = j * 4;
-                area += verts[vi + 0] * verts[vj + 2] - verts[vj + 0] * verts[vi + 2];
+                area += verts[vi] * verts[vj + 2] - verts[vj] * verts[vi + 2];
             }
 
             return (area + 1) / 2;
@@ -585,7 +585,7 @@ namespace DotRecast.Recast
             int leftmost = 0;
             for (int i = 1; i < contour.nverts; i++)
             {
-                int x = contour.verts[i * 4 + 0];
+                int x = contour.verts[i * 4];
                 int z = contour.verts[i * 4 + 2];
                 if (x < minx || (x == minx && z < minz))
                 {
@@ -642,7 +642,7 @@ namespace DotRecast.Recast
                     {
                         if (InCone(j, outline.nverts, outline.verts, corner, hole.verts))
                         {
-                            int dx = outline.verts[j * 4 + 0] - hole.verts[corner + 0];
+                            int dx = outline.verts[j * 4] - hole.verts[corner];
                             int dz = outline.verts[j * 4 + 2] - hole.verts[corner + 2];
                             diags[ndiags] = new(j, dx * dx + dz * dz);
                             ndiags++;
