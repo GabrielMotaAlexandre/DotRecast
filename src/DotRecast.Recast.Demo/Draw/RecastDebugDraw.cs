@@ -103,7 +103,7 @@ public class RecastDebugDraw : DebugDraw
     public void DebugDrawNavMeshWithClosedList(DtNavMesh mesh, DtNavMeshQuery query, int flags)
     {
         DtNavMeshQuery q = (flags & DRAWNAVMESH_CLOSEDLIST) != 0 ? query : null;
-        for (int i = 0; i < mesh.GetMaxTiles(); ++i)
+        for (int i = 0; i < mesh.MaxTiles; ++i)
         {
             DtMeshTile tile = mesh.GetTile(i);
             if (tile != null && tile.data != null)
@@ -368,7 +368,7 @@ public class RecastDebugDraw : DebugDraw
                     DtPolyDetail pd = tile.data.detailMeshes[i];
                     for (int k = 0; k < pd.triCount; ++k)
                     {
-                        int t = (pd.triBase + k) * 4;
+                        int t = pd.triBase + k;
                         Vector3[] tv = new Vector3[3];
                         for (int m = 0; m < 3; ++m)
                         {
@@ -435,7 +435,7 @@ public class RecastDebugDraw : DebugDraw
 
     public void DebugDrawNavMeshBVTree(DtNavMesh mesh)
     {
-        for (int i = 0; i < mesh.GetMaxTiles(); ++i)
+        for (int i = 0; i < mesh.MaxTiles; ++i)
         {
             DtMeshTile tile = mesh.GetTile(i);
             if (tile != null && tile.data != null && tile.data.header != null)
@@ -1235,7 +1235,7 @@ public class RecastDebugDraw : DebugDraw
 
     public void DebugDrawNavMeshPolysWithFlags(DtNavMesh mesh, int polyFlags, int col)
     {
-        for (int i = 0; i < mesh.GetMaxTiles(); ++i)
+        for (int i = 0; i < mesh.MaxTiles; ++i)
         {
             DtMeshTile tile = mesh.GetTile(i);
             if (tile == null || tile.data == null || tile.data.header == null)
@@ -1300,7 +1300,7 @@ public class RecastDebugDraw : DebugDraw
 
     public void DebugDrawNavMeshPortals(DtNavMesh mesh)
     {
-        for (int i = 0; i < mesh.GetMaxTiles(); ++i)
+        for (int i = 0; i < mesh.MaxTiles; ++i)
         {
             DtMeshTile tile = mesh.GetTile(i);
             if (tile.data != null && tile.data.header != null)

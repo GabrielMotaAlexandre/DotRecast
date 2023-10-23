@@ -47,8 +47,6 @@ namespace DotRecast.Detour.Crowd
                     break;
                 }
 
-                queue.RemoveFirst();
-
                 // Handle query start.
                 if (q.result.status.IsEmpty())
                 {
@@ -59,7 +57,8 @@ namespace DotRecast.Detour.Crowd
                 // Handle query in progress.
                 if (q.result.status.InProgress())
                 {
-                    q.result.status = q.navQuery.UpdateSlicedFindPath(iterCount, out var iters);
+                    q.navQuery.UpdateSlicedFindPath(iterCount, out var iters);
+                    q.result.status = q.navQuery.Status;
                     iterCount -= iters;
                 }
 
@@ -68,9 +67,9 @@ namespace DotRecast.Detour.Crowd
                     q.result.status = q.navQuery.FinalizeSlicedFindPath(ref q.result.path);
                 }
 
-                if (!(q.result.status.Failed() || q.result.status.Succeeded()))
+                if (q.result.status.Failed() || q.result.status.Succeeded())
                 {
-                    queue.AddFirst(q);
+                    queue.RemoveFirst();
                 }
             }
         }

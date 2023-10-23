@@ -106,7 +106,7 @@ public class MeshSetReaderWriterTest
 
         using var br = new BinaryReader(ms);
         mesh = reader.Read(br, 6);
-        Assert.That(mesh.GetMaxTiles(), Is.EqualTo(128));
+        Assert.That(mesh.MaxTiles, Is.EqualTo(128));
         Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
         Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
         List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);

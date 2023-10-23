@@ -33,7 +33,7 @@ namespace DotRecast.Detour
         public static bool Raycast(DtNavMesh mesh, Vector3 src, Vector3 dst, out float hitTime)
         {
             hitTime = 0.0f;
-            for (int t = 0; t < mesh.GetMaxTiles(); ++t)
+            for (int t = 0; t < mesh.MaxTiles; ++t)
             {
                 DtMeshTile tile = mesh.GetTile(t);
                 if (tile != null && tile.data != null)

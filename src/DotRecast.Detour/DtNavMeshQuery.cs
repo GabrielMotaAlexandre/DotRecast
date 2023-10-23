@@ -29,7 +29,7 @@ namespace DotRecast.Detour
 
     using static DtNode;
 
-    public class DtNavMeshQuery
+    public sealed class DtNavMeshQuery
     {
         /**
      * Use raycasts during pathfind to "shortcut" (raycast still consider costs) Options for
@@ -58,18 +58,18 @@ namespace DotRecast.Detour
         public const int DT_STRAIGHTPATH_ALL_CROSSINGS = 0x02;
 
         /// < Add a vertex at every polygon edge crossing.
-        protected readonly DtNavMesh m_nav;
+        private readonly DtNavMesh m_nav;
 
-        protected readonly DtNodePool m_nodePool;
-        protected readonly DtNodeQueue m_openList;
-        protected DtQueryData m_query;
+        private readonly DtNodePool m_nodePool = new();
+        private readonly DtNodeQueue m_openList = new();
+        private DtQueryData m_query;
+
+        public DtStatus Status => m_query.status;
 
         /// < Sliced query state.
         public DtNavMeshQuery(DtNavMesh nav)
         {
             m_nav = nav;
-            m_nodePool = new DtNodePool();
-            m_openList = new DtNodeQueue();
         }
 
         /// Returns random location on navmesh.
@@ -92,7 +92,7 @@ namespace DotRecast.Detour
             // Randomly pick one tile. Assume that all tiles cover roughly the same area.
             DtMeshTile tile = null;
             float tsum = 0.0f;
-            for (int i = 0; i < m_nav.GetMaxTiles(); i++)
+            for (int i = 0; i < m_nav.MaxTiles; i++)
             {
                 DtMeshTile mt = m_nav.GetTile(i);
                 if (mt == null || mt.data == null || mt.data.header == null)
@@ -595,7 +595,7 @@ namespace DotRecast.Detour
         }
 
         // FIXME: (PP) duplicate?
-        protected static void QueryPolygonsInTile(DtMeshTile tile, Vector3 qmin, Vector3 qmax, IDtQueryFilter filter, IDtPolyQuery query)
+        private static void QueryPolygonsInTile(DtMeshTile tile, Vector3 qmin, Vector3 qmax, IDtQueryFilter filter, IDtPolyQuery query)
         {
             if (tile.data.bvTree != null)
             {
@@ -1090,19 +1090,19 @@ namespace DotRecast.Detour
      *            The maximum number of iterations to perform.
      * @return The status flags for the query.
      */
-        public virtual DtStatus UpdateSlicedFindPath(int maxIter, out int doneIters)
+        public void UpdateSlicedFindPath(int maxIter, out int doneIters)
         {
             doneIters = 0;
             if (!m_query.status.InProgress())
             {
-                return m_query.status;
+                return;
             }
 
             // Make sure the request is still valid.
             if (!m_nav.IsValidPolyRef(m_query.startRef) || !m_nav.IsValidPolyRef(m_query.endRef))
             {
                 m_query.status = DtStatus.DT_FAILURE;
-                return DtStatus.DT_FAILURE;
+                return;
             }
 
             int iter = 0;
@@ -1122,7 +1122,7 @@ namespace DotRecast.Detour
                     var details = m_query.status & DtStatus.DT_STATUS_DETAIL_MASK;
                     m_query.status = DtStatus.DT_SUCCSESS | details;
                     doneIters = iter;
-                    return m_query.status;
+                    return;
                 }
 
                 // Get current poly and tile.
@@ -1135,7 +1135,7 @@ namespace DotRecast.Detour
                     // The polygon has disappeared during the sliced query, fail.
                     m_query.status = DtStatus.DT_FAILURE;
                     doneIters = iter;
-                    return m_query.status;
+                    return;
                 }
 
                 // Get parent and grand parent poly and tile.
@@ -1162,7 +1162,7 @@ namespace DotRecast.Detour
                         // The polygon has disappeared during the sliced query fail.
                         m_query.status = DtStatus.DT_FAILURE;
                         doneIters = iter;
-                        return m_query.status;
+                        return;
                     }
                 }
 
@@ -1322,16 +1322,15 @@ namespace DotRecast.Detour
             }
 
             doneIters = iter;
-            return m_query.status;
         }
 
         /// Finalizes and returns the results of a sliced path query.
         /// @param[out] path An ordered list of polygon references representing the path. (Start to end.)
         /// [(polyRef) * @p pathCount]
         /// @returns The status flags for the query.
-        public virtual DtStatus FinalizeSlicedFindPath(ref List<long> path)
+        public DtStatus FinalizeSlicedFindPath(ref List<long> path)
         {
-            if (null == path)
+            if (path is null)
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
 
             path.Clear();
@@ -1361,9 +1360,6 @@ namespace DotRecast.Detour
 
             var details = m_query.status & DtStatus.DT_STATUS_DETAIL_MASK;
 
-            // Reset query.
-            m_query = new DtQueryData();
-
             return DtStatus.DT_SUCCSESS | details;
         }
 
@@ -1374,7 +1370,7 @@ namespace DotRecast.Detour
         /// @param[out] path An ordered list of polygon references representing the path. (Start to end.)
         /// [(polyRef) * @p pathCount]
         /// @returns The status flags for the query.
-        public virtual DtStatus FinalizeSlicedFindPathPartial(List<long> existing, ref List<long> path)
+        public DtStatus FinalizeSlicedFindPathPartial(List<long> existing, ref List<long> path)
         {
             if (null == path)
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
@@ -1428,7 +1424,7 @@ namespace DotRecast.Detour
             return DtStatus.DT_SUCCSESS | details;
         }
 
-        protected static DtStatus AppendVertex(Vector3 pos, int flags, long refs, ref List<StraightPathItem> straightPath,
+        private static DtStatus AppendVertex(Vector3 pos, int flags, long refs, ref List<StraightPathItem> straightPath,
             int maxStraightPath)
         {
             if (straightPath.Count > 0 && DtUtils.VEqual(straightPath[^1].pos, pos))
@@ -1454,7 +1450,7 @@ namespace DotRecast.Detour
             return DtStatus.DT_IN_PROGRESS;
         }
 
-        protected DtStatus AppendPortals(int startIdx, int endIdx, Vector3 endPos, List<long> path,
+        private DtStatus AppendPortals(int startIdx, int endIdx, Vector3 endPos, List<long> path,
             ref List<StraightPathItem> straightPath, int maxStraightPath, int options)
         {
             var startPos = straightPath[^1].pos;
@@ -1533,7 +1529,7 @@ namespace DotRecast.Detour
         ///  @param[in]		maxStraightPath		The maximum number of points the straight path arrays can hold.  [Limit: > 0]
         ///  @param[in]		options				Query options. (see: #dtStraightPathOptions)
         /// @returns The status flags for the query.
-        public virtual DtStatus FindStraightPath(Vector3 startPos, Vector3 endPos, List<long> path,
+        public DtStatus FindStraightPath(Vector3 startPos, Vector3 endPos, List<long> path,
             ref List<StraightPathItem> straightPath,
             int maxStraightPath, int options)
         {
@@ -1964,7 +1960,7 @@ namespace DotRecast.Detour
             return DtStatus.DT_SUCCSESS;
         }
 
-        protected DtStatus GetPortalPoints(long from, long to, out Vector3 left, out Vector3 right, out int fromType, out int toType)
+        private DtStatus GetPortalPoints(long from, long to, out Vector3 left, out Vector3 right, out int fromType, out int toType)
         {
             left = Vector3.Zero;
             right = Vector3.Zero;
@@ -1991,7 +1987,7 @@ namespace DotRecast.Detour
         }
 
         // Returns portal points between two polygons.
-        protected static DtStatus GetPortalPoints(long from, DtPoly fromPoly, DtMeshTile fromTile,
+        private static DtStatus GetPortalPoints(long from, DtPoly fromPoly, DtMeshTile fromTile,
             long to, DtPoly toPoly, DtMeshTile toTile,
             out Vector3 left, out Vector3 right)
         {
@@ -2075,7 +2071,7 @@ namespace DotRecast.Detour
             return DtStatus.DT_SUCCSESS;
         }
 
-        protected static DtStatus GetEdgeMidPoint(long from, DtPoly fromPoly, DtMeshTile fromTile, long to,
+        private static DtStatus GetEdgeMidPoint(long from, DtPoly fromPoly, DtMeshTile fromTile, long to,
             DtPoly toPoly, DtMeshTile toTile, ref Vector3 mid)
         {
             var ppStatus = GetPortalPoints(from, fromPoly, fromTile, to, toPoly, toTile, out var left, out var right);
@@ -2089,7 +2085,7 @@ namespace DotRecast.Detour
             return DtStatus.DT_SUCCSESS;
         }
 
-        protected static DtStatus GetEdgeIntersectionPoint(Vector3 fromPos, long from, DtPoly fromPoly, DtMeshTile fromTile,
+        private static DtStatus GetEdgeIntersectionPoint(Vector3 fromPos, long from, DtPoly fromPoly, DtMeshTile fromTile,
             Vector3 toPos, long to, DtPoly toPoly, DtMeshTile toTile,
             ref Vector3 pt)
         {
@@ -2674,7 +2670,7 @@ namespace DotRecast.Detour
 
                     // Expand to neighbour
                     m_nav.GetTileAndPolyByRefUnsafe(neighbourRef, out var neighbourTile, out var neighbourPoly);
-
+                    
                     // Do not advance if the polygon is excluded by the filter.
                     if (!filter.PassFilter(neighbourRef, neighbourTile, neighbourPoly))
                     {
@@ -2933,7 +2929,7 @@ namespace DotRecast.Detour
         }
 
 
-        protected static void InsertInterval(List<DtSegInterval> ints, int tmin, int tmax, long refs)
+        private static void InsertInterval(List<DtSegInterval> ints, int tmin, int tmax, long refs)
         {
             // Find insertion point.
             int idx = 0;
@@ -3108,7 +3104,7 @@ namespace DotRecast.Detour
         ///  @param[out]	hitNormal		The normalized ray formed from the wall point to the 
         ///  								source point. [(x, y, z)]
         /// @returns The status flags for the query.
-        public virtual DtStatus FindDistanceToWall(long startRef, Vector3 centerPos, float maxRadius,
+        public DtStatus FindDistanceToWall(long startRef, Vector3 centerPos, float maxRadius,
             IDtQueryFilter filter,
             out float hitDist, out Vector3 hitPos, out Vector2 hitNormal)
         {
@@ -3379,7 +3375,7 @@ namespace DotRecast.Detour
         }
 
         // Gets the path leading to the specified end node.
-        protected DtStatus GetPathToNode(DtNode endNode, ref List<long> path)
+        private DtStatus GetPathToNode(DtNode endNode, ref List<long> path)
         {
             // Reverse the path.
             DtNode curNode = endNode;

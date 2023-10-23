@@ -215,9 +215,10 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus UpdateSlicedFindPath(DtNavMeshQuery navQuery, int maxIter, long endRef, Vector3 startPos, Vector3 endPos,
             ref List<long> path, ref List<StraightPathItem> straightPath)
         {
-            var status = navQuery.UpdateSlicedFindPath(maxIter, out _);
+            navQuery.UpdateSlicedFindPath(maxIter, out _);
+            var status = navQuery.Status;
 
-            if (!status.Succeeded())
+            if (status.Succeeded() is false)
             {
                 return status;
             }

@@ -60,8 +60,13 @@ namespace DotRecast.Detour
 
         private readonly float m_tileHeight;
 
+        /**
+     * The maximum number of tiles supported by the navigation mesh.
+     *
+     * @return The maximum number of tiles supported by the navigation mesh.
+     */
         /// < Dimensions of each tile.
-        readonly int m_maxTiles;
+        public readonly int MaxTiles;
 
         /// < Max number of tiles.
         private readonly int m_tileLutMask;
@@ -90,11 +95,11 @@ namespace DotRecast.Detour
             m_tileWidth = option.tileWidth;
             m_tileHeight = option.tileHeight;
             // Init tiles
-            m_maxTiles = option.maxTiles;
+            MaxTiles = option.maxTiles;
             m_maxVertPerPoly = maxVertsPerPoly;
             m_tileLutMask = Math.Max(1, DtUtils.NextPow2(option.maxTiles)) - 1;
-            m_tiles = new DtMeshTile[m_maxTiles];
-            for (int i = 0; i < m_maxTiles; i++)
+            m_tiles = new DtMeshTile[MaxTiles];
+            for (int i = 0; i < MaxTiles; i++)
             {
                 m_tiles[i] = new DtMeshTile(i)
                 {
@@ -117,24 +122,10 @@ namespace DotRecast.Detour
             return option;
         }
 
-
-        /**
-     * The maximum number of tiles supported by the navigation mesh.
-     *
-     * @return The maximum number of tiles supported by the navigation mesh.
-     */
-        public int GetMaxTiles()
-        {
-            return m_maxTiles;
-        }
-
         /**
      * Returns tile in the tile array.
      */
-        public DtMeshTile GetTile(int i)
-        {
-            return m_tiles[i];
-        }
+        public DtMeshTile GetTile(int i) => m_tiles[i];
 
         /**
      * Gets the polygon reference for the tile's base polygon.
@@ -268,7 +259,7 @@ namespace DotRecast.Detour
             }
 
             DecodePolyId(refs, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -310,7 +301,7 @@ namespace DotRecast.Detour
             }
 
             DecodePolyId(refs, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return false;
             }
@@ -459,10 +450,10 @@ namespace DotRecast.Detour
 
             // Allocate a tile.
             DtMeshTile tile;
-            if (lastRef == 0)
+            if (lastRef is 0)
             {
                 // Make sure we could allocate a tile.
-                if (0 == availableTiles.Count)
+                if (availableTiles.Count is 0)
                 {
                     throw new Exception("Could not allocate a tile");
                 }
@@ -475,7 +466,7 @@ namespace DotRecast.Detour
             {
                 // Try to relocate the tile to specific index with same salt.
                 int tileIndex = DecodePolyIdTile(lastRef);
-                if (tileIndex >= m_maxTiles)
+                if (tileIndex >= MaxTiles)
                 {
                     throw new Exception("Tile index too high");
                 }
@@ -567,7 +558,7 @@ namespace DotRecast.Detour
 
             int tileIndex = DecodePolyIdTile(refs);
             int tileSalt = DecodePolyIdSalt(refs);
-            if (tileIndex >= m_maxTiles)
+            if (tileIndex >= MaxTiles)
             {
                 throw new Exception("Invalid tile index");
             }
@@ -1447,7 +1438,7 @@ namespace DotRecast.Detour
 
             int tileIndex = DecodePolyIdTile(refs);
             int tileSalt = DecodePolyIdSalt(refs);
-            if (tileIndex >= m_maxTiles)
+            if (tileIndex >= MaxTiles)
             {
                 return null;
             }
@@ -1502,7 +1493,7 @@ namespace DotRecast.Detour
 
             // Get current polygon
             DecodePolyId(polyRef, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1573,7 +1564,7 @@ namespace DotRecast.Detour
             }
 
             DecodePolyId(refs, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return DtStatus.DT_INVALID_PARAM;
             }
@@ -1610,7 +1601,7 @@ namespace DotRecast.Detour
             }
 
             DecodePolyId(refs, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1641,7 +1632,7 @@ namespace DotRecast.Detour
             }
 
             DecodePolyId(refs, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -1674,7 +1665,7 @@ namespace DotRecast.Detour
             }
 
             DecodePolyId(refs, out var salt, out var it, out var ip);
-            if (it >= m_maxTiles)
+            if (it >= MaxTiles)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1750,7 +1741,7 @@ namespace DotRecast.Detour
         {
             bmin = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
             bmax = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-            for (int t = 0; t < GetMaxTiles(); ++t)
+            for (int t = 0; t < MaxTiles; ++t)
             {
                 DtMeshTile tile = GetTile(t);
                 if (tile != null && tile.data != null)

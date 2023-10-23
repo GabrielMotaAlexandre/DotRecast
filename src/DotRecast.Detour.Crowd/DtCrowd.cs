@@ -595,7 +595,7 @@ namespace DotRecast.Detour.Crowd
                     _navQuery.UpdateSlicedFindPath(_config.maxTargetFindPathIterations, out var _);
 
                     DtStatus status;
-                    if (ag.targetReplan) // && npath > 10)
+                    if (ag.targetReplan)
                     {
                         // Try to use existing steady path during replan if possible.
                         status = _navQuery.FinalizeSlicedFindPathPartial(path, ref reqPath);
@@ -646,19 +646,20 @@ namespace DotRecast.Detour.Crowd
                     }
                     else
                     {
-                        // The path is longer or potentially unreachable, full plan.
+                        // The path is long or potentially unreachable, full plan.
                         ag.TargetState = DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE;
+                        queue.Enqueue(ag);
                     }
 
                     ag.targetReplanWaitTime = 0;
                 }
-
-                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
                 {
-                    queue.Enqueue(ag);
+                    throw new Exception("Wasn't sure if would reach here");
                 }
             }
 
+            // add to request
             while (!queue.IsEmpty())
             {
                 DtCrowdAgent ag = queue.Dequeue();
