@@ -180,7 +180,7 @@ namespace DotRecast.Detour.Dynamic
 
         private ICollection<DtDynamicTile> GetTiles(float[] bounds)
         {
-            if (bounds == null)
+            if (bounds is null)
             {
                 return _tiles.Values;
             }

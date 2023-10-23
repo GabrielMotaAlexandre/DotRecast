@@ -254,9 +254,9 @@ namespace DotRecast.Detour
         {
             if (option.vertCount >= 0xffff)
                 return null;
-            if (option.vertCount is 0 || option.verts == null)
+            if (option.vertCount is 0 || option.verts is null)
                 return null;
-            if (option.polyCount is 0 || option.polys == null)
+            if (option.polyCount is 0 || option.polys is null)
                 return null;
 
             int nvp = option.nvp;

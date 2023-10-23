@@ -136,7 +136,7 @@ namespace DotRecast.Detour
      */
         public static long GetPolyRefBase(DtMeshTile tile)
         {
-            if (tile == null)
+            if (tile is null)
             {
                 return 0;
             }
@@ -264,7 +264,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data.header == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data.header is null)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -306,7 +306,7 @@ namespace DotRecast.Detour
                 return false;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data is null)
             {
                 return false;
             }
@@ -620,7 +620,7 @@ namespace DotRecast.Detour
         /// Builds internal polygons links for a tile.
         static void ConnectIntLinks(DtMeshTile tile)
         {
-            if (tile == null)
+            if (tile is null)
             {
                 return;
             }
@@ -662,7 +662,7 @@ namespace DotRecast.Detour
 
         static void UnconnectLinks(DtMeshTile tile, DtMeshTile target)
         {
-            if (tile == null || target == null)
+            if (tile is null || target is null)
             {
                 return;
             }
@@ -704,7 +704,7 @@ namespace DotRecast.Detour
 
         static void ConnectExtLinks(DtMeshTile tile, DtMeshTile target, int side)
         {
-            if (tile == null)
+            if (tile is null)
             {
                 return;
             }
@@ -785,7 +785,7 @@ namespace DotRecast.Detour
 
         void ConnectExtOffMeshLinks(DtMeshTile tile, DtMeshTile target, int side)
         {
-            if (tile == null)
+            if (tile is null)
             {
                 return;
             }
@@ -875,7 +875,7 @@ namespace DotRecast.Detour
         private static void FindConnectingPolys(float[] verts, int va, int vb, DtMeshTile tile, int side,
             ref List<DtConnectPoly> cons)
         {
-            if (tile == null)
+            if (tile is null)
                 return;
 
             cons.Clear();
@@ -1029,7 +1029,7 @@ namespace DotRecast.Detour
      */
         void BaseOffMeshLinks(DtMeshTile tile)
         {
-            if (tile == null)
+            if (tile is null)
             {
                 return;
             }
@@ -1454,7 +1454,7 @@ namespace DotRecast.Detour
 
         public static long GetTileRef(DtMeshTile tile)
         {
-            if (tile == null)
+            if (tile is null)
             {
                 return 0;
             }
@@ -1498,7 +1498,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data.header == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data.header is null)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1569,7 +1569,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_INVALID_PARAM;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data == null || m_tiles[it].data.header == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data is null || m_tiles[it].data.header is null)
             {
                 return DtStatus.DT_INVALID_PARAM;
             }
@@ -1606,7 +1606,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data == null || m_tiles[it].data.header == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data is null || m_tiles[it].data.header is null)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1637,7 +1637,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data == null || m_tiles[it].data.header == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data is null || m_tiles[it].data.header is null)
             {
                 return DtStatus.DT_INVALID_PARAM;
             }
@@ -1670,7 +1670,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            if (m_tiles[it].salt != salt || m_tiles[it].data == null || m_tiles[it].data.header == null)
+            if (m_tiles[it].salt != salt || m_tiles[it].data is null || m_tiles[it].data.header is null)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }

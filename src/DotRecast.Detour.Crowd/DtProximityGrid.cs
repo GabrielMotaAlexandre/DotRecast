@@ -79,7 +79,7 @@ namespace DotRecast.Detour.Crowd
                 {
                     ref var item = ref _items[y * Length.x + x];
 
-                    if (item.ids == null)
+                    if (item.ids is null)
                     {
                         item = (ArrayPool<int>.Shared.Rent(8), 0);
                     }

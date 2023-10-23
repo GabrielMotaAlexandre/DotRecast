@@ -1212,7 +1212,7 @@ namespace DotRecast.Recast
         /// @see rcAllocPolyMesh, rcPolyMesh
         public static RcPolyMesh MergePolyMeshes(RcPolyMesh[] meshes, int nmeshes)
         {
-            if (nmeshes is 0 || meshes == null)
+            if (nmeshes is 0 || meshes is null)
                 return null;
 
             RcPolyMesh mesh = new()

@@ -66,7 +66,7 @@ namespace DotRecast.Detour.Extras.Jumplink
             }
 
             var list = solid.spans[ix + iz * w];
-            if (list == null)
+            if (list is null)
             {
                 return false;
             }

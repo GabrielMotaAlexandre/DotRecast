@@ -859,7 +859,7 @@ namespace DotRecast.Detour.Crowd
 
             var size = _config.maxAgentRadius * 3;
 
-            if (_grid == null || _grid.CellSize != size)
+            if (_grid is null || _grid.CellSize != size)
             {
                 _navMesh.ComputeBounds(out var min, out var max);
                 _grid = new DtProximityGrid(new Vector4(min.X, min.Z, max.X, max.Z), size);

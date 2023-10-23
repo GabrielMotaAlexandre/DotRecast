@@ -130,11 +130,11 @@ public class CrowdSampleTool : ISampleTool
         float rad = settings.agentRadius;
 
         var crowd = _tool.GetCrowd();
-        if (crowd == null)
+        if (crowd is null)
             return;
 
         var nav = crowd.GetNavMesh();
-        if (nav == null)
+        if (nav is null)
             return;
 
         var cfg = _tool.GetCrowdConfig();
@@ -463,7 +463,7 @@ public class CrowdSampleTool : ISampleTool
     public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
         var crowd = _tool.GetCrowd();
-        if (crowd == null)
+        if (crowd is null)
         {
             return;
         }

@@ -52,7 +52,7 @@ namespace DotRecast.Detour
 
             var qCircle = Circle(center, radius);
             var intersection = ConvexConvexIntersection.Intersect(verts, qCircle);
-            if (intersection == null && DtUtils.PointInPolygon(center, verts, verts.Length / 3))
+            if (intersection is null && DtUtils.PointInPolygon(center, verts, verts.Length / 3))
             {
                 // circle inside polygon
                 return qCircle;

@@ -123,7 +123,7 @@ namespace DotRecast.Recast
                 {
                     var list = heightfield.spans[x + y * w];
                     // If there are no spans at this cell, just leave the data to index=0, count=0.
-                    if (list == null)
+                    if (list is null)
                         continue;
 
                     Debug.Assert(list.Count > 0);

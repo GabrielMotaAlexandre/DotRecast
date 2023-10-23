@@ -888,7 +888,7 @@ public class RecastDebugDraw : DebugDraw
 
     public void DebugDrawCompactHeightfieldDistance(RcCompactHeightfield chf)
     {
-        if (chf.dist == null)
+        if (chf.dist is null)
         {
             return;
         }
@@ -1192,7 +1192,7 @@ public class RecastDebugDraw : DebugDraw
             {
                 foreach (DtNode node in nodes)
                 {
-                    if (node == null)
+                    if (node is null)
                     {
                         continue;
                     }
@@ -1208,7 +1208,7 @@ public class RecastDebugDraw : DebugDraw
             {
                 foreach (DtNode node in nodes)
                 {
-                    if (node == null)
+                    if (node is null)
                     {
                         continue;
                     }
@@ -1219,7 +1219,7 @@ public class RecastDebugDraw : DebugDraw
                     }
 
                     DtNode parent = pool.GetNodeAtIdx(node.pidx);
-                    if (parent == null)
+                    if (parent is null)
                     {
                         continue;
                     }
@@ -1238,7 +1238,7 @@ public class RecastDebugDraw : DebugDraw
         for (int i = 0; i < mesh.MaxTiles; ++i)
         {
             DtMeshTile tile = mesh.GetTile(i);
-            if (tile == null || tile.data == null || tile.data.header == null)
+            if (tile is null || tile.data is null || tile.data.header is null)
             {
                 continue;
             }

@@ -106,7 +106,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public void UpdateAgentParams()
         {
-            if (crowd == null)
+            if (crowd is null)
             {
                 return;
             }
@@ -139,11 +139,11 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public void Update(float dt)
         {
-            if (crowd == null)
+            if (crowd is null)
                 return;
 
             DtNavMesh nav = crowd.GetNavMesh();
-            if (nav == null)
+            if (nav is null)
                 return;
 
             long startTime = RcFrequency.Ticks;
@@ -258,7 +258,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public void SetMoveTarget(Vector3 p, bool adjust)
         {
-            if (crowd == null)
+            if (crowd is null)
                 return;
 
             // Find nearest point on navmesh and set move request to that location.

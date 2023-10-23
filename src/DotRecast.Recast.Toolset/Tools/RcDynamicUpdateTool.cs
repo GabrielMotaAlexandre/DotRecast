@@ -91,7 +91,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public RcGizmo AddShape(RcDynamicColliderShape colliderShape, Vector3 p)
         {
-            if (dynaMesh == null)
+            if (dynaMesh is null)
             {
                 return null;
             }
@@ -339,7 +339,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public bool UpdateDynaMesh(TaskFactory executor)
         {
-            if (dynaMesh == null)
+            if (dynaMesh is null)
             {
                 return false;
             }

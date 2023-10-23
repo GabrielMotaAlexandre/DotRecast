@@ -95,7 +95,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < m_nav.MaxTiles; i++)
             {
                 DtMeshTile mt = m_nav.GetTile(i);
-                if (mt == null || mt.data == null || mt.data.header == null)
+                if (mt is null || mt.data is null || mt.data.header is null)
                 {
                     continue;
                 }
@@ -110,7 +110,7 @@ namespace DotRecast.Detour
                 }
             }
 
-            if (tile == null)
+            if (tile is null)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -157,7 +157,7 @@ namespace DotRecast.Detour
                 }
             }
 
-            if (poly == null)
+            if (poly is null)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -396,7 +396,7 @@ namespace DotRecast.Detour
                 }
             }
 
-            if (randomPoly == null)
+            if (randomPoly is null)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -470,7 +470,7 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            if (tile == null || !Vector3Extensions.IsFinite(pos))
+            if (tile is null || !Vector3Extensions.IsFinite(pos))
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1407,7 +1407,7 @@ namespace DotRecast.Detour
                     }
                 }
 
-                if (node == null)
+                if (node is null)
                 {
                     m_query.status |= DtStatus.DT_PARTIAL_RESULT;
                     node = m_query.lastBestNode;
@@ -2005,7 +2005,7 @@ namespace DotRecast.Detour
                 }
             }
 
-            if (link == null)
+            if (link is null)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -3409,7 +3409,7 @@ namespace DotRecast.Detour
      */
         public bool IsInClosedList(long refs)
         {
-            if (m_nodePool == null)
+            if (m_nodePool is null)
             {
                 return false;
             }

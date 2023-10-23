@@ -45,7 +45,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public void Build(IInputGeomProvider geom, RcNavMeshBuildSettings settings, IList<RcBuilderResult> results, RcJumpLinkBuilderToolConfig cfg)
         {
-            if (_annotationBuilder == null)
+            if (_annotationBuilder is null)
             {
                 if (0 < results.Count)
                 {

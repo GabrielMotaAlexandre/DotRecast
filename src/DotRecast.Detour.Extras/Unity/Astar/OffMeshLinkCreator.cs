@@ -59,7 +59,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                             ? 0xFF
                             : DtNavMeshBuilder.ClassifyOffMeshPoint(Vector3Extensions.Of(connection.pos, 3), startTile.header.bmin, startTile.header.bmax);
                         connection.userId = (int)l.linkID;
-                        if (startTile.offMeshCons == null)
+                        if (startTile.offMeshCons is null)
                         {
                             startTile.offMeshCons = new DtOffMeshConnection[1];
                         }

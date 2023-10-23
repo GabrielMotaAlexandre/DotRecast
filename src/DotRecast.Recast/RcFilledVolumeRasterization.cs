@@ -733,12 +733,12 @@ namespace DotRecast.Recast
 
         private static Vector2 MergeIntersections(Vector2? s1, Vector2? s2)
         {
-            if (s1 == null)
+            if (s1 is null)
             {
                 return s2.Value;
             }
 
-            if (s2 == null)
+            if (s2 is null)
             {
                 return s1.Value;
             }

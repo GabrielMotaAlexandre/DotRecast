@@ -11,7 +11,7 @@ namespace DotRecast.Recast.Toolset.Gizmos
 
         public static float[] GenerateSphericalVertices()
         {
-            if (sphericalVertices == null)
+            if (sphericalVertices is null)
             {
                 sphericalVertices = GenerateSphericalVertices(SEGMENTS, RINGS);
             }

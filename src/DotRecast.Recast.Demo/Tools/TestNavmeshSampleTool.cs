@@ -194,7 +194,7 @@ public class TestNavmeshSampleTool : ISampleTool
         dd.DepthMask(true);
 
         DtNavMesh m_navMesh = _sample.GetNavMesh();
-        if (m_navMesh == null)
+        if (m_navMesh is null)
         {
             return;
         }

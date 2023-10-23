@@ -65,7 +65,7 @@ namespace DotRecast.Detour
 
                 DtPolyDetail pd = tile.data.detailMeshes[i];
 
-                //if (pd == null)
+                //if (pd is null)
                 //{
                 //    // FIXME: Use Poly if PolyDetail is unavailable                 
                 //}

@@ -268,7 +268,7 @@ public class RecastDemo : IRecastDemoChannel
         options.PreferredDepthBufferBits = 24;
         window = Window.Create(options);
 
-        if (window == null)
+        if (window is null)
         {
             throw new Exception("Failed to create the GLFW window");
         }
@@ -743,7 +743,7 @@ public class RecastDemo : IRecastDemoChannel
 
         // Hit test mesh.
         DemoInputGeomProvider inputGeom = _sample.GetInputGeom();
-        if (_sample == null)
+        if (_sample is null)
             return;
 
         float hitTime = 0f;

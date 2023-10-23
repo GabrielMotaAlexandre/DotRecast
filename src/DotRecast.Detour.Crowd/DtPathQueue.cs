@@ -42,7 +42,7 @@ namespace DotRecast.Detour.Crowd
             while (iterCount > 0)
             {
                 DtPathQuery q = queue.First?.Value;
-                if (q == null)
+                if (q is null)
                 {
                     break;
                 }

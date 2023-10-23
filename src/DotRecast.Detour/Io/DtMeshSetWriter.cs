@@ -40,7 +40,7 @@ namespace DotRecast.Detour.Io
             for (int i = 0; i < mesh.MaxTiles; ++i)
             {
                 DtMeshTile tile = mesh.GetTile(i);
-                if (tile == null || tile.data == null || tile.data.header == null)
+                if (tile is null || tile.data is null || tile.data.header is null)
                 {
                     continue;
                 }
@@ -61,7 +61,7 @@ namespace DotRecast.Detour.Io
             for (int i = 0; i < mesh.MaxTiles; ++i)
             {
                 DtMeshTile tile = mesh.GetTile(i);
-                if (tile == null || tile.data == null || tile.data.header == null)
+                if (tile is null || tile.data is null || tile.data.header is null)
                 {
                     continue;
                 }

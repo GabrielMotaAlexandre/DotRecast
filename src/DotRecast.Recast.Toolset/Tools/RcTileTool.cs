@@ -16,7 +16,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public static void RemoveAllTiles(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh)
         {
-            if (null == settings || null == geom || navMesh == null)
+            if (null == settings || null == geom || navMesh is null)
                 return;
 
             var bmin = geom.GetMeshBoundsMin().AsVector2XZ();
@@ -39,7 +39,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public static void BuildAllTiles(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh)
         {
-            if (null == settings || null == geom || navMesh == null)
+            if (null == settings || null == geom || navMesh is null)
                 return;
 
             var bmin = geom.GetMeshBoundsMin().AsVector2XZ();
@@ -113,7 +113,7 @@ namespace DotRecast.Recast.Toolset.Tools
             tileTriCount = 0;
             tileMemUsage = 0;
 
-            if (null == settings || null == geom || navMesh == null)
+            if (null == settings || null == geom || navMesh is null)
                 return false;
 
             float ts = settings.tileSize * settings.cellSize;
@@ -130,7 +130,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public static bool RemoveTile(IInputGeomProvider geom, RcNavMeshBuildSettings settings, DtNavMesh navMesh, Vector3 pos)
         {
-            if (null == settings || null == geom || navMesh == null)
+            if (null == settings || null == geom || navMesh is null)
                 return false;
 
             float ts = settings.tileSize * settings.cellSize;

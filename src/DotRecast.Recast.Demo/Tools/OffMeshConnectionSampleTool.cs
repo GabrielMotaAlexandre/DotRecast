@@ -87,7 +87,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
     public void HandleClick(Vector3 s, Vector3 p, bool shift)
     {
         DemoInputGeomProvider geom = _sample.GetInputGeom();
-        if (geom == null)
+        if (geom is null)
         {
             return;
         }
