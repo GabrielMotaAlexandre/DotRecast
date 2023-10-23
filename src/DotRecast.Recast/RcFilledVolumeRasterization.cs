@@ -186,8 +186,8 @@ namespace DotRecast.Recast
                 return;
             }
 
-            float ics = 1.0f / hf.cs;
-            float ich = 1.0f / hf.ch;
+            float ics = 1f / hf.cs;
+            float ich = 1f / hf.ch;
             int xMin = (int)((bounds[0] - hf.bmin.X) * ics);
             int zMin = (int)((bounds[2] - hf.bmin.Z) * ics);
             int xMax = Math.Min(hf.width - 1, (int)((bounds[3] - hf.bmin.X) * ics));
@@ -231,13 +231,13 @@ namespace DotRecast.Recast
 
             float b = my; // Dot(m, d) d = (0, 1, 0)
             float c = LenSqr(mx, my, mz) - radiusSqr;
-            if (c > 0.0f && b > 0.0f)
+            if (c > 0f && b > 0f)
             {
                 return null;
             }
 
             float discr = b * b - c;
-            if (discr < 0.0f)
+            if (discr < 0f)
             {
                 return null;
             }
@@ -246,9 +246,9 @@ namespace DotRecast.Recast
             float tmin = -b - discrSqrt;
             float tmax = -b + discrSqrt;
 
-            if (tmin < 0.0f)
+            if (tmin < 0f)
             {
-                tmin = 0.0f;
+                tmin = 0f;
             }
 
             return new Vector2(y + tmin, y + tmax);
@@ -416,7 +416,7 @@ namespace DotRecast.Recast
             if (Math.Abs(a) < EPSILON)
             {
                 // Segment runs parallel to cylinder axis
-                if (c > 0.0f)
+                if (c > 0f)
                 {
                     return null; // ’a’ and thus the segment lie outside cylinder
                 }
@@ -429,7 +429,7 @@ namespace DotRecast.Recast
 
             float b = dd * mn - nd * md;
             float discr = b * b - a * c;
-            if (discr < 0.0f)
+            if (discr < 0f)
             {
                 return null; // No real roots; no intersection
             }
@@ -438,11 +438,11 @@ namespace DotRecast.Recast
             float t1 = (-b - discSqrt) / a;
             float t2 = (-b + discSqrt) / a;
 
-            if (md + t1 * nd < 0.0f)
+            if (md + t1 * nd < 0f)
             {
                 // Intersection outside cylinder on ’p’ side
                 t1 = -md / nd;
-                if (k + t1 * (2 * mn + t1 * nn) > 0.0f)
+                if (k + t1 * (2 * mn + t1 * nn) > 0f)
                 {
                     return null;
                 }
@@ -451,17 +451,17 @@ namespace DotRecast.Recast
             {
                 // Intersection outside cylinder on ’q’ side
                 t1 = (dd - md) / nd;
-                if (k + dd - 2 * md + t1 * (2 * (mn - nd) + t1 * nn) > 0.0f)
+                if (k + dd - 2 * md + t1 * (2 * (mn - nd) + t1 * nn) > 0f)
                 {
                     return null;
                 }
             }
 
-            if (md + t2 * nd < 0.0f)
+            if (md + t2 * nd < 0f)
             {
                 // Intersection outside cylinder on ’p’ side
                 t2 = -md / nd;
-                if (k + t2 * (2 * mn + t2 * nn) > 0.0f)
+                if (k + t2 * (2 * mn + t2 * nn) > 0f)
                 {
                     return null;
                 }
@@ -470,7 +470,7 @@ namespace DotRecast.Recast
             {
                 // Intersection outside cylinder on ’q’ side
                 t2 = (dd - md) / nd;
-                if (k + dd - 2 * md + t2 * (2 * (mn - nd) + t2 * nn) > 0.0f)
+                if (k + dd - 2 * md + t2 * (2 * (mn - nd) + t2 * nn) > 0f)
                 {
                     return null;
                 }
@@ -499,8 +499,8 @@ namespace DotRecast.Recast
             var point = new Vector3(0, rectangle[1], 0);
             for (int i = 0; i < 4; i++)
             {
-                point.X = ((i & 1) == 0) ? rectangle[0] : rectangle[2];
-                point.Z = ((i & 2) == 0) ? rectangle[1] : rectangle[3];
+                point.X = ((i & 1) is 0) ? rectangle[0] : rectangle[2];
+                point.Z = ((i & 2) is 0) ? rectangle[1] : rectangle[3];
                 for (int j = 0; j < 6; j++)
                 {
                     if (MathF.Abs(planes[j][1]) > EPSILON)
@@ -649,8 +649,8 @@ namespace DotRecast.Recast
                 var point = new Vector3(0, rectangle[1], 0);
                 for (int i = 0; i < 4; i++)
                 {
-                    point.X = ((i & 1) == 0) ? rectangle[0] : rectangle[2];
-                    point.Z = ((i & 2) == 0) ? rectangle[1] : rectangle[3];
+                    point.X = ((i & 1) is 0) ? rectangle[0] : rectangle[2];
+                    point.Z = ((i & 2) is 0) ? rectangle[1] : rectangle[3];
                     if (RayTriangleIntersection(point, tri, planes, out var y))
                     {
                         imin = Math.Min(imin, y);
@@ -681,7 +681,7 @@ namespace DotRecast.Recast
                 }
             }
 
-            iy = 0.0f;
+            iy = 0f;
             return false;
         }
 
@@ -699,7 +699,7 @@ namespace DotRecast.Recast
                 }
             }
 
-            iy = 0.0f;
+            iy = 0f;
             return false;
         }
 
@@ -710,19 +710,19 @@ namespace DotRecast.Recast
             point.Y += t;
 
             float u = Vector3.Dot(point, planes[plane + 1].UnsafeAs<float, Vector3>()) - planes[plane + 1][3];
-            if (u < 0.0f || u > 1.0f)
+            if (u < 0f || u > 1f)
             {
                 return false;
             }
 
             float v = Vector3.Dot(point, planes[plane + 2].UnsafeAs<float, Vector3>()) - planes[plane + 2][3];
-            if (v < 0.0f)
+            if (v < 0f)
             {
                 return false;
             }
 
             float w = 1f - u - v;
-            if (w < 0.0f)
+            if (w < 0f)
             {
                 return false;
             }

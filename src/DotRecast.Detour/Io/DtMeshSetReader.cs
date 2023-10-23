@@ -122,7 +122,7 @@ namespace DotRecast.Detour.Io
                 }
 
                 tileHeader.dataSize = bb.GetInt();
-                if (tileHeader.tileRef == 0 || tileHeader.dataSize == 0)
+                if (tileHeader.tileRef is 0 || tileHeader.dataSize is 0)
                 {
                     break;
                 }

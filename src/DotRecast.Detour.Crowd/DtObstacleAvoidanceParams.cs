@@ -23,7 +23,7 @@
         public DtObstacleAvoidanceParams()
         {
             velBias = 0.4f;
-            weightDesVel = 2.0f;
+            weightDesVel = 2f;
             weightCurVel = 0.75f;
             weightSide = 0.75f;
             weightToi = 2.5f;

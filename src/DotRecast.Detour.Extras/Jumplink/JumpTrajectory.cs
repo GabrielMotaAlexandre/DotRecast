@@ -24,11 +24,11 @@ namespace DotRecast.Detour.Extras.Jumplink
 
         private float InterpolateHeight(float ys, float ye, float u)
         {
-            if (u == 0f)
+            if (u is 0f)
             {
                 return ys;
             }
-            else if (u == 1.0f)
+            else if (u == 1f)
             {
                 return ye;
             }
@@ -50,11 +50,11 @@ namespace DotRecast.Detour.Extras.Jumplink
             float t = (float)(Math.Sqrt(h1) / (Math.Sqrt(h2) + Math.Sqrt(h1)));
             if (u <= t)
             {
-                float v1 = 1.0f - (u / t);
+                float v1 = 1f - (u / t);
                 return ys + h1 - h1 * v1 * v1;
             }
 
-            float v = (u - t) / (1.0f - t);
+            float v = (u - t) / (1f - t);
             return ys + h1 - h2 * v * v;
         }
     }

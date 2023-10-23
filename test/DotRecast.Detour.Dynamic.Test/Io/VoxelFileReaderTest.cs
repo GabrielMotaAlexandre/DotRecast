@@ -38,7 +38,7 @@ public class VoxelFileReaderTest
         DtVoxelFileReader reader = new(DtVoxelTileLZ4ForTestCompressor.Shared);
         DtVoxelFile f = reader.Read(br);
         Assert.That(f.useTiles, Is.False);
-        Assert.That(f.bounds, Is.EqualTo(new float[] { -100.0f, 0f, -100f, 100f, 5f, 100f }));
+        Assert.That(f.bounds, Is.EqualTo(new float[] { -100f, 0f, -100f, 100f, 5f, 100f }));
         Assert.That(f.cellSize, Is.EqualTo(0.25f));
         Assert.That(f.walkableRadius, Is.EqualTo(0.5f));
         Assert.That(f.walkableHeight, Is.EqualTo(2f));
@@ -65,7 +65,7 @@ public class VoxelFileReaderTest
         DtVoxelFile f = reader.Read(br);
 
         Assert.That(f.useTiles, Is.True);
-        Assert.That(f.bounds, Is.EqualTo(new float[] { -100.0f, 0f, -100f, 100f, 5f, 100f }));
+        Assert.That(f.bounds, Is.EqualTo(new float[] { -100f, 0f, -100f, 100f, 5f, 100f }));
         Assert.That(f.cellSize, Is.EqualTo(0.25f));
         Assert.That(f.walkableRadius, Is.EqualTo(0.5f));
         Assert.That(f.walkableHeight, Is.EqualTo(2f));

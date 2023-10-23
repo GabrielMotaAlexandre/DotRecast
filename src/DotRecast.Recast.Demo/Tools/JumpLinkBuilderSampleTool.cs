@@ -244,7 +244,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     dd.Vertex(link.start.q, col);
                     dd.End();
 
-                    dd.Begin(LINES, 1.0f);
+                    dd.Begin(LINES, 1f);
                     dd.Vertex(link.start.p.X, link.start.p.Y, link.start.p.Z, colb);
                     dd.Vertex(link.start.p.X, link.start.p.Y + r, link.start.p.Z, colb);
                     dd.Vertex(link.start.p.X, link.start.p.Y + r, link.start.p.Z, colb);
@@ -263,7 +263,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     dd.Vertex(end.q, col);
                     dd.End();
 
-                    dd.Begin(LINES, 1.0f);
+                    dd.Begin(LINES, 1f);
                     dd.Vertex(end.p.X, end.p.Y, end.p.Z, colb);
                     dd.Vertex(end.p.X, end.p.Y + r, end.p.Z, colb);
                     dd.Vertex(end.p.X, end.p.Y + r, end.p.Z, colb);

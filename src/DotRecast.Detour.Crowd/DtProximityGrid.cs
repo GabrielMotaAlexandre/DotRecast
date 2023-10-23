@@ -37,7 +37,7 @@ namespace DotRecast.Detour.Crowd
         public DtProximityGrid(Vector4 planeBounds, float cellSize)
         {
             CellSize = cellSize;
-            _invCellSize = 1.0f / cellSize;
+            _invCellSize = 1f / cellSize;
 
             const int collisionQueryRange = 10;
 

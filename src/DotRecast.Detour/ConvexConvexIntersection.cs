@@ -70,7 +70,7 @@ namespace DotRecast.Detour
                     cross = 0f;
                 }
 
-                bool parallel = cross == 0f;
+                bool parallel = cross is 0f;
                 Intersection code = parallel ? ParallelInt(a1, a, b1, b, ref ip, ref iq) : SegSegInt(a1, a, b1, b, ref ip, ref iq);
 
                 if (code == Intersection.Single)
@@ -250,7 +250,7 @@ namespace DotRecast.Detour
         {
             if (DtUtils.IntersectSegSeg2D(a, b, c, d, out var s, out var t))
             {
-                if (s >= 0.0f && s <= 1.0f && t >= 0.0f && t <= 1.0f)
+                if (s >= 0f && s <= 1f && t >= 0f && t <= 1f)
                 {
                     p.X = a.X + (b.X - a.X) * s;
                     p.Y = a.Y + (b.Y - a.Y) * s;

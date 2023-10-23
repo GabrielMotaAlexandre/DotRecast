@@ -166,7 +166,7 @@ public class AbstractCrowdTest
     protected static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
     {
         Vector3 vel = tgt - pos;
-        vel.Y = 0.0f;
+        vel.Y = 0f;
         vel.Normalize();
         vel *= speed;
         return vel;

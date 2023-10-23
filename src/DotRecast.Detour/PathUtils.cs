@@ -51,7 +51,7 @@ namespace DotRecast.Detour
             {
                 // Stop at Off-Mesh link or when point is further than slop away.
                 if (((straightPath[ns].flags & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
-                    || !InRange(straightPath[ns].pos, startPos, minTargetDist, 1000.0f))
+                    || !InRange(straightPath[ns].pos, startPos, minTargetDist, 1000f))
                     break;
                 ns++;
             }
@@ -118,7 +118,7 @@ namespace DotRecast.Detour
             // in the path, short cut to that polygon directly.
             const int maxLookAhead = 6;
             int cut = 0;
-            for (int i = Math.Min(maxLookAhead, path.Count) - 1; i > 1 && cut == 0; i--)
+            for (int i = Math.Min(maxLookAhead, path.Count) - 1; i > 1 && cut is 0; i--)
             {
                 for (int j = 0; j < neis.Count; j++)
                 {

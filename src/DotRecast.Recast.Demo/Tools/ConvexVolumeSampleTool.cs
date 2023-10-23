@@ -120,7 +120,7 @@ public class ConvexVolumeSampleTool : ISampleTool
 
         dd.End();
 
-        dd.Begin(LINES, 2.0f);
+        dd.Begin(LINES, 2f);
         for (int i = 0, j = hull.Count - 1; i < hull.Count; j = i++)
         {
             int vi = hull[j];

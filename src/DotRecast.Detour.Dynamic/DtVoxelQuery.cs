@@ -180,7 +180,7 @@ namespace DotRecast.Detour.Dynamic
                 }
             }
 
-            hit = 0.0f;
+            hit = 0f;
             return false;
         }
     }

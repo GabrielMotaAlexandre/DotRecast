@@ -67,8 +67,8 @@ namespace DotRecast.Recast.Toolset.Tools
                 maxAcceleration = agentMaxAcceleration,
                 maxSpeed = agentMaxSpeed
             };
-            ap.collisionQueryRange = ap.radius * 12.0f;
-            ap.pathOptimizationRange = ap.radius * 30.0f;
+            ap.collisionQueryRange = ap.radius * 12f;
+            ap.pathOptimizationRange = ap.radius * 30f;
             ap.updateFlags = _agCfg.GetUpdateFlags();
             ap.obstacleAvoidanceType = _agCfg.obstacleAvoidanceType;
             ap.separationWeight = _agCfg.separationWeight;

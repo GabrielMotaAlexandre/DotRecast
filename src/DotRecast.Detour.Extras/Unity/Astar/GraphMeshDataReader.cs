@@ -138,7 +138,7 @@ namespace DotRecast.Detour.Extras.Unity.Astar
                     header.bmax.Y = ymax;
                     header.bmax.Z = meta.forcedBoundsCenter.z - 0.5f * meta.forcedBoundsSize.z
                                      + meta.cellSize * meta.tileSizeZ * (z + 1);
-                    header.bvQuantFactor = 1.0f / meta.cellSize;
+                    header.bvQuantFactor = 1f / meta.cellSize;
                     header.offMeshBase = nodeCount;
                     header.walkableClimb = meta.walkableClimb;
                     header.walkableHeight = meta.walkableHeight;

@@ -101,10 +101,10 @@ namespace DotRecast.Core
 
         public readonly bool IsIdentity =>
             M11.Equals(1f) && M22.Equals(1f) && M33.Equals(1f) && M44.Equals(1f) &&
-            M12 == 0f && M13 == 0f && M14 == 0f &&
-            M21 == 0f && M23 == 0f && M24 == 0f &&
-            M31 == 0f && M32 == 0f && M34 == 0f &&
-            M41 == 0f && M42 == 0f && M43 == 0f;
+            M12 is 0f && M13 is 0f && M14 is 0f &&
+            M21 is 0f && M23 is 0f && M24 is 0f &&
+            M31 is 0f && M32 is 0f && M34 is 0f &&
+            M41 is 0f && M42 is 0f && M43 is 0f;
 
         public static RcMatrix4x4f Mul(ref RcMatrix4x4f left, ref RcMatrix4x4f right)
         {
@@ -181,7 +181,7 @@ namespace DotRecast.Core
             a = (float)(a * Math.PI / 180.0); // convert to radians
             float s = (float)Math.Sin(a);
             float c = (float)Math.Cos(a);
-            float t = 1.0f - c;
+            float t = 1f - c;
 
             float tx = t * x;
             float ty = t * y;

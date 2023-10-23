@@ -150,7 +150,7 @@ namespace DotRecast.Recast.Geom
                 float d = (float)Math.Sqrt(normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]);
                 if (d > 0)
                 {
-                    d = 1.0f / d;
+                    d = 1f / d;
                     normals[i] *= d;
                     normals[i + 1] *= d;
                     normals[i + 2] *= d;

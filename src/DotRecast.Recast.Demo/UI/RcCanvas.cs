@@ -53,7 +53,7 @@ public class RcCanvas
     private static void SetupClipboard(long window)
     {
         // ctx.Clip().copy((handle, text, len) => {
-        //     if (len == 0) {
+        //     if (len is 0) {
         //         return;
         //     }
         //

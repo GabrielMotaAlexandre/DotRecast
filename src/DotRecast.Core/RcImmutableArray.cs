@@ -35,7 +35,7 @@ namespace DotRecast.Core
 
         public static RcImmutableArray<T> Create<T>(params T[] items)
         {
-            if (items == null || items.Length == 0)
+            if (items == null || items.Length is 0)
             {
                 return RcImmutableArray<T>.Empty;
             }

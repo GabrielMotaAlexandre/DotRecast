@@ -116,7 +116,7 @@ namespace DotRecast.Recast.Toolset.Tools
             {
                 Vector3 p = link.startSamples[i].p;
                 Vector3 q = link.endSamples[i].p;
-                if (i == 0 || Vector3Extensions.Dist2D(prev, p) > agentRadius)
+                if (i is 0 || Vector3Extensions.Dist2D(prev, p) > agentRadius)
                 {
                     geom.AddOffMeshConnection(p, q, agentRadius, false, area, flags);
                     prev = p;

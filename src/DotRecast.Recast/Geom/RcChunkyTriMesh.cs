@@ -100,7 +100,7 @@ namespace DotRecast.Recast.Geom
 
                 int axis = LongestAxis(node.bmax.X - node.bmin.X, node.bmax.Y - node.bmin.Y);
 
-                if (axis == 0)
+                if (axis is 0)
                 {
                     Array.Sort(items, imin, imax - imin, BoundsItemXComparer.Shared);
                     // Sort along x-axis

@@ -73,19 +73,19 @@ namespace DotRecast.Recast.Toolset.Tools
             float my = point.Y - cy;
             float mz = point.Z - cz;
             float c = mx * mx + my * my + mz * mz - rSqr;
-            if (c <= 0.0f)
+            if (c <= 0f)
             {
                 return true;
             }
 
             float b = mx * dir.X + my * dir.Y + mz * dir.Z;
-            if (b > 0.0f)
+            if (b > 0f)
             {
                 return false;
             }
 
             float disc = b * b - c;
-            return disc >= 0.0f;
+            return disc >= 0f;
         }
 
 

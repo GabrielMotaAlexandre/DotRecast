@@ -212,8 +212,8 @@ namespace DotRecast.Recast.Toolset.Tools
                 maxAcceleration = agentMaxAcceleration,
                 maxSpeed = agentMaxSpeed
             };
-            ap.collisionQueryRange = ap.radius * 12.0f;
-            ap.pathOptimizationRange = ap.radius * 30.0f;
+            ap.collisionQueryRange = ap.radius * 12f;
+            ap.pathOptimizationRange = ap.radius * 30f;
             ap.updateFlags = _agCfg.GetUpdateFlags();
             ap.obstacleAvoidanceType = _agCfg.obstacleAvoidanceType;
             ap.separationWeight = _agCfg.separationWeight;
@@ -303,7 +303,7 @@ namespace DotRecast.Recast.Toolset.Tools
         private static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
         {
             Vector3 vel = tgt - pos;
-            vel.Y = 0.0f;
+            vel.Y = 0f;
             vel.Normalize();
             return vel * speed;
         }

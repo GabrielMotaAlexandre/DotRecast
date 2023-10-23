@@ -72,11 +72,11 @@ public class TileSampleTool : ISampleTool
             lastBuiltTileBmax[1] = bmax[1];
             lastBuiltTileBmax[2] = bmin[2] + (ty + 1) * ts;
 
-            dd.DebugDrawCross(_hitPos.X, _hitPos.Y + 0.1f, _hitPos.Z, s, DuRGBA(0, 0, 0, 128), 2.0f);
+            dd.DebugDrawCross(_hitPos.X, _hitPos.Y + 0.1f, _hitPos.Z, s, DuRGBA(0, 0, 0, 128), 2f);
             dd.DebugDrawBoxWire(
                 lastBuiltTileBmin.X, lastBuiltTileBmin.Y, lastBuiltTileBmin.Z,
                 lastBuiltTileBmax.X, lastBuiltTileBmax.Y, lastBuiltTileBmax.Z,
-                DuRGBA(255, 255, 255, 64), 1.0f);
+                DuRGBA(255, 255, 255, 64), 1f);
 
             // 표기
         }

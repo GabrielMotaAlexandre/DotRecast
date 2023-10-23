@@ -77,7 +77,7 @@ public class PolygonByCircleConstraintTest
         var constrained = _constraint.Apply(polygon, center, 3).ToArray();
 
         Assert.That(constrained, Has.Length.EqualTo(expectedSize));
-        Assert.That(constrained, Is.SupersetOf(new[] { -2f, 0f, -4f, -4f, 0f, 0f, -3.4641016f, 0.0f, 1.6076951f, -2.0f, 0.0f, 2.0f }));
+        Assert.That(constrained, Is.SupersetOf(new[] { -2f, 0f, -4f, -4f, 0f, 0f, -3.4641016f, 0f, 1.6076951f, -2f, 0f, 2f }));
     }
 
     [Test]

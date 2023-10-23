@@ -5,7 +5,7 @@ namespace DotRecast.Recast.Toolset
         public float cellSize = 0.3f;
         public float cellHeight = 0.2f;
 
-        public float agentHeight = 2.0f;
+        public float agentHeight = 2f;
         public float agentRadius = 0.6f;
         public float agentMaxClimb = 0.9f;
         public float agentMaxSlope = 45f;

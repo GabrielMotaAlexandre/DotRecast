@@ -165,7 +165,7 @@ namespace DotRecast.Detour.Crowd
         public DtCrowd(DtCrowdConfig config, DtNavMesh nav, Func<int, IDtQueryFilter> queryFilterFactory)
         {
             _config = config;
-            _ext = new Vector3(config.maxAgentRadius * 2.0f, config.maxAgentRadius * 1.5f, config.maxAgentRadius * 2.0f);
+            _ext = new Vector3(config.maxAgentRadius * 2f, config.maxAgentRadius * 1.5f, config.maxAgentRadius * 2f);
 
             for (int i = 0; i < DT_CROWD_MAX_QUERY_FILTER_TYPE; i++)
             {
@@ -318,7 +318,7 @@ namespace DotRecast.Detour.Crowd
         /// The request will be processed during the next #Update().
         public static bool RequestMoveTarget(DtCrowdAgent agent, long refs, Vector3 pos)
         {
-            if (refs == 0)
+            if (refs is 0)
             {
                 return false;
             }
@@ -408,7 +408,7 @@ namespace DotRecast.Detour.Crowd
 
             var agents = GetActiveAgents();
 
-            if (agents.Count == 0)
+            if (agents.Count is 0)
                 return _telemetry;
 
             // Check that all agents still have valid paths.
@@ -477,7 +477,7 @@ namespace DotRecast.Detour.Crowd
                     _navQuery.FindNearestPoly(ag.npos, _ext, _filters[ag.option.queryFilterType], out agentRef, out var nearestPt, out var _);
                     agentPos = nearestPt;
 
-                    if (agentRef == 0)
+                    if (agentRef is 0)
                     {
                         // Could not find location in navmesh, set state to invalid.
                         ag.corridor.Reset(0, agentPos);
@@ -519,7 +519,7 @@ namespace DotRecast.Detour.Crowd
                         replan = true;
                     }
 
-                    if (ag.targetRef == 0)
+                    if (ag.targetRef is 0)
                     {
                         // Failed to reposition target, fail moverequest.
                         ag.corridor.Reset(agentRef, agentPos);
@@ -584,7 +584,7 @@ namespace DotRecast.Detour.Crowd
                 if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING)
                 {
                     List<long> path = ag.corridor.GetPath();
-                    if (path.Count == 0)
+                    if (path.Count is 0)
                     {
                         throw new ArgumentException("Empty path");
                     }
@@ -833,7 +833,7 @@ namespace DotRecast.Detour.Crowd
                     continue;
                 }
 
-                if ((ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO) == 0)
+                if ((ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO) is 0)
                 {
                     continue;
                 }
@@ -1086,7 +1086,7 @@ namespace DotRecast.Detour.Crowd
                 if ((ag.option.updateFlags & DtCrowdAgentParams.DT_CROWD_SEPARATION) != 0)
                 {
                     float separationDist = ag.option.collisionQueryRange;
-                    float invSeparationDist = 1.0f / separationDist;
+                    float invSeparationDist = 1f / separationDist;
                     float separationWeight = ag.option.separationWeight;
 
                     var w = 0;
@@ -1108,7 +1108,7 @@ namespace DotRecast.Detour.Crowd
                         }
 
                         var dist = MathF.Sqrt(distSqr);
-                        var weight = separationWeight * (1.0f - RcMath.Sqr(dist * invSeparationDist));
+                        var weight = separationWeight * (1f - RcMath.Sqr(dist * invSeparationDist));
 
                         disp += diff * (weight / dist);
                         w++;
@@ -1245,7 +1245,7 @@ namespace DotRecast.Detour.Crowd
                         }
                         else
                         {
-                            pen = 1.0f / dist * (pen * 0.5f) * _config.collisionResolveFactor;
+                            pen = 1f / dist * (pen * 0.5f) * _config.collisionResolveFactor;
                         }
 
                         ag.disp.X += diff.X * pen;
@@ -1326,7 +1326,7 @@ namespace DotRecast.Detour.Crowd
                 float tb = anim.tmax;
                 if (anim.t < ta)
                 {
-                    float u = Tween(anim.t, 0.0f, ta);
+                    float u = Tween(anim.t, 0f, ta);
                     ag.npos = Vector3.Lerp(anim.initPos, anim.startPos, u);
                 }
                 else
@@ -1343,7 +1343,7 @@ namespace DotRecast.Detour.Crowd
 
         private static float Tween(float t, float t0, float t1)
         {
-            return Math.Clamp((t - t0) / (t1 - t0), 0.0f, 1.0f);
+            return Math.Clamp((t - t0) / (t1 - t0), 0f, 1f);
         }
     }
 }

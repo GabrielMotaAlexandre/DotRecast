@@ -133,21 +133,21 @@ public class RecastDemo : IRecastDemoChannel
             // wheel down
             if (!_mouseOverMenu)
             {
-                scrollZoom += 1.0f;
+                scrollZoom += 1f;
             }
         }
         else
         {
             if (!_mouseOverMenu)
             {
-                scrollZoom -= 1.0f;
+                scrollZoom -= 1f;
             }
         }
 
         var modelviewMatrix = dd.ViewMatrix(cameraPos, cameraEulers);
-        cameraPos.X += scrollZoom * 2.0f * modelviewMatrix.M13;
-        cameraPos.Y += scrollZoom * 2.0f * modelviewMatrix.M23;
-        cameraPos.Z += scrollZoom * 2.0f * modelviewMatrix.M33;
+        cameraPos.X += scrollZoom * 2f * modelviewMatrix.M13;
+        cameraPos.Y += scrollZoom * 2f * modelviewMatrix.M23;
+        cameraPos.Z += scrollZoom * 2f * modelviewMatrix.M33;
         scrollZoom = 0;
     }
 
@@ -414,26 +414,26 @@ public class RecastDemo : IRecastDemoChannel
         // keyboard input
         foreach (var keyboard in _input.Keyboards)
         {
-            var tempMoveFront = keyboard.IsKeyPressed(Key.W) || keyboard.IsKeyPressed(Key.Up) ? 1.0f : -1f;
-            var tempMoveLeft = keyboard.IsKeyPressed(Key.A) || keyboard.IsKeyPressed(Key.Left) ? 1.0f : -1f;
-            var tempMoveBack = keyboard.IsKeyPressed(Key.S) || keyboard.IsKeyPressed(Key.Down) ? 1.0f : -1f;
-            var tempMoveRight = keyboard.IsKeyPressed(Key.D) || keyboard.IsKeyPressed(Key.Right) ? 1.0f : -1f;
-            var tempMoveUp = keyboard.IsKeyPressed(Key.Q) || keyboard.IsKeyPressed(Key.PageUp) ? 1.0f : -1f;
-            var tempMoveDown = keyboard.IsKeyPressed(Key.E) || keyboard.IsKeyPressed(Key.PageDown) ? 1.0f : -1f;
-            var tempMoveAccel = keyboard.IsKeyPressed(Key.ShiftLeft) || keyboard.IsKeyPressed(Key.ShiftRight) ? 1.0f : -1f;
+            var tempMoveFront = keyboard.IsKeyPressed(Key.W) || keyboard.IsKeyPressed(Key.Up) ? 1f : -1f;
+            var tempMoveLeft = keyboard.IsKeyPressed(Key.A) || keyboard.IsKeyPressed(Key.Left) ? 1f : -1f;
+            var tempMoveBack = keyboard.IsKeyPressed(Key.S) || keyboard.IsKeyPressed(Key.Down) ? 1f : -1f;
+            var tempMoveRight = keyboard.IsKeyPressed(Key.D) || keyboard.IsKeyPressed(Key.Right) ? 1f : -1f;
+            var tempMoveUp = keyboard.IsKeyPressed(Key.Q) || keyboard.IsKeyPressed(Key.PageUp) ? 1f : -1f;
+            var tempMoveDown = keyboard.IsKeyPressed(Key.E) || keyboard.IsKeyPressed(Key.PageDown) ? 1f : -1f;
+            var tempMoveAccel = keyboard.IsKeyPressed(Key.ShiftLeft) || keyboard.IsKeyPressed(Key.ShiftRight) ? 1f : -1f;
             var tempControl = keyboard.IsKeyPressed(Key.ControlLeft) || keyboard.IsKeyPressed(Key.ControlRight);
 
             _modState |= tempControl ? KeyModState.Control : KeyModState.None;
             _modState |= 0 < tempMoveAccel ? KeyModState.Shift : KeyModState.None;
 
             //Logger.Information($"{_modState}");
-            _moveFront = Math.Clamp(_moveFront + tempMoveFront * dt * 4.0f, 0, 2.0f);
-            _moveLeft = Math.Clamp(_moveLeft + tempMoveLeft * dt * 4.0f, 0, 2.0f);
-            _moveBack = Math.Clamp(_moveBack + tempMoveBack * dt * 4.0f, 0, 2.0f);
-            _moveRight = Math.Clamp(_moveRight + tempMoveRight * dt * 4.0f, 0, 2.0f);
-            _moveUp = Math.Clamp(_moveUp + tempMoveUp * dt * 4.0f, 0, 2.0f);
-            _moveDown = Math.Clamp(_moveDown + tempMoveDown * dt * 4.0f, 0, 2.0f);
-            _moveAccel = Math.Clamp(_moveAccel + tempMoveAccel * dt * 4.0f, 0, 2.0f);
+            _moveFront = Math.Clamp(_moveFront + tempMoveFront * dt * 4.0f, 0, 2f);
+            _moveLeft = Math.Clamp(_moveLeft + tempMoveLeft * dt * 4.0f, 0, 2f);
+            _moveBack = Math.Clamp(_moveBack + tempMoveBack * dt * 4.0f, 0, 2f);
+            _moveRight = Math.Clamp(_moveRight + tempMoveRight * dt * 4.0f, 0, 2f);
+            _moveUp = Math.Clamp(_moveUp + tempMoveUp * dt * 4.0f, 0, 2f);
+            _moveDown = Math.Clamp(_moveDown + tempMoveDown * dt * 4.0f, 0, 2f);
+            _moveAccel = Math.Clamp(_moveAccel + tempMoveAccel * dt * 4.0f, 0, 2f);
         }
     }
 
@@ -458,14 +458,14 @@ public class RecastDemo : IRecastDemoChannel
         UpdateKeyboard((float)dt);
 
         // camera move
-        float keySpeed = 22.0f;
+        float keySpeed = 22f;
         if (0 < _moveAccel)
         {
-            keySpeed *= _moveAccel * 2.0f;
+            keySpeed *= _moveAccel * 2f;
         }
 
         double movex = (_moveRight - _moveLeft) * keySpeed * dt;
-        double movey = (_moveBack - _moveFront) * keySpeed * dt + scrollZoom * 2.0f;
+        double movey = (_moveBack - _moveFront) * keySpeed * dt + scrollZoom * 2f;
         scrollZoom = 0;
 
         cameraPos.X += (float)(movex * modelviewMatrix[0]);
@@ -480,8 +480,8 @@ public class RecastDemo : IRecastDemoChannel
 
         // Update sample simulation.
         float SIM_RATE = 20;
-        float DELTA_TIME = 1.0f / SIM_RATE;
-        timeAcc = Math.Clamp((float)(timeAcc + dt), -1.0f, 1.0f);
+        float DELTA_TIME = 1f / SIM_RATE;
+        timeAcc = Math.Clamp((float)(timeAcc + dt), -1f, 1f);
         int simIter = 0;
         while (timeAcc > DELTA_TIME)
         {
@@ -502,8 +502,8 @@ public class RecastDemo : IRecastDemoChannel
             Vector3 rayStart = new();
             Vector3 rayEnd = new();
 
-            GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 0.0f, modelviewMatrix, projectionMatrix, viewport, ref rayStart);
-            GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 1.0f, modelviewMatrix, projectionMatrix, viewport, ref rayEnd);
+            GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 0f, modelviewMatrix, projectionMatrix, viewport, ref rayStart);
+            GLU.GlhUnProjectf(mousePos[0], viewport[3] - 1 - mousePos[1], 1f, modelviewMatrix, projectionMatrix, viewport, ref rayEnd);
 
             SendMessage(new RaycastEvent()
             {
@@ -595,7 +595,7 @@ public class RecastDemo : IRecastDemoChannel
     {
         // Clear the screen
         dd.Clear();
-        dd.ProjectionMatrix(50f, width / (float)height, 1.0f, camr).CopyTo(projectionMatrix);
+        dd.ProjectionMatrix(50f, width / (float)height, 1f, camr).CopyTo(projectionMatrix);
         dd.ViewMatrix(cameraPos, cameraEulers).CopyTo(modelviewMatrix);
 
         dd.Fog(camr * 0.1f, camr * 1.25f);
@@ -746,7 +746,7 @@ public class RecastDemo : IRecastDemoChannel
         if (_sample == null)
             return;
 
-        float hitTime = 0.0f;
+        float hitTime = 0f;
         bool hit = false;
         if (inputGeom != null)
         {

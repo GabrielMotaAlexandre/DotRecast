@@ -130,7 +130,7 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
             {
                 float radius = ag.option.radius;
                 Vector3 pos = ag.npos;
-                dd.DebugDrawCircle(pos.X, pos.Y, pos.Z, radius, DuRGBA(0, 0, 0, 32), 2.0f);
+                dd.DebugDrawCircle(pos.X, pos.Y, pos.Z, radius, DuRGBA(0, 0, 0, 32), 2f);
             }
 
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())

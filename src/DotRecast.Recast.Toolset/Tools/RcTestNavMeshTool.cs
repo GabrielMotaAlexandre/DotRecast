@@ -24,7 +24,7 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus FindFollowPath(DtNavMesh navMesh, DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 startPt, Vector3 endPt, IDtQueryFilter filter, bool enableRaycast,
             ref List<long> polys, ref List<Vector3> smoothPath)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 polys?.Clear();
                 smoothPath?.Clear();
@@ -102,7 +102,7 @@ namespace DotRecast.Recast.Toolset.Tools
                 }
 
                 // Handle end of path and off-mesh links when close enough.
-                if (endOfPath && PathUtils.InRange(iterPos, steerPos, SLOP, 1.0f))
+                if (endOfPath && PathUtils.InRange(iterPos, steerPos, SLOP, 1f))
                 {
                     // Reached end of path.
                     iterPos = targetPos;
@@ -113,7 +113,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
                     break;
                 }
-                else if (offMeshConnection && PathUtils.InRange(iterPos, steerPos, SLOP, 1.0f))
+                else if (offMeshConnection && PathUtils.InRange(iterPos, steerPos, SLOP, 1f))
                 {
                     // Reached off-mesh connection.
                     Vector3 startPos = Vector3.Zero;
@@ -166,7 +166,7 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus FindStraightPath(DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 startPt, Vector3 endPt, IDtQueryFilter filter, bool enableRaycast,
             ref List<long> polys, ref List<StraightPathItem> straightPath, int straightPathOptions)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -201,7 +201,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public static DtStatus InitSlicedFindPath(DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 startPos, Vector3 endPos, IDtQueryFilter filter, bool enableRaycast)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -250,7 +250,7 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus Raycast(DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 startPos, Vector3 endPos, IDtQueryFilter filter,
             ref List<long> polys, ref List<StraightPathItem> straightPath, ref Vector3 hitPos, ref Vector2 hitNormal, ref bool hitResult)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 polys?.Clear();
                 straightPath?.Clear();
@@ -323,7 +323,7 @@ namespace DotRecast.Recast.Toolset.Tools
 
         public static DtStatus FindPolysAroundCircle(DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 spos, Vector3 epos, IDtQueryFilter filter, ref List<long> resultRef, ref List<long> resultParent)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -348,7 +348,7 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus FindLocalNeighbourhood(DtNavMeshQuery navQuery, long startRef, Vector3 spos, float radius, IDtQueryFilter filter,
             ref List<long> resultRef, ref List<long> resultParent)
         {
-            if (startRef == 0)
+            if (startRef is 0)
             {
                 resultRef?.Clear();
                 resultParent?.Clear();
@@ -369,7 +369,7 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus FindPolysAroundShape(DtNavMeshQuery navQuery, float agentHeight, long startRef, long endRef, Vector3 spos, Vector3 epos, IDtQueryFilter filter,
             ref List<long> resultRefs, ref List<long> resultParents, ref Vector3[] queryPoly)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 return DtStatus.DT_FAILURE;
             }
@@ -411,7 +411,7 @@ namespace DotRecast.Recast.Toolset.Tools
         public static DtStatus FindRandomPointAroundCircle(DtNavMeshQuery navQuery, long startRef, long endRef, Vector3 spos, Vector3 epos, IDtQueryFilter filter, bool constrainByCircle, int count,
             ref List<Vector3> points)
         {
-            if (startRef == 0 || endRef == 0)
+            if (startRef is 0 || endRef is 0)
             {
                 return DtStatus.DT_FAILURE;
             }

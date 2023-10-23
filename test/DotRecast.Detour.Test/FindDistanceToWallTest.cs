@@ -38,10 +38,10 @@ public class FindDistanceToWallTest : AbstractDetourTest
     private static readonly Vector2[] HIT_NORMAL =
     {
         new Vector2(-0.955779f, -0.29408592f),
-        new Vector2(0.0f, 1.0f),
+        new Vector2(0f, 1f),
         new Vector2(0.97014254f,  0.24253564f),
-        new Vector2(-1.0f, 0.0f),
-        new Vector2(1.0f, 0.0f),
+        new Vector2(-1f, 0f),
+        new Vector2(1f, 0f),
     };
 
     [Test]

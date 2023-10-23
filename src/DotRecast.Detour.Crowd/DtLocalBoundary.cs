@@ -57,7 +57,7 @@ namespace DotRecast.Detour.Crowd
                 PruningDistance = dist
             };
 
-            if (Segments.Count == 0)
+            if (Segments.Count is 0)
             {
                 Segments.Add(seg);
             }
@@ -93,7 +93,7 @@ namespace DotRecast.Detour.Crowd
 
         public void Update(long startRef, Vector3 pos, float collisionQueryRange, DtNavMeshQuery navquery, IDtQueryFilter filter)
         {
-            if (startRef == 0)
+            if (startRef is 0)
             {
                 Reset();
                 return;
@@ -141,7 +141,7 @@ namespace DotRecast.Detour.Crowd
 
         public readonly bool IsValid(DtNavMeshQuery navquery, IDtQueryFilter filter)
         {
-            if (m_polys.Count == 0)
+            if (m_polys.Count is 0)
             {
                 return false;
             }

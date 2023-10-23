@@ -91,7 +91,7 @@ namespace DotRecast.Detour
 
             // Randomly pick one tile. Assume that all tiles cover roughly the same area.
             DtMeshTile tile = null;
-            float tsum = 0.0f;
+            float tsum = 0f;
             for (int i = 0; i < m_nav.MaxTiles; i++)
             {
                 DtMeshTile mt = m_nav.GetTile(i);
@@ -101,7 +101,7 @@ namespace DotRecast.Detour
                 }
 
                 // Choose random tile using reservoir sampling.
-                float area = 1.0f; // Could be tile area too.
+                float area = 1f; // Could be tile area too.
                 tsum += area;
                 float u = frand.Next();
                 if (u * tsum <= area)
@@ -120,7 +120,7 @@ namespace DotRecast.Detour
             long polyRef = 0;
             long @base = DtNavMesh.GetPolyRefBase(tile);
 
-            float areaSum = 0.0f;
+            float areaSum = 0f;
             for (int i = 0; i < tile.data.header.polyCount; ++i)
             {
                 DtPoly p = tile.data.polys[i];
@@ -138,7 +138,7 @@ namespace DotRecast.Detour
                 }
 
                 // Calc area of the polygon.
-                float polyArea = 0.0f;
+                float polyArea = 0f;
                 for (int j = 2; j < p.vertCount; ++j)
                 {
                     int va = p.verts[0] * 3;
@@ -261,7 +261,7 @@ namespace DotRecast.Detour
             DtStatus status = DtStatus.DT_SUCCSESS;
 
             float radiusSqr = maxRadius * maxRadius;
-            float areaSum = 0.0f;
+            float areaSum = 0f;
 
             DtPoly randomPoly = null;
             long randomPolyRef = 0;
@@ -281,7 +281,7 @@ namespace DotRecast.Detour
                 if (bestPoly.GetPolyType() == DtPoly.DT_POLYTYPE_GROUND)
                 {
                     // Calc area of the polygon.
-                    float polyArea = 0.0f;
+                    float polyArea = 0f;
                     float[] polyVerts = new float[bestPoly.vertCount * 3];
                     for (int j = 0; j < bestPoly.vertCount; ++j)
                     {
@@ -324,7 +324,7 @@ namespace DotRecast.Detour
                     DtLink link = bestTile.links[i];
                     long neighbourRef = link.refs;
                     // Skip invalid neighbours and do not follow back to parent.
-                    if (neighbourRef == 0 || neighbourRef == parentRef)
+                    if (neighbourRef is 0 || neighbourRef == parentRef)
                     {
                         continue;
                     }
@@ -366,7 +366,7 @@ namespace DotRecast.Detour
                     }
 
                     // Cost
-                    if (neighbourNode.flags == 0)
+                    if (neighbourNode.flags is 0)
                     {
                         neighbourNode.pos = Vector3.Lerp(va, vb, 0.5f);
                     }
@@ -862,7 +862,7 @@ namespace DotRecast.Detour
                     long neighbourRef = bestTile.links[i].refs;
 
                     // Skip invalid ids and do not expand back to where we came from.
-                    if (neighbourRef == 0 || neighbourRef == parentRef)
+                    if (neighbourRef is 0 || neighbourRef == parentRef)
                     {
                         continue;
                     }
@@ -910,7 +910,7 @@ namespace DotRecast.Detour
                             DT_RAYCAST_USE_COSTS, grandpaRef, out var rayHit);
                         if (rayStatus.Succeeded())
                         {
-                            foundShortCut = rayHit.t >= 1.0f;
+                            foundShortCut = rayHit.t >= 1f;
                             if (foundShortCut)
                             {
                                 shortcut = rayHit.path;
@@ -1018,7 +1018,7 @@ namespace DotRecast.Detour
      */
         public DtStatus InitSlicedFindPath(long startRef, long endRef, Vector3 startPos, Vector3 endPos, IDtQueryFilter filter, int options)
         {
-            return InitSlicedFindPath(startRef, endRef, startPos, endPos, filter, options, DefaultQueryHeuristic.Default, -1.0f);
+            return InitSlicedFindPath(startRef, endRef, startPos, endPos, filter, options, DefaultQueryHeuristic.Default, -1f);
         }
 
         public DtStatus InitSlicedFindPath(long startRef, long endRef, Vector3 startPos, Vector3 endPos, IDtQueryFilter filter, int options, float raycastLimit)
@@ -1183,7 +1183,7 @@ namespace DotRecast.Detour
 
                     // Skip invalid ids and do not expand back to where we came
                     // from.
-                    if (neighbourRef == 0 || neighbourRef == parentRef)
+                    if (neighbourRef is 0 || neighbourRef == parentRef)
                     {
                         continue;
                     }
@@ -1232,7 +1232,7 @@ namespace DotRecast.Detour
                         status = Raycast(parentRef, parentNode.pos, neighbourPos, m_query.filter, DT_RAYCAST_USE_COSTS, grandpaRef, out var rayHit);
                         if (status.Succeeded())
                         {
-                            foundShortCut = rayHit.t >= 1.0f;
+                            foundShortCut = rayHit.t >= 1f;
                             if (foundShortCut)
                             {
                                 shortcut = rayHit.path;
@@ -1534,7 +1534,7 @@ namespace DotRecast.Detour
             int maxStraightPath, int options)
         {
             if (!Vector3Extensions.IsFinite(startPos) || !Vector3Extensions.IsFinite(endPos) || null == straightPath
-                || null == path || 0 == path.Count || path[0] == 0 || maxStraightPath <= 0)
+                || null == path || 0 == path.Count || path[0] is 0 || maxStraightPath <= 0)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
@@ -1611,7 +1611,7 @@ namespace DotRecast.Detour
                         }
 
                         // If starting really close the portal, advance.
-                        if (i == 0)
+                        if (i is 0)
                         {
                             var distSqr = DtUtils.DistancePtSegSqr2D(portalApex, left, right, out _);
                             if (distSqr < RcMath.Sqr(0.001f))
@@ -1629,9 +1629,9 @@ namespace DotRecast.Detour
                     }
 
                     // Right vertex.
-                    if (DtUtils.TriArea2D(portalApex, portalRight, right) <= 0.0f)
+                    if (DtUtils.TriArea2D(portalApex, portalRight, right) <= 0f)
                     {
-                        if (DtUtils.VEqual(portalApex, portalRight) || DtUtils.TriArea2D(portalApex, portalLeft, right) > 0.0f)
+                        if (DtUtils.VEqual(portalApex, portalRight) || DtUtils.TriArea2D(portalApex, portalLeft, right) > 0f)
                         {
                             portalRight = right;
                             rightPolyRef = (i + 1 < path.Count) ? path[i + 1] : 0;
@@ -1654,7 +1654,7 @@ namespace DotRecast.Detour
                             apexIndex = leftIndex;
 
                             int flags = 0;
-                            if (leftPolyRef == 0)
+                            if (leftPolyRef is 0)
                             {
                                 flags = DT_STRAIGHTPATH_END;
                             }
@@ -1685,9 +1685,9 @@ namespace DotRecast.Detour
                     }
 
                     // Left vertex.
-                    if (DtUtils.TriArea2D(portalApex, portalLeft, left) >= 0.0f)
+                    if (DtUtils.TriArea2D(portalApex, portalLeft, left) >= 0f)
                     {
-                        if (DtUtils.VEqual(portalApex, portalLeft) || DtUtils.TriArea2D(portalApex, portalRight, left) < 0.0f)
+                        if (DtUtils.VEqual(portalApex, portalLeft) || DtUtils.TriArea2D(portalApex, portalRight, left) < 0f)
                         {
                             portalLeft = left;
                             leftPolyRef = (i + 1 < path.Count) ? path[i + 1] : 0;
@@ -1710,7 +1710,7 @@ namespace DotRecast.Detour
                             apexIndex = rightIndex;
 
                             int flags = 0;
-                            if (rightPolyRef == 0)
+                            if (rightPolyRef is 0)
                             {
                                 flags = DT_STRAIGHTPATH_END;
                             }
@@ -1818,7 +1818,7 @@ namespace DotRecast.Detour
 
             // Search constraints
             var searchPos = Vector3.Lerp(startPos, endPos, 0.5f);
-            float searchRadSqr = RcMath.Sqr(Vector3.Distance(startPos, endPos) / 2.0f + 0.001f);
+            float searchRadSqr = RcMath.Sqr(Vector3.Distance(startPos, endPos) / 2f + 0.001f);
 
             float[] verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
 
@@ -1889,7 +1889,7 @@ namespace DotRecast.Detour
                         }
                     }
 
-                    if (nneis == 0)
+                    if (nneis is 0)
                     {
                         // Wall edge, calc distance.
                         int vj = j * 3;
@@ -2264,7 +2264,7 @@ namespace DotRecast.Detour
                     }
 
                     // If the link is internal, just return the ref.
-                    if (link.side == 0xff)
+                    if (link.side is 0xff)
                     {
                         nextRef = link.refs;
                         break;
@@ -2273,7 +2273,7 @@ namespace DotRecast.Detour
                     // If the link is at tile boundary,
 
                     // Check if the link spans the whole edge, and accept.
-                    if (link.bmin == 0 && link.bmax == 255)
+                    if (link.bmin is 0 && link.bmax == 255)
                     {
                         nextRef = link.refs;
                         break;
@@ -2286,10 +2286,10 @@ namespace DotRecast.Detour
                     int right = v1 * 3;
 
                     // Check that the intersection lies inside the link portal.
-                    if (link.side == 0 || link.side == 4)
+                    if (link.side is 0 || link.side == 4)
                     {
                         // Calculate link size.
-                        const float s = 1.0f / 255.0f;
+                        const float s = 1f / 255.0f;
                         float lmin = tile.data.verts[left + 2]
                                      + (tile.data.verts[right + 2] - tile.data.verts[left + 2]) * (link.bmin * s);
                         float lmax = tile.data.verts[left + 2]
@@ -2310,7 +2310,7 @@ namespace DotRecast.Detour
                     else if (link.side == 2 || link.side == 6)
                     {
                         // Calculate link size.
-                        const float s = 1.0f / 255.0f;
+                        const float s = 1f / 255.0f;
                         float lmin = tile.data.verts[left]
                                      + (tile.data.verts[right] - tile.data.verts[left]) * (link.bmin * s);
                         float lmax = tile.data.verts[left]
@@ -2348,7 +2348,7 @@ namespace DotRecast.Detour
                         nextRef, nextTile, nextPoly);
                 }
 
-                if (nextRef == 0)
+                if (nextRef is 0)
                 {
                     // No neighbour, we hit a wall.
 
@@ -2486,7 +2486,7 @@ namespace DotRecast.Detour
                     DtLink link = bestTile.links[i];
                     long neighbourRef = link.refs;
                     // Skip invalid neighbours and do not follow back to parent.
-                    if (neighbourRef == 0 || neighbourRef == parentRef)
+                    if (neighbourRef is 0 || neighbourRef == parentRef)
                     {
                         continue;
                     }
@@ -2523,7 +2523,7 @@ namespace DotRecast.Detour
                     }
 
                     // Cost
-                    if (neighbourNode.flags == 0)
+                    if (neighbourNode.flags is 0)
                     {
                         neighbourNode.pos = Vector3.Lerp(va, vb, 0.5f);
                     }
@@ -2615,7 +2615,7 @@ namespace DotRecast.Detour
                 centerPos += verts[i];
             }
 
-            float scale = 1.0f / nverts;
+            float scale = 1f / nverts;
             centerPos.X *= scale;
             centerPos.Y *= scale;
             centerPos.Z *= scale;
@@ -2663,7 +2663,7 @@ namespace DotRecast.Detour
                     DtLink link = bestTile.links[i];
                     long neighbourRef = link.refs;
                     // Skip invalid neighbours and do not follow back to parent.
-                    if (neighbourRef == 0 || neighbourRef == parentRef)
+                    if (neighbourRef is 0 || neighbourRef == parentRef)
                     {
                         continue;
                     }
@@ -2692,7 +2692,7 @@ namespace DotRecast.Detour
                         continue;
                     }
 
-                    if (tmin > 1.0f || tmax < 0.0f)
+                    if (tmin > 1f || tmax < 0f)
                     {
                         continue;
                     }
@@ -2705,7 +2705,7 @@ namespace DotRecast.Detour
                     }
 
                     // Cost
-                    if (neighbourNode.flags == 0)
+                    if (neighbourNode.flags is 0)
                     {
                         neighbourNode.pos = Vector3.Lerp(va, vb, 0.5f);
                     }
@@ -2818,7 +2818,7 @@ namespace DotRecast.Detour
                     DtLink link = curTile.links[i];
                     long neighbourRef = link.refs;
                     // Skip invalid neighbours.
-                    if (neighbourRef == 0)
+                    if (neighbourRef is 0)
                     {
                         continue;
                     }
@@ -3225,7 +3225,7 @@ namespace DotRecast.Detour
                     DtLink link = bestTile.links[i];
                     long neighbourRef = link.refs;
                     // Skip invalid neighbours and do not follow back to parent.
-                    if (neighbourRef == 0 || neighbourRef == parentRef)
+                    if (neighbourRef is 0 || neighbourRef == parentRef)
                     {
                         continue;
                     }
@@ -3268,7 +3268,7 @@ namespace DotRecast.Detour
                     }
 
                     // Cost
-                    if (neighbourNode.flags == 0)
+                    if (neighbourNode.flags is 0)
                     {
                         GetEdgeMidPoint(bestRef, bestPoly, bestTile,
                             neighbourRef, neighbourPoly, neighbourTile,
@@ -3366,7 +3366,7 @@ namespace DotRecast.Detour
             }
 
             DtNode endNode = nodes[0];
-            if ((endNode.flags & DT_NODE_CLOSED) == 0)
+            if ((endNode.flags & DT_NODE_CLOSED) is 0)
             {
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }

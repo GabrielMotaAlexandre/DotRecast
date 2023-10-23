@@ -60,7 +60,7 @@ namespace DotRecast.Detour
             m_excludeFlags = 0;
             for (int i = 0; i < DtNavMesh.DT_MAX_AREAS; ++i)
             {
-                m_areaCost[i] = 1.0f;
+                m_areaCost[i] = 1f;
             }
         }
 
@@ -75,13 +75,13 @@ namespace DotRecast.Detour
 
             for (int i = areaCost.Length; i < DtNavMesh.DT_MAX_AREAS; ++i)
             {
-                m_areaCost[i] = 1.0f;
+                m_areaCost[i] = 1f;
             }
         }
 
         public bool PassFilter(long refs, DtMeshTile tile, DtPoly poly)
         {
-            return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) == 0;
+            return (poly.flags & m_includeFlags) != 0 && (poly.flags & m_excludeFlags) is 0;
         }
 
         public float GetCost(Vector3 pa, Vector3 pb, long prevRef, DtMeshTile prevTile, DtPoly prevPoly, long curRef,

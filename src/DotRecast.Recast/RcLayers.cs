@@ -97,7 +97,7 @@ namespace DotRecast.Recast
                                 sid = srcReg[ai];
                         }
 
-                        if (sid == 0xff)
+                        if (sid is 0xff)
                         {
                             sid = sweepId++;
                             sweeps[sid].nei = 0xff;
@@ -115,7 +115,7 @@ namespace DotRecast.Recast
                             {
                                 // Set neighbour when first valid neighbour is
                                 // encoutered.
-                                if (sweeps[sid].ns == 0)
+                                if (sweeps[sid].ns is 0)
                                     sweeps[sid].nei = nr;
 
                                 if (sweeps[sid].nei == nr)
@@ -195,7 +195,7 @@ namespace DotRecast.Recast
                     {
                         RcCompactSpan s = chf.spans[i];
                         int ri = srcReg[i];
-                        if (ri == 0xff)
+                        if (ri is 0xff)
                             continue;
 
                         regs[ri].ymin = Math.Min(regs[ri].ymin, s.y);
@@ -352,7 +352,7 @@ namespace DotRecast.Recast
                     }
 
                     // Could not find anything to merge with, stop.
-                    if (oldId == 0xff)
+                    if (oldId is 0xff)
                         break;
 
                     // Merge
@@ -398,14 +398,14 @@ namespace DotRecast.Recast
                 regs[i].layerId = remap[regs[i].layerId];
 
             // No layers, return empty.
-            if (layerId == 0)
+            if (layerId is 0)
             {
                 // ctx.Stop(RC_TIMER_BUILD_LAYERS);
                 return null;
             }
 
             // Create layers.
-            // RcAssert(lset.layers == 0);
+            // RcAssert(lset.layers is 0);
 
             int lw = w - borderSize * 2;
             int lh = h - borderSize * 2;
@@ -483,7 +483,7 @@ namespace DotRecast.Recast
                         {
                             RcCompactSpan s = chf.spans[j];
                             // Skip unassigned regions.
-                            if (srcReg[j] == 0xff)
+                            if (srcReg[j] is 0xff)
                                 continue;
                             // Skip of does nto belong to current layer.
                             int lid = regs[srcReg[j]].layerId;

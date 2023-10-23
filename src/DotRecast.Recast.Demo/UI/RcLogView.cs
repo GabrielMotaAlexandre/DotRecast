@@ -106,7 +106,7 @@ public class RcLogView : IRcView
 
             if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
             {
-                ImGui.SetScrollHereY(1.0f);
+                ImGui.SetScrollHereY(1f);
             }
         }
 

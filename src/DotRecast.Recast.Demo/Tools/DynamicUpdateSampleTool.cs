@@ -309,7 +309,7 @@ public class DynamicUpdateSampleTool : ISampleTool
             if (raycastHitPos != Vector3.Zero)
             {
                 int spathCol = raycastHit ? DuRGBA(128, 32, 16, 220) : DuRGBA(64, 128, 240, 220);
-                dd.Begin(LINES, 2.0f);
+                dd.Begin(LINES, 2f);
                 dd.Vertex(spos.X, spos.Y + 1.3f, spos.Z, spathCol);
                 dd.Vertex(raycastHitPos.X, raycastHitPos.Y, raycastHitPos.Z, spathCol);
                 dd.End();
@@ -327,8 +327,8 @@ public class DynamicUpdateSampleTool : ISampleTool
         float c = settings.agentMaxClimb;
         dd.DepthMask(false);
         // Agent dimensions.
-        dd.DebugDrawCylinderWire(pos.X - r, pos.Y + 0.02f, pos.Z - r, pos.X + r, pos.Y + h, pos.Z + r, col, 2.0f);
-        dd.DebugDrawCircle(pos.X, pos.Y + c, pos.Z, r, DuRGBA(0, 0, 0, 64), 1.0f);
+        dd.DebugDrawCylinderWire(pos.X - r, pos.Y + 0.02f, pos.Z - r, pos.X + r, pos.Y + h, pos.Z + r, col, 2f);
+        dd.DebugDrawCircle(pos.X, pos.Y + c, pos.Z, r, DuRGBA(0, 0, 0, 64), 1f);
         int colb = DuRGBA(0, 0, 0, 196);
         dd.Begin(LINES);
         dd.Vertex(pos.X, pos.Y - c, pos.Z, colb);

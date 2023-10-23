@@ -414,7 +414,7 @@ namespace DotRecast.Detour.Crowd
                 // All valid, no need to fix.
                 return true;
             }
-            else if (n == 0)
+            else if (n is 0)
             {
                 // The first polyref is bad, use current safe values.
                 Pos = new Vector3(safePos[0], safePos[1], safePos[2]);

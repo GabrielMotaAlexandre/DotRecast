@@ -26,17 +26,17 @@ public class RecastTestMeshBuilder
     private readonly DtMeshData meshData;
     public const float m_cellSize = 0.3f;
     public const float m_cellHeight = 0.2f;
-    public const float m_agentHeight = 2.0f;
+    public const float m_agentHeight = 2f;
     public const float m_agentRadius = 0.6f;
     public const float m_agentMaxClimb = 0.9f;
     public const float m_agentMaxSlope = 45.0f;
     public const int m_regionMinSize = 8;
     public const int m_regionMergeSize = 20;
-    public const float m_edgeMaxLen = 12.0f;
+    public const float m_edgeMaxLen = 12f;
     public const float m_edgeMaxError = 1.3f;
     public const int m_vertsPerPoly = 6;
     public const float m_detailSampleDist = 6.0f;
-    public const float m_detailSampleMaxError = 1.0f;
+    public const float m_detailSampleMaxError = 1f;
 
     public RecastTestMeshBuilder()
         : this(SimpleInputGeomProvider.LoadFile("dungeon.obj"),

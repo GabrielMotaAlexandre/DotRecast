@@ -777,17 +777,17 @@ namespace DotRecast.Recast
 
                 // If the magnitude of the segment normal average is less than about .69444,
                 // the corner is an acute enough angle that the result should be beveled.
-                bool bevel = cornerMiterSqMag * MITER_LIMIT * MITER_LIMIT < 1.0f;
+                bool bevel = cornerMiterSqMag * MITER_LIMIT * MITER_LIMIT < 1f;
 
                 // Scale the corner miter so it's proportional to how much the corner should be offset compared to the edges.
                 if (cornerMiterSqMag > Vector3Extensions.EPSILON)
                 {
-                    float scale = 1.0f / cornerMiterSqMag;
+                    float scale = 1f / cornerMiterSqMag;
                     cornerMiterX *= scale;
                     cornerMiterZ *= scale;
                 }
 
-                if (bevel && cross < 0.0f) // If the corner is convex and an acute enough angle, generate a bevel.
+                if (bevel && cross < 0f) // If the corner is convex and an acute enough angle, generate a bevel.
                 {
                     if (numOutVerts + 2 > maxOutVerts)
                     {
@@ -796,7 +796,7 @@ namespace DotRecast.Recast
 
                     // Generate two bevel vertices at a distances from B proportional to the angle between the two segments.
                     // Move each bevel vertex out proportional to the given offset.
-                    float d = (1.0f - (prevSegmentDir.X * currSegmentDir.X + prevSegmentDir.Z * currSegmentDir.Z)) * 0.5f;
+                    float d = (1f - (prevSegmentDir.X * currSegmentDir.X + prevSegmentDir.Z * currSegmentDir.Z)) * 0.5f;
 
                     outVerts[numOutVerts * 3 + 0] = vertB.X + (-prevSegmentNormX + prevSegmentDir.X * d) * offset;
                     outVerts[numOutVerts * 3 + 1] = vertB.Y;

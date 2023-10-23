@@ -59,7 +59,7 @@ public class ModernOpenGLDraw : IOpenGLDraw
                                                 + "uniform float EnableFog;\n" //
                                                 + "uniform float FogStart;\n" //
                                                 + "uniform float FogEnd;\n" //
-                                                + "const vec4 FogColor = vec4(0.3f, 0.3f, 0.32f, 1.0f);\n" //
+                                                + "const vec4 FogColor = vec4(0.3f, 0.3f, 0.32f, 1f);\n" //
                                                 + "in vec2 Frag_UV;\n" //
                                                 + "in vec4 Frag_Color;\n" //
                                                 + "in float Frag_Depth;\n" //
@@ -155,7 +155,7 @@ public class ModernOpenGLDraw : IOpenGLDraw
 
     public void Clear()
     {
-        _gl.ClearColor(0.3f, 0.3f, 0.32f, 1.0f);
+        _gl.ClearColor(0.3f, 0.3f, 0.32f, 1f);
         _gl.Clear((uint)GLEnum.ColorBufferBit | (uint)GLEnum.DepthBufferBit);
         _gl.Enable(GLEnum.Blend);
         _gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
@@ -185,7 +185,7 @@ public class ModernOpenGLDraw : IOpenGLDraw
         _gl.UniformMatrix4(uniformProjectionMatrix, 1, false, _projectionMatrix);
         _gl.Uniform1(uniformFogStart, fogStart);
         _gl.Uniform1(uniformFogEnd, fogEnd);
-        _gl.Uniform1(uniformFog, fogEnabled ? 1.0f : 0.0f);
+        _gl.Uniform1(uniformFog, fogEnabled ? 1f : 0f);
         _gl.BindVertexArray(vao);
         _gl.BindBuffer(GLEnum.ArrayBuffer, vbo);
         _gl.BindBuffer(GLEnum.ElementArrayBuffer, ebo);
@@ -242,11 +242,11 @@ public class ModernOpenGLDraw : IOpenGLDraw
         if (_texture != null)
         {
             _texture.Bind();
-            _gl.Uniform1(uniformUseTexture, 1.0f);
+            _gl.Uniform1(uniformUseTexture, 1f);
         }
         else
         {
-            _gl.Uniform1(uniformUseTexture, 0.0f);
+            _gl.Uniform1(uniformUseTexture, 0f);
         }
 
         switch (currentPrim)
@@ -272,8 +272,8 @@ public class ModernOpenGLDraw : IOpenGLDraw
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         _gl.BindBuffer(GLEnum.ElementArrayBuffer, 0);
         vertices.Clear();
-        _gl.LineWidth(1.0f);
-        _gl.PointSize(1.0f);
+        _gl.LineWidth(1f);
+        _gl.PointSize(1f);
     }
 
     public void Vertex(float x, float y, float z, int color)

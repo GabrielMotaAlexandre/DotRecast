@@ -66,9 +66,9 @@ namespace DotRecast.Detour.Crowd.Tracking
             }
 
             float penRange = maxPen - minPen;
-            float s = penRange > 0.001f ? (1.0f / penRange) : 1;
+            float s = penRange > 0.001f ? (1f / penRange) : 1;
             for (int i = 0; i < n; ++i)
-                arr[i] = Math.Clamp((arr[i] - minPen) * s, 0.0f, 1.0f);
+                arr[i] = Math.Clamp((arr[i] - minPen) * s, 0f, 1f);
         }
 
         public void NormalizeSamples()

@@ -28,7 +28,7 @@ namespace DotRecast.Detour.Extras
         public static void Build(DtMeshData data)
         {
             data.bvTree = new DtBVNode[data.header.polyCount * 2];
-            data.header.bvNodeCount = data.bvTree.Length == 0
+            data.header.bvNodeCount = data.bvTree.Length is 0
                 ? 0
                 : CreateBVTree(data, data.bvTree, data.header.bvQuantFactor);
         }

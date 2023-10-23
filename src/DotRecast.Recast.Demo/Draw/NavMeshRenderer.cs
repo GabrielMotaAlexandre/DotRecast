@@ -57,7 +57,7 @@ public class NavMeshRenderer
         _debugDraw.Fog(true);
         _debugDraw.DepthMask(true);
 
-        float texScale = 1.0f / (settings.cellSize * 10.0f);
+        float texScale = 1f / (settings.cellSize * 10f);
         float agentMaxSlope = settings.agentMaxSlope;
 
         if (drawMode != DrawMode.DRAWMODE_NAVMESH_TRANS)
@@ -85,7 +85,7 @@ public class NavMeshRenderer
             int tw = (gw + settings.tileSize - 1) / settings.tileSize;
             int th = (gh + settings.tileSize - 1) / settings.tileSize;
             float s = settings.tileSize * settings.cellSize;
-            _debugDraw.DebugDrawGridXZ(bmin[0], bmin[1], bmin[2], tw, th, s, DebugDraw.DuRGBA(0, 0, 0, 64), 1.0f);
+            _debugDraw.DebugDrawGridXZ(bmin[0], bmin[1], bmin[2], tw, th, s, DebugDraw.DuRGBA(0, 0, 0, 64), 1f);
         }
 
         if (navMesh != null && navQuery != null
@@ -212,7 +212,7 @@ public class NavMeshRenderer
         Vector3 bmin = geom.GetMeshBoundsMin();
         Vector3 bmax = geom.GetMeshBoundsMax();
         _debugDraw.DebugDrawBoxWire(bmin.X, bmin.Y, bmin.Z, bmax.X, bmax.Y, bmax.Z,
-            DebugDraw.DuRGBA(255, 255, 255, 128), 1.0f);
+            DebugDraw.DuRGBA(255, 255, 255, 128), 1f);
         _debugDraw.Begin(DebugDrawPrimitives.POINTS, 5.0f);
         _debugDraw.Vertex(bmin.X, bmin.Y, bmin.Z, DebugDraw.DuRGBA(255, 255, 255, 128));
         _debugDraw.End();
@@ -224,7 +224,7 @@ public class NavMeshRenderer
         int baseColor = DebugDraw.DuRGBA(0, 0, 0, 64);
         _debugDraw.DepthMask(false);
 
-        _debugDraw.Begin(DebugDrawPrimitives.LINES, 2.0f);
+        _debugDraw.Begin(DebugDrawPrimitives.LINES, 2f);
         foreach (var con in geom.GetOffMeshConnections())
         {
             float[] v = con.verts;
@@ -239,7 +239,7 @@ public class NavMeshRenderer
 
             if (hilight)
             {
-                _debugDraw.AppendArc(v[0], v[1], v[2], v[3], v[4], v[5], 0.25f, con.bidir ? 0.6f : 0.0f, 0.6f, conColor);
+                _debugDraw.AppendArc(v[0], v[1], v[2], v[3], v[4], v[5], 0.25f, con.bidir ? 0.6f : 0f, 0.6f, conColor);
             }
         }
 
@@ -278,7 +278,7 @@ public class NavMeshRenderer
 
         _debugDraw.End();
 
-        _debugDraw.Begin(DebugDrawPrimitives.LINES, 2.0f);
+        _debugDraw.Begin(DebugDrawPrimitives.LINES, 2f);
         foreach (RcConvexVolume vol in geom.ConvexVolumes())
         {
             int col = DebugDraw.DuTransCol(DebugDraw.AreaToCol(vol.areaMod.GetMaskedValue()), 220);

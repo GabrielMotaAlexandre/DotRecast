@@ -8,7 +8,7 @@ namespace DotRecast.Detour
 {
     public static class DtUtils
     {
-        private static readonly float EQUAL_THRESHOLD = RcMath.Sqr(1.0f / 16384.0f);
+        private static readonly float EQUAL_THRESHOLD = RcMath.Sqr(1f / 16384.0f);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int NextPow2(int v)
@@ -181,7 +181,7 @@ namespace DotRecast.Detour
         public static Vector3 RandomPointInConvexPoly(ReadOnlySpan<float> pts, int npts, Span<float> areas, float s, float t)
         {
             // Calc triangle araes
-            float areasum = 0.0f;
+            float areasum = 0f;
             for (int i = 2; i < npts; i++)
             {
                 areas[i] = TriArea2D(pts, 0, (i - 1) * 3, i * 3);
@@ -190,8 +190,8 @@ namespace DotRecast.Detour
 
             // Find sub triangle weighted by area.
             float thr = s * areasum;
-            float acc = 0.0f;
-            float u = 1.0f;
+            float acc = 0f;
+            float u = 1f;
             int tri = npts - 1;
             for (int i = 2; i < npts; i++)
             {
@@ -250,7 +250,7 @@ namespace DotRecast.Detour
             }
 
             // If point lies inside the triangle, return interpolated ycoord.
-            if (u >= 0.0f && v >= 0.0f && (u + v) <= denom)
+            if (u >= 0f && v >= 0f && (u + v) <= denom)
             {
                 h = a.Y + (v0.Y * u + v1.Y * v) / denom;
                 return true;

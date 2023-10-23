@@ -375,7 +375,7 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        if (chf.dist[ai] >= lev && srcReg[ai] == 0)
+                        if (chf.dist[ai] >= lev && srcReg[ai] is 0)
                         {
                             srcReg[ai] = r;
                             srcDist[ai] = 0;
@@ -413,7 +413,7 @@ namespace DotRecast.Recast
                         var c = chf.cells[x + y * w];
                         for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
                         {
-                            if (chf.dist[i] >= level && srcReg[i] == 0 && chf.areas[i] != RC_NULL_AREA)
+                            if (chf.dist[i] >= level && srcReg[i] is 0 && chf.areas[i] != RC_NULL_AREA)
                             {
                                 stack.Add(x);
                                 stack.Add(y);
@@ -474,7 +474,7 @@ namespace DotRecast.Recast
                         }
 
                         var regAi = srcReg[ai];
-                        if (regAi > 0 && (regAi & RC_BORDER_REG) == 0)
+                        if (regAi > 0 && (regAi & RC_BORDER_REG) is 0)
                         {
                             var distAi = srcDist[ai] + 2;
                             if (distAi < d2)
@@ -864,7 +864,7 @@ namespace DotRecast.Recast
                     for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
                     {
                         int r = srcReg[i];
-                        if (r == 0 || r >= nreg)
+                        if (r is 0 || r >= nreg)
                         {
                             continue;
                         }
@@ -881,7 +881,7 @@ namespace DotRecast.Recast
                             }
 
                             int floorId = srcReg[j];
-                            if (floorId == 0 || floorId >= nreg)
+                            if (floorId is 0 || floorId >= nreg)
                             {
                                 continue;
                             }
@@ -929,12 +929,12 @@ namespace DotRecast.Recast
             for (int i = 0; i < nreg; ++i)
             {
                 ref RcRegion reg = ref regions[i];
-                if (reg.id == 0 || (reg.id & RC_BORDER_REG) != 0)
+                if (reg.id is 0 || (reg.id & RC_BORDER_REG) != 0)
                 {
                     continue;
                 }
 
-                if (reg.spanCount == 0)
+                if (reg.spanCount is 0)
                 {
                     continue;
                 }
@@ -979,7 +979,7 @@ namespace DotRecast.Recast
                             continue;
                         }
 
-                        if (neireg.id == 0 || (neireg.id & RC_BORDER_REG) != 0)
+                        if (neireg.id is 0 || (neireg.id & RC_BORDER_REG) != 0)
                         {
                             continue;
                         }
@@ -1013,7 +1013,7 @@ namespace DotRecast.Recast
                 for (int i = 0; i < nreg; ++i)
                 {
                     RcRegion reg = regions[i];
-                    if (reg.id == 0 || (reg.id & RC_BORDER_REG) != 0)
+                    if (reg.id is 0 || (reg.id & RC_BORDER_REG) != 0)
                     {
                         continue;
                     }
@@ -1023,7 +1023,7 @@ namespace DotRecast.Recast
                         continue;
                     }
 
-                    if (reg.spanCount == 0)
+                    if (reg.spanCount is 0)
                     {
                         continue;
                     }
@@ -1047,7 +1047,7 @@ namespace DotRecast.Recast
                         }
 
                         RcRegion mreg = regions[reg.connections[j]];
-                        if (mreg.id == 0 || (mreg.id & RC_BORDER_REG) != 0 || mreg.overlap)
+                        if (mreg.id is 0 || (mreg.id & RC_BORDER_REG) != 0 || mreg.overlap)
                         {
                             continue;
                         }
@@ -1070,7 +1070,7 @@ namespace DotRecast.Recast
                             // Fixup regions pointing to current region.
                             for (int j = 0; j < nreg; ++j)
                             {
-                                if (regions[j].id == 0 || (regions[j].id & RC_BORDER_REG) != 0)
+                                if (regions[j].id is 0 || (regions[j].id & RC_BORDER_REG) != 0)
                                 {
                                     continue;
                                 }
@@ -1097,7 +1097,7 @@ namespace DotRecast.Recast
             for (int i = 0; i < nreg; ++i)
             {
                 regions[i].remap = false;
-                if (regions[i].id == 0)
+                if (regions[i].id is 0)
                 {
                     continue; // Skip nil regions.
                 }
@@ -1135,7 +1135,7 @@ namespace DotRecast.Recast
             // Remap regions.
             for (int i = 0; i < chf.spanCount; ++i)
             {
-                if ((srcReg[i] & RC_BORDER_REG) == 0)
+                if ((srcReg[i] & RC_BORDER_REG) is 0)
                 {
                     srcReg[i] = regions[srcReg[i]].id;
                 }
@@ -1180,7 +1180,7 @@ namespace DotRecast.Recast
                     {
                         RcCompactSpan s = chf.spans[i];
                         int ri = srcReg[i];
-                        if (ri == 0 || ri >= nreg)
+                        if (ri is 0 || ri >= nreg)
                         {
                             continue;
                         }
@@ -1340,7 +1340,7 @@ namespace DotRecast.Recast
             for (int i = 0; i < nreg; ++i)
             {
                 regions[i].remap = false;
-                if (regions[i].id == 0)
+                if (regions[i].id is 0)
                 {
                     continue; // Skip nil regions.
                 }
@@ -1378,7 +1378,7 @@ namespace DotRecast.Recast
             // Remap regions.
             for (int i = 0; i < chf.spanCount; ++i)
             {
-                if ((srcReg[i] & RC_BORDER_REG) == 0)
+                if ((srcReg[i] & RC_BORDER_REG) is 0)
                 {
                     srcReg[i] = regions[srcReg[i]].id;
                 }
@@ -1518,13 +1518,13 @@ namespace DotRecast.Recast
                             int ax = x + GetDirOffsetX(0);
                             int ay = y + GetDirOffsetY(0);
                             int ai = chf.cells[ax + ay * w].index + GetCon(s, 0);
-                            if ((srcReg[ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
+                            if ((srcReg[ai] & RC_BORDER_REG) is 0 && chf.areas[i] == chf.areas[ai])
                             {
                                 previd = srcReg[ai];
                             }
                         }
 
-                        if (previd == 0)
+                        if (previd is 0)
                         {
                             previd = rid++;
                             ref var sw = ref sweeps[previd];
@@ -1539,10 +1539,10 @@ namespace DotRecast.Recast
                             int ax = x + GetDirOffsetX(3);
                             int ay = y + GetDirOffsetY(3);
                             int ai = chf.cells[ax + ay * w].index + GetCon(s, 3);
-                            if (srcReg[ai] != 0 && (srcReg[ai] & RC_BORDER_REG) == 0 && chf.areas[i] == chf.areas[ai])
+                            if (srcReg[ai] != 0 && (srcReg[ai] & RC_BORDER_REG) is 0 && chf.areas[i] == chf.areas[ai])
                             {
                                 int nr = srcReg[ai];
-                                if (sweeps[previd].nei == 0 || sweeps[previd].nei == nr)
+                                if (sweeps[previd].nei is 0 || sweeps[previd].nei == nr)
                                 {
                                     sweeps[previd].nei = nr;
                                     sweeps[previd].ns++;
@@ -1689,7 +1689,7 @@ namespace DotRecast.Recast
 
                 // ctx->StartTimer(RC_TIMER_DIVIDE_TO_LEVELS);
 
-                if (sId == 0)
+                if (sId is 0)
                 {
                     SortCellsByLevel(level, in chf, srcReg, NB_STACKS, lvlStacks, 1);
                 }
@@ -1707,7 +1707,7 @@ namespace DotRecast.Recast
                     int x = lvlStacks[sId][j];
                     int y = lvlStacks[sId][j + 1];
                     int i = lvlStacks[sId][j + 2];
-                    if (i >= 0 && srcReg[i] == 0)
+                    if (i >= 0 && srcReg[i] is 0)
                     {
                         if (FloodRegion(x, y, i, level, regionId, in chf, srcReg, srcDist, stack))
                         {

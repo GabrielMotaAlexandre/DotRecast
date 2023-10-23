@@ -105,7 +105,7 @@ namespace DotRecast.Detour
 
                 int axis = LongestAxis(in bmin, in bmax);
 
-                if (axis == 0)
+                if (axis is 0)
                 {
                     // Sort along x-axis
                     Array.Sort(items, imin, inum, BVItemXComparer.Shared);
@@ -254,9 +254,9 @@ namespace DotRecast.Detour
         {
             if (option.vertCount >= 0xffff)
                 return null;
-            if (option.vertCount == 0 || option.verts == null)
+            if (option.vertCount is 0 || option.verts == null)
                 return null;
-            if (option.polyCount == 0 || option.polys == null)
+            if (option.polyCount is 0 || option.polys == null)
                 return null;
 
             int nvp = option.nvp;
@@ -313,7 +313,7 @@ namespace DotRecast.Detour
 
                     // Zero out off-mesh start positions which are not even
                     // potentially touching the mesh.
-                    if (offMeshConClass[i * 2 + 0] == 0xff)
+                    if (offMeshConClass[i * 2 + 0] is 0xff)
                     {
                         if (p0.Y < bmin.Y || p0.Y > bmax.Y)
                             offMeshConClass[i * 2 + 0] = 0;
@@ -321,12 +321,12 @@ namespace DotRecast.Detour
 
                     // Count how many links should be allocated for off-mesh
                     // connections.
-                    if (offMeshConClass[i * 2 + 0] == 0xff)
+                    if (offMeshConClass[i * 2 + 0] is 0xff)
                         offMeshConLinkCount++;
-                    if (offMeshConClass[i * 2 + 1] == 0xff)
+                    if (offMeshConClass[i * 2 + 1] is 0xff)
                         offMeshConLinkCount++;
 
-                    if (offMeshConClass[i * 2 + 0] == 0xff)
+                    if (offMeshConClass[i * 2 + 0] is 0xff)
                         storedOffMeshConCount++;
                 }
             }
@@ -428,7 +428,7 @@ namespace DotRecast.Detour
             header.detailMeshCount = option.polyCount;
             header.detailVertCount = uniqueDetailVertCount;
             header.detailTriCount = detailTriCount;
-            header.bvQuantFactor = 1.0f / option.cs;
+            header.bvQuantFactor = 1f / option.cs;
             header.offMeshBase = option.polyCount;
             header.walkableHeight = option.walkableHeight;
             header.walkableRadius = option.walkableRadius;
@@ -455,7 +455,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < option.offMeshConCount; ++i)
             {
                 // Only store connections which start from this tile.
-                if (offMeshConClass[i * 2 + 0] == 0xff)
+                if (offMeshConClass[i * 2 + 0] is 0xff)
                 {
                     int linkv = i * 2 * 3;
                     int v = (offMeshVertsBase + n * 2) * 3;
@@ -484,9 +484,9 @@ namespace DotRecast.Detour
                     {
                         // Border or portal edge.
                         int dir = option.polys[src + nvp + j] & 0xf;
-                        if (dir == 0xf) // Border
+                        if (dir is 0xf) // Border
                             p.neis[j] = 0;
-                        else if (dir == 0) // Portal x-
+                        else if (dir is 0) // Portal x-
                             p.neis[j] = DtNavMesh.DT_EXT_LINK | 4;
                         else if (dir == 1) // Portal z+
                             p.neis[j] = DtNavMesh.DT_EXT_LINK | 2;
@@ -512,7 +512,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < option.offMeshConCount; ++i)
             {
                 // Only store connections which start from this tile.
-                if (offMeshConClass[i * 2 + 0] == 0xff)
+                if (offMeshConClass[i * 2 + 0] is 0xff)
                 {
                     DtPoly p = new(offMeshPolyBase + n, nvp);
                     navPolys[offMeshPolyBase + n] = p;
@@ -596,7 +596,7 @@ namespace DotRecast.Detour
             for (int i = 0; i < option.offMeshConCount; ++i)
             {
                 // Only store connections which start from this tile.
-                if (offMeshConClass[i * 2 + 0] == 0xff)
+                if (offMeshConClass[i * 2 + 0] is 0xff)
                 {
                     DtOffMeshConnection con = new();
                     offMeshCons[n] = con;

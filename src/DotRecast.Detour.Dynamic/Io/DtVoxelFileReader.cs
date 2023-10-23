@@ -50,7 +50,7 @@ namespace DotRecast.Detour.Dynamic.Io
             }
 
             file.version = buf.GetInt();
-            bool isExportedFromAstar = (file.version & DtVoxelFile.VERSION_EXPORTER_MASK) == 0;
+            bool isExportedFromAstar = (file.version & DtVoxelFile.VERSION_EXPORTER_MASK) is 0;
             bool compression = (file.version & DtVoxelFile.VERSION_COMPRESSION_MASK) == DtVoxelFile.VERSION_COMPRESSION_LZ4;
             file.walkableRadius = buf.GetFloat();
             file.walkableHeight = buf.GetFloat();

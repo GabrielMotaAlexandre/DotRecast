@@ -25,7 +25,7 @@ public class RecastLayersTest
 {
     private const float m_cellSize = 0.3f;
     private const float m_cellHeight = 0.2f;
-    private const float m_agentHeight = 2.0f;
+    private const float m_agentHeight = 2f;
     private const float m_agentRadius = 0.6f;
     private const float m_agentMaxClimb = 0.9f;
     private const float m_agentMaxSlope = 45.0f;
@@ -33,11 +33,11 @@ public class RecastLayersTest
     private const int m_regionMergeSize = 20;
     private const float m_regionMinArea = m_regionMinSize * m_regionMinSize * m_cellSize * m_cellSize;
     private const float m_regionMergeArea = m_regionMergeSize * m_regionMergeSize * m_cellSize * m_cellSize;
-    private const float m_edgeMaxLen = 12.0f;
+    private const float m_edgeMaxLen = 12f;
     private const float m_edgeMaxError = 1.3f;
     private const int m_vertsPerPoly = 6;
     private const float m_detailSampleDist = 6.0f;
-    private const float m_detailSampleMaxError = 1.0f;
+    private const float m_detailSampleMaxError = 1f;
     private readonly RcPartition m_partitionType = RcPartition.WATERSHED;
     private const int m_tileSize = 48;
 

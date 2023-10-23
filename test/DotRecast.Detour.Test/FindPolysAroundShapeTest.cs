@@ -162,7 +162,7 @@ public class FindPolysAroundShapeTest : AbstractDetourTest
     {
         float nx = (m_epos.Z - m_spos.Z) * 0.25f;
         float nz = -(m_epos.X - m_spos.X) * 0.25f;
-        float agentHeight = 2.0f;
+        float agentHeight = 2f;
 
         Vector3[] m_queryPoly = new Vector3[4];
         m_queryPoly[0].X = m_spos.X + nx * 1.2f;

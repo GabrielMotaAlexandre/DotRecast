@@ -39,7 +39,7 @@ namespace DotRecast.Core
             // Compute denominator d. If d <= 0, segment is parallel to or points
             // away from triangle, so exit early
             float d = Vector3.Dot(qp, norm);
-            if (d <= 0.0f)
+            if (d <= 0f)
             {
                 return false;
             }
@@ -90,7 +90,7 @@ namespace DotRecast.Core
                 Y = sq.Y - sp.Y,
                 Z = sq.Z - sp.Z
             };
-            tmin = 0.0f;
+            tmin = 0f;
             tmax = float.MaxValue;
 
             for (int i = 0; i < 3; i++)
@@ -104,7 +104,7 @@ namespace DotRecast.Core
                 }
                 else
                 {
-                    float ood = 1.0f / d[i];
+                    float ood = 1f / d[i];
                     float t1 = (amin[i] - sp[i]) * ood;
                     float t2 = (amax[i] - sp[i]) * ood;
 

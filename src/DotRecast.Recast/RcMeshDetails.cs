@@ -706,12 +706,12 @@ namespace DotRecast.Recast
 
         private static float GetJitterX(int i)
         {
-            return (((i * 0x8da6b343) & 0xffff) / 65535.0f * 2.0f) - 1.0f;
+            return (((i * 0x8da6b343) & 0xffff) / 65535.0f * 2f) - 1f;
         }
 
         private static float GetJitterY(int i)
         {
-            return (((i * 0xd8163841) & 0xffff) / 65535.0f * 2.0f) - 1.0f;
+            return (((i * 0xd8163841) & 0xffff) / 65535.0f * 2f) - 1f;
         }
 
         static int BuildPolyDetail(ReadOnlySpan<float> @in, int nin, float sampleDist, float sampleMaxError, int heightSearchRadius,
@@ -734,7 +734,7 @@ namespace DotRecast.Recast
             tris.Clear();
 
             float cs = chf.cs;
-            float ics = 1.0f / cs;
+            float ics = 1f / cs;
 
             // Calculate minimum extents of the polygon based on input data.
             float minExtent = PolyMinExtent(verts, nverts);
@@ -873,7 +873,7 @@ namespace DotRecast.Recast
             // are no internal points.
             TriangulateHull(verts, nhull, hull, nin, tris);
 
-            if (tris.Count == 0)
+            if (tris.Count is 0)
             {
                 // Could not triangulate the poly, make sure there is some valid data there.
                 throw new Exception("buildPolyDetail: Could not triangulate polygon (" + nverts + ") verts).");
@@ -1301,7 +1301,7 @@ namespace DotRecast.Recast
         /// @see rcAllocPolyMeshDetail, rcPolyMesh, rcCompactHeightfield, rcPolyMeshDetail, rcConfig
         public static RcPolyMeshDetail BuildPolyMeshDetail(RcPolyMesh mesh, in RcCompactHeightfield chf, float sampleDist, float sampleMaxError)
         {
-            if (mesh.nverts == 0 || mesh.npolys == 0)
+            if (mesh.nverts is 0 || mesh.npolys is 0)
             {
                 return default;
             }

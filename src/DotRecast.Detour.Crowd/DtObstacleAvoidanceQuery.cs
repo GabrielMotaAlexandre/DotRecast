@@ -284,7 +284,7 @@ namespace DotRecast.Detour.Crowd
                     return minPenalty;
             }
 
-            float spen = m_ncircles == 0
+            float spen = m_ncircles is 0
                 ? 0
                 // Normalize side bias, to prevent it dominating too much.
                 : m_params.weightSide * (side / m_ncircles);
@@ -346,9 +346,9 @@ namespace DotRecast.Detour.Crowd
         {
             Prepare(pos, dvel);
             m_params = option;
-            m_invHorizTime = 1.0f / m_params.horizTime;
+            m_invHorizTime = 1f / m_params.horizTime;
             m_vmax = vmax;
-            m_invVmax = vmax > 0 ? 1.0f / vmax : float.MaxValue;
+            m_invVmax = vmax > 0 ? 1f / vmax : float.MaxValue;
 
             debug?.Reset();
 
@@ -380,7 +380,7 @@ namespace DotRecast.Detour.Crowd
             // Always add sample at zero
             pat.UnsafeAs<float, Vector2>() = default;
 
-            //var preCalculated = (nd % 2) == 0;
+            //var preCalculated = (nd % 2) is 0;
             //const int preCalculatedInt = 0; // Unsafe.As<bool, int>(ref preCalculated);
 
             float nrInverted = 1f / nr;

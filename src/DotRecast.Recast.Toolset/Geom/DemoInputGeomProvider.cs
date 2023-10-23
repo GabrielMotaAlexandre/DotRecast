@@ -113,7 +113,7 @@ namespace DotRecast.Recast.Toolset.Geom
                 float d = (float)Math.Sqrt(normals[i] * normals[i] + normals[i + 1] * normals[i + 1] + normals[i + 2] * normals[i + 2]);
                 if (d > 0)
                 {
-                    d = 1.0f / d;
+                    d = 1f / d;
                     normals[i] *= d;
                     normals[i + 1] *= d;
                     normals[i + 2] *= d;
@@ -149,7 +149,7 @@ namespace DotRecast.Recast.Toolset.Geom
 
         public bool RaycastMesh(Vector3 src, Vector3 dst, out float tmin)
         {
-            tmin = 1.0f;
+            tmin = 1f;
 
             // Prune hit ray.
             if (!Intersections.IsectSegAABB(src, dst, bmin, bmax, out var btmin, out var btmax))
@@ -170,7 +170,7 @@ namespace DotRecast.Recast.Toolset.Geom
                 return false;
             }
 
-            tmin = 1.0f;
+            tmin = 1f;
             bool hit = false;
             foreach (RcChunkyTriMeshNode chunk in chunks)
             {

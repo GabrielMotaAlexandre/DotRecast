@@ -43,26 +43,26 @@ public static class GLU
     private static void GlhFrustumf2(ref RcMatrix4x4f matrix, float left, float right, float bottom, float top, float znear, float zfar)
     {
         float temp, temp2, temp3, temp4;
-        temp = 2.0f * znear;
+        temp = 2f * znear;
         temp2 = right - left;
         temp3 = top - bottom;
         temp4 = zfar - znear;
         matrix.M11 = temp / temp2;
-        matrix.M12 = 0.0f;
-        matrix.M13 = 0.0f;
-        matrix.M14 = 0.0f;
-        matrix.M21 = 0.0f;
+        matrix.M12 = 0f;
+        matrix.M13 = 0f;
+        matrix.M14 = 0f;
+        matrix.M21 = 0f;
         matrix.M22 = temp / temp3;
-        matrix.M23 = 0.0f;
-        matrix.M24 = 0.0f;
+        matrix.M23 = 0f;
+        matrix.M24 = 0f;
         matrix.M31 = (right + left) / temp2;
         matrix.M32 = (top + bottom) / temp3;
         matrix.M33 = (-zfar - znear) / temp4;
-        matrix.M34 = -1.0f;
-        matrix.M41 = 0.0f;
-        matrix.M42 = 0.0f;
+        matrix.M34 = -1f;
+        matrix.M41 = 0f;
+        matrix.M42 = 0f;
         matrix.M43 = -temp * zfar / temp4;
-        matrix.M44 = 0.0f;
+        matrix.M44 = 0f;
     }
 
     public static int GlhUnProjectf(float winx, float winy, float winz, float[] modelview, float[] projection, int[] viewport, ref Vector3 objectCoordinate)
@@ -74,18 +74,18 @@ public static class GLU
         // and store in A[16]
         MultiplyMatrices4by4OpenGL_FLOAT(A, projection, modelview);
         // Now compute the inverse of matrix A
-        if (GlhInvertMatrixf2(A, m) == 0)
+        if (GlhInvertMatrixf2(A, m) is 0)
             return 0;
         // Transformation of normalized coordinates between -1 and 1
-        @in[0] = (winx - viewport[0]) / viewport[2] * 2.0f - 1.0f;
-        @in[1] = (winy - viewport[1]) / viewport[3] * 2.0f - 1.0f;
-        @in[2] = 2.0f * winz - 1.0f;
-        @in[3] = 1.0f;
+        @in[0] = (winx - viewport[0]) / viewport[2] * 2f - 1f;
+        @in[1] = (winy - viewport[1]) / viewport[3] * 2f - 1f;
+        @in[2] = 2f * winz - 1f;
+        @in[3] = 1f;
         // Objects coordinates
         MultiplyMatrixByVector4by4OpenGL_FLOAT(@out, m, @in);
-        if (@out[3] == 0.0)
+        if (@out[3] is 0)
             return 0;
-        @out[3] = 1.0f / @out[3];
+        @out[3] = 1f / @out[3];
         objectCoordinate.X = @out[0] * @out[3];
         objectCoordinate.Y = @out[1] * @out[3];
         objectCoordinate.Z = @out[2] * @out[3];
@@ -137,26 +137,26 @@ public static class GLU
         r0[1] = MAT(m, 0, 1);
         r0[2] = MAT(m, 0, 2);
         r0[3] = MAT(m, 0, 3);
-        r0[4] = 1.0f;
-        r0[5] = r0[6] = r0[7] = 0.0f;
+        r0[4] = 1f;
+        r0[5] = r0[6] = r0[7] = 0f;
         r1[0] = MAT(m, 1, 0);
         r1[1] = MAT(m, 1, 1);
         r1[2] = MAT(m, 1, 2);
         r1[3] = MAT(m, 1, 3);
-        r1[5] = 1.0f;
-        r1[4] = r1[6] = r1[7] = 0.0f;
+        r1[5] = 1f;
+        r1[4] = r1[6] = r1[7] = 0f;
         r2[0] = MAT(m, 2, 0);
         r2[1] = MAT(m, 2, 1);
         r2[2] = MAT(m, 2, 2);
         r2[3] = MAT(m, 2, 3);
-        r2[6] = 1.0f;
-        r2[4] = r2[5] = r2[7] = 0.0f;
+        r2[6] = 1f;
+        r2[4] = r2[5] = r2[7] = 0f;
         r3[0] = MAT(m, 3, 0);
         r3[1] = MAT(m, 3, 1);
         r3[2] = MAT(m, 3, 2);
         r3[3] = MAT(m, 3, 3);
-        r3[7] = 1.0f;
-        r3[4] = r3[5] = r3[6] = 0.0f;
+        r3[7] = 1f;
+        r3[4] = r3[5] = r3[6] = 0f;
         /* choose pivot - or die */
         if (Math.Abs(r3[0]) > Math.Abs(r2[0]))
         {
@@ -289,13 +289,13 @@ public static class GLU
         /* last check */
         if (0.0 == r3[3])
             return 0;
-        s = 1.0f / r3[3]; /* now back substitute row 3 */
+        s = 1f / r3[3]; /* now back substitute row 3 */
         r3[4] *= s;
         r3[5] *= s;
         r3[6] *= s;
         r3[7] *= s;
         m2 = r2[3]; /* now back substitute row 2 */
-        s = 1.0f / r2[2];
+        s = 1f / r2[2];
         r2[4] = s * (r2[4] - r3[4] * m2);
         r2[5] = s * (r2[5] - r3[5] * m2);
         r2[6] = s * (r2[6] - r3[6] * m2);
@@ -311,7 +311,7 @@ public static class GLU
         r0[6] -= r3[6] * m0;
         r0[7] -= r3[7] * m0;
         m1 = r1[2]; /* now back substitute row 1 */
-        s = 1.0f / r1[1];
+        s = 1f / r1[1];
         r1[4] = s * (r1[4] - r2[4] * m1);
         r1[5] = s * (r1[5] - r2[5] * m1);
         r1[6] = s * (r1[6] - r2[6] * m1);
@@ -322,7 +322,7 @@ public static class GLU
         r0[6] -= r2[6] * m0;
         r0[7] -= r2[7] * m0;
         m0 = r0[1]; /* now back substitute row 0 */
-        s = 1.0f / r0[0];
+        s = 1f / r0[0];
         r0[4] = s * (r0[4] - r1[4] * m0);
         r0[5] = s * (r0[5] - r1[5] * m0);
         r0[6] = s * (r0[6] - r1[6] * m0);

@@ -42,7 +42,7 @@ public class GLCheckerTexture
 
     public void Bind()
     {
-        if (m_texId == 0)
+        if (m_texId is 0)
         {
             // Create checker pattern.
             int col0 = DebugDraw.DuRGBA(215, 215, 215, 255);
@@ -61,7 +61,7 @@ public class GLCheckerTexture
                 {
                     for (int x = 0; x < size; ++x)
                     {
-                        data[x + y * size] = (x == 0 || y == 0) ? col0 : col1;
+                        data[x + y * size] = (x is 0 || y is 0) ? col0 : col1;
                     }
                 }
 

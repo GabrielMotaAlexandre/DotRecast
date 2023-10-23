@@ -346,8 +346,8 @@ namespace DotRecast.Recast
         public static void RasterizeTriangle(in RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, int v0, int v1, int v2, int area,
             int flagMergeThreshold)
         {
-            float inverseCellSize = 1.0f / heightfield.cs;
-            float inverseCellHeight = 1.0f / heightfield.ch;
+            float inverseCellSize = 1f / heightfield.cs;
+            float inverseCellHeight = 1f / heightfield.ch;
             RasterizeTri(verts, v0, v1, v2, area, heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs, inverseCellSize,
                 inverseCellHeight, flagMergeThreshold);
         }
@@ -373,8 +373,8 @@ namespace DotRecast.Recast
         public static void RasterizeTriangles(in RcHeightfield heightfield, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, ReadOnlySpan<int> areaIds,
             int flagMergeThreshold)
         {
-            float inverseCellSize = 1.0f / heightfield.cs;
-            float inverseCellHeight = 1.0f / heightfield.ch;
+            float inverseCellSize = 1f / heightfield.cs;
+            float inverseCellHeight = 1f / heightfield.ch;
             for (int triIndex = 0; triIndex < tris.Length / 3; ++triIndex)
             {
                 int v0 = tris[triIndex * 3];

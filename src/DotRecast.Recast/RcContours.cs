@@ -97,7 +97,7 @@ namespace DotRecast.Recast
                 // The vertex is a border vertex there are two same exterior cells in a row,
                 // followed by two interior cells and none of the regions are out of bounds.
                 bool twoSameExts = (regs[a] & regs[b] & RC_BORDER_REG) != 0 && regs[a] == regs[b];
-                bool twoInts = ((regs[c] | regs[d]) & RC_BORDER_REG) == 0;
+                bool twoInts = ((regs[c] | regs[d]) & RC_BORDER_REG) is 0;
                 bool intsSameArea = (regs[c] >> 16) == (regs[d] >> 16);
                 bool noZeros = regs[a] != 0 && regs[b] != 0 && regs[c] != 0 && regs[d] != 0;
                 if (twoSameExts && twoInts && intsSameArea && noZeros)
@@ -114,7 +114,7 @@ namespace DotRecast.Recast
         {
             // Choose the first non-connected edge
             int dir = 0;
-            while ((flags[i] & (1 << dir)) == 0)
+            while ((flags[i] & (1 << dir)) is 0)
                 dir++;
 
             int startDir = dir;
@@ -254,7 +254,7 @@ namespace DotRecast.Recast
                 }
             }
 
-            if (simplified.Count == 0)
+            if (simplified.Count is 0)
             {
                 // If there is no connections at all,
                 // create some initial points for the simplification process.
@@ -339,7 +339,7 @@ namespace DotRecast.Recast
                 }
 
                 // Tessellate only outer edges or edges between areas.
-                if ((points[ci * 4 + 3] & RC_CONTOUR_REG_MASK) == 0 || (points[ci * 4 + 3] & RC_AREA_BORDER) != 0)
+                if ((points[ci * 4 + 3] & RC_CONTOUR_REG_MASK) is 0 || (points[ci * 4 + 3] & RC_AREA_BORDER) != 0)
                 {
                     while (ci != endi)
                     {
@@ -392,7 +392,7 @@ namespace DotRecast.Recast
                     // Tessellate only outer edges or edges between areas.
                     bool tess = false;
                     // Wall edges.
-                    if ((buildFlags & RC_CONTOUR_TESS_WALL_EDGES) != 0 && (points[ci * 4 + 3] & RC_CONTOUR_REG_MASK) == 0)
+                    if ((buildFlags & RC_CONTOUR_TESS_WALL_EDGES) != 0 && (points[ci * 4 + 3] & RC_CONTOUR_REG_MASK) is 0)
                         tess = true;
                     // Edges between areas.
                     if ((buildFlags & RC_CONTOUR_TESS_AREA_EDGES) != 0 && (points[ci * 4 + 3] & RC_AREA_BORDER) != 0)
@@ -719,7 +719,7 @@ namespace DotRecast.Recast
                     {
                         int res = 0;
                         RcCompactSpan s = chf.spans[i];
-                        if (chf.spans[i].reg == 0 || (chf.spans[i].reg & RC_BORDER_REG) != 0)
+                        if (chf.spans[i].reg is 0 || (chf.spans[i].reg & RC_BORDER_REG) != 0)
                         {
                             flags[i] = 0;
                             continue;
@@ -755,14 +755,14 @@ namespace DotRecast.Recast
                     RcCompactCell c = chf.cells[x + y * w];
                     for (int i = c.index, ni = c.index + c.count; i < ni; ++i)
                     {
-                        if (flags[i] == 0 || flags[i] == 0xf)
+                        if (flags[i] is 0 || flags[i] is 0xf)
                         {
                             flags[i] = 0;
                             continue;
                         }
 
                         int reg = chf.spans[i].reg;
-                        if (reg == 0 || (reg & RC_BORDER_REG) != 0)
+                        if (reg is 0 || (reg & RC_BORDER_REG) != 0)
                             continue;
                         int area = chf.areas[i];
 
@@ -897,7 +897,7 @@ namespace DotRecast.Recast
                     for (int i = 0; i < nregions; i++)
                     {
                         RcContourRegion reg = regions[i];
-                        if (reg.nholes == 0)
+                        if (reg.nholes is 0)
                             continue;
 
                         if (reg.outline != null)

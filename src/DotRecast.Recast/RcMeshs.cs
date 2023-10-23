@@ -183,7 +183,7 @@ namespace DotRecast.Recast
 
         private static bool Collinear(ReadOnlySpan<int> verts, int a, int b, int c)
         {
-            return Area2(verts, a, b, c) == 0;
+            return Area2(verts, a, b, c) is 0;
         }
 
         // Returns true iff ab properly intersects cd: they share
@@ -774,7 +774,7 @@ namespace DotRecast.Recast
                     edges[i * 4 + 1]--;
             }
 
-            if (nedges == 0)
+            if (nedges is 0)
                 return;
 
             // Start with one vertex, keep appending connected
@@ -884,7 +884,7 @@ namespace DotRecast.Recast
                 }
             }
 
-            if (npolys == 0)
+            if (npolys is 0)
                 return;
 
             // Merge polygons.
@@ -1068,7 +1068,7 @@ namespace DotRecast.Recast
                     }
                 }
 
-                if (npolys == 0)
+                if (npolys is 0)
                     continue;
 
                 // Merge polygons.
@@ -1179,13 +1179,13 @@ namespace DotRecast.Recast
                         int va = mesh.polys[p + j] * 3;
                         int vb = mesh.polys[p + nj] * 3;
 
-                        if (mesh.verts[va + 0] == 0 && mesh.verts[vb + 0] == 0)
+                        if (mesh.verts[va + 0] is 0 && mesh.verts[vb + 0] is 0)
                             mesh.polys[p + nvp + j] = 0x8000 | 0;
                         else if (mesh.verts[va + 2] == h && mesh.verts[vb + 2] == h)
                             mesh.polys[p + nvp + j] = 0x8000 | 1;
                         else if (mesh.verts[va + 0] == w && mesh.verts[vb + 0] == w)
                             mesh.polys[p + nvp + j] = 0x8000 | 2;
-                        else if (mesh.verts[va + 2] == 0 && mesh.verts[vb + 2] == 0)
+                        else if (mesh.verts[va + 2] is 0 && mesh.verts[vb + 2] is 0)
                             mesh.polys[p + nvp + j] = 0x8000 | 3;
                     }
                 }
@@ -1212,7 +1212,7 @@ namespace DotRecast.Recast
         /// @see rcAllocPolyMesh, rcPolyMesh
         public static RcPolyMesh MergePolyMeshes(RcPolyMesh[] meshes, int nmeshes)
         {
-            if (nmeshes == 0 || meshes == null)
+            if (nmeshes is 0 || meshes == null)
                 return null;
 
             RcPolyMesh mesh = new()
@@ -1261,10 +1261,10 @@ namespace DotRecast.Recast
                 int ox = (int)Math.Floor((pmesh.bmin.X - mesh.bmin.X) / mesh.cs + 0.5f);
                 int oz = (int)Math.Floor((pmesh.bmin.Z - mesh.bmin.Z) / mesh.cs + 0.5f);
 
-                bool isMinX = ox == 0;
-                bool isMinZ = oz == 0;
-                bool isMaxX = Math.Floor((mesh.bmax.X - pmesh.bmax.X) / mesh.cs + 0.5f) == 0;
-                bool isMaxZ = Math.Floor((mesh.bmax.Z - pmesh.bmax.Z) / mesh.cs + 0.5f) == 0;
+                bool isMinX = ox is 0;
+                bool isMinZ = oz is 0;
+                bool isMaxX = Math.Floor((mesh.bmax.X - pmesh.bmax.X) / mesh.cs + 0.5f) is 0;
+                bool isMaxZ = Math.Floor((mesh.bmax.Z - pmesh.bmax.Z) / mesh.cs + 0.5f) is 0;
                 bool isOnBorder = isMinX || isMinZ || isMaxX || isMaxZ;
 
                 for (int j = 0; j < pmesh.nverts; ++j)

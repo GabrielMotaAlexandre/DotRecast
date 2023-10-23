@@ -211,7 +211,7 @@ namespace DotRecast.Core.Compression
                     htab[hslot] = anchor;
 
                     /* is this a match? check the first 3 bytes */
-                    if (distance == 0
+                    if (distance is 0
                         || (level == LEVEL_1 ? distance >= MAX_DISTANCE : distance >= MAX_FARDISTANCE)
                         || input[inOffset + refs++] != input[inOffset + ip++]
                         || input[inOffset + refs++] != input[inOffset + ip++]
@@ -269,7 +269,7 @@ namespace DotRecast.Core.Compression
                 /* distance is biased */
                 distance--;
 
-                if (distance == 0)
+                if (distance is 0)
                 {
                     /* zero distance means a run */
                     //flzuint8 x = ip[-1];

@@ -44,10 +44,10 @@ public class RandomPointTest : AbstractDetourTest
             for (int j = 0; j < poly.vertCount; j++)
             {
                 int v = poly.verts[j] * 3;
-                bmin[0] = j == 0 ? tile.data.verts[v] : Math.Min(bmin[0], tile.data.verts[v]);
-                bmax[0] = j == 0 ? tile.data.verts[v] : Math.Max(bmax[0], tile.data.verts[v]);
-                bmin[1] = j == 0 ? tile.data.verts[v + 2] : Math.Min(bmin[1], tile.data.verts[v + 2]);
-                bmax[1] = j == 0 ? tile.data.verts[v + 2] : Math.Max(bmax[1], tile.data.verts[v + 2]);
+                bmin[0] = j is 0 ? tile.data.verts[v] : Math.Min(bmin[0], tile.data.verts[v]);
+                bmax[0] = j is 0 ? tile.data.verts[v] : Math.Max(bmax[0], tile.data.verts[v]);
+                bmin[1] = j is 0 ? tile.data.verts[v + 2] : Math.Min(bmin[1], tile.data.verts[v + 2]);
+                bmax[1] = j is 0 ? tile.data.verts[v + 2] : Math.Max(bmax[1], tile.data.verts[v + 2]);
             }
 
             Assert.That(randomPt.X >= bmin[0], Is.True);
@@ -78,10 +78,10 @@ public class RandomPointTest : AbstractDetourTest
             for (int j = 0; j < poly.vertCount; j++)
             {
                 int v = poly.verts[j] * 3;
-                bmin[0] = j == 0 ? tile.data.verts[v] : Math.Min(bmin[0], tile.data.verts[v]);
-                bmax[0] = j == 0 ? tile.data.verts[v] : Math.Max(bmax[0], tile.data.verts[v]);
-                bmin[1] = j == 0 ? tile.data.verts[v + 2] : Math.Min(bmin[1], tile.data.verts[v + 2]);
-                bmax[1] = j == 0 ? tile.data.verts[v + 2] : Math.Max(bmax[1], tile.data.verts[v + 2]);
+                bmin[0] = j is 0 ? tile.data.verts[v] : Math.Min(bmin[0], tile.data.verts[v]);
+                bmax[0] = j is 0 ? tile.data.verts[v] : Math.Max(bmax[0], tile.data.verts[v]);
+                bmin[1] = j is 0 ? tile.data.verts[v + 2] : Math.Min(bmin[1], tile.data.verts[v + 2]);
+                bmax[1] = j is 0 ? tile.data.verts[v + 2] : Math.Max(bmax[1], tile.data.verts[v + 2]);
             }
 
             Assert.That(randomPt.X >= bmin[0], Is.True);

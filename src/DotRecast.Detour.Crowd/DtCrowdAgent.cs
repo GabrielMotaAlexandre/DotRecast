@@ -168,7 +168,7 @@ namespace DotRecast.Detour.Crowd
 
         public Vector2 CalcSmoothSteerDirection()
         {
-            if (corners.Count == 0)
+            if (corners.Count is 0)
             {
                 return Vector2.Zero;
             }
@@ -184,14 +184,14 @@ namespace DotRecast.Detour.Crowd
             float len0 = dir0.Length();
             float len1 = dir1.Length();
             if (len1 > 0.001f)
-                dir1 *= 1.0f / len1;
+                dir1 *= 1f / len1;
 
             return Vector2.Normalize(dir0 - dir1 * (len0 * 0.5f));
         }
 
         public Vector2 CalcStraightSteerDirection()
         {
-            if (corners.Count == 0)
+            if (corners.Count is 0)
             {
                 return Vector2.Zero;
             }

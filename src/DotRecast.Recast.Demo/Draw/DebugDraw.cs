@@ -329,7 +329,7 @@ public class DebugDraw
 
     private static readonly int NUM_ARC_PTS = 8;
     private static readonly float PAD = 0.05f;
-    private static readonly float ARC_PTS_SCALE = (1.0f - PAD * 2) / NUM_ARC_PTS;
+    private static readonly float ARC_PTS_SCALE = (1f - PAD * 2) / NUM_ARC_PTS;
 
     public void AppendArc(float x0, float y0, float z0, float x1, float y1, float z1, float h, float as0, float as1, int col)
     {
@@ -505,7 +505,7 @@ public class DebugDraw
 
     public static void Vnormalize(ref Vector3 v)
     {
-        float d = (float)(1.0f / Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z));
+        float d = (float)(1f / Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z));
         v.X *= d;
         v.Y *= d;
         v.Z *= d;
@@ -527,7 +527,7 @@ public class DebugDraw
     }
 
 //    public static int AreaToCol(int area) {
-//        if (area == 0) {
+//        if (area is 0) {
 //            return DuRGBA(0, 192, 255, 255);
 //        } else {
 //            return DuIntToCol(area, 255);

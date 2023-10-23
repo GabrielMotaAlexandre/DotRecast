@@ -41,7 +41,7 @@ namespace DotRecast.Detour.Extras.Jumplink
                         if ((mesh.polys[p + nvp + j] & 0x8000) != 0)
                         {
                             int dir = mesh.polys[p + nvp + j] & 0xf;
-                            if (dir == 0xf)
+                            if (dir is 0xf)
                             {
                                 // Border
                                 if (mesh.polys[p + nvp + j] != RC_MESH_NULL_IDX)
