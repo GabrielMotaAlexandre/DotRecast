@@ -235,7 +235,7 @@ namespace DotRecast.Detour.Crowd
             var res = new List<long>();
             navquery.InitSlicedFindPath(m_path[0], m_path[^1], Pos, m_target, filter, 0);
             navquery.UpdateSlicedFindPath(maxIterations, out var _);
-            var status = navquery.FinalizeSlicedFindPathPartial(m_path, ref res);
+            var status = navquery.FinalizeSlicedFindPathPartial(m_path, res);
 
             if (status.Succeeded() && res.Count > 0)
             {

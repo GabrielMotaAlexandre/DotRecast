@@ -223,7 +223,7 @@ namespace DotRecast.Recast.Toolset.Tools
                 return status;
             }
 
-            navQuery.FinalizeSlicedFindPath(ref path);
+            navQuery.FinalizeSlicedFindPath(path);
 
             straightPath?.Clear();
             if (path != null)

@@ -598,12 +598,12 @@ namespace DotRecast.Detour.Crowd
                     if (ag.targetReplan)
                     {
                         // Try to use existing steady path during replan if possible.
-                        status = _navQuery.FinalizeSlicedFindPathPartial(path, ref reqPath);
+                        status = _navQuery.FinalizeSlicedFindPathPartial(path, reqPath);
                     }
                     else
                     {
                         // Try to move towards target when goal changes.
-                        status = _navQuery.FinalizeSlicedFindPath(ref reqPath);
+                        status = _navQuery.FinalizeSlicedFindPath(reqPath);
                     }
 
                     Vector3 reqPos;
@@ -723,7 +723,7 @@ namespace DotRecast.Detour.Crowd
 
                         bool valid = true;
                         List<long> res = ag.targetPathQueryResult.path;
-                        if (status.Failed() || 0 == res.Count)
+                        if (status.Failed() || res.Count is 0)
                         {
                             valid = false;
                         }

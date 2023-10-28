@@ -64,7 +64,7 @@ namespace DotRecast.Detour.Crowd
 
                 if (q.result.status.Succeeded())
                 {
-                    q.result.status = q.navQuery.FinalizeSlicedFindPath(ref q.result.path);
+                    q.result.status = q.navQuery.FinalizeSlicedFindPath(q.result.path);
                 }
 
                 if (q.result.status.Failed() || q.result.status.Succeeded())

@@ -987,7 +987,7 @@ namespace DotRecast.Detour
                 }
             }
 
-            var status = GetPathToNode(lastBestNode, ref path);
+            var status = GetPathToNode(lastBestNode, path);
             if (lastBestNode.id != endRef)
             {
                 status |= DtStatus.DT_PARTIAL_RESULT;
@@ -1328,7 +1328,7 @@ namespace DotRecast.Detour
         /// @param[out] path An ordered list of polygon references representing the path. (Start to end.)
         /// [(polyRef) * @p pathCount]
         /// @returns The status flags for the query.
-        public DtStatus FinalizeSlicedFindPath(ref List<long> path)
+        public DtStatus FinalizeSlicedFindPath(List<long> path)
         {
             if (path is null)
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
@@ -1355,7 +1355,7 @@ namespace DotRecast.Detour
                     m_query.status |= DtStatus.DT_PARTIAL_RESULT;
                 }
 
-                GetPathToNode(m_query.lastBestNode, ref path);
+                GetPathToNode(m_query.lastBestNode, path);
             }
 
             var details = m_query.status & DtStatus.DT_STATUS_DETAIL_MASK;
@@ -1370,7 +1370,7 @@ namespace DotRecast.Detour
         /// @param[out] path An ordered list of polygon references representing the path. (Start to end.)
         /// [(polyRef) * @p pathCount]
         /// @returns The status flags for the query.
-        public DtStatus FinalizeSlicedFindPathPartial(List<long> existing, ref List<long> path)
+        public DtStatus FinalizeSlicedFindPathPartial(List<long> existing, List<long> path)
         {
             if (null == path)
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
@@ -1413,7 +1413,7 @@ namespace DotRecast.Detour
                     node = m_query.lastBestNode;
                 }
 
-                GetPathToNode(node, ref path);
+                GetPathToNode(node, path);
             }
 
             var details = m_query.status & DtStatus.DT_STATUS_DETAIL_MASK;
@@ -3350,7 +3350,7 @@ namespace DotRecast.Detour
      * @remarks The result of this function depends on the state of the query object. For that reason it should only be
      *          used immediately after one of the two Dijkstra searches, findPolysAroundCircle or findPolysAroundShape.
      */
-        public DtStatus GetPathFromDijkstraSearch(long endRef, ref List<long> path)
+        public DtStatus GetPathFromDijkstraSearch(long endRef, List<long> path)
         {
             if (!m_nav.IsValidPolyRef(endRef) || null == path)
             {
@@ -3371,11 +3371,11 @@ namespace DotRecast.Detour
                 return DtStatus.DT_FAILURE | DtStatus.DT_INVALID_PARAM;
             }
 
-            return GetPathToNode(endNode, ref path);
+            return GetPathToNode(endNode, path);
         }
 
         // Gets the path leading to the specified end node.
-        private DtStatus GetPathToNode(DtNode endNode, ref List<long> path)
+        private DtStatus GetPathToNode(DtNode endNode, List<long> path)
         {
             // Reverse the path.
             DtNode curNode = endNode;

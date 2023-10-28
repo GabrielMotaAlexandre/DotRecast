@@ -171,7 +171,7 @@ public class FindPathTest : AbstractDetourTest
                 status = query.Status;
             }
 
-            status = query.FinalizeSlicedFindPath(ref path);
+            status = query.FinalizeSlicedFindPath(path);
             Assert.That(status, Is.EqualTo(STATUSES[i]), $"index({i})");
             Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
             for (int j = 0; j < RESULTS[i].Length; j++)
