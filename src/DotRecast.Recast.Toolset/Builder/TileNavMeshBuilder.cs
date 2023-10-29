@@ -32,7 +32,7 @@ namespace DotRecast.Recast.Toolset.Builder
         {
         }
 
-        public NavMeshBuildResult Build(IInputGeomProvider geom, RcNavMeshBuildSettings settings)
+        public static NavMeshBuildResult Build(IInputGeomProvider geom, RcNavMeshBuildSettings settings)
         {
             return Build(geom,
                 settings.tileSize,

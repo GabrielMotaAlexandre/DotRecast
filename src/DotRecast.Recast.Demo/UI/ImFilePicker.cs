@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -22,6 +22,7 @@ public class ImFilePicker
     public string SelectedFile;
     public List<string> AllowedExtensions;
     public bool OnlyAllowFolders;
+    private static readonly char[] separator = new char[] { '|' };
 
     public static ImFilePicker GetFolderPicker(string pickerName, string startingPath)
         => GetFilePicker(pickerName, startingPath, null, true);
@@ -55,7 +56,7 @@ public class ImFilePicker
                 else
                     fp.AllowedExtensions = new List<string>();
 
-                fp.AllowedExtensions.AddRange(searchFilter.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries));
+                fp.AllowedExtensions.AddRange(searchFilter.Split(separator, StringSplitOptions.RemoveEmptyEntries));
             }
 
             _filePickers.Add(pickerName, fp);
@@ -143,20 +144,6 @@ public class ImFilePicker
         }
 
         return result;
-    }
-
-    static bool TryGetFileInfo(string fileName, out FileInfo realFile)
-    {
-        try
-        {
-            realFile = new FileInfo(fileName);
-            return true;
-        }
-        catch
-        {
-            realFile = null;
-            return false;
-        }
     }
 
     List<string> GetFileSystemEntries(string fullName)

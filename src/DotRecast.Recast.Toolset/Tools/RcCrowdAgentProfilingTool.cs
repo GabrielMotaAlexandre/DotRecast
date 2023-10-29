@@ -21,6 +21,7 @@ namespace DotRecast.Recast.Toolset.Tools
         private FRand rnd;
         private readonly List<DtPolyPoint> _polyPoints;
         private long crowdUpdateTime;
+        private static readonly float[] areaCost = new float[] { 1f, 10f, 1f, 1f, 2f, 1.5f };
 
         public RcCrowdAgentProfilingTool()
         {
@@ -131,7 +132,7 @@ namespace DotRecast.Recast.Toolset.Tools
             crowd = new DtCrowd(_crowdCfg, navMesh, __ => new DtQueryDefaultFilter(
                 SampleAreaModifications.SAMPLE_POLYFLAGS_ALL,
                 SampleAreaModifications.SAMPLE_POLYFLAGS_DISABLED,
-                new float[] { 1f, 10f, 1f, 1f, 2f, 1.5f })
+                areaCost)
             );
 
             DtObstacleAvoidanceParams option = new(crowd.GetObstacleAvoidanceParams(0))
@@ -243,7 +244,7 @@ namespace DotRecast.Recast.Toolset.Tools
                                 MoveVillager(navquery, filter, ag, crowAgentData);
                                 break;
                             case RcCrowdAgentType.TRAVELLER:
-                                MoveTraveller(navquery, filter, ag, crowAgentData);
+                                MoveTraveller(ag);
                                 break;
                         }
                     }
@@ -283,7 +284,7 @@ namespace DotRecast.Recast.Toolset.Tools
             }
         }
 
-        private void MoveTraveller(DtNavMeshQuery navquery, IDtQueryFilter filter, DtCrowdAgent ag, RcCrowdAgentData crowAgentData)
+        private void MoveTraveller(DtCrowdAgent ag)
         {
             // Move to another zone
             List<DtPolyPoint> potentialTargets = new();
@@ -297,8 +298,20 @@ namespace DotRecast.Recast.Toolset.Tools
 
             if (0 < potentialTargets.Count)
             {
-                potentialTargets.Shuffle();
+                Shuffle(potentialTargets);
                 DtCrowd.RequestMoveTarget(ag, potentialTargets[0].refs, potentialTargets[0].pt);
+            }
+        }
+
+        public static void Shuffle<T>(IList<T> list)
+        {
+            Random random = new();
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = random.Next(n + 1);
+                (list[k], list[n]) = (list[n], list[k]);
             }
         }
 

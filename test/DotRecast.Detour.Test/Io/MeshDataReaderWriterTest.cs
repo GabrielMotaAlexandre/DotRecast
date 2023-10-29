@@ -66,7 +66,7 @@ public class MeshDataReaderWriterTest
         using var bw = new BinaryWriter(ms);
 
         DtMeshDataWriter writer = new();
-        writer.Write(bw, meshData, order, cCompatibility);
+        DtMeshDataWriter.Write(bw, meshData, order, cCompatibility);
         ms.Seek(0, SeekOrigin.Begin);
 
         using var br = new BinaryReader(ms);

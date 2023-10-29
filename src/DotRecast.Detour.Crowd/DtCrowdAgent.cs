@@ -141,9 +141,7 @@ namespace DotRecast.Detour.Crowd
                 return false;
 
             bool offMeshConnection = ((corners[^1].flags
-                                       & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
-                ? true
-                : false;
+                                       & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0);
             if (offMeshConnection)
             {
                 float distSq = Vector3Extensions.Dist2DSqr(npos, corners[^1].pos);
@@ -159,7 +157,7 @@ namespace DotRecast.Detour.Crowd
             if (0 == corners.Count)
                 return range;
 
-            bool endOfPath = ((corners[^1].flags & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0) ? true : false;
+            bool endOfPath = (corners[^1].flags & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0;
             if (endOfPath)
                 return MathF.Min(Vector3Extensions.Dist2D(npos, corners[^1].pos), range);
 

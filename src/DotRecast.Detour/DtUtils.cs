@@ -85,10 +85,9 @@ namespace DotRecast.Detour
         /// @see dtOverlapQuantBounds
         public static bool OverlapBounds(Vector3 amin, Vector3 amax, Vector3 bmin, Vector3 bmax)
         {
-            bool overlap = true;
-            overlap = (amin.X > bmax.X || amax.X < bmin.X) ? false : overlap;
-            overlap = (amin.Y > bmax.Y || amax.Y < bmin.Y) ? false : overlap;
-            overlap = (amin.Z > bmax.Z || amax.Z < bmin.Z) ? false : overlap;
+            bool overlap = amin.X <= bmax.X && amax.X >= bmin.X;
+            overlap &= amin.Y <= bmax.Y && amax.Y >= bmin.Y;
+            overlap &= amin.Z <= bmax.Z && amax.Z >= bmin.Z;
             return overlap;
         }
 

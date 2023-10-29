@@ -189,27 +189,6 @@ namespace DotRecast.Detour
             return copied;
         }
 
-        private static int AddVertex(float[] inters, int ii, float[] p)
-        {
-            if (ii > 0)
-            {
-                if (inters[ii - 3] == p[0] && inters[ii - 2] == p[1] && inters[ii - 1] == p[2])
-                {
-                    return ii;
-                }
-
-                if (inters[0] == p[0] && inters[1] == p[1] && inters[2] == p[2])
-                {
-                    return ii;
-                }
-            }
-
-            inters[ii] = p[0];
-            inters[ii + 1] = p[1];
-            inters[ii + 2] = p[2];
-            return ii + 3;
-        }
-
         private static int AddVertex(float[] inters, int ii, Vector3 p)
         {
             if (ii > 0)

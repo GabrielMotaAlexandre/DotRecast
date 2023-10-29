@@ -29,8 +29,6 @@ namespace DotRecast.Recast.Demo.UI;
 
 public class RcSettingsView : IRcView
 {
-    private static readonly ILogger Logger = Log.ForContext<RcSettingsView>();
-
     private readonly IRecastDemoChannel _channel;
     private long buildTime;
 
@@ -142,7 +140,7 @@ public class RcSettingsView : IRcView
         Enum.GetValues<RcPartition>().ForEach(partition =>
         {
             var name = Enum.GetName(partition);
-            var label = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
+            var label = name[..1].ToUpper() + name[1..].ToLower();
             var v = (int)settings.partitioning;
             ImGui.RadioButton(label, ref v, (int)partition);
             settings.partitioning = (RcPartition)v;

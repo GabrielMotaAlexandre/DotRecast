@@ -119,24 +119,5 @@ namespace DotRecast.Core
                 return BinaryPrimitives.ReadInt64LittleEndian(span);
             }
         }
-
-        public static void PutFloat(float v)
-        {
-            // if (_order == ByteOrder.BIG_ENDIAN)
-            // {
-            //     BinaryPrimitives.WriteInt32BigEndian(_bytes[_position]);
-            // }
-            // else
-            // {
-            //     BinaryPrimitives.ReadInt64LittleEndian(span);
-            // }
-
-            // ?
-        }
-
-        public static void PutInt(int v)
-        {
-            // ?
-        }
     }
 }

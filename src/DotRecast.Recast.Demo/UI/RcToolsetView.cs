@@ -30,7 +30,6 @@ public class RcToolsetView : IRcView
     //private readonly NkColor white = NkColor.Create();
     private int _currentToolIdx;
     private ISampleTool _currentSampleTool;
-    private bool enabled;
     private readonly ISampleTool[] tools;
     private bool _isHovered;
     public bool IsHovered() => _isHovered;
@@ -88,9 +87,9 @@ public class RcToolsetView : IRcView
         ImGui.End();
     }
 
-    public void SetEnabled(bool enabled)
+    public static void SetEnabled(bool enabled)
     {
-        this.enabled = enabled;
+        //this.enabled = enabled;
     }
 
     public ISampleTool GetTool()

@@ -9,10 +9,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     public class JumpLinkBuilder
     {
-        private readonly EdgeSamplerFactory edgeSamplerFactory = new();
-        private readonly IGroundSampler groundSampler = new NavMeshGroundSampler();
-        private readonly TrajectorySampler trajectorySampler = new();
-        private readonly JumpSegmentBuilder jumpSegmentBuilder = new();
+        private readonly NavMeshGroundSampler groundSampler = new();
 
         private readonly List<JumpEdge[]> edges;
         private readonly IList<RcBuilderResult> results;
@@ -42,7 +39,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         {
             EdgeSampler es = EdgeSamplerFactory.Get(acfg, type, edge);
             groundSampler.Sample(acfg, result, es);
-            trajectorySampler.Sample(acfg, in result.Solid, es);
+            TrajectorySampler.Sample(acfg, in result.Solid, es);
             JumpSegment[] jumpSegments = JumpSegmentBuilder.Build(acfg, es);
             return BuildJumpLinks(acfg, es, jumpSegments);
         }

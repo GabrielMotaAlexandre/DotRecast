@@ -25,8 +25,6 @@ namespace DotRecast.Recast.Demo.UI;
 
 public class RcCanvas
 {
-    private static readonly ILogger Logger = Log.ForContext<RecastDemo>();
-
     private readonly IWindow _window;
     private readonly IRcView[] _views;
     private bool _mouseOver;
@@ -43,55 +41,6 @@ public class RcCanvas
         {
             view.Bind(this);
         }
-
-        // SetupClipboard(window);
-        // GlfwSetCharCallback(window, (w, codepoint) => Nk_input_unicode(ctx, codepoint));
-        // glContext = new NuklearGL(this);
-    }
-
-
-    private static void SetupClipboard(long window)
-    {
-        // ctx.Clip().copy((handle, text, len) => {
-        //     if (len is 0) {
-        //         return;
-        //     }
-        //
-        //     try (MemoryStack stack = StackPush()) {
-        //         ByteBuffer str = stack.Malloc(len + 1);
-        //         MemCopy(text, MemAddress(str), len);
-        //         str.Put(len, (byte) 0);
-        //         GlfwSetClipboardString(window, str);
-        //     }
-        // });
-        // ctx.Clip().paste((handle, edit) => {
-        //     long text = NglfwGetClipboardString(window);
-        //     if (text != NULL) {
-        //         Nnk_textedit_paste(edit, text, Nnk_strlen(text));
-        //     }
-        // });
-    }
-
-    public static void InputBegin()
-    {
-        //Nk_input_begin(ctx);
-    }
-
-    public static void InputEnd(IWindow win)
-    {
-        // NkMouse mouse = ctx.Input().Mouse();
-        // if (mouse.Grab()) {
-        //     GlfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-        // } else if (mouse.Grabbed()) {
-        //     float prevX = mouse.Prev().x();
-        //     float prevY = mouse.Prev().y();
-        //     GlfwSetCursorPos(win, prevX, prevY);
-        //     mouse.Pos().x(prevX);
-        //     mouse.Pos().y(prevY);
-        // } else if (mouse.Ungrab()) {
-        //     GlfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        // }
-        // Nk_input_end(ctx);
     }
 
     public void Update(double dt)

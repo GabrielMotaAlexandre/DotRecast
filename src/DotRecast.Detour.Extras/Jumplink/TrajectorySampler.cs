@@ -7,7 +7,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 {
     class TrajectorySampler
     {
-        public void Sample(JumpLinkBuilderConfig acfg, in RcHeightfield heightfield, EdgeSampler es)
+        public static void Sample(JumpLinkBuilderConfig acfg, in RcHeightfield heightfield, EdgeSampler es)
         {
             int nsamples = es.start.gsamples.Length;
             for (int i = 0; i < nsamples; ++i)
@@ -87,7 +87,7 @@ namespace DotRecast.Detour.Extras.Jumplink
 
         private static bool OverlapRange(float amin, float amax, float bmin, float bmax)
         {
-            return (amin > bmax || amax < bmin) ? false : true;
+            return amin <= bmax && amax >= bmin;
         }
     }
 }

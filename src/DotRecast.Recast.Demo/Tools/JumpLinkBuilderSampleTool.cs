@@ -30,7 +30,6 @@ namespace DotRecast.Recast.Demo.Tools;
 
 public class JumpLinkBuilderSampleTool : ISampleTool
 {
-    private static readonly ILogger Logger = Log.ForContext<JumpLinkBuilderSampleTool>();
     private DemoSample _sample;
 
     public const int DRAW_WALKABLE_SURFACE = 1 << 0;
@@ -235,7 +234,6 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     float r = link.start.height;
 
                     int col = DuLerpCol(DuRGBA(255, 192, 0, 255), DuRGBA(255, 255, 255, 255), 64);
-                    int cola = DuTransCol(col, 192);
                     int colb = DuRGBA(255, 255, 255, 255);
 
                     // Start segment.
@@ -272,11 +270,6 @@ public class JumpLinkBuilderSampleTool : ISampleTool
                     dd.Vertex(end.q.X, end.q.Y, end.q.Z, colb);
                     dd.Vertex(end.q.X, end.q.Y, end.q.Z, colb);
                     dd.Vertex(end.p.X, end.p.Y, end.p.Z, colb);
-                    dd.End();
-
-                    dd.Begin(LINES, 4.0f);
-                    DrawTrajectory(dd, link, link.start.p, end.p, link.trajectory, cola);
-                    DrawTrajectory(dd, link, link.start.q, end.q, link.trajectory, cola);
                     dd.End();
 
                     dd.Begin(LINES, 8.0f);
@@ -400,11 +393,6 @@ public class JumpLinkBuilderSampleTool : ISampleTool
 
 
     public void HandleClick(Vector3 s, Vector3 p, bool shift)
-    {
-    }
-
-
-    private static void DrawTrajectory(RecastDebugDraw dd, JumpLink link, Vector3 pa, Vector3 pb, Trajectory tra, int cola)
     {
     }
 

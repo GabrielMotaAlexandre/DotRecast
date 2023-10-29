@@ -30,10 +30,6 @@ namespace DotRecast.Recast
 
     public static class RcLayers
     {
-        const int RC_MAX_LAYERS = RC_NOT_CONNECTED;
-        const int RC_MAX_NEIS = 16;
-
-
         private static void AddUnique(List<int> a, int v)
         {
             if (!a.Contains(v))
@@ -49,7 +45,7 @@ namespace DotRecast.Recast
 
         private static bool OverlapRange(int amin, int amax, int bmin, int bmax)
         {
-            return (amin > bmax || amax < bmin) ? false : true;
+            return amin <= bmax && amax >= bmin;
         }
 
         public static RcHeightfieldLayerSet BuildHeightfieldLayers(in RcCompactHeightfield chf, int walkableHeight)

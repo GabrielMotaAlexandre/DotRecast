@@ -171,15 +171,4 @@ public class AbstractCrowdTest
         vel *= speed;
         return vel;
     }
-
-    protected void DumpActiveAgents(int i)
-    {
-        Console.WriteLine(crowd.GetActiveAgents().Count);
-        foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        {
-            Console.WriteLine(ag.state + ", " + ag.TargetState);
-            Console.WriteLine(ag.npos.X + ", " + ag.npos.Y);
-            Console.WriteLine(ag.nvel.X + ", " + ag.nvel.Y);
-        }
-    }
 }

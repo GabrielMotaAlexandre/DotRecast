@@ -32,7 +32,7 @@ namespace DotRecast.Detour.Io
             WriteTiles(stream, mesh, order, cCompatibility);
         }
 
-        private void WriteHeader(BinaryWriter stream, DtNavMesh mesh, RcByteOrder order, bool cCompatibility)
+        private static void WriteHeader(BinaryWriter stream, DtNavMesh mesh, RcByteOrder order, bool cCompatibility)
         {
             Write(stream, NavMeshSetHeader.NAVMESHSET_MAGIC, order);
             Write(stream, cCompatibility ? NavMeshSetHeader.NAVMESHSET_VERSION : NavMeshSetHeader.NAVMESHSET_VERSION_RECAST4J, order);
@@ -56,7 +56,7 @@ namespace DotRecast.Detour.Io
             }
         }
 
-        private void WriteTiles(BinaryWriter stream, DtNavMesh mesh, RcByteOrder order, bool cCompatibility)
+        private static void WriteTiles(BinaryWriter stream, DtNavMesh mesh, RcByteOrder order, bool cCompatibility)
         {
             for (int i = 0; i < mesh.MaxTiles; ++i)
             {
@@ -72,7 +72,7 @@ namespace DotRecast.Detour.Io
                 };
                 using MemoryStream msw = new();
                 using BinaryWriter bw = new(msw);
-                writer.Write(bw, tile.data, order, cCompatibility);
+                DtMeshDataWriter.Write(bw, tile.data, order, cCompatibility);
                 bw.Flush();
                 bw.Close();
 

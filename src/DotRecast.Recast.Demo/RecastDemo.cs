@@ -66,9 +66,6 @@ public class RecastDemo : IRecastDemoChannel
     private float timeAcc;
     private float camr = 1000;
 
-    private readonly SoloNavMeshBuilder soloNavMeshBuilder = new();
-    private readonly TileNavMeshBuilder tileNavMeshBuilder = new();
-
     private string _lastGeomFileName;
     private DemoSample _sample;
 
@@ -305,12 +302,12 @@ public class RecastDemo : IRecastDemoChannel
         {
             using var br = new BinaryReader(file);
             DtMeshSetReader reader = new();
-            var mesh = reader.Read(br, 6);
+            var mesh = DtMeshSetReader.Read(br, 6);
 
             if (null != mesh)
             {
                 _sample.Update(_sample.GetInputGeom(), Array.Empty<RcBuilderResult>(), mesh);
-                toolset.SetEnabled(true);
+                RcToolsetView.SetEnabled(true);
             }
         }
         catch (Exception e)
@@ -374,7 +371,7 @@ public class RecastDemo : IRecastDemoChannel
             new CrowdAgentProfilingSampleTool(),
             new JumpLinkBuilderSampleTool()
         );
-        toolset.SetEnabled(true);
+        RcToolsetView.SetEnabled(true);
         logView = new RcLogView();
 
         _canvas = new RcCanvas(window, settingsView, toolset, logView);
@@ -658,7 +655,7 @@ public class RecastDemo : IRecastDemoChannel
         var geom = _sample.GetInputGeom();
         if (settings.tiled)
         {
-            buildResult = tileNavMeshBuilder.Build(geom, settings);
+            buildResult = TileNavMeshBuilder.Build(geom, settings);
         }
         else
         {

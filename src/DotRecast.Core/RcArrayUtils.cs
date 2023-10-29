@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace DotRecast.Core
 {
@@ -10,18 +10,6 @@ namespace DotRecast.Core
             for (int i = 0; i < length; ++i)
             {
                 deatArr[i] = source[startIdx + i];
-            }
-
-            return deatArr;
-        }
-
-        public static T[] CopyOf<T>(T[] source, int length)
-        {
-            var deatArr = new T[length];
-            var count = Math.Max(0, Math.Min(source.Length, length));
-            for (int i = 0; i < count; ++i)
-            {
-                deatArr[i] = source[i];
             }
 
             return deatArr;

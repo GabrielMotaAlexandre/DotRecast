@@ -24,40 +24,22 @@ namespace DotRecast.Detour.Io
 {
     public class DtMeshSetReader
     {
-        private readonly DtMeshDataReader meshReader = new();
-        private readonly DtNavMeshParamsReader paramReader = new();
-
-        public DtNavMesh Read(BinaryReader @is, int maxVertPerPoly)
+        public static DtNavMesh Read(BinaryReader @is, int maxVertPerPoly)
         {
             return Read(IOUtils.ToByteBuffer(@is), maxVertPerPoly, false);
         }
 
-        public DtNavMesh Read(RcByteBuffer bb, int maxVertPerPoly)
-        {
-            return Read(bb, maxVertPerPoly, false);
-        }
-
-        public DtNavMesh Read32Bit(BinaryReader @is, int maxVertPerPoly)
-        {
-            return Read(IOUtils.ToByteBuffer(@is), maxVertPerPoly, true);
-        }
-
-        public DtNavMesh Read32Bit(RcByteBuffer bb, int maxVertPerPoly)
-        {
-            return Read(bb, maxVertPerPoly, true);
-        }
-
-        public DtNavMesh Read(BinaryReader @is)
-        {
-            return Read(IOUtils.ToByteBuffer(@is));
-        }
-
-        public DtNavMesh Read(RcByteBuffer bb)
+        public static DtNavMesh Read(RcByteBuffer bb)
         {
             return Read(bb, -1, false);
         }
 
-        DtNavMesh Read(RcByteBuffer bb, int maxVertPerPoly, bool is32Bit)
+        public static DtNavMesh Read32Bit(BinaryReader @is, int maxVertPerPoly)
+        {
+            return Read(IOUtils.ToByteBuffer(@is), maxVertPerPoly, true);
+        }
+
+        static DtNavMesh Read(RcByteBuffer bb, int maxVertPerPoly, bool is32Bit)
         {
             NavMeshSetHeader header = ReadHeader(bb, maxVertPerPoly);
             if (header.maxVertsPerPoly <= 0)

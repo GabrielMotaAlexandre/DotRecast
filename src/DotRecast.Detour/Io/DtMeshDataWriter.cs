@@ -25,7 +25,7 @@ namespace DotRecast.Detour.Io
 {
     public class DtMeshDataWriter : DtWriter
     {
-        public void Write(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
+        public static void Write(BinaryWriter stream, DtMeshData data, RcByteOrder order, bool cCompatibility)
         {
             DtMeshHeader header = data.header;
             Write(stream, header.magic, order);

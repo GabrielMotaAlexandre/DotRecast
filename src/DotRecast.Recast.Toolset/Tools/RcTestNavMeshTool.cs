@@ -65,12 +65,8 @@ namespace DotRecast.Recast.Toolset.Tools
                     break;
                 }
 
-                bool endOfPath = (steerPosFlag & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0
-                    ? true
-                    : false;
-                bool offMeshConnection = (steerPosFlag & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0
-                    ? true
-                    : false;
+                bool endOfPath = (steerPosFlag & DtNavMeshQuery.DT_STRAIGHTPATH_END) != 0;
+                bool offMeshConnection = (steerPosFlag & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0;
 
                 // Find movement delta.
                 Vector3 delta = steerPos - iterPos;

@@ -16,10 +16,6 @@ namespace DotRecast.Recast.Demo.Tools;
 
 public class TestNavmeshSampleTool : ISampleTool
 {
-    private static readonly ILogger Logger = Log.ForContext<TestNavmeshSampleTool>();
-
-    private const int MAX_POLYS = 256;
-
     private DemoSample _sample;
     private readonly RcTestNavMeshTool _tool;
 
@@ -67,6 +63,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
     // for mode RANDOM_POINTS_IN_CIRCLE
     private List<Vector3> _randomPoints = new();
+    private static readonly float[] areaCost = new float[] { 1f, 1f, 1f, 1f, 2f, 1.5f };
 
     public TestNavmeshSampleTool()
     {
@@ -75,7 +72,7 @@ public class TestNavmeshSampleTool : ISampleTool
         m_filter = new DtQueryDefaultFilter(
             SampleAreaModifications.SAMPLE_POLYFLAGS_ALL,
             SampleAreaModifications.SAMPLE_POLYFLAGS_DISABLED,
-            new float[] { 1f, 1f, 1f, 1f, 2f, 1.5f }
+            areaCost
         );
     }
 

@@ -7,20 +7,12 @@ namespace DotRecast.Detour.Extras.Jumplink
     {
         public static EdgeSampler Get(JumpLinkBuilderConfig acfg, JumpLinkType type, JumpEdge edge)
         {
-            EdgeSampler es;
-            switch (type.Bit)
+            EdgeSampler es = type.Bit switch
             {
-                case JumpLinkType.EDGE_JUMP_BIT:
-                    es = InitEdgeJumpSampler(acfg, edge);
-                    break;
-                case JumpLinkType.EDGE_CLIMB_DOWN_BIT:
-                    es = InitClimbDownSampler(acfg, edge);
-                    break;
-                case JumpLinkType.EDGE_JUMP_OVER_BIT:
-                default:
-                    throw new ArgumentException("Unsupported jump type " + type);
-            }
-
+                JumpLinkType.EDGE_JUMP_BIT => InitEdgeJumpSampler(acfg, edge),
+                JumpLinkType.EDGE_CLIMB_DOWN_BIT => InitClimbDownSampler(acfg, edge),
+                _ => throw new ArgumentException("Unsupported jump type " + type),
+            };
             return es;
         }
 
@@ -75,13 +67,6 @@ namespace DotRecast.Detour.Extras.Jumplink
             return es;
         }
 
-        private static void Vadd(float[] dest, float[] v1, float[] v2)
-        {
-            dest[0] = v1[0] + v2[0];
-            dest[1] = v1[1] + v2[1];
-            dest[2] = v1[2] + v2[2];
-        }
-        
         private static void Vadd(ref Vector3 dest, Vector3 v1, Vector3 v2)
         {
             dest.X = v1.X + v2.X;
@@ -89,20 +74,11 @@ namespace DotRecast.Detour.Extras.Jumplink
             dest.Z = v1.Z + v2.Z;
         }
 
-
-        private static void Trans2d(float[] dst, float[] ax, float[] ay, float[] pt)
-        {
-            dst[0] = ax[0] * pt[0] + ay[0] * pt[1];
-            dst[1] = ax[1] * pt[0] + ay[1] * pt[1];
-            dst[2] = ax[2] * pt[0] + ay[2] * pt[1];
-        }
-        
         private static void Trans2d(ref Vector3 dst, Vector3 ax, Vector3 ay, Vector2 pt)
         {
             dst.X = ax.X * pt.X + ay.X * pt.Y;
             dst.Y = ax.Y * pt.X + ay.Y * pt.Y;
             dst.Z = ax.Z * pt.X + ay.Z * pt.Y;
         }
-
     }
 }

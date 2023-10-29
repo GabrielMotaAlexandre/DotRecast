@@ -41,24 +41,6 @@ namespace DotRecast.Core.Compression
 
         private const int MIN_RECOMENDED_LENGTH_FOR_LEVEL_2 = 1024 * 64;
 
-        private const int MAGIC_NUMBER = 'F' << 16 | 'L' << 8 | 'Z';
-
-        private const byte BLOCK_TYPE_NON_COMPRESSED = 0x00;
-        private const byte BLOCK_TYPE_COMPRESSED = 0x01;
-        private const byte BLOCK_WITHOUT_CHECKSUM = 0x00;
-        private const byte BLOCK_WITH_CHECKSUM = 0x10;
-
-        private const int OPTIONS_OFFSET = 3;
-        private const int CHECKSUM_OFFSET = 4;
-
-        private const int MAX_CHUNK_LENGTH = 0xFFFF;
-
-        /**
-     * Do not call {@link #Compress(byte[], int, int, byte[], int, int)} for input buffers
-     * which length less than this value.
-     */
-        private const int MIN_LENGTH_TO_COMPRESSION = 32;
-
         /**
      * In this case {@link #Compress(byte[], int, int, byte[], int, int)} will choose level
      * automatically depending on the length of the input buffer. If length less than
