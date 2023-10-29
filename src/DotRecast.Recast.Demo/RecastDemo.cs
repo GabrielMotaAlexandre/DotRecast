@@ -34,7 +34,6 @@ using Silk.NET.Windowing;
 using ImGuiNET;
 using DotRecast.Core;
 using DotRecast.Detour;
-using DotRecast.Detour.Extras.Unity.Astar;
 using DotRecast.Detour.Io;
 using DotRecast.Recast.Toolset.Builder;
 using DotRecast.Recast.Demo.Draw;
@@ -304,18 +303,9 @@ public class RecastDemo : IRecastDemoChannel
     {
         try
         {
-            DtNavMesh mesh = null;
-            if (filename.EndsWith(".zip"))
-            {
-                UnityAStarPathfindingImporter importer = new();
-                mesh = importer.Load(file)[0];
-            }
-            else
-            {
-                using var br = new BinaryReader(file);
-                DtMeshSetReader reader = new();
-                mesh = reader.Read(br, 6);
-            }
+            using var br = new BinaryReader(file);
+            DtMeshSetReader reader = new();
+            var mesh = reader.Read(br, 6);
 
             if (null != mesh)
             {
@@ -381,7 +371,6 @@ public class RecastDemo : IRecastDemoChannel
             new OffMeshConnectionSampleTool(),
             new ConvexVolumeSampleTool(),
             new CrowdSampleTool(),
-            new DynamicUpdateSampleTool(),
             new CrowdAgentProfilingSampleTool(),
             new JumpLinkBuilderSampleTool()
         );

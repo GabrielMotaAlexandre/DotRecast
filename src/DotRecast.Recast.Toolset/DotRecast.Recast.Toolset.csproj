@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotRecast.Core\DotRecast.Core.csproj" />
-    <ProjectReference Include="..\DotRecast.Detour.Dynamic\DotRecast.Detour.Dynamic.csproj" />
     <ProjectReference Include="..\DotRecast.Recast\DotRecast.Recast.csproj" />
     <ProjectReference Include="..\DotRecast.Detour\DotRecast.Detour.csproj" />
     <ProjectReference Include="..\DotRecast.Detour.Crowd\DotRecast.Detour.Crowd.csproj" />
