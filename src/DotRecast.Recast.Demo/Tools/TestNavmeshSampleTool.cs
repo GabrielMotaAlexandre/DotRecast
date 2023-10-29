@@ -173,7 +173,7 @@ public class TestNavmeshSampleTool : ISampleTool
         int endCol = DuRGBA(51, 102, 0, 129);
         int pathCol = DuRGBA(0, 0, 0, 64);
 
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
         float agentRadius = settings.agentRadius;
         float agentHeight = settings.agentHeight;
         float agentClimb = settings.agentMaxClimb;
@@ -190,7 +190,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
         dd.DepthMask(true);
 
-        DtNavMesh m_navMesh = _sample.GetNavMesh();
+        DtNavMesh m_navMesh = _sample.NavMesh;
         if (m_navMesh is null)
         {
             return;
@@ -483,10 +483,10 @@ public class TestNavmeshSampleTool : ISampleTool
                     }
 
                     dd.DepthMask(true);
-                    if (_sample.GetNavMeshQuery() != null)
+                    if (_sample.NavMeshQuery != null)
                     {
                         var result = _sample
-                            .GetNavMeshQuery()
+                            .NavMeshQuery
                             .GetPolyWallSegments(m_polys[i], false, m_filter, ref segmentVerts, ref segmentRefs);
 
                         if (result.Succeeded())
@@ -575,7 +575,7 @@ public class TestNavmeshSampleTool : ISampleTool
 
     private void DrawAgent(RecastDebugDraw dd, Vector3 pos, int col)
     {
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
         float r = settings.agentRadius;
         float h = settings.agentHeight;
         float c = settings.agentMaxClimb;
@@ -631,9 +631,9 @@ public class TestNavmeshSampleTool : ISampleTool
     private void Recalc()
     {
         var geom = _sample.GetInputGeom();
-        var settings = _sample.GetSettings();
-        var navMesh = _sample.GetNavMesh();
-        var navQuery = _sample.GetNavMeshQuery();
+        var settings = _sample.Settings;
+        var navMesh = _sample.NavMesh;
+        var navQuery = _sample.NavMeshQuery;
 
         if (null == geom || null == navQuery)
             return;
@@ -705,7 +705,7 @@ public class TestNavmeshSampleTool : ISampleTool
     {
         if (_mode == RcTestNavmeshToolMode.PATHFIND_SLICED)
         {
-            DtNavMeshQuery navQuery = _sample.GetNavMeshQuery();
+            DtNavMeshQuery navQuery = _sample.NavMeshQuery;
 
             if (m_pathFindStatus.InProgress())
             {

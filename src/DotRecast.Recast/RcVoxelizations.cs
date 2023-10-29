@@ -19,6 +19,7 @@ freely, subject to the following restrictions:
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using DotRecast.Recast.Geom;
@@ -48,22 +49,21 @@ namespace DotRecast.Recast
             foreach (RcTriMesh geom in geomProvider.Meshes())
             {
                 var verts = MemoryMarshal.Cast<float, Vector3>(geom.Vertices.AsSpan());
+                IEnumerable<int[]> nodes;
 
                 if (cfg.UseTiles)
                 {
-                    List<RcChunkyTriMeshNode> nodes = geom.GetChunksOverlappingRect(bmin, bmax);
-                    foreach (RcChunkyTriMeshNode node in nodes)
-                    {
-                        var tris = node.tris;
-                        var m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
-                        RcRasterizations.RasterizeTriangles(in solid, verts, tris, m_triareas, cfg.WalkableClimb);
-                    }
+                    nodes = geom.GetChunksOverlappingRect(bmin, bmax).Select(x => x.tris);
                 }
                 else
                 {
-                    var tris = geom.Triangles;
-                    var m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
-                    RcRasterizations.RasterizeTriangles(in solid, verts, tris, m_triareas, cfg.WalkableClimb);
+                    nodes = new int[][] { geom.Triangles };
+                }
+
+                foreach (var triangles in nodes)
+                {
+                    var m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, triangles, cfg.WalkableAreaMod);
+                    RcRasterizations.RasterizeTriangles(in solid, verts, triangles, m_triareas, cfg.WalkableClimb);
                 }
             }
 

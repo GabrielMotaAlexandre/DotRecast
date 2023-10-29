@@ -66,7 +66,7 @@ public class RcSettingsView : IRcView
 
     public void Draw(double dt)
     {
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
 
         ImGui.Begin("Properties");
 

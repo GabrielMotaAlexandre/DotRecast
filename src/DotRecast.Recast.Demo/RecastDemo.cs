@@ -431,7 +431,7 @@ public class RecastDemo : IRecastDemoChannel
          */
         if (_sample.GetInputGeom() != null)
         {
-            var settings = _sample.GetSettings();
+            var settings = _sample.Settings;
             var bmin = _sample.GetInputGeom().GetMeshBoundsMin().AsVector2XZ();
             var bmax = _sample.GetInputGeom().GetMeshBoundsMax().AsVector2XZ();
             RcCommons.CalcGridSize(bmin, bmax, settings.cellSize, out var gw, out var gh);
@@ -498,7 +498,7 @@ public class RecastDemo : IRecastDemoChannel
             });
         }
 
-        if (_sample.IsChanged())
+        if (_sample.IsChanged)
         {
             bool hasBound = false;
             Vector3 bminN = Vector3.Zero;
@@ -509,9 +509,9 @@ public class RecastDemo : IRecastDemoChannel
                 bmaxN = _sample.GetInputGeom().GetMeshBoundsMax();
                 hasBound = true;
             }
-            else if (_sample.GetNavMesh() != null)
+            else if (_sample.NavMesh != null)
             {
-                _sample.GetNavMesh().ComputeBounds(out bminN, out bmaxN);
+                _sample.                NavMesh.ComputeBounds(out bminN, out bmaxN);
                 hasBound = true;
             }
             else if (0 < _sample.GetRecastResults().Count)
@@ -651,7 +651,7 @@ public class RecastDemo : IRecastDemoChannel
 
         NavMeshBuildResult buildResult;
 
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
         var geom = _sample.GetInputGeom();
         if (settings.tiled)
         {
@@ -677,7 +677,7 @@ public class RecastDemo : IRecastDemoChannel
 
     private void OnNavMeshSaveBegan(NavMeshSaveBeganEvent args)
     {
-        var navMesh = _sample.GetNavMesh();
+        var navMesh = _sample.NavMesh;
         if (null == navMesh)
         {
             Logger.Error("navmesh is null");
@@ -739,9 +739,9 @@ public class RecastDemo : IRecastDemoChannel
             hit = inputGeom.RaycastMesh(rayStart, rayEnd, out hitTime);
         }
 
-        if (!hit && _sample.GetNavMesh() != null)
+        if (!hit && _sample.NavMesh != null)
         {
-            hit = DtNavMeshRaycast.Raycast(_sample.GetNavMesh(), rayStart, rayEnd, out hitTime);
+            hit = DtNavMeshRaycast.Raycast(_sample.NavMesh, rayStart, rayEnd, out hitTime);
         }
 
         if (!hit && _sample.GetRecastResults() != null)

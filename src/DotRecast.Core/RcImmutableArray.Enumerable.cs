@@ -54,7 +54,7 @@ namespace DotRecast.Core
                 }
             }
 
-            object IEnumerator.Current => this.Current;
+            object IEnumerator.Current => Current;
 
             public void Dispose()
             {

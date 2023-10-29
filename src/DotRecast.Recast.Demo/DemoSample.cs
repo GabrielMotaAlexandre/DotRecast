@@ -60,25 +60,13 @@ namespace DotRecast.Recast.Demo
             return _recastResults;
         }
 
-        public DtNavMesh GetNavMesh()
-        {
-            return _navMesh;
-        }
+        public DtNavMesh NavMesh => _navMesh;
 
-        public RcNavMeshBuildSettings GetSettings()
-        {
-            return _settings;
-        }
+        public RcNavMeshBuildSettings Settings => _settings;
 
-        public DtNavMeshQuery GetNavMeshQuery()
-        {
-            return _navMeshQuery;
-        }
+        public DtNavMeshQuery NavMeshQuery => _navMeshQuery;
 
-        public bool IsChanged()
-        {
-            return _changed;
-        }
+        public bool IsChanged => _changed;
 
         public void SetChanged(bool changed)
         {

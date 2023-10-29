@@ -31,8 +31,8 @@ namespace DotRecast.Recast.Geom
 
         public RcTriMesh(float[] vertices, int[] triangles)
         {
-            this.Vertices = vertices;
-            this.Triangles = triangles;
+            Vertices = vertices;
+            Triangles = triangles;
             chunkyTriMesh = new RcChunkyTriMesh(vertices, triangles, triangles.Length / 3, 32);
         }
 

@@ -53,7 +53,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
     {
         RecastDebugDraw dd = renderer.GetDebugDraw();
 
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
         float s = settings.agentRadius;
 
         if (_hasStartPt)
@@ -92,7 +92,7 @@ public class OffMeshConnectionSampleTool : ISampleTool
             return;
         }
 
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
 
         if (shift)
         {

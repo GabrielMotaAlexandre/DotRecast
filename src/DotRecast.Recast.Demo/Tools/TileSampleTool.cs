@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Numerics;
 using DotRecast.Recast.Demo.Draw;
 using DotRecast.Recast.Toolset;
@@ -27,8 +27,8 @@ public class TileSampleTool : ISampleTool
     public void Layout()
     {
         var geom = _sample.GetInputGeom();
-        var settings = _sample.GetSettings();
-        var navMesh = _sample.GetNavMesh();
+        var settings = _sample.Settings;
+        var navMesh = _sample.NavMesh;
 
         if (ImGui.Button("Create All Tile"))
         {
@@ -44,7 +44,7 @@ public class TileSampleTool : ISampleTool
     public void HandleRender(NavMeshRenderer renderer)
     {
         var geom = _sample.GetInputGeom();
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
 
         if (null == geom)
             return;
@@ -103,8 +103,8 @@ public class TileSampleTool : ISampleTool
         _hitPos = p;
 
         var geom = _sample.GetInputGeom();
-        var settings = _sample.GetSettings();
-        var navMesh = _sample.GetNavMesh();
+        var settings = _sample.Settings;
+        var navMesh = _sample.NavMesh;
 
         if (shift)
         {

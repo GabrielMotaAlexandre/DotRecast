@@ -98,7 +98,7 @@ public class JumpLinkBuilderSampleTool : ISampleTool
             if (0 < _sample.GetRecastResults().Count)
             {
                 var geom = _sample.GetInputGeom();
-                var settings = _sample.GetSettings();
+                var settings = _sample.Settings;
 
                 _tool.Build(geom, settings, _sample.GetRecastResults(), _cfg);
             }

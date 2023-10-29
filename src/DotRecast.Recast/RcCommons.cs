@@ -117,7 +117,7 @@ namespace DotRecast.Recast
         public static int[] MarkWalkableTriangles(float walkableSlopeAngle, ReadOnlySpan<Vector3> verts, ReadOnlySpan<int> tris, RcAreaModification areaMod)
         {
             int[] areas = new int[tris.Length / 3];
-            float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180f * Math.PI);
+            var walkableThr = MathF.Cos(walkableSlopeAngle / 180f * MathF.PI);
             Vector3 norm = new();
             for (int i = 0; i < areas.Length; ++i)
             {

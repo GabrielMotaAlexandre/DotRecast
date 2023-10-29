@@ -16,8 +16,8 @@ namespace DotRecast.Recast
 
         public RcBuilderResult(Vector2Int tile, in RcHeightfield solid, RcCompactHeightfield chf, RcContourSet cs, RcPolyMesh pmesh, RcPolyMeshDetail dmesh)
         {
-            this.tileX = tile.x;
-            this.tileZ = tile.y;
+            tileX = tile.x;
+            tileZ = tile.y;
             Solid = solid;
             CompactHeightfield = chf;
             ContourSet = cs;

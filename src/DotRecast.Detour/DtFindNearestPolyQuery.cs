@@ -14,8 +14,8 @@ namespace DotRecast.Detour
 
         public DtFindNearestPolyQuery(DtNavMeshQuery query, Vector3 center)
         {
-            this._query = query;
-            this._center = center;
+            _query = query;
+            _center = center;
             _nearestDistanceSqr = float.MaxValue;
             _nearestPt = center;
         }

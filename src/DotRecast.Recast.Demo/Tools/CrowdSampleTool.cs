@@ -126,7 +126,7 @@ public class CrowdSampleTool : ISampleTool
     public void HandleRender(NavMeshRenderer renderer)
     {
         RecastDebugDraw dd = renderer.GetDebugDraw();
-        var settings = _sample.GetSettings();
+        var settings = _sample.Settings;
         float rad = settings.agentRadius;
 
         var crowd = _tool.GetCrowd();
@@ -450,8 +450,8 @@ public class CrowdSampleTool : ISampleTool
     public void OnSampleChanged()
     {
         _ = _sample.GetInputGeom();
-        var settings = _sample.GetSettings();
-        var navMesh = _sample.GetNavMesh();
+        var settings = _sample.Settings;
+        var navMesh = _sample.NavMesh;
 
         if (navMesh != null && m_nav != navMesh)
         {
@@ -482,7 +482,7 @@ public class CrowdSampleTool : ISampleTool
             else
             {
                 // Add
-                var settings = _sample.GetSettings();
+                var settings = _sample.Settings;
                 _tool.AddAgent(p, settings.agentRadius, settings.agentHeight, settings.agentMaxAcceleration, settings.agentMaxSpeed);
             }
         }
@@ -498,8 +498,8 @@ public class CrowdSampleTool : ISampleTool
         }
         else if (m_mode == RcCrowdToolMode.TOGGLE_POLYS)
         {
-            DtNavMesh nav = _sample.GetNavMesh();
-            DtNavMeshQuery navquery = _sample.GetNavMeshQuery();
+            DtNavMesh nav = _sample.NavMesh;
+            DtNavMeshQuery navquery = _sample.NavMeshQuery;
             if (nav != null && navquery != null)
             {
                 IDtQueryFilter filter = new DtQueryDefaultFilter();

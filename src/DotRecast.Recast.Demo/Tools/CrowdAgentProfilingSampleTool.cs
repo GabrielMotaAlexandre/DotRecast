@@ -96,7 +96,7 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
 
         if (ImGui.Button("Start Crowd Profiling"))
         {
-            var settings = _sample.GetSettings();
+            var settings = _sample.Settings;
             _tool.StartProfiling(settings.agentRadius, settings.agentHeight, settings.agentMaxAcceleration, settings.agentMaxSpeed);
         }
 
@@ -178,8 +178,8 @@ public class CrowdAgentProfilingSampleTool : ISampleTool
     public void OnSampleChanged()
     {
         _ = _sample.GetInputGeom();
-        var settings = _sample.GetSettings();
-        var navMesh = _sample.GetNavMesh();
+        var settings = _sample.Settings;
+        var navMesh = _sample.NavMesh;
 
         if (navMesh != null && m_nav != navMesh)
         {
