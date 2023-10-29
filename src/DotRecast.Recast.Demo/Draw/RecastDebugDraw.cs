@@ -41,7 +41,7 @@ public class RecastDebugDraw : DebugDraw
     public void DebugDrawTriMeshSlope(float[] verts, int[] tris, float[] normals, float walkableSlopeAngle,
         float texScale)
     {
-        float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180f * Math.PI);
+        float walkableThr = MathF.Cos(walkableSlopeAngle / 180f * MathF.PI);
 
         Vector2 uva = Vector2.Zero;
         Vector2 uvb = Vector2.Zero;
@@ -76,7 +76,7 @@ public class RecastDebugDraw : DebugDraw
                 ax = 1;
             }
 
-            if (Math.Abs(norm.Z) > Math.Abs(norm[ax]))
+            if (MathF.Abs(norm.Z) > MathF.Abs(norm[ax]))
             {
                 ax = 2;
             }

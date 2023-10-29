@@ -46,9 +46,9 @@ namespace DotRecast.Recast
         {
             float[] bounds =
             {
-                Math.Min(start.X, end.X) - radius, Math.Min(start.Y, end.Y) - radius,
-                Math.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
-                Math.Max(start.Z, end.Z) + radius
+                MathF.Min(start.X, end.X) - radius, Math.Min(start.Y, end.Y) - radius,
+                MathF.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
+                MathF.Max(start.Z, end.Z) + radius
             };
             Vector3 axis = new(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             RasterizationFilledShape(hf, bounds, area, flagMergeThr,
@@ -59,9 +59,9 @@ namespace DotRecast.Recast
         {
             float[] bounds =
             {
-                Math.Min(start.X, end.X) - radius, Math.Min(start.Y, end.Y) - radius,
-                Math.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
-                Math.Max(start.Z, end.Z) + radius
+                MathF.Min(start.X, end.X) - radius, Math.Min(start.Y, end.Y) - radius,
+                MathF.Min(start.Z, end.Z) - radius, Math.Max(start.X, end.X) + radius, Math.Max(start.Y, end.Y) + radius,
+                MathF.Max(start.Z, end.Z) + radius
             };
             Vector3 axis = new(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             RasterizationFilledShape(hf, bounds, area, flagMergeThr,
@@ -95,12 +95,12 @@ namespace DotRecast.Recast
                 vertices[i * 3] = center.X + s0 * halfEdges[0].X + s1 * halfEdges[1].X + s2 * halfEdges[2].X;
                 vertices[i * 3 + 1] = center.Y + s0 * halfEdges[0].Y + s1 * halfEdges[1].Y + s2 * halfEdges[2].Y;
                 vertices[i * 3 + 2] = center.Z + s0 * halfEdges[0].Z + s1 * halfEdges[1].Z + s2 * halfEdges[2].Z;
-                bounds[0] = Math.Min(bounds[0], vertices[i * 3]);
-                bounds[1] = Math.Min(bounds[1], vertices[i * 3 + 1]);
-                bounds[2] = Math.Min(bounds[2], vertices[i * 3 + 2]);
-                bounds[3] = Math.Max(bounds[3], vertices[i * 3]);
-                bounds[4] = Math.Max(bounds[4], vertices[i * 3 + 1]);
-                bounds[5] = Math.Max(bounds[5], vertices[i * 3 + 2]);
+                bounds[0] = MathF.Min(bounds[0], vertices[i * 3]);
+                bounds[1] = MathF.Min(bounds[1], vertices[i * 3 + 1]);
+                bounds[2] = MathF.Min(bounds[2], vertices[i * 3 + 2]);
+                bounds[3] = MathF.Max(bounds[3], vertices[i * 3]);
+                bounds[4] = MathF.Max(bounds[4], vertices[i * 3 + 1]);
+                bounds[5] = MathF.Max(bounds[5], vertices[i * 3 + 2]);
             }
 
             float[][] planes = RcArrayUtils.Of<float>(6, 4);
@@ -176,10 +176,10 @@ namespace DotRecast.Recast
                 return;
             }
 
-            bounds[0] = Math.Max(bounds[0], hf.bmin.X);
-            bounds[2] = Math.Max(bounds[2], hf.bmin.Z);
-            bounds[3] = Math.Min(bounds[3], hf.bmax.X);
-            bounds[5] = Math.Min(bounds[5], hf.bmax.Z);
+            bounds[0] = MathF.Max(bounds[0], hf.bmin.X);
+            bounds[2] = MathF.Max(bounds[2], hf.bmin.Z);
+            bounds[3] = MathF.Min(bounds[3], hf.bmax.X);
+            bounds[5] = MathF.Min(bounds[5], hf.bmax.Z);
 
             if (bounds[3] <= bounds[0] || bounds[4] <= bounds[1] || bounds[5] <= bounds[2])
             {
@@ -242,7 +242,7 @@ namespace DotRecast.Recast
                 return null;
             }
 
-            float discrSqrt = (float)Math.Sqrt(discr);
+            float discrSqrt = MathF.Sqrt(discr);
             float tmin = -b - discrSqrt;
             float tmax = -b + discrSqrt;
 
@@ -327,7 +327,7 @@ namespace DotRecast.Recast
             float discr = b * b - c;
             if (discr > EPSILON)
             {
-                float discrSqrt = (float)Math.Sqrt(discr);
+                float discrSqrt = MathF.Sqrt(discr);
                 float t1 = -b - discrSqrt;
                 float t2 = -b + discrSqrt;
                 if (t1 <= 1 && t2 >= 0)
@@ -434,7 +434,7 @@ namespace DotRecast.Recast
                 return null; // No real roots; no intersection
             }
 
-            float discSqrt = (float)Math.Sqrt(discr);
+            float discSqrt = MathF.Sqrt(discr);
             float t1 = (-b - discSqrt) / a;
             float t2 = (-b + discSqrt) / a;
 
@@ -605,8 +605,8 @@ namespace DotRecast.Recast
                     // triangle vertex
                     if (x >= rectangle[0] && x <= rectangle[2] && z >= rectangle[1] && z <= rectangle[3])
                     {
-                        imin = Math.Min(imin, verts[vi + 1]);
-                        imax = Math.Max(imax, verts[vi + 1]);
+                        imin = MathF.Min(imin, verts[vi + 1]);
+                        imax = MathF.Max(imax, verts[vi + 1]);
                     }
 
                     // triangle slab intersection
@@ -614,33 +614,33 @@ namespace DotRecast.Recast
                     float dx = verts[vj] - x;
                     float dy = verts[vj + 1] - y;
                     float dz = verts[vj + 2] - z;
-                    if (Math.Abs(dx) > EPSILON)
+                    if (MathF.Abs(dx) > EPSILON)
                     {
                         if (XSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[0], out var iy))
                         {
-                            imin = Math.Min(imin, iy);
-                            imax = Math.Max(imax, iy);
+                            imin = MathF.Min(imin, iy);
+                            imax = MathF.Max(imax, iy);
                         }
 
                         if (XSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[2], out iy))
                         {
-                            imin = Math.Min(imin, iy);
-                            imax = Math.Max(imax, iy);
+                            imin = MathF.Min(imin, iy);
+                            imax = MathF.Max(imax, iy);
                         }
                     }
 
-                    if (Math.Abs(dz) > EPSILON)
+                    if (MathF.Abs(dz) > EPSILON)
                     {
                         if (ZSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[1], out var iy))
                         {
-                            imin = Math.Min(imin, iy);
-                            imax = Math.Max(imax, iy);
+                            imin = MathF.Min(imin, iy);
+                            imax = MathF.Max(imax, iy);
                         }
 
                         if (ZSlabSegmentIntersection(rectangle, x, y, z, dx, dy, dz, rectangle[3], out iy))
                         {
-                            imin = Math.Min(imin, iy);
-                            imax = Math.Max(imax, iy);
+                            imin = MathF.Min(imin, iy);
+                            imax = MathF.Max(imax, iy);
                         }
                     }
                 }
@@ -653,8 +653,8 @@ namespace DotRecast.Recast
                     point.Z = ((i & 2) is 0) ? rectangle[1] : rectangle[3];
                     if (RayTriangleIntersection(point, tri, planes, out var y))
                     {
-                        imin = Math.Min(imin, y);
-                        imax = Math.Max(imax, y);
+                        imin = MathF.Min(imin, y);
+                        imax = MathF.Max(imax, y);
                     }
                 }
             }

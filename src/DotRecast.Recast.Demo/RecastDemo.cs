@@ -526,17 +526,8 @@ public class RecastDemo : IRecastDemoChannel
                             bmaxN = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
                         }
 
-                        bminN = new Vector3(
-                            Math.Min(bminN.X, result.Solid.bmin.X),
-                            Math.Min(bminN.Y, result.Solid.bmin.Y),
-                            Math.Min(bminN.Z, result.Solid.bmin.Z)
-                        );
-
-                        bmaxN = new Vector3(
-                            Math.Max(bmaxN.X, result.Solid.bmax.X),
-                            Math.Max(bmaxN.Y, result.Solid.bmax.Y),
-                            Math.Max(bmaxN.Z, result.Solid.bmax.Z)
-                        );
+                        bminN = Vector3.Min(bminN, result.Solid.bmin);
+                        bmaxN = Vector3.Max(bmaxN, result.Solid.bmax);
 
                         hasBound = true;
                     }
@@ -548,7 +539,7 @@ public class RecastDemo : IRecastDemoChannel
                 Vector3 bmin = bminN;
                 Vector3 bmax = bmaxN;
 
-                camr = (float)(Math.Sqrt(RcMath.Sqr(bmax.X - bmin.X) + RcMath.Sqr(bmax.Y - bmin.Y) + RcMath.Sqr(bmax.Z - bmin.Z)) / 2);
+                camr = MathF.Sqrt(RcMath.Sqr(bmax.X - bmin.X) + RcMath.Sqr(bmax.Y - bmin.Y) + RcMath.Sqr(bmax.Z - bmin.Z)) / 2;
                 cameraPos.X = (bmax.X + bmin.X) / 2 + camr;
                 cameraPos.Y = (bmax.Y + bmin.Y) / 2 + camr;
                 cameraPos.Z = (bmax.Z + bmin.Z) / 2 + camr;

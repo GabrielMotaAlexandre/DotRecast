@@ -1234,7 +1234,7 @@ namespace DotRecast.Detour.Crowd
                             continue;
                         }
 
-                        dist = (float)Math.Sqrt(dist);
+                        dist = MathF.Sqrt(dist);
                         float pen = ag.option.radius + nei.option.radius - dist;
                         if (dist < 0.0001f)
                         {

@@ -133,9 +133,9 @@ public class DebugDraw
             cylinderInit = true;
             for (int i = 0; i < CYLINDER_NUM_SEG; ++i)
             {
-                float a = (float)(i * Math.PI * 2 / CYLINDER_NUM_SEG);
-                cylinderDir[i * 2] = (float)Math.Cos(a);
-                cylinderDir[i * 2 + 1] = (float)Math.Sin(a);
+                float a = (float)(i * MathF.PI * 2 / CYLINDER_NUM_SEG);
+                cylinderDir[i * 2] = MathF.Cos(a);
+                cylinderDir[i * 2 + 1] = MathF.Sin(a);
             }
         }
     }
@@ -314,9 +314,9 @@ public class DebugDraw
             circleInit = true;
             for (int i = 0; i < CIRCLE_NUM_SEG; ++i)
             {
-                float a = (float)(i * Math.PI * 2 / CIRCLE_NUM_SEG);
-                circeDir[i * 2] = (float)Math.Cos(a);
-                circeDir[i * 2 + 1] = (float)Math.Sin(a);
+                float a = (float)(i * MathF.PI * 2 / CIRCLE_NUM_SEG);
+                circeDir[i * 2] = MathF.Cos(a);
+                circeDir[i * 2 + 1] = MathF.Sin(a);
             }
         }
 
@@ -336,7 +336,7 @@ public class DebugDraw
         float dx = x1 - x0;
         float dy = y1 - y0;
         float dz = z1 - z0;
-        float len = (float)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+        float len = MathF.Sqrt(dx * dx + dy * dy + dz * dz);
         Vector3 prev = new();
         EvalArc(x0, y0, z0, dx, dy, dz, len * h, PAD, ref prev);
         for (int i = 1; i <= NUM_ARC_PTS; ++i)
@@ -678,7 +678,7 @@ public class DebugDraw
 
     private static void NormalizePlane(float px, float py, float pz, float pw, ref float[] plane)
     {
-        float length = (float)Math.Sqrt(px * px + py * py + pz * pz);
+        float length = MathF.Sqrt(px * px + py * py + pz * pz);
         if (length != 0)
         {
             length = 1f / length;

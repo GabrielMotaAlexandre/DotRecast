@@ -22,8 +22,8 @@ namespace DotRecast.Detour
             var temp = new float[CIRCLE_SEGMENTS * 3];
             for (int i = 0; i < CIRCLE_SEGMENTS; i++)
             {
-                double a = i * Math.PI * 2 / CIRCLE_SEGMENTS;
-                temp[3 * i] = (float)Math.Cos(a);
+                double a = i * MathF.PI * 2 / CIRCLE_SEGMENTS;
+                temp[3 * i] = MathF.Cos(a);
                 temp[3 * i + 1] = 0;
                 temp[3 * i + 2] = (float)-Math.Sin(a);
             }

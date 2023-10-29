@@ -49,7 +49,7 @@ namespace DotRecast.Recast
 
         private static float Vdist2(ReadOnlySpan<float> verts, int p, int q)
         {
-            return (float)Math.Sqrt(VdistSq2(verts, p, q));
+            return MathF.Sqrt(VdistSq2(verts, p, q));
         }
 
         private static float VdistSq2(Vector3 p, ReadOnlySpan<float> verts, int q)
@@ -61,7 +61,7 @@ namespace DotRecast.Recast
 
         private static float Vdist2(Vector3 p, ReadOnlySpan<float> verts, int q)
         {
-            return (float)Math.Sqrt(VdistSq2(p, verts, q));
+            return MathF.Sqrt(VdistSq2(p, verts, q));
         }
 
         private static float Vcross2(ReadOnlySpan<float> verts, int p1, int p2, int p3)
@@ -104,7 +104,7 @@ namespace DotRecast.Recast
 
                 c += d;
 
-                return (float)Math.Sqrt(d.LengthSquared());
+                return MathF.Sqrt(d.LengthSquared());
             }
 
             return 0;
@@ -231,8 +231,8 @@ namespace DotRecast.Recast
 
         private static int GetHeight(float fx, float fy, float fz, float cs, float ics, float ch, int radius, in RcHeightPatch hp)
         {
-            int ix = (int)Math.Floor(fx * ics + 0.01f);
-            int iz = (int)Math.Floor(fz * ics + 0.01f);
+            int ix = (int)MathF.Floor(fx * ics + 0.01f);
+            int iz = (int)MathF.Floor(fz * ics + 0.01f);
             ix = Math.Clamp(ix - hp.xmin, 0, hp.width - 1);
             iz = Math.Clamp(iz - hp.ymin, 0, hp.height - 1);
             int h = hp.data[ix + iz * hp.width];
@@ -259,7 +259,7 @@ namespace DotRecast.Recast
                         int nh = hp.data[nx + nz * hp.width];
                         if (nh != RC_UNSET_HEIGHT)
                         {
-                            float d = Math.Abs(nh * ch - fy);
+                            float d = MathF.Abs(nh * ch - fy);
                             if (d < dmin)
                             {
                                 h = nh;
@@ -629,7 +629,7 @@ namespace DotRecast.Recast
                 minDist = Math.Min(minDist, maxEdgeDist);
             }
 
-            return (float)Math.Sqrt(minDist);
+            return MathF.Sqrt(minDist);
         }
 
         private static void TriangulateHull(ReadOnlySpan<float> verts, int nhull, int[] hull, int nin, List<int> tris)
@@ -772,8 +772,8 @@ namespace DotRecast.Recast
                     float dx = @in[vi] - @in[vj];
                     float dy = @in[vi + 1] - @in[vj + 1];
                     float dz = @in[vi + 2] - @in[vj + 2];
-                    float d = (float)Math.Sqrt(dx * dx + dz * dz);
-                    int nn = 1 + (int)Math.Floor(d / sampleDist);
+                    float d = MathF.Sqrt(dx * dx + dz * dz);
+                    int nn = 1 + (int)MathF.Floor(d / sampleDist);
                     if (nn >= MAX_VERTS_PER_EDGE)
                     {
                         nn = MAX_VERTS_PER_EDGE - 1;
@@ -890,10 +890,10 @@ namespace DotRecast.Recast
                     bmax.Max(@in, i * 3);
                 }
 
-                int x0 = (int)Math.Floor(bmin.X / sampleDist);
-                int x1 = (int)Math.Ceiling(bmax.X / sampleDist);
-                int z0 = (int)Math.Floor(bmin.Z / sampleDist);
-                int z1 = (int)Math.Ceiling(bmax.Z / sampleDist);
+                int x0 = (int)MathF.Floor(bmin.X / sampleDist);
+                int x1 = (int)MathF.Ceiling(bmax.X / sampleDist);
+                int z0 = (int)MathF.Floor(bmin.Z / sampleDist);
+                int z1 = (int)MathF.Ceiling(bmax.Z / sampleDist);
                 samples.Clear();
                 for (int z = z0; z < z1; ++z)
                 {
@@ -1308,7 +1308,7 @@ namespace DotRecast.Recast
 
             int nvp = mesh.nvp;
             int borderSize = mesh.borderSize;
-            int heightSearchRadius = (int)Math.Max(1, Math.Ceiling(mesh.maxEdgeError));
+            int heightSearchRadius = (int)MathF.Max(1, MathF.Ceiling(mesh.maxEdgeError));
 
             List<int> tempTris = new(512);
             float[] tempVerts = new float[256 * 3];

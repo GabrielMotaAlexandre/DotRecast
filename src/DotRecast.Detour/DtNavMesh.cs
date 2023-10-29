@@ -239,8 +239,8 @@ namespace DotRecast.Detour
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CalcTileLoc(in Vector3 pos, out int tx, out int ty)
         {
-            tx = (int)Math.Floor((pos.X - m_params.orig.X) / m_tileWidth);
-            ty = (int)Math.Floor((pos.Z - m_params.orig.Y) / m_tileHeight);
+            tx = (int)MathF.Floor((pos.X - m_params.orig.X) / m_tileWidth);
+            ty = (int)MathF.Floor((pos.Z - m_params.orig.Y) / m_tileHeight);
         }
 
         /// Gets the tile and polygon for the specified polygon reference.
@@ -761,8 +761,8 @@ namespace DotRecast.Detour
                                 (tmax, tmin) = (tmin, tmax);
                             }
 
-                            link.bmin = (int)Math.Round(Math.Clamp(tmin, 0f, 1f) * 255.0f);
-                            link.bmax = (int)Math.Round(Math.Clamp(tmax, 0f, 1f) * 255.0f);
+                            link.bmin = (int)MathF.Round(Math.Clamp(tmin, 0f, 1f) * 255.0f);
+                            link.bmax = (int)MathF.Round(Math.Clamp(tmax, 0f, 1f) * 255.0f);
                         }
                         else if (dir == 2 || dir == 6)
                         {
@@ -775,8 +775,8 @@ namespace DotRecast.Detour
                                 (tmax, tmin) = (tmin, tmax);
                             }
 
-                            link.bmin = (int)Math.Round(Math.Clamp(tmin, 0f, 1f) * 255.0f);
-                            link.bmax = (int)Math.Round(Math.Clamp(tmax, 0f, 1f) * 255.0f);
+                            link.bmin = (int)MathF.Round(Math.Clamp(tmin, 0f, 1f) * 255.0f);
+                            link.bmax = (int)MathF.Round(Math.Clamp(tmax, 0f, 1f) * 255.0f);
                         }
                     }
                 }
@@ -977,8 +977,8 @@ namespace DotRecast.Detour
             // Check for horizontal overlap.
             // The segment is shrunken a little so that slabs which touch
             // at end points are not connected.
-            float minx = Math.Max(amin.X + px, bmin.X + px);
-            float maxx = Math.Min(amax.X - px, bmax.X - px);
+            float minx = MathF.Max(amin.X + px, bmin.X + px);
+            float maxx = MathF.Min(amax.X - px, bmax.X - px);
             if (minx > maxx)
             {
                 return false;
@@ -1738,12 +1738,12 @@ namespace DotRecast.Detour
                 {
                     for (int i = 0; i < tile.data.verts.Length; i += 3)
                     {
-                        bmin.X = Math.Min(bmin.X, tile.data.verts[i]);
-                        bmin.Y = Math.Min(bmin.Y, tile.data.verts[i + 1]);
-                        bmin.Z = Math.Min(bmin.Z, tile.data.verts[i + 2]);
-                        bmax.X = Math.Max(bmax.X, tile.data.verts[i]);
-                        bmax.Y = Math.Max(bmax.Y, tile.data.verts[i + 1]);
-                        bmax.Z = Math.Max(bmax.Z, tile.data.verts[i + 2]);
+                        bmin.X = MathF.Min(bmin.X, tile.data.verts[i]);
+                        bmin.Y = MathF.Min(bmin.Y, tile.data.verts[i + 1]);
+                        bmin.Z = MathF.Min(bmin.Z, tile.data.verts[i + 2]);
+                        bmax.X = MathF.Max(bmax.X, tile.data.verts[i]);
+                        bmax.Y = MathF.Max(bmax.Y, tile.data.verts[i + 1]);
+                        bmax.Z = MathF.Max(bmax.Z, tile.data.verts[i + 2]);
                     }
                 }
             }

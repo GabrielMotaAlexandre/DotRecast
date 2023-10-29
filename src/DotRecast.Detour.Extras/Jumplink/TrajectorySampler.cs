@@ -36,7 +36,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         {
             float cs = Math.Min(acfg.cellSize, acfg.cellHeight);
             float d = Vector3Extensions.Dist2D(pa, pb) + Math.Abs(pa.Y - pb.Y);
-            int nsamples = Math.Max(2, (int)Math.Ceiling(d / cs));
+            int nsamples = Math.Max(2, (int)MathF.Ceiling(d / cs));
             for (int i = 0; i < nsamples; ++i)
             {
                 float u = i / (float)(nsamples - 1);
@@ -57,8 +57,8 @@ namespace DotRecast.Detour.Extras.Jumplink
             float cs = solid.cs;
             float ch = solid.ch;
             Vector3 orig = solid.bmin;
-            int ix = (int)Math.Floor((x - orig.X) / cs);
-            int iz = (int)Math.Floor((z - orig.Z) / cs);
+            int ix = (int)MathF.Floor((x - orig.X) / cs);
+            int iz = (int)MathF.Floor((z - orig.Z) / cs);
 
             if (ix < 0 || iz < 0 || ix > w || iz > h)
             {

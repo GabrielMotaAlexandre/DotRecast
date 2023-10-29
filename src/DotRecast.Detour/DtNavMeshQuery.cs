@@ -3309,7 +3309,7 @@ namespace DotRecast.Detour
                 hitNormal = Vector2.Normalize(hitNormal);
             }
 
-            hitDist = (float)Math.Sqrt(radiusSqr);
+            hitDist = MathF.Sqrt(radiusSqr);
 
             return status;
         }

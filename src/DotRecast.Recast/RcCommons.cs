@@ -150,7 +150,7 @@ namespace DotRecast.Recast
         /// @see rcHeightfield, rcClearUnwalkableTriangles, rcRasterizeTriangles
         public static void ClearUnwalkableTriangles(float walkableSlopeAngle, ReadOnlySpan<Vector3> verts, int[] tris, int[] areas)
         {
-            float walkableThr = (float)Math.Cos(walkableSlopeAngle / 180f * Math.PI);
+            float walkableThr = MathF.Cos(walkableSlopeAngle / 180f * MathF.PI);
 
             Vector3 norm = new();
 
