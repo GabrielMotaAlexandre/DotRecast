@@ -6,24 +6,20 @@ namespace DotRecast.Detour
     /**
      * Calculate the intersection between a polygon and a circle. A dodecagon is used as an approximation of the circle.
      */
-    public class DtStrictDtPolygonByCircleConstraint : IDtPolygonByCircleConstraint
+    public struct DtStrictDtPolygonByCircleConstraint : IDtPolygonByCircleConstraint
     {
         private const int CIRCLE_SEGMENTS = 12;
         private static readonly float[] UnitCircle = MakeUnitCircle();
 
-        public static readonly IDtPolygonByCircleConstraint Shared = new DtStrictDtPolygonByCircleConstraint();
-
-        private DtStrictDtPolygonByCircleConstraint()
-        {
-        }
+        public static readonly DtStrictDtPolygonByCircleConstraint Shared = new();
 
         private static float[] MakeUnitCircle()
         {
             var temp = new float[CIRCLE_SEGMENTS * 3];
             for (int i = 0; i < CIRCLE_SEGMENTS; i++)
             {
-                double a = i * MathF.PI * 2 / CIRCLE_SEGMENTS;
-                temp[3 * i] = MathF.Cos(a);
+                double a = i * Math.PI * 2 / CIRCLE_SEGMENTS;
+                temp[3 * i] = (float)Math.Cos(a);
                 temp[3 * i + 1] = 0;
                 temp[3 * i + 2] = (float)-Math.Sin(a);
             }
@@ -31,7 +27,7 @@ namespace DotRecast.Detour
             return temp;
         }
 
-        public ReadOnlySpan<float> Apply(ReadOnlySpan<float> verts, Vector3 center, float radius)
+        public readonly ReadOnlySpan<float> Apply(ReadOnlySpan<float> verts, Vector3 center, float radius)
         {
             float radiusSqr = radius * radius;
             int outsideVertex = -1;
