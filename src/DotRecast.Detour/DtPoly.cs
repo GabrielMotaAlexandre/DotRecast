@@ -42,7 +42,7 @@ namespace DotRecast.Detour
         public int flags;
 
         /** The number of vertices in the polygon. */
-        public int vertCount;
+        public int vertCount { get; set; }
 
         /// The bit packed area id and polygon type.
         /// @note Use the structure's set and get methods to access this value.

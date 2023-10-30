@@ -17,30 +17,33 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
+using System;
+using System.Linq;
+using System.Numerics;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class ConvexConvexIntersectionTest
+namespace DotRecast.Detour.Test
 {
-    [Test]
-    public void ShouldHandleSamePolygonIntersection()
+    [Parallelizable]
+    public class ConvexConvexIntersectionTest
     {
-        float[] p = { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 };
-        float[] q = { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 };
-        float[] intersection = ConvexConvexIntersection.Intersect(p, q);
-        Assert.That(intersection, Has.Length.EqualTo(5 * 3));
-        Assert.That(intersection, Is.EqualTo(p));
-    }
+        [Test]
+        public void ShouldHandleSamePolygonIntersection()
+        {
+            var p = new float[] { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 }.AsSpan().Cast<float, Vector3>().ToArray();
+            var intersection = ConvexConvexIntersection.Intersect(p, p).ToArray();
+            Assert.That(intersection, Has.Length.EqualTo(5));
+            Assert.That(intersection, Is.EqualTo(p));
+        }
 
-    [Test]
-    public void ShouldHandleIntersection()
-    {
-        float[] p = { -5, 0, -5, -5, 0, 4, 1, 0, 4, 1, 0, -5 };
-        float[] q = { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 };
-        float[] intersection = ConvexConvexIntersection.Intersect(p, q);
-        Assert.That(intersection, Has.Length.EqualTo(5 * 3));
-        Assert.That(intersection, Is.EqualTo(new[] { 1, 0, 3, 1, 0, -3.4f, -2, 0, -4, -4, 0, 0, -3, 0, 3 }));
+        [Test]
+        public void ShouldHandleIntersection()
+        {
+            var p = new float[] { -5, 0, -5, -5, 0, 4, 1, 0, 4, 1, 0, -5 }.AsSpan().Cast<float, Vector3>().ToArray();
+            var q = new float[] { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 }.AsSpan().Cast<float, Vector3>().ToArray();
+            var intersection = ConvexConvexIntersection.Intersect(p, q).ToArray();
+            Assert.That(intersection, Has.Length.EqualTo(5));
+            Assert.That(intersection, Is.EqualTo(new[] { 1, 0, 3, 1, 0, -3.4f, -2, 0, -4, -4, 0, 0, -3, 0, 3 }.AsSpan().Cast<float, Vector3>().ToArray()));
+        }
     }
 }

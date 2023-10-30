@@ -1047,8 +1047,8 @@ namespace DotRecast.Detour
                 }
 
                 float[] p = con.pos; // First vertex
-                // findNearestPoly may return too optimistic results, further check
-                // to make sure.
+                                     // findNearestPoly may return too optimistic results, further check
+                                     // to make sure.
                 if (RcMath.Sqr(nearestPt.X - p[0]) + RcMath.Sqr(nearestPt.Z - p[2]) > RcMath.Sqr(con.rad))
                 {
                     continue;
@@ -1195,11 +1195,11 @@ namespace DotRecast.Detour
 
             int ip = poly.index;
 
-            float[] verts = new float[m_maxVertPerPoly * 3];
+            var verts = new Vector3[m_maxVertPerPoly];
             int nv = poly.vertCount;
             for (int i = 0; i < nv; ++i)
             {
-                Array.Copy(tile.data.verts, poly.verts[i] * 3, verts, i * 3, 3);
+                verts[i] = tile.data.verts.UnsafeAs<float, Vector3>(poly.verts[i]);
             }
 
             if (!DtUtils.PointInPolygon(pos, verts, nv))

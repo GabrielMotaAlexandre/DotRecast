@@ -32,7 +32,7 @@ namespace DotRecast.Detour.Test
         public void TestRandom()
         {
             FRand f = new(1);
-            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var filter = new DtQueryDefaultFilter();
             for (int i = 0; i < 1000; i++)
             {
                 var status = query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
@@ -61,7 +61,7 @@ namespace DotRecast.Detour.Test
         public void TestRandomAroundCircle()
         {
             FRand f = new(1);
-            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var filter = new DtQueryDefaultFilter();
             query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
             for (int i = 0; i < 1000; i++)
             {
@@ -95,7 +95,7 @@ namespace DotRecast.Detour.Test
         public void TestRandomWithinCircle()
         {
             FRand f = new(1);
-            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var filter = new DtQueryDefaultFilter();
             query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
             float radius = 5f;
             for (int i = 0; i < 1000; i++)
@@ -115,7 +115,7 @@ namespace DotRecast.Detour.Test
         public void TestPerformance()
         {
             FRand f = new(1);
-            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var filter = new DtQueryDefaultFilter();
             query.FindRandomPoint(filter, f, out var randomRef, out var randomPt);
 
             float radius = 5f;

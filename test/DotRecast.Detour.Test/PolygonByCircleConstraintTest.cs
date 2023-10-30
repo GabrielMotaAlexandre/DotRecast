@@ -31,7 +31,7 @@ namespace DotRecast.Detour.Test
         [Test]
         public void ShouldHandlePolygonFullyInsideCircle()
         {
-            float[] polygon = { -2, 0, 2, 2, 0, 2, 2, 0, -2, -2, 0, -2 };
+            var polygon = new float[] { -2, 0, 2, 2, 0, 2, 2, 0, -2, -2, 0, -2 }.AsSpan().Cast<float, Vector3>().ToArray();
             Vector3 center = new(1, 0, 1);
             var constrained = _constraint.Apply(polygon, center, 6).ToArray();
 
@@ -41,55 +41,54 @@ namespace DotRecast.Detour.Test
         [Test]
         public void ShouldHandleVerticalSegment()
         {
-            int expectedSize = 21;
-            float[] polygon = { -2, 0, 2, 2, 0, 2, 2, 0, -2, -2, 0, -2 };
+            int expectedSize = 7;
+            var polygon = new float[] { -2, 0, 2, 2, 0, 2, 2, 0, -2, -2, 0, -2 }.AsSpan().Cast<float, Vector3>();
             Vector3 center = new(2, 0, 0);
 
             var constrained = _constraint.Apply(polygon, center, 3).ToArray();
             Assert.That(constrained, Has.Length.EqualTo(expectedSize));
-            Assert.That(constrained, Is.SupersetOf(new[] { 2f, 0f, 2f, 2f, 0f, -2f }));
+            Assert.That(constrained, Is.SupersetOf(new[] { 2f, 0f, 2f, 2f, 0f, -2f }.AsSpan().Cast<float, Vector3>().ToArray()));
         }
 
         [Test]
         public void ShouldHandleCircleFullyInsidePolygon()
         {
-            int expectedSize = 12 * 3;
-            float[] polygon = { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 };
+            int expectedSize = 12;
+            var polygon = new float[] { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 }.AsSpan().Cast<float, Vector3>();
             Vector3 center = new(-1, 0, -1);
             var constrained = _constraint.Apply(polygon, center, 2).ToArray();
 
             Assert.That(constrained, Has.Length.EqualTo(expectedSize));
 
-            for (int i = 0; i < expectedSize; i += 3)
+            for (int i = 0; i < expectedSize; i++)
             {
-                float x = constrained[i] + 1;
-                float z = constrained[i + 2] + 1;
-                Assert.That(x * x + z * z, Is.EqualTo(4).Within(1e-4f));
+                var v2 = constrained[i].AsVector2XZ() + Vector2.One;
+                Assert.That(v2.LengthSquared(), Is.EqualTo(4).Within(1e-4f));
             }
         }
 
         [Test]
         public void ShouldHandleCircleInsidePolygon()
         {
-            int expectedSize = 9 * 3;
-            float[] polygon = { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 };
+            int expectedSize = 9;
+            var polygon = new float[] { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 }.AsSpan().Cast<float, Vector3>();
             Vector3 center = new(-2, 0, -1);
             var constrained = _constraint.Apply(polygon, center, 3).ToArray();
 
             Assert.That(constrained, Has.Length.EqualTo(expectedSize));
-            Assert.That(constrained, Is.SupersetOf(new[] { -2f, 0f, -4f, -4f, 0f, 0f, -3.4641016f, 0f, 1.60769534f, -2f, 0f, 2f }));
+            Assert.That(constrained, Is.SupersetOf(new[] { -2f, 0f, -4f, -4f, 0f, 0f, -3.4641016f, 0f, 1.6076951f, -2f, 0f, 2f }.AsSpan().Cast<float, Vector3>().ToArray()));
         }
 
         [Test]
         public void ShouldHandleCircleOutsidePolygon()
         {
-            int expectedSize = 7 * 3;
-            float[] polygon = { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 };
+            int expectedSize = 7;
+            var polygon = new float[] { -4, 0, 0, -3, 0, 3, 2, 0, 3, 3, 0, -3, -2, 0, -4 }.AsSpan().Cast<float, Vector3>();
             Vector3 center = new(4, 0, 0);
             var constrained = _constraint.Apply(polygon, center, 4).ToArray();
 
             Assert.That(constrained, Has.Length.EqualTo(expectedSize));
-            Assert.That(constrained, Is.SupersetOf(new[] { 1.53589869f, 0f, 3f, 2f, 0f, 3f, 3f, 0f, -3f }));
+            Assert.That(constrained, Is.SupersetOf(new[] { 1.5358982f, 0f, 3f, 2f, 0f, 3f, 3f, 0f, -3f }.AsSpan().Cast<float, Vector3>().ToArray()));
         }
     }
 }

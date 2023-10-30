@@ -11,7 +11,7 @@ namespace DotRecast.Detour
         {
         }
 
-        public ReadOnlySpan<float> Apply(ReadOnlySpan<float> polyVerts, Vector3 circleCenter, float radius)
+        public ReadOnlySpan<Vector3> Apply(ReadOnlySpan<Vector3> polyVerts, Vector3 circleCenter, float radius)
         {
             return polyVerts;
         }

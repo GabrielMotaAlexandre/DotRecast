@@ -109,7 +109,13 @@ namespace System.Numerics
             ref readonly Vector3 vector1 = ref verts.GetReference().UnsafeAdd(v1).UnsafeAs<float, Vector3>();
             ref readonly Vector3 vector2 = ref verts.GetReference().UnsafeAdd(v2).UnsafeAs<float, Vector3>();
 
-            return vector1 + (vector2 - vector1) * t;
+            return Lerp(vector1, vector2, t);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 Lerp(Vector3 v1, Vector3 v2, float t)
+        {
+            return v1 + (v2 - v1) * t;
             //return Vector3.Lerp(vector1, vector2, t);
         }
 
@@ -235,6 +241,20 @@ namespace System.Numerics
         public static ref T GetUnsafeNotReadonly<T>(this ReadOnlySpan<T> array, int index = 0) where T : struct
         {
             return ref array.GetReference().UnsafeAdd(index);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<TTo> Cast<T, TTo>(this Span<T> value) where T : struct where TTo : struct
+        {
+            return MemoryMarshal.Cast<T, TTo>(value);
+        }
+
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<TTo> Cast<T, TTo>(this ReadOnlySpan<T> value) where T : struct where TTo : struct
+        {
+            return MemoryMarshal.Cast<T, TTo>(value);
         }
 
         [Pure]

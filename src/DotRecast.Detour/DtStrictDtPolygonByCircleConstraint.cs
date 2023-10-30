@@ -9,31 +9,29 @@ namespace DotRecast.Detour
     public struct DtStrictDtPolygonByCircleConstraint : IDtPolygonByCircleConstraint
     {
         private const int CIRCLE_SEGMENTS = 12;
-        private static readonly float[] UnitCircle = MakeUnitCircle();
+        private static readonly Vector3[] UnitCircle = MakeUnitCircle();
 
         public static readonly DtStrictDtPolygonByCircleConstraint Shared = new();
 
-        private static float[] MakeUnitCircle()
+        private static Vector3[] MakeUnitCircle()
         {
-            var temp = new float[CIRCLE_SEGMENTS * 3];
+            var temp = new Vector3[CIRCLE_SEGMENTS];
             for (int i = 0; i < CIRCLE_SEGMENTS; i++)
             {
-                double a = i * Math.PI * 2 / CIRCLE_SEGMENTS;
-                temp[3 * i] = (float)Math.Cos(a);
-                temp[3 * i + 1] = 0;
-                temp[3 * i + 2] = (float)-Math.Sin(a);
+                var a = i * Math.PI * 2 / CIRCLE_SEGMENTS;
+                temp[i] = new Vector3((float)Math.Cos(a), 0, (float)-Math.Sin(a));
             }
 
             return temp;
         }
 
-        public readonly ReadOnlySpan<float> Apply(ReadOnlySpan<float> verts, Vector3 center, float radius)
+        public readonly ReadOnlySpan<Vector3> Apply(ReadOnlySpan<Vector3> verts, Vector3 center, float radius)
         {
             float radiusSqr = radius * radius;
             int outsideVertex = -1;
-            for (int pv = 0; pv < verts.Length; pv += 3)
+            for (int pv = 0; pv < verts.Length; pv++)
             {
-                if (Vector3Extensions.Dist2DSqr(center, verts.UnsafeAs<float, Vector3>(pv)) > radiusSqr)
+                if (Vector3Extensions.Dist2DSqr(center, verts[pv]) > radiusSqr)
                 {
                     outsideVertex = pv;
                     break;
@@ -48,7 +46,7 @@ namespace DotRecast.Detour
 
             var qCircle = Circle(center, radius);
             var intersection = ConvexConvexIntersection.Intersect(verts, qCircle);
-            if (intersection is null && DtUtils.PointInPolygon(center, verts, verts.Length / 3))
+            if (intersection == default && DtUtils.PointInPolygon(center, verts, verts.Length))
             {
                 // circle inside polygon
                 return qCircle;
@@ -58,14 +56,12 @@ namespace DotRecast.Detour
         }
 
 
-        private static float[] Circle(Vector3 center, float radius)
+        private static Vector3[] Circle(Vector3 center, float radius)
         {
-            float[] circle = new float[12 * 3];
-            for (int i = 0; i < CIRCLE_SEGMENTS * 3; i += 3)
+            var circle = new Vector3[12];
+            for (int i = 0; i < CIRCLE_SEGMENTS; i++)
             {
-                circle[i] = UnitCircle[i] * radius + center.X;
-                circle[i + 1] = center.Y;
-                circle[i + 2] = UnitCircle[i + 2] * radius + center.Z;
+                circle[i] = center + UnitCircle[i] * radius;
             }
 
             return circle;

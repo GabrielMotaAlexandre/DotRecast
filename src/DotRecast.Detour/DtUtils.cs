@@ -157,13 +157,27 @@ namespace DotRecast.Detour
             return acx * abz - abx * acz;
         }
 
+        /// @}
+        /// @name Computational geometry helper functions.
+        /// @{
+        /// Derives the signed xz-plane area of the triangle ABC, or the
+        /// relationship of line AB to point C.
+        /// @param[in] a Vertex A. [(x, y, z)]
+        /// @param[in] b Vertex B. [(x, y, z)]
+        /// @param[in] c Vertex C. [(x, y, z)]
+        /// @return The signed xz-plane area of the triangle.
+        public static float TriArea2D(ReadOnlySpan<Vector3> verts, int a, int b, int c)
+        {
+            return TriArea2D(verts[a], verts[b], verts[c]);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float TriArea2D(in Vector3 a, in Vector3 b, in Vector3 c)
         {
-            float abx = b.X - a.X;
-            float abz = b.Z - a.Z;
-            float acx = c.X - a.X;
-            float acz = c.Z - a.Z;
+            var abx = b.X - a.X;
+            var abz = b.Z - a.Z;
+            var acx = c.X - a.X;
+            var acz = c.Z - a.Z;
             return acx * abz - abx * acz;
         }
 
@@ -177,14 +191,18 @@ namespace DotRecast.Detour
 
         // Returns a random point in a convex polygon.
         // Adapted from Graphics Gems article.
-        public static Vector3 RandomPointInConvexPoly(ReadOnlySpan<float> pts, int npts, Span<float> areas, float s, float t)
+        public static Vector3 RandomPointInConvexPoly(ReadOnlySpan<Vector3> pts, int npts, Span<float> areas, float s, float t)
         {
             // Calc triangle araes
             float areasum = 0f;
+            var pt0 = pts[0];
+            var ptPrevious = pts[1];
             for (int i = 2; i < npts; i++)
             {
-                areas[i] = TriArea2D(pts, 0, (i - 1) * 3, i * 3);
-                areasum += Math.Max(0.001f, areas[i]);
+                var pt = pts[i];
+                areas[i] = TriArea2D(pt0, ptPrevious, pt);
+                areasum += MathF.Max(0.001f, areas[i]);
+                ptPrevious = pt;
             }
 
             // Find sub triangle weighted by area.
@@ -210,16 +228,10 @@ namespace DotRecast.Detour
             float a = 1 - v;
             float b = (1 - u) * v;
             float c = u * v;
-            int pa = 0;
-            int pb = (tri - 1) * 3;
-            int pc = tri * 3;
+            int pb = tri - 1;
+            int pc = tri;
 
-            return new Vector3()
-            {
-                X = a * pts[pa] + b * pts[pb] + c * pts[pc],
-                Y = a * pts[pa + 1] + b * pts[pb + 1] + c * pts[pc + 1],
-                Z = a * pts[pa + 2] + b * pts[pb + 2] + c * pts[pc + 2]
-            };
+            return a * pt0 + b * pts[pb] + c * pts[pc];
         }
 
         public static bool ClosestHeightPointTriangle(Vector3 p, Vector3 a, Vector3 b, Vector3 c, out float h)
@@ -276,17 +288,19 @@ namespace DotRecast.Detour
         /// @par
         ///
         /// All points are projected onto the xz-plane, so the y-values are ignored.
-        public static bool PointInPolygon(Vector3 pt, ReadOnlySpan<float> verts, int nverts)
+        public static bool PointInPolygon(Vector3 pt, ReadOnlySpan<Vector3> verts, int nverts)
         {
+            // todo replace with vertices and triangles input parameters instead of only verts
+
             // TODO: Replace pnpoly with triArea2D tests?
             int i, j;
             bool c = false;
             for (i = 0, j = nverts - 1; i < nverts; j = i++)
             {
-                int vi = i * 3;
-                int vj = j * 3;
-                if (((verts[vi + 2] > pt.Z) != (verts[vj + 2] > pt.Z)) && (pt.X < (verts[vj ] - verts[vi ])
-                        * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi ]))
+                var vi = verts[i];
+                var vj = verts[j];
+
+                if (((vi.Z > pt.Z) != (vj.Z > pt.Z)) && (pt.X < (vj.X - vi.X) * (pt.Z - vi.Z) / (vj.Z - vi.Z) + vi.X))
                 {
                     c = !c;
                 }
@@ -305,7 +319,7 @@ namespace DotRecast.Detour
                 int vi = i * 3;
                 int vj = j * 3;
                 if (((verts[vi + 2] > pt.Z) != (verts[vj + 2] > pt.Z)) &&
-                    (pt.X < (verts[vj ] - verts[vi ]) * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi ]))
+                    (pt.X < (verts[vj] - verts[vi]) * (pt.Z - verts[vi + 2]) / (verts[vj + 2] - verts[vi + 2]) + verts[vi]))
                 {
                     c = !c;
                 }
@@ -433,7 +447,7 @@ namespace DotRecast.Detour
             Vector3 v = bq - bp;
             Vector3 w = ap - bp;
             float d = Vector3Extensions.PerpXZ(u, v);
-            if (Math.Abs(d) < 1e-6f)
+            if (MathF.Abs(d) < 1e-6f)
             {
                 return false;
             }

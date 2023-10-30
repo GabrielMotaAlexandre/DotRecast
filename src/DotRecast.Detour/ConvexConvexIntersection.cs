@@ -24,23 +24,19 @@ using System.Runtime.CompilerServices;
 namespace DotRecast.Detour
 {
     /**
- * Convex-convex intersection based on "Computational Geometry in C" by Joseph O'Rourke
- */
+    * Convex-convex intersection based on "Computational Geometry in C" by Joseph O'Rourke
+*/
     public static class ConvexConvexIntersection
     {
         private static readonly float EPSILON = 0.0001f;
 
-        public static float[] Intersect(ReadOnlySpan<float> p, ReadOnlySpan<float> q)
+        public static ReadOnlySpan<Vector3> Intersect(ReadOnlySpan<Vector3> pVerts, ReadOnlySpan<Vector3> qVerts)
         {
-            int n = p.Length / 3;
-            int m = q.Length / 3;
-            float[] inters = new float[Math.Max(m, n) * 3 * 3];
+            int pLength = pVerts.Length;
+            int qLength = qVerts.Length;
+            var inters = new Vector3[Math.Max(qLength, pLength) * 3];
             int ii = 0;
             /* Initialize variables. */
-            Vector3 a = new();
-            Vector3 b = new();
-            Vector3 a1 = new();
-            Vector3 b1 = new();
 
             int aa = 0;
             int ba = 0;
@@ -49,29 +45,28 @@ namespace DotRecast.Detour
 
             InFlag f = InFlag.Unknown;
             bool FirstPoint = true;
-            Vector3 ip = new();
-            Vector3 iq = new();
 
             do
             {
-                a.Set(p, ai % n);
-                b.Set(q, bi % m);
-                a1.Set(p, (ai + n - 1) % n); // prev a
-                b1.Set(q, (bi + m - 1) % m); // prev b
+                var a = pVerts[ai % pLength];
+                var b = qVerts[bi % qLength];
+                var a1 = pVerts[(ai + pLength - 1) % pLength]; // prev a
+                var b1 = qVerts[(bi + qLength - 1) % qLength]; // prev b
 
-                Vector3 A = a - a1;
-                Vector3 B = b - b1;
+                Vector3 aV = a - a1;
+                Vector3 bV = b - b1;
 
-                float cross = B.X * A.Z - A.X * B.Z; // TriArea2D({0, 0}, A, B);
+                float cross = bV.X * aV.Z - aV.X * bV.Z; // TriArea2D({0, 0}, A, B);
                 float aHB = DtUtils.TriArea2D(b1, b, a);
                 float bHA = DtUtils.TriArea2D(a1, a, b);
-                if (Math.Abs(cross) < EPSILON)
+                if (MathF.Abs(cross) < EPSILON)
                 {
                     cross = 0f;
                 }
 
+                Vector3 iq = default;
                 bool parallel = cross is 0f;
-                Intersection code = parallel ? ParallelInt(a1, a, b1, b, ref ip, ref iq) : SegSegInt(a1, a, b1, b, ref ip, ref iq);
+                Intersection code = parallel ? ParallelInt(a1, a, b1, b, out var ip, out iq) : SegSegInt(a1, a, b1, b, out ip);
 
                 if (code == Intersection.Single)
                 {
@@ -94,14 +89,8 @@ namespace DotRecast.Detour
                 ///
                 /// The vectors are projected onto the xz-plane, so the y-values are
                 /// ignored.
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                static float Dot2D(Vector3 vector, Vector3 v)
-                {
-                    return vector.X * v.X + vector.Z * v.Z;
-                }
-
                 /* Special case: A & B overlap and oppositely oriented. */
-                if (code == Intersection.Overlap && Dot2D(A, B) < 0)
+                if (code == Intersection.Overlap && aV.X * bV.X + aV.Z * bV.Z < 0)
                 {
                     ii = AddVertex(inters, ii, ip);
                     ii = AddVertex(inters, ii, iq);
@@ -111,10 +100,10 @@ namespace DotRecast.Detour
                 /* Special case: A & B parallel and separated. */
                 if (parallel && aHB < 0f && bHA < 0f)
                 {
-                    return null;
+                    return default;
                 }
                 /* Special case: A & B collinear. */
-                else if (parallel && Math.Abs(aHB) < EPSILON && Math.Abs(bHA) < EPSILON)
+                else if (parallel && MathF.Abs(aHB) < EPSILON && Math.Abs(bHA) < EPSILON)
                 {
                     /* Advance but do not output point. */
                     if (f == InFlag.Pin)
@@ -176,7 +165,7 @@ namespace DotRecast.Detour
                     }
                 }
                 /* Quit when both adv. indices have cycled, or one has cycled twice. */
-            } while ((aa < n || ba < m) && aa < 2 * n && ba < 2 * m);
+            } while ((aa < pLength || ba < qLength) && aa < 2 * pLength && ba < 2 * qLength);
 
             /* Deal with special cases: not implemented. */
             if (f == InFlag.Unknown)
@@ -184,30 +173,26 @@ namespace DotRecast.Detour
                 return null;
             }
 
-            float[] copied = new float[ii];
-            Array.Copy(inters, copied, ii);
-            return copied;
+            return inters.AsSpan(0, ii);
         }
 
-        private static int AddVertex(float[] inters, int ii, Vector3 p)
+        private static int AddVertex(Span<Vector3> inters, int ii, Vector3 p)
         {
             if (ii > 0)
             {
-                if (inters[ii - 3] == p.X && inters[ii - 2] == p.Y && inters[ii - 1] == p.Z)
+                if (inters[ii - 1] == p)
                 {
                     return ii;
                 }
 
-                if (inters[0] == p.X && inters[1] == p.Y && inters[2] == p.Z)
+                if (inters[0] == p)
                 {
                     return ii;
                 }
             }
 
-            inters[ii] = p.X;
-            inters[ii + 1] = p.Y;
-            inters[ii + 2] = p.Z;
-            return ii + 3;
+            inters[ii] = p;
+            return ii + 1;
         }
 
 
@@ -225,23 +210,21 @@ namespace DotRecast.Detour
             return inflag;
         }
 
-        private static Intersection SegSegInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, ref Vector3 p, ref Vector3 q)
+        private static Intersection SegSegInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, out Vector3 p)
         {
             if (DtUtils.IntersectSegSeg2D(a, b, c, d, out var s, out var t))
             {
                 if (s >= 0f && s <= 1f && t >= 0f && t <= 1f)
                 {
-                    p.X = a.X + (b.X - a.X) * s;
-                    p.Y = a.Y + (b.Y - a.Y) * s;
-                    p.Z = a.Z + (b.Z - a.Z) * s;
+                    p = a + (b - a) * s;
                     return Intersection.Single;
                 }
             }
-
+            p = default;
             return Intersection.None;
         }
 
-        private static Intersection ParallelInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, ref Vector3 p, ref Vector3 q)
+        private static Intersection ParallelInt(Vector3 a, Vector3 b, Vector3 c, Vector3 d, out Vector3 p, out Vector3 q)
         {
             if (Between2D(a, b, c) && Between2D(a, b, d))
             {
@@ -285,12 +268,14 @@ namespace DotRecast.Detour
                 return Intersection.Overlap;
             }
 
+            p = q = default;
+
             return Intersection.None;
         }
 
         private static bool Between2D(Vector3 a, Vector3 b, Vector3 c)
         {
-            if (Math.Abs(a.X - b.X) > Math.Abs(a.Z - b.Z))
+            if (MathF.Abs(a.X - b.X) > MathF.Abs(a.Z - b.Z))
             {
                 return ((a.X <= c.X) && (c.X <= b.X)) || ((a.X >= c.X) && (c.X >= b.X));
             }

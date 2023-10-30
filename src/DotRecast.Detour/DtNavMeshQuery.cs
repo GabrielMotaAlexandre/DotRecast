@@ -26,7 +26,6 @@ using DotRecast.Core;
 
 namespace DotRecast.Detour
 {
-
     using static DtNode;
 
     public sealed class DtNavMeshQuery
@@ -163,16 +162,16 @@ namespace DotRecast.Detour
             }
 
             // Randomly pick point on polygon.
-            var verts = new float[3 * m_nav.GetMaxVertsPerPoly()];
-            var areas = new float[m_nav.GetMaxVertsPerPoly()];
-            Array.Copy(tile.data.verts, poly.verts[0] * 3, verts, 0, 3);
-            for (int j = 1; j < poly.vertCount; ++j)
+            var verts = new Vector3[m_nav.GetMaxVertsPerPoly()];
+            for (int j = 0; j < poly.vertCount; ++j)
             {
-                Array.Copy(tile.data.verts, poly.verts[j] * 3, verts, j * 3, 3);
+                verts[j] = tile.data.verts.UnsafeAs<float, Vector3>(poly.verts[j]);
             }
 
             float s = frand.Next();
             float t = frand.Next();
+
+            var areas = new float[m_nav.GetMaxVertsPerPoly()];
 
             var pt = DtUtils.RandomPointInConvexPoly(verts, poly.vertCount, areas, s, t);
             ClosestPointOnPoly(polyRef, pt, out var closest, out var _);
@@ -265,7 +264,7 @@ namespace DotRecast.Detour
 
             DtPoly randomPoly = null;
             long randomPolyRef = 0;
-            ReadOnlySpan<float> randomPolyVerts = null;
+            ReadOnlySpan<Vector3> randomPolyVerts = default;
 
             while (!m_openList.IsEmpty())
             {
@@ -281,22 +280,23 @@ namespace DotRecast.Detour
                 if (bestPoly.GetPolyType() == DtPoly.DT_POLYTYPE_GROUND)
                 {
                     // Calc area of the polygon.
-                    float polyArea = 0f;
-                    float[] polyVerts = new float[bestPoly.vertCount * 3];
+                    var polyVerts = new Vector3[bestPoly.vertCount];
                     for (int j = 0; j < bestPoly.vertCount; ++j)
                     {
-                        Array.Copy(bestTile.data.verts, bestPoly.verts[j] * 3, polyVerts, j * 3, 3);
+                        polyVerts[j] = bestTile.data.verts.UnsafeAs<float, Vector3>(bestPoly.verts[j]);
                     }
 
                     var constrainedVerts = constraint.Apply(polyVerts, centerPos, maxRadius);
                     if (constrainedVerts != null)
                     {
+                        float polyArea = 0f;
+
                         int vertCount = constrainedVerts.Length / 3;
                         for (int j = 2; j < vertCount; ++j)
                         {
                             int va = 0;
-                            int vb = (j - 1) * 3;
-                            int vc = j * 3;
+                            int vb = j - 1;
+                            int vc = j;
                             polyArea += DtUtils.TriArea2D(constrainedVerts, va, vb, vc);
                         }
 
@@ -405,8 +405,8 @@ namespace DotRecast.Detour
             float s = frand.Next();
             float t = frand.Next();
 
-            float[] areas = new float[randomPolyVerts.Length / 3];
-            Vector3 pt = DtUtils.RandomPointInConvexPoly(randomPolyVerts, randomPolyVerts.Length / 3, areas, s, t);
+            var areas = new float[randomPolyVerts.Length];
+            var pt = DtUtils.RandomPointInConvexPoly(randomPolyVerts, randomPolyVerts.Length, areas, s, t);
             ClosestPointOnPoly(randomPolyRef, pt, out var closest, out _);
 
             randomRef = randomPolyRef;
@@ -1820,7 +1820,7 @@ namespace DotRecast.Detour
             var searchPos = Vector3.Lerp(startPos, endPos, 0.5f);
             float searchRadSqr = RcMath.Sqr(Vector3.Distance(startPos, endPos) / 2f + 0.001f);
 
-            float[] verts = ArrayPool<float>.Shared.Rent(m_nav.GetMaxVertsPerPoly() * 3);
+            var verts = ArrayPool<Vector3>.Shared.Rent(m_nav.GetMaxVertsPerPoly());
 
             while (0 < stack.Count)
             {
@@ -1837,7 +1837,7 @@ namespace DotRecast.Detour
                 int nverts = curPoly.vertCount;
                 for (int i = 0; i < nverts; ++i)
                 {
-                    verts.UnsafeAs<float, Vector3>(i) = curTile.data.verts.UnsafeAs<float, Vector3>(curPoly.verts[i]);
+                    verts[i] = curTile.data.verts.UnsafeAs<float, Vector3>(curPoly.verts[i]);
                 }
 
                 // If target is inside the poly, stop search.
@@ -1891,14 +1891,14 @@ namespace DotRecast.Detour
 
                     if (nneis is 0)
                     {
+                        var vj = verts[j];
+                        var vi = verts[i];
                         // Wall edge, calc distance.
-                        int vj = j * 3;
-                        int vi = i * 3;
-                        var distSqr = DtUtils.DistancePtSegSqr2D(endPos, verts, vj, vi, out var tseg);
+                        var distSqr = DtUtils.DistancePtSegSqr2D(endPos, vj, vi, out var tseg);
                         if (distSqr < bestDist)
                         {
                             // Update nearest distance.
-                            resultPos = Vector3Extensions.Lerp(verts, vj, vi, tseg);
+                            resultPos = Vector3Extensions.Lerp(vj, vi, tseg);
                             bestDist = distSqr;
                             bestNode = curNode;
                         }
@@ -1916,9 +1916,7 @@ namespace DotRecast.Detour
 
                             // Skip the link if it is too far from search constraint.
                             // TODO: Maybe should use GetPortalPoints(), but this one is way faster.
-                            int vj = j * 3;
-                            int vi = i * 3;
-                            var distSqr = DtUtils.DistancePtSegSqr2D(searchPos, verts, vj, vi, out var _);
+                            var distSqr = DtUtils.DistancePtSegSqr2D(searchPos, verts[j], verts[i], out var _);
                             if (distSqr > searchRadSqr)
                             {
                                 continue;
@@ -1933,7 +1931,7 @@ namespace DotRecast.Detour
                 }
             }
 
-            ArrayPool<float>.Shared.Return(verts);
+            ArrayPool<Vector3>.Shared.Return(verts);
 
             if (bestNode != null)
             {
