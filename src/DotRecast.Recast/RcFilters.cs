@@ -19,12 +19,11 @@ freely, subject to the following restrictions:
 */
 
 using System;
+using static DotRecast.Recast.RcConstants;
+using static DotRecast.Recast.RcCommons;
 
 namespace DotRecast.Recast
 {
-    using static RcConstants;
-    using static RcCommons;
-
     public static class RcFilters
     {
         /// @par

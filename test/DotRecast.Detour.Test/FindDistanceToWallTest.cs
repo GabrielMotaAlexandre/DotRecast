@@ -19,15 +19,15 @@ freely, subject to the following restrictions:
 using System.Numerics;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class FindDistanceToWallTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly float[] DISTANCES_TO_WALL = { 0.597511f, 3.201085f, 0.603713f, 2.791475f, 2.815544f };
-
-    private static readonly Vector3[] HIT_POSITION =
+    [Parallelizable]
+    public class FindDistanceToWallTest : AbstractDetourTest
     {
+        private static readonly float[] DISTANCES_TO_WALL = { 0.597511f, 3.201085f, 0.603713f, 2.791475f, 2.815544f };
+
+        private static readonly Vector3[] HIT_POSITION =
+        {
         new Vector3(23.177608f, 10.197294f, -45.742954f),
         new Vector3(22.331268f, 10.197294f, -4.241272f),
         new Vector3(18.108675f, 15.743596f, -73.236839f),
@@ -35,8 +35,8 @@ public class FindDistanceToWallTest : AbstractDetourTest
         new Vector3(-22.315216f, 4.997294f, -11.441269f),
     };
 
-    private static readonly Vector2[] HIT_NORMAL =
-    {
+        private static readonly Vector2[] HIT_NORMAL =
+        {
         new Vector2(-0.955779f, -0.29408592f),
         new Vector2(0f, 1f),
         new Vector2(0.97014254f,  0.24253564f),
@@ -44,23 +44,24 @@ public class FindDistanceToWallTest : AbstractDetourTest
         new Vector2(1f, 0f),
     };
 
-    [Test]
-    public void TestFindDistanceToWall()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindDistanceToWall()
         {
-            Vector3 startPos = startPoss[i];
-            query.FindDistanceToWall(startRefs[i], startPos, 3.5f, filter,
-                out var hitDist, out var hitPos, out var hitNormal);
-            Assert.That(hitDist, Is.EqualTo(DISTANCES_TO_WALL[i]).Within(0.001f));
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            for (int i = 0; i < startRefs.Length; i++)
+            {
+                Vector3 startPos = startPoss[i];
+                query.FindDistanceToWall(startRefs[i], startPos, 3.5f, filter,
+                    out var hitDist, out var hitPos, out var hitNormal);
+                Assert.That(hitDist, Is.EqualTo(DISTANCES_TO_WALL[i]).Within(0.001f));
 
-            Assert.That(hitPos.X, Is.EqualTo(HIT_POSITION[i].X).Within(0.001f));
-            Assert.That(hitPos.Y, Is.EqualTo(HIT_POSITION[i].Y).Within(0.001f));
-            Assert.That(hitPos.Z, Is.EqualTo(HIT_POSITION[i].Z).Within(0.001f));
+                Assert.That(hitPos.X, Is.EqualTo(HIT_POSITION[i].X).Within(0.001f));
+                Assert.That(hitPos.Y, Is.EqualTo(HIT_POSITION[i].Y).Within(0.001f));
+                Assert.That(hitPos.Z, Is.EqualTo(HIT_POSITION[i].Z).Within(0.001f));
 
-            Assert.That(hitNormal.X, Is.EqualTo(HIT_NORMAL[i].X).Within(0.001f));
-            Assert.That(hitNormal.Y, Is.EqualTo(HIT_NORMAL[i].Y).Within(0.001f));
+                Assert.That(hitNormal.X, Is.EqualTo(HIT_NORMAL[i].X).Within(0.001f));
+                Assert.That(hitNormal.Y, Is.EqualTo(HIT_NORMAL[i].Y).Within(0.001f));
+            }
         }
     }
 }

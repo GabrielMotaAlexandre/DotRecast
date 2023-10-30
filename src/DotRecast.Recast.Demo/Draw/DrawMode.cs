@@ -20,66 +20,67 @@ freely, subject to the following restrictions:
 
 using DotRecast.Core;
 
-namespace DotRecast.Recast.Demo.Draw;
-
-public class DrawMode
+namespace DotRecast.Recast.Demo.Draw
 {
-    public static readonly DrawMode DRAWMODE_MESH = new(0, "Input Mesh");
-    public static readonly DrawMode DRAWMODE_NAVMESH = new(1, "Navmesh");
-    public static readonly DrawMode DRAWMODE_NAVMESH_INVIS = new(2, "Navmesh Invis");
-    public static readonly DrawMode DRAWMODE_NAVMESH_TRANS = new(3, "Navmesh Trans");
-    public static readonly DrawMode DRAWMODE_NAVMESH_BVTREE = new(4, "Navmesh BVTree");
-    public static readonly DrawMode DRAWMODE_NAVMESH_NODES = new(5, "Navmesh Nodes");
-    public static readonly DrawMode DRAWMODE_NAVMESH_PORTALS = new(6, "Navmesh Portals");
-    public static readonly DrawMode DRAWMODE_VOXELS = new(7, "Voxels");
-    public static readonly DrawMode DRAWMODE_VOXELS_WALKABLE = new(8, "Walkable Voxels");
-    public static readonly DrawMode DRAWMODE_COMPACT = new(9, "Compact");
-    public static readonly DrawMode DRAWMODE_COMPACT_DISTANCE = new(10, "Compact Distance");
-    public static readonly DrawMode DRAWMODE_COMPACT_REGIONS = new(11, "Compact Regions");
-    public static readonly DrawMode DRAWMODE_REGION_CONNECTIONS = new(12, "Region Connections");
-    public static readonly DrawMode DRAWMODE_RAW_CONTOURS = new(13, "Raw Contours");
-    public static readonly DrawMode DRAWMODE_BOTH_CONTOURS = new(14, "Both Contours");
-    public static readonly DrawMode DRAWMODE_CONTOURS = new(15, "Contours");
-    public static readonly DrawMode DRAWMODE_POLYMESH = new(16, "Poly Mesh");
-    public static readonly DrawMode DRAWMODE_POLYMESH_DETAIL = new(17, "Poly Mesh Detils");
-
-    public static readonly RcImmutableArray<DrawMode> Values = RcImmutableArray.Create(
-        DRAWMODE_MESH,
-        DRAWMODE_NAVMESH,
-        DRAWMODE_NAVMESH_INVIS,
-        DRAWMODE_NAVMESH_TRANS,
-        DRAWMODE_NAVMESH_BVTREE,
-        DRAWMODE_NAVMESH_NODES,
-        DRAWMODE_NAVMESH_PORTALS,
-        DRAWMODE_VOXELS,
-        DRAWMODE_VOXELS_WALKABLE,
-        DRAWMODE_COMPACT,
-        DRAWMODE_COMPACT_DISTANCE,
-        DRAWMODE_COMPACT_REGIONS,
-        DRAWMODE_REGION_CONNECTIONS,
-        DRAWMODE_RAW_CONTOURS,
-        DRAWMODE_BOTH_CONTOURS,
-        DRAWMODE_CONTOURS,
-        DRAWMODE_POLYMESH,
-        DRAWMODE_POLYMESH_DETAIL
-    );
-
-    public int Idx { get; }
-    public string Text { get; }
-
-    private DrawMode(int idx, string text)
+    public class DrawMode
     {
-        Idx = idx;
-        Text = text;
-    }
+        public static readonly DrawMode DRAWMODE_MESH = new(0, "Input Mesh");
+        public static readonly DrawMode DRAWMODE_NAVMESH = new(1, "Navmesh");
+        public static readonly DrawMode DRAWMODE_NAVMESH_INVIS = new(2, "Navmesh Invis");
+        public static readonly DrawMode DRAWMODE_NAVMESH_TRANS = new(3, "Navmesh Trans");
+        public static readonly DrawMode DRAWMODE_NAVMESH_BVTREE = new(4, "Navmesh BVTree");
+        public static readonly DrawMode DRAWMODE_NAVMESH_NODES = new(5, "Navmesh Nodes");
+        public static readonly DrawMode DRAWMODE_NAVMESH_PORTALS = new(6, "Navmesh Portals");
+        public static readonly DrawMode DRAWMODE_VOXELS = new(7, "Voxels");
+        public static readonly DrawMode DRAWMODE_VOXELS_WALKABLE = new(8, "Walkable Voxels");
+        public static readonly DrawMode DRAWMODE_COMPACT = new(9, "Compact");
+        public static readonly DrawMode DRAWMODE_COMPACT_DISTANCE = new(10, "Compact Distance");
+        public static readonly DrawMode DRAWMODE_COMPACT_REGIONS = new(11, "Compact Regions");
+        public static readonly DrawMode DRAWMODE_REGION_CONNECTIONS = new(12, "Region Connections");
+        public static readonly DrawMode DRAWMODE_RAW_CONTOURS = new(13, "Raw Contours");
+        public static readonly DrawMode DRAWMODE_BOTH_CONTOURS = new(14, "Both Contours");
+        public static readonly DrawMode DRAWMODE_CONTOURS = new(15, "Contours");
+        public static readonly DrawMode DRAWMODE_POLYMESH = new(16, "Poly Mesh");
+        public static readonly DrawMode DRAWMODE_POLYMESH_DETAIL = new(17, "Poly Mesh Detils");
 
-    public static DrawMode OfIdx(int idx)
-    {
-        return Values[idx];
-    }
+        public static readonly RcImmutableArray<DrawMode> Values = RcImmutableArray.Create(
+            DRAWMODE_MESH,
+            DRAWMODE_NAVMESH,
+            DRAWMODE_NAVMESH_INVIS,
+            DRAWMODE_NAVMESH_TRANS,
+            DRAWMODE_NAVMESH_BVTREE,
+            DRAWMODE_NAVMESH_NODES,
+            DRAWMODE_NAVMESH_PORTALS,
+            DRAWMODE_VOXELS,
+            DRAWMODE_VOXELS_WALKABLE,
+            DRAWMODE_COMPACT,
+            DRAWMODE_COMPACT_DISTANCE,
+            DRAWMODE_COMPACT_REGIONS,
+            DRAWMODE_REGION_CONNECTIONS,
+            DRAWMODE_RAW_CONTOURS,
+            DRAWMODE_BOTH_CONTOURS,
+            DRAWMODE_CONTOURS,
+            DRAWMODE_POLYMESH,
+            DRAWMODE_POLYMESH_DETAIL
+        );
 
-    public override string ToString()
-    {
-        return Text;
+        public int Idx { get; }
+        public string Text { get; }
+
+        private DrawMode(int idx, string text)
+        {
+            Idx = idx;
+            Text = text;
+        }
+
+        public static DrawMode OfIdx(int idx)
+        {
+            return Values[idx];
+        }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

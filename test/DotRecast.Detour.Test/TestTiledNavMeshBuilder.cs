@@ -22,111 +22,112 @@ using DotRecast.Recast;
 using DotRecast.Recast.Geom;
 
 
-namespace DotRecast.Detour.Test;
-
-public class TestTiledNavMeshBuilder
+namespace DotRecast.Detour.Test
 {
-    private readonly DtNavMesh navMesh;
-    private const float m_cellSize = 0.3f;
-    private const float m_cellHeight = 0.2f;
-    private const float m_agentHeight = 2f;
-    private const float m_agentRadius = 0.6f;
-    private const float m_agentMaxClimb = 0.9f;
-    private const float m_agentMaxSlope = 45.0f;
-    private const int m_regionMinSize = 8;
-    private const int m_regionMergeSize = 20;
-    private const float m_regionMinArea = m_regionMinSize * m_regionMinSize * m_cellSize * m_cellSize;
-    private const float m_regionMergeArea = m_regionMergeSize * m_regionMergeSize * m_cellSize * m_cellSize;
-    private const float m_edgeMaxLen = 12f;
-    private const float m_edgeMaxError = 1.3f;
-    private const int m_vertsPerPoly = 6;
-    private const float m_detailSampleDist = 6.0f;
-    private const float m_detailSampleMaxError = 1f;
-    private const int m_tileSize = 32;
-
-    public TestTiledNavMeshBuilder() :
-        this(SimpleInputGeomProvider.LoadFile("dungeon.obj"),
-            RcPartition.WATERSHED, m_cellSize, m_cellHeight, m_agentHeight, m_agentRadius, m_agentMaxClimb, m_agentMaxSlope,
-            m_regionMinSize, m_regionMergeSize, m_edgeMaxLen, m_edgeMaxError, m_vertsPerPoly, m_detailSampleDist,
-            m_detailSampleMaxError, m_tileSize)
+    public class TestTiledNavMeshBuilder
     {
-    }
+        private readonly DtNavMesh navMesh;
+        private const float m_cellSize = 0.3f;
+        private const float m_cellHeight = 0.2f;
+        private const float m_agentHeight = 2f;
+        private const float m_agentRadius = 0.6f;
+        private const float m_agentMaxClimb = 0.9f;
+        private const float m_agentMaxSlope = 45.0f;
+        private const int m_regionMinSize = 8;
+        private const int m_regionMergeSize = 20;
+        private const float m_regionMinArea = m_regionMinSize * m_regionMinSize * m_cellSize * m_cellSize;
+        private const float m_regionMergeArea = m_regionMergeSize * m_regionMergeSize * m_cellSize * m_cellSize;
+        private const float m_edgeMaxLen = 12f;
+        private const float m_edgeMaxError = 1.3f;
+        private const int m_vertsPerPoly = 6;
+        private const float m_detailSampleDist = 6.0f;
+        private const float m_detailSampleMaxError = 1f;
+        private const int m_tileSize = 32;
 
-    public TestTiledNavMeshBuilder(IInputGeomProvider geom, RcPartition partitionType, float cellSize, float cellHeight,
-        float agentHeight, float agentRadius, float agentMaxClimb, float agentMaxSlope, int regionMinSize,
-        int regionMergeSize, float edgeMaxLen, float edgeMaxError, int vertsPerPoly, float detailSampleDist,
-        float detailSampleMaxError, int tileSize)
-    {
-        // Create empty nav mesh
-        DtNavMeshParams navMeshParams = new()
+        public TestTiledNavMeshBuilder() :
+            this(SimpleInputGeomProvider.LoadFile("dungeon.obj"),
+                RcPartition.WATERSHED, m_cellSize, m_cellHeight, m_agentHeight, m_agentRadius, m_agentMaxClimb, m_agentMaxSlope,
+                m_regionMinSize, m_regionMergeSize, m_edgeMaxLen, m_edgeMaxError, m_vertsPerPoly, m_detailSampleDist,
+                m_detailSampleMaxError, m_tileSize)
         {
-            orig = geom.GetMeshBoundsMin().AsVector2XZ(),
-            tileWidth = tileSize * cellSize,
-            tileHeight = tileSize * cellSize,
-            maxTiles = 128,
-            maxPolys = 32768
-        };
-        navMesh = new DtNavMesh(navMeshParams, 6);
-
-        // Build all tiles
-        RcConfig cfg = new(true, tileSize, tileSize, RcConfig.CalcBorder(agentRadius, cellSize),
-            partitionType,
-            cellSize, cellHeight,
-            agentMaxSlope, agentHeight, agentRadius, agentMaxClimb,
-            m_regionMinArea, m_regionMergeArea,
-            edgeMaxLen, edgeMaxError,
-            vertsPerPoly,
-            detailSampleDist, detailSampleMaxError,
-            true, true, true,
-            SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        
-        List<RcBuilderResult> rcResult = RcBuilder.BuildTiles(geom, cfg);
-
-        // Add tiles to nav mesh
-
-        foreach (RcBuilderResult result in rcResult)
-        {
-            RcPolyMesh pmesh = result.Mesh;
-            if (pmesh.npolys is 0)
-            {
-                continue;
-            }
-
-            for (int i = 0; i < pmesh.npolys; ++i)
-            {
-                pmesh.flags[i] = 1;
-            }
-
-            DtNavMeshCreateParams option = new()
-            {
-                verts = pmesh.verts,
-                vertCount = pmesh.nverts,
-                polys = pmesh.polys,
-                polyAreas = pmesh.areas,
-                polyFlags = pmesh.flags,
-                polyCount = pmesh.npolys,
-                nvp = pmesh.nvp
-            };
-            RcPolyMeshDetail dmesh = result.MeshDetail;
-            option.detailMeshes = dmesh.meshes;
-            option.detailVerts = dmesh.verts;
-            option.detailTris = dmesh.tris;
-            option.walkableHeight = agentHeight;
-            option.walkableRadius = agentRadius;
-            option.walkableClimb = agentMaxClimb;
-            option.bmin = pmesh.bmin;
-            option.bmax = pmesh.bmax;
-            option.cs = cellSize;
-            option.ch = cellHeight;
-            option.tileX = result.tileX;
-            option.tileZ = result.tileZ;
-            option.buildBvTree = true;
-            navMesh.AddTile(DtNavMeshBuilder.CreateNavMeshData(option), 0, 0);
         }
-    }
 
-    public DtNavMesh GetNavMesh()
-    {
-        return navMesh;
+        public TestTiledNavMeshBuilder(IInputGeomProvider geom, RcPartition partitionType, float cellSize, float cellHeight,
+            float agentHeight, float agentRadius, float agentMaxClimb, float agentMaxSlope, int regionMinSize,
+            int regionMergeSize, float edgeMaxLen, float edgeMaxError, int vertsPerPoly, float detailSampleDist,
+            float detailSampleMaxError, int tileSize)
+        {
+            // Create empty nav mesh
+            DtNavMeshParams navMeshParams = new()
+            {
+                orig = geom.GetMeshBoundsMin().AsVector2XZ(),
+                tileWidth = tileSize * cellSize,
+                tileHeight = tileSize * cellSize,
+                maxTiles = 128,
+                maxPolys = 32768
+            };
+            navMesh = new DtNavMesh(navMeshParams, 6);
+
+            // Build all tiles
+            RcConfig cfg = new(true, tileSize, tileSize, RcConfig.CalcBorder(agentRadius, cellSize),
+                partitionType,
+                cellSize, cellHeight,
+                agentMaxSlope, agentHeight, agentRadius, agentMaxClimb,
+                m_regionMinArea, m_regionMergeArea,
+                edgeMaxLen, edgeMaxError,
+                vertsPerPoly,
+                detailSampleDist, detailSampleMaxError,
+                true, true, true,
+                SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
+
+            List<RcBuilderResult> rcResult = RcBuilder.BuildTiles(geom, cfg);
+
+            // Add tiles to nav mesh
+
+            foreach (RcBuilderResult result in rcResult)
+            {
+                RcPolyMesh pmesh = result.Mesh;
+                if (pmesh.npolys is 0)
+                {
+                    continue;
+                }
+
+                for (int i = 0; i < pmesh.npolys; ++i)
+                {
+                    pmesh.flags[i] = 1;
+                }
+
+                DtNavMeshCreateParams option = new()
+                {
+                    verts = pmesh.verts,
+                    vertCount = pmesh.nverts,
+                    polys = pmesh.polys,
+                    polyAreas = pmesh.areas,
+                    polyFlags = pmesh.flags,
+                    polyCount = pmesh.npolys,
+                    nvp = pmesh.nvp
+                };
+                RcPolyMeshDetail dmesh = result.MeshDetail;
+                option.detailMeshes = dmesh.meshes;
+                option.detailVerts = dmesh.verts;
+                option.detailTris = dmesh.tris;
+                option.walkableHeight = agentHeight;
+                option.walkableRadius = agentRadius;
+                option.walkableClimb = agentMaxClimb;
+                option.bmin = pmesh.bmin;
+                option.bmax = pmesh.bmax;
+                option.cs = cellSize;
+                option.ch = cellHeight;
+                option.tileX = result.tileX;
+                option.tileZ = result.tileZ;
+                option.buildBvTree = true;
+                navMesh.AddTile(DtNavMeshBuilder.CreateNavMeshData(option), 0, 0);
+            }
+        }
+
+        public DtNavMesh GetNavMesh()
+        {
+            return navMesh;
+        }
     }
 }

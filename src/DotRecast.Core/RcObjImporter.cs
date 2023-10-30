@@ -82,9 +82,9 @@ namespace DotRecast.Core
             // fix - https://github.com/ikpil/DotRecast/issues/7
             return new float[]
             {
-                float.Parse(v[1], CultureInfo.InvariantCulture),
-                float.Parse(v[2], CultureInfo.InvariantCulture),
-                float.Parse(v[3], CultureInfo.InvariantCulture)
+            float.Parse(v[1], CultureInfo.InvariantCulture),
+            float.Parse(v[2], CultureInfo.InvariantCulture),
+            float.Parse(v[3], CultureInfo.InvariantCulture)
             };
         }
 

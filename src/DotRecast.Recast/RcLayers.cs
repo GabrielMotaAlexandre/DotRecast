@@ -267,8 +267,8 @@ namespace DotRecast.Recast
                         if (Contains(root.layers, nei))
                             continue;
                         // Skip if the height range would become too large.
-                        int ymin = MathF.Min(root.ymin, regn.ymin);
-                        int ymax = MathF.Max(root.ymax, regn.ymax);
+                        int ymin = Math.Min(root.ymin, regn.ymin);
+                        int ymax = Math.Max(root.ymax, regn.ymax);
                         if ((ymax - ymin) >= 255)
                             continue;
 

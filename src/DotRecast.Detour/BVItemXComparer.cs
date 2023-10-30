@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace DotRecast.Detour
 {
-    public struct BVItemXComparer : IComparer<BVItem>
+    public readonly struct BVItemXComparer : IComparer<BVItem>
     {
         public static readonly BVItemXComparer Shared = new();
 

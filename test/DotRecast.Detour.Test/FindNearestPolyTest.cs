@@ -19,52 +19,53 @@ freely, subject to the following restrictions:
 using System.Numerics;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class FindNearestPolyTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly long[] POLY_REFS = { 281474976710696L, 281474976710773L, 281474976710680L, 281474976710753L, 281474976710733L };
-
-    private static readonly float[][] POLY_POS =
+    [Parallelizable]
+    public class FindNearestPolyTest : AbstractDetourTest
     {
+        private static readonly long[] POLY_REFS = { 281474976710696L, 281474976710773L, 281474976710680L, 281474976710753L, 281474976710733L };
+
+        private static readonly float[][] POLY_POS =
+        {
         new[] { 22.606520f, 10.197294f, -45.918674f }, new[] { 22.331268f, 10.197294f, -1.040187f },
         new[] { 18.694363f, 15.803535f, -73.090416f }, new[] { 0.745335f, 10.197294f, -5.940050f },
         new[] { -20.651257f, 5.904126f, -13.712508f }
     };
 
-    [Test]
-    public void TestFindNearestPoly()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        Vector3 extents = new(2, 4, 2);
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindNearestPoly()
         {
-            Vector3 startPos = startPoss[i];
-            var status = query.FindNearestPoly(startPos, extents, filter, out var nearestRef, out var nearestPt, out var _);
-            Assert.That(status.Succeeded(), Is.True);
-            Assert.That(nearestRef, Is.EqualTo(POLY_REFS[i]));
-            for (int v = 0; v < POLY_POS[i].Length; v++)
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            Vector3 extents = new(2, 4, 2);
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                Assert.That(nearestPt[v], Is.EqualTo(POLY_POS[i][v]).Within(0.001f));
+                Vector3 startPos = startPoss[i];
+                var status = query.FindNearestPoly(startPos, extents, filter, out var nearestRef, out var nearestPt, out var _);
+                Assert.That(status.Succeeded(), Is.True);
+                Assert.That(nearestRef, Is.EqualTo(POLY_REFS[i]));
+                for (int v = 0; v < POLY_POS[i].Length; v++)
+                {
+                    Assert.That(nearestPt[v], Is.EqualTo(POLY_POS[i][v]).Within(0.001f));
+                }
             }
         }
-    }
 
 
-    [Test]
-    public void ShouldReturnStartPosWhenNoPolyIsValid()
-    {
-        Vector3 extents = new(2, 4, 2);
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void ShouldReturnStartPosWhenNoPolyIsValid()
         {
-            Vector3 startPos = startPoss[i];
-            var status = query.FindNearestPoly(startPos, extents, DtQueryEmptyFilter.Shared, out var nearestRef, out var nearestPt, out var _);
-            Assert.That(status.Succeeded(), Is.True);
-            Assert.That(nearestRef, Is.EqualTo(0L));
-            for (int v = 0; v < POLY_POS[i].Length; v++)
+            Vector3 extents = new(2, 4, 2);
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                Assert.That(nearestPt[v], Is.EqualTo(startPos[v]).Within(0.001f));
+                Vector3 startPos = startPoss[i];
+                var status = query.FindNearestPoly(startPos, extents, DtQueryEmptyFilter.Shared, out var nearestRef, out var nearestPt, out var _);
+                Assert.That(status.Succeeded(), Is.True);
+                Assert.That(nearestRef, Is.EqualTo(0L));
+                for (int v = 0; v < POLY_POS[i].Length; v++)
+                {
+                    Assert.That(nearestPt[v], Is.EqualTo(startPos[v]).Within(0.001f));
+                }
             }
         }
     }

@@ -19,7 +19,7 @@ namespace DotRecast.Core
                 {
                     return fullSearchingPath;
                 }
-                
+
                 if (Directory.Exists(fullSearchingPath))
                 {
                     isDir = true;

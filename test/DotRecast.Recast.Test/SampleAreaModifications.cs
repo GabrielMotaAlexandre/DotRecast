@@ -16,34 +16,35 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-namespace DotRecast.Recast.Test;
-
-public class SampleAreaModifications
+namespace DotRecast.Recast.Test
 {
-    public const int SAMPLE_POLYAREA_TYPE_MASK = 0x07;
+    public class SampleAreaModifications
+    {
+        public const int SAMPLE_POLYAREA_TYPE_MASK = 0x07;
 
-    /// Value for the kind of ceil "ground"
-    public const int SAMPLE_POLYAREA_TYPE_GROUND = 0x1;
+        /// Value for the kind of ceil "ground"
+        public const int SAMPLE_POLYAREA_TYPE_GROUND = 0x1;
 
-    /// Value for the kind of ceil "water"
-    public const int SAMPLE_POLYAREA_TYPE_WATER = 0x2;
+        /// Value for the kind of ceil "water"
+        public const int SAMPLE_POLYAREA_TYPE_WATER = 0x2;
 
-    /// Value for the kind of ceil "road"
-    public const int SAMPLE_POLYAREA_TYPE_ROAD = 0x3;
+        /// Value for the kind of ceil "road"
+        public const int SAMPLE_POLYAREA_TYPE_ROAD = 0x3;
 
-    /// Value for the kind of ceil "grass"
-    public const int SAMPLE_POLYAREA_TYPE_GRASS = 0x4;
+        /// Value for the kind of ceil "grass"
+        public const int SAMPLE_POLYAREA_TYPE_GRASS = 0x4;
 
-    /// Flag for door area. Can be combined with area types and jump flag.
-    public const int SAMPLE_POLYAREA_FLAG_DOOR = 0x08;
+        /// Flag for door area. Can be combined with area types and jump flag.
+        public const int SAMPLE_POLYAREA_FLAG_DOOR = 0x08;
 
-    /// Flag for jump area. Can be combined with area types and door flag.
-    public const int SAMPLE_POLYAREA_FLAG_JUMP = 0x10;
+        /// Flag for jump area. Can be combined with area types and door flag.
+        public const int SAMPLE_POLYAREA_FLAG_JUMP = 0x10;
 
-    public static readonly RcAreaModification SAMPLE_AREAMOD_GROUND = new(SAMPLE_POLYAREA_TYPE_GROUND, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_WATER = new(SAMPLE_POLYAREA_TYPE_WATER, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_ROAD = new(SAMPLE_POLYAREA_TYPE_ROAD, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_GRASS = new(SAMPLE_POLYAREA_TYPE_GRASS, SAMPLE_POLYAREA_TYPE_MASK);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_DOOR = new(SAMPLE_POLYAREA_FLAG_DOOR, SAMPLE_POLYAREA_FLAG_DOOR);
-    public static readonly RcAreaModification SAMPLE_AREAMOD_JUMP = new(SAMPLE_POLYAREA_FLAG_JUMP, SAMPLE_POLYAREA_FLAG_JUMP);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_GROUND = new(SAMPLE_POLYAREA_TYPE_GROUND, SAMPLE_POLYAREA_TYPE_MASK);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_WATER = new(SAMPLE_POLYAREA_TYPE_WATER, SAMPLE_POLYAREA_TYPE_MASK);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_ROAD = new(SAMPLE_POLYAREA_TYPE_ROAD, SAMPLE_POLYAREA_TYPE_MASK);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_GRASS = new(SAMPLE_POLYAREA_TYPE_GRASS, SAMPLE_POLYAREA_TYPE_MASK);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_DOOR = new(SAMPLE_POLYAREA_FLAG_DOOR, SAMPLE_POLYAREA_FLAG_DOOR);
+        public static readonly RcAreaModification SAMPLE_AREAMOD_JUMP = new(SAMPLE_POLYAREA_FLAG_JUMP, SAMPLE_POLYAREA_FLAG_JUMP);
+    }
 }

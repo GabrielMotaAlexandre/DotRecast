@@ -20,13 +20,13 @@ using System.Collections.Generic;
 using DotRecast.Core;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class GetPolyWallSegmentsTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly RcSegmentVert[][] VERTICES =
+    [Parallelizable]
+    public class GetPolyWallSegmentsTest : AbstractDetourTest
     {
+        private static readonly RcSegmentVert[][] VERTICES =
+        {
         new RcSegmentVert[]
         {
             new(22.084785f, 10.197294f, -48.341274f, 22.684784f, 10.197294f, -44.141273f),
@@ -70,8 +70,8 @@ public class GetPolyWallSegmentsTest : AbstractDetourTest
         }
     };
 
-    private static readonly long[][] REFS =
-    {
+        private static readonly long[][] REFS =
+        {
         new[] { 281474976710695L, 0L, 0L },
         new[] { 0L, 281474976710770L, 0L, 281474976710769L, 281474976710772L, 0L },
         new[] { 281474976710683L, 281474976710674L, 0L, 281474976710679L, 281474976710684L, 0L },
@@ -79,31 +79,32 @@ public class GetPolyWallSegmentsTest : AbstractDetourTest
         new[] { 0L, 0L, 0L, 281474976710735L, 281474976710736L }
     };
 
-    [Test]
-    public void TestFindDistanceToWall()
-    {
-        var segmentVerts = new List<RcSegmentVert>();
-        var segmentRefs = new List<long>();
-
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindDistanceToWall()
         {
-            _ = query.GetPolyWallSegments(startRefs[i], true, filter, ref segmentVerts, ref segmentRefs);
-            Assert.That(segmentVerts.Count, Is.EqualTo(VERTICES[i].Length));
-            Assert.That(segmentRefs.Count, Is.EqualTo(REFS[i].Length));
-            for (int v = 0; v < VERTICES[i].Length / 6; v++)
-            {
-                Assert.That(segmentVerts[v].vmin.X, Is.EqualTo(VERTICES[i][v].vmin.X).Within(0.001f));
-                Assert.That(segmentVerts[v].vmin.Y, Is.EqualTo(VERTICES[i][v].vmin.Y).Within(0.001f));
-                Assert.That(segmentVerts[v].vmin.Z, Is.EqualTo(VERTICES[i][v].vmin.Z).Within(0.001f));
-                Assert.That(segmentVerts[v].vmax.X, Is.EqualTo(VERTICES[i][v].vmax.X).Within(0.001f));
-                Assert.That(segmentVerts[v].vmax.Y, Is.EqualTo(VERTICES[i][v].vmax.Y).Within(0.001f));
-                Assert.That(segmentVerts[v].vmax.Z, Is.EqualTo(VERTICES[i][v].vmax.Z).Within(0.001f));
-            }
+            var segmentVerts = new List<RcSegmentVert>();
+            var segmentRefs = new List<long>();
 
-            for (int v = 0; v < REFS[i].Length; v++)
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                Assert.That(segmentRefs[v], Is.EqualTo(REFS[i][v]));
+                _ = query.GetPolyWallSegments(startRefs[i], true, filter, ref segmentVerts, ref segmentRefs);
+                Assert.That(segmentVerts.Count, Is.EqualTo(VERTICES[i].Length));
+                Assert.That(segmentRefs.Count, Is.EqualTo(REFS[i].Length));
+                for (int v = 0; v < VERTICES[i].Length / 6; v++)
+                {
+                    Assert.That(segmentVerts[v].vmin.X, Is.EqualTo(VERTICES[i][v].vmin.X).Within(0.001f));
+                    Assert.That(segmentVerts[v].vmin.Y, Is.EqualTo(VERTICES[i][v].vmin.Y).Within(0.001f));
+                    Assert.That(segmentVerts[v].vmin.Z, Is.EqualTo(VERTICES[i][v].vmin.Z).Within(0.001f));
+                    Assert.That(segmentVerts[v].vmax.X, Is.EqualTo(VERTICES[i][v].vmax.X).Within(0.001f));
+                    Assert.That(segmentVerts[v].vmax.Y, Is.EqualTo(VERTICES[i][v].vmax.Y).Within(0.001f));
+                    Assert.That(segmentVerts[v].vmax.Z, Is.EqualTo(VERTICES[i][v].vmax.Z).Within(0.001f));
+                }
+
+                for (int v = 0; v < REFS[i].Length; v++)
+                {
+                    Assert.That(segmentRefs[v], Is.EqualTo(REFS[i][v]));
+                }
             }
         }
     }

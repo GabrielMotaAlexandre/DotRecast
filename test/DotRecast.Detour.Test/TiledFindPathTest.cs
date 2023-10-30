@@ -21,15 +21,15 @@ using System.Numerics;
 
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class TiledFindPathTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly DtStatus[] STATUSES = { DtStatus.DT_SUCCSESS };
-
-    private static readonly long[][] RESULTS =
+    [Parallelizable]
+    public class TiledFindPathTest
     {
+        private static readonly DtStatus[] STATUSES = { DtStatus.DT_SUCCSESS };
+
+        private static readonly long[][] RESULTS =
+        {
         new[]
         {
             281475015507969L, 281475014459393L, 281475014459392L, 281475006070784L,
@@ -41,43 +41,44 @@ public class TiledFindPathTest
         }
     };
 
-    protected static readonly long[] START_REFS = { 281475015507969L };
-    protected static readonly long[] END_REFS = { 281474985099266L };
-    protected static readonly Vector3[] START_POS = { new Vector3(39.447338f, 9.998177f, -0.784811f) };
-    protected static readonly Vector3[] END_POS = { new Vector3(19.292645f, 11.611748f, -57.750366f) };
+        protected static readonly long[] START_REFS = { 281475015507969L };
+        protected static readonly long[] END_REFS = { 281474985099266L };
+        protected static readonly Vector3[] START_POS = { new Vector3(39.447338f, 9.998177f, -0.784811f) };
+        protected static readonly Vector3[] END_POS = { new Vector3(19.292645f, 11.611748f, -57.750366f) };
 
-    protected DtNavMeshQuery query;
-    protected DtNavMesh navmesh;
+        protected DtNavMeshQuery query;
+        protected DtNavMesh navmesh;
 
-    [SetUp]
-    public void SetUp()
-    {
-        navmesh = CreateNavMesh();
-        query = new DtNavMeshQuery(navmesh);
-    }
-
-    protected static DtNavMesh CreateNavMesh()
-    {
-        return new TestTiledNavMeshBuilder().GetNavMesh();
-    }
-
-    [Test]
-    public void TestFindPath()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var path = new List<long>();
-        for (int i = 0; i < START_REFS.Length; i++)
+        [SetUp]
+        public void SetUp()
         {
-            long startRef = START_REFS[i];
-            long endRef = END_REFS[i];
-            Vector3 startPos = START_POS[i];
-            Vector3 endPos = END_POS[i];
-            var status = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
-            Assert.That(status, Is.EqualTo(STATUSES[i]));
-            Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
-            for (int j = 0; j < RESULTS[i].Length; j++)
+            navmesh = CreateNavMesh();
+            query = new DtNavMeshQuery(navmesh);
+        }
+
+        protected static DtNavMesh CreateNavMesh()
+        {
+            return new TestTiledNavMeshBuilder().GetNavMesh();
+        }
+
+        [Test]
+        public void TestFindPath()
+        {
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var path = new List<long>();
+            for (int i = 0; i < START_REFS.Length; i++)
             {
-                Assert.That(RESULTS[i][j], Is.EqualTo(path[j]));
+                long startRef = START_REFS[i];
+                long endRef = END_REFS[i];
+                Vector3 startPos = START_POS[i];
+                Vector3 endPos = END_POS[i];
+                var status = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
+                Assert.That(status, Is.EqualTo(STATUSES[i]));
+                Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
+                for (int j = 0; j < RESULTS[i].Length; j++)
+                {
+                    Assert.That(RESULTS[i][j], Is.EqualTo(path[j]));
+                }
             }
         }
     }

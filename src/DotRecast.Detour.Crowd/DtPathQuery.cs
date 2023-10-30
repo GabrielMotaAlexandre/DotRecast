@@ -29,7 +29,7 @@ namespace DotRecast.Detour.Crowd
         public Vector3 endPos;
         public long startRef;
         public long endRef;
-        
+
         public readonly DtPathQueryResult result = new();
         public IDtQueryFilter filter; // < TODO: This is potentially dangerous!
 

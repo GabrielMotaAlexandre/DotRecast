@@ -21,13 +21,13 @@ using System.Numerics;
 
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class MoveAlongSurfaceTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly long[][] VISITED =
+    [Parallelizable]
+    public class MoveAlongSurfaceTest : AbstractDetourTest
     {
+        private static readonly long[][] VISITED =
+        {
         new[]
         {
             281474976710696L, 281474976710695L, 281474976710694L, 281474976710703L, 281474976710706L,
@@ -57,8 +57,8 @@ public class MoveAlongSurfaceTest : AbstractDetourTest
         }
     };
 
-    private static readonly float[][] POSITION =
-    {
+        private static readonly float[][] POSITION =
+        {
         new[] { 6.457663f, 10.197294f, -18.334061f },
         new[] { -1.433933f, 10.197294f, -1.359993f },
         new[] { 12.184784f, 9.997294f, -18.941269f },
@@ -66,28 +66,29 @@ public class MoveAlongSurfaceTest : AbstractDetourTest
         new[] { 18.784092f, 10.197294f, 3.054368f }
     };
 
-    [Test]
-    public void TestMoveAlongSurface()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var visited = new List<long>();
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestMoveAlongSurface()
         {
-            long startRef = startRefs[i];
-            Vector3 startPos = startPoss[i];
-            Vector3 endPos = endPoss[i];
-            var status = query.MoveAlongSurface(startRef, startPos, endPos, filter, out var result, ref visited);
-            Assert.That(status.Succeeded(), Is.True);
-            
-            for (int v = 0; v < 3; v++)
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var visited = new List<long>();
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                Assert.That(result[v], Is.EqualTo(POSITION[i][v]).Within(0.01f));
-            }
+                long startRef = startRefs[i];
+                Vector3 startPos = startPoss[i];
+                Vector3 endPos = endPoss[i];
+                var status = query.MoveAlongSurface(startRef, startPos, endPos, filter, out var result, ref visited);
+                Assert.That(status.Succeeded(), Is.True);
 
-            Assert.That(visited.Count, Is.EqualTo(VISITED[i].Length));
-            for (int j = 0; j < POSITION[i].Length; j++)
-            {
-                Assert.That(visited[j], Is.EqualTo(VISITED[i][j]));
+                for (int v = 0; v < 3; v++)
+                {
+                    Assert.That(result[v], Is.EqualTo(POSITION[i][v]).Within(0.01f));
+                }
+
+                Assert.That(visited.Count, Is.EqualTo(VISITED[i].Length));
+                for (int j = 0; j < POSITION[i].Length; j++)
+                {
+                    Assert.That(visited[j], Is.EqualTo(VISITED[i][j]));
+                }
             }
         }
     }

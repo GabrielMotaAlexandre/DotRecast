@@ -21,11 +21,11 @@ freely, subject to the following restrictions:
 namespace DotRecast.Detour
 {
     /**
- * Defines a link between polygons.
- *
- * @note This structure is rarely if ever used by the end user.
- * @see MeshTile
- */
+    * Defines a link between polygons.
+    *
+    * @note This structure is rarely if ever used by the end user.
+    * @see MeshTile
+*/
     public class DtLink
     {
         /** Neighbour reference. (The neighbor that is linked to.) */

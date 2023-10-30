@@ -20,13 +20,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class FindPolysAroundShapeTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly long[][] REFS =
+    [Parallelizable]
+    public class FindPolysAroundShapeTest : AbstractDetourTest
     {
+        private static readonly long[][] REFS =
+        {
         new[]
         {
             281474976710696L, 281474976710695L, 281474976710694L, 281474976710691L, 281474976710697L,
@@ -61,8 +61,8 @@ public class FindPolysAroundShapeTest : AbstractDetourTest
         }
     };
 
-    private static readonly long[][] PARENT_REFS =
-    {
+        private static readonly long[][] PARENT_REFS =
+        {
         new[]
         {
             0L, 281474976710696L, 281474976710695L, 281474976710695L, 281474976710695L, 281474976710695L,
@@ -96,8 +96,8 @@ public class FindPolysAroundShapeTest : AbstractDetourTest
         }
     };
 
-    private static readonly float[][] COSTS =
-    {
+        private static readonly float[][] COSTS =
+        {
         new[]
         {
             0.000000f, 16.188787f, 22.561579f, 19.950766f, 19.519329f, 21.906523f, 22.806520f, 23.311579f, 25.124035f,
@@ -125,61 +125,62 @@ public class FindPolysAroundShapeTest : AbstractDetourTest
         }
     };
 
-    [Test]
-    public void TestFindPolysAroundShape()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var refs = new List<long>();
-        var parentRefs = new List<long>();
-        var costs = new List<float>();
-
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindPolysAroundShape()
         {
-            long startRef = startRefs[i];
-            Vector3 startPos = startPoss[i];
-            query.FindPolysAroundShape(startRef, GetQueryPoly(startPos, endPoss[i]), filter, ref refs, ref parentRefs, ref costs);
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var refs = new List<long>();
+            var parentRefs = new List<long>();
+            var costs = new List<float>();
 
-            Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
-            for (int v = 0; v < REFS[i].Length; v++)
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                bool found = false;
-                for (int w = 0; w < REFS[i].Length; w++)
-                {
-                    if (REFS[i][v] == refs[w])
-                    {
-                        Assert.That(parentRefs[w], Is.EqualTo(PARENT_REFS[i][v]));
-                        Assert.That(costs[w], Is.EqualTo(COSTS[i][v]).Within(0.01f));
-                        found = true;
-                    }
-                }
+                long startRef = startRefs[i];
+                Vector3 startPos = startPoss[i];
+                query.FindPolysAroundShape(startRef, GetQueryPoly(startPos, endPoss[i]), filter, ref refs, ref parentRefs, ref costs);
 
-                Assert.That(found, Is.True);
+                Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
+                for (int v = 0; v < REFS[i].Length; v++)
+                {
+                    bool found = false;
+                    for (int w = 0; w < REFS[i].Length; w++)
+                    {
+                        if (REFS[i][v] == refs[w])
+                        {
+                            Assert.That(parentRefs[w], Is.EqualTo(PARENT_REFS[i][v]));
+                            Assert.That(costs[w], Is.EqualTo(COSTS[i][v]).Within(0.01f));
+                            found = true;
+                        }
+                    }
+
+                    Assert.That(found, Is.True);
+                }
             }
         }
-    }
 
-    private static Vector3[] GetQueryPoly(Vector3 m_spos, Vector3 m_epos)
-    {
-        float nx = (m_epos.Z - m_spos.Z) * 0.25f;
-        float nz = -(m_epos.X - m_spos.X) * 0.25f;
-        float agentHeight = 2f;
+        private static Vector3[] GetQueryPoly(Vector3 m_spos, Vector3 m_epos)
+        {
+            float nx = (m_epos.Z - m_spos.Z) * 0.25f;
+            float nz = -(m_epos.X - m_spos.X) * 0.25f;
+            float agentHeight = 2f;
 
-        Vector3[] m_queryPoly = new Vector3[4];
-        m_queryPoly[0].X = m_spos.X + nx * 1.2f;
-        m_queryPoly[0].Y = m_spos.Y + agentHeight / 2;
-        m_queryPoly[0].Z = m_spos.Z + nz * 1.2f;
+            Vector3[] m_queryPoly = new Vector3[4];
+            m_queryPoly[0].X = m_spos.X + nx * 1.2f;
+            m_queryPoly[0].Y = m_spos.Y + agentHeight / 2;
+            m_queryPoly[0].Z = m_spos.Z + nz * 1.2f;
 
-        m_queryPoly[1].X = m_spos.X - nx * 1.3f;
-        m_queryPoly[1].Y = m_spos.Y + agentHeight / 2;
-        m_queryPoly[1].Z = m_spos.Z - nz * 1.3f;
+            m_queryPoly[1].X = m_spos.X - nx * 1.3f;
+            m_queryPoly[1].Y = m_spos.Y + agentHeight / 2;
+            m_queryPoly[1].Z = m_spos.Z - nz * 1.3f;
 
-        m_queryPoly[2].X = m_epos.X - nx * 0.8f;
-        m_queryPoly[2].Y = m_epos.Y + agentHeight / 2;
-        m_queryPoly[2].Z = m_epos.Z - nz * 0.8f;
+            m_queryPoly[2].X = m_epos.X - nx * 0.8f;
+            m_queryPoly[2].Y = m_epos.Y + agentHeight / 2;
+            m_queryPoly[2].Z = m_epos.Z - nz * 0.8f;
 
-        m_queryPoly[3].X = m_epos.X + nx;
-        m_queryPoly[3].Y = m_epos.Y + agentHeight / 2;
-        m_queryPoly[3].Z = m_epos.Z + nz;
-        return m_queryPoly;
+            m_queryPoly[3].X = m_epos.X + nx;
+            m_queryPoly[3].Y = m_epos.Y + agentHeight / 2;
+            m_queryPoly[3].Z = m_epos.Z + nz;
+            return m_queryPoly;
+        }
     }
 }

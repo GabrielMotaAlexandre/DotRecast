@@ -20,13 +20,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class FindPolysAroundCircleTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly long[][] REFS =
+    [Parallelizable]
+    public class FindPolysAroundCircleTest : AbstractDetourTest
     {
+        private static readonly long[][] REFS =
+        {
         new[]
         {
             281474976710696L, 281474976710695L, 281474976710694L, 281474976710691L, 281474976710697L, 281474976710693L,
@@ -51,8 +51,8 @@ public class FindPolysAroundCircleTest : AbstractDetourTest
         }
     };
 
-    private static readonly long[][] PARENT_REFS =
-    {
+        private static readonly long[][] PARENT_REFS =
+        {
         new[]
         {
             0L, 281474976710696L, 281474976710695L, 281474976710695L, 281474976710695L, 281474976710695L, 281474976710697L,
@@ -77,8 +77,8 @@ public class FindPolysAroundCircleTest : AbstractDetourTest
         }
     };
 
-    private static readonly float[][] COSTS =
-    {
+        private static readonly float[][] COSTS =
+        {
         new[]
         {
             0.000000f, 0.391453f, 6.764245f, 4.153431f, 3.721995f, 6.109188f, 5.378797f, 7.178796f, 7.009186f, 7.514245f,
@@ -98,35 +98,36 @@ public class FindPolysAroundCircleTest : AbstractDetourTest
         new[] { 0.000000f, 2.480514f, 0.823685f, 5.002500f, 8.229258f, 3.983844f, 5.483844f, 6.655379f, 11.996962f }
     };
 
-    [Test]
-    public void TestFindPolysAroundCircle()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var refs = new List<long>();
-        var parentRefs = new List<long>();
-        var costs = new List<float>();
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindPolysAroundCircle()
         {
-            long startRef = startRefs[i];
-            Vector3 startPos = startPoss[i];
-            var status = query.FindPolysAroundCircle(startRef, startPos, 7.5f, filter, ref refs, ref parentRefs, ref costs);
-            Assert.That(status.Succeeded(), Is.True);
-
-            Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
-            for (int v = 0; v < REFS[i].Length; v++)
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var refs = new List<long>();
+            var parentRefs = new List<long>();
+            var costs = new List<float>();
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                bool found = false;
-                for (int w = 0; w < REFS[i].Length; w++)
-                {
-                    if (REFS[i][v] == refs[w])
-                    {
-                        Assert.That(parentRefs[w], Is.EqualTo(PARENT_REFS[i][v]));
-                        Assert.That(costs[w], Is.EqualTo(COSTS[i][v]).Within(0.01f));
-                        found = true;
-                    }
-                }
+                long startRef = startRefs[i];
+                Vector3 startPos = startPoss[i];
+                var status = query.FindPolysAroundCircle(startRef, startPos, 7.5f, filter, ref refs, ref parentRefs, ref costs);
+                Assert.That(status.Succeeded(), Is.True);
 
-                Assert.That(found, Is.True, $"Ref not found {REFS[i][v]}");
+                Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
+                for (int v = 0; v < REFS[i].Length; v++)
+                {
+                    bool found = false;
+                    for (int w = 0; w < REFS[i].Length; w++)
+                    {
+                        if (REFS[i][v] == refs[w])
+                        {
+                            Assert.That(parentRefs[w], Is.EqualTo(PARENT_REFS[i][v]));
+                            Assert.That(costs[w], Is.EqualTo(COSTS[i][v]).Within(0.01f));
+                            found = true;
+                        }
+                    }
+
+                    Assert.That(found, Is.True, $"Ref not found {REFS[i][v]}");
+                }
             }
         }
     }

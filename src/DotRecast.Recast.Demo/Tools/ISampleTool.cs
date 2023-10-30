@@ -22,17 +22,18 @@ using System.Numerics;
 using DotRecast.Recast.Demo.Draw;
 using DotRecast.Recast.Toolset;
 
-namespace DotRecast.Recast.Demo.Tools;
-
-public interface ISampleTool
+namespace DotRecast.Recast.Demo.Tools
 {
-    void SetSample(DemoSample sample);
-    void OnSampleChanged();
+    public interface ISampleTool
+    {
+        void SetSample(DemoSample sample);
+        void OnSampleChanged();
 
-    IRcToolable GetTool();
-    void Layout();
-    void HandleClick(Vector3 s, Vector3 p, bool shift);
-    void HandleRender(NavMeshRenderer renderer);
-    void HandleUpdate(float dt);
-    void HandleClickRay(Vector3 start, Vector3 direction, bool shift);
+        IRcToolable GetTool();
+        void Layout();
+        void HandleClick(Vector3 s, Vector3 p, bool shift);
+        void HandleRender(NavMeshRenderer renderer);
+        void HandleUpdate(float dt);
+        void HandleClickRay(Vector3 start, Vector3 direction, bool shift);
+    }
 }

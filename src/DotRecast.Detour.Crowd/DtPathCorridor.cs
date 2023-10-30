@@ -66,9 +66,9 @@ namespace DotRecast.Detour.Crowd
     public struct DtPathCorridor
     {
         /**
-* Gets the current position within the corridor. (In the first polygon.)
-*
-* @return The current position within the corridor.
+    * Gets the current position within the corridor. (In the first polygon.)
+    *
+    * @return The current position within the corridor.
 */
         public Vector3 Pos { get; private set; }
         private Vector3 m_target;
@@ -119,7 +119,7 @@ namespace DotRecast.Detour.Crowd
         public readonly int FindCorners(ref List<StraightPathItem> corners, int maxCorners, DtNavMeshQuery navquery)
         {
             var result = navquery.FindStraightPath(Pos, m_target, m_path, ref corners, maxCorners, 0);
-            
+
             if (result.Succeeded())
             {
                 // Prune points in the beginning of the path which are too close.

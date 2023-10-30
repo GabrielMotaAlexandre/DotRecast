@@ -41,8 +41,8 @@ namespace DotRecast.Recast
 
             int[] regs =
             {
-                0, 0, 0, 0
-            };
+            0, 0, 0, 0
+        };
 
             // Combine region and area codes in order to prevent
             // border vertices which are in between two areas to be removed.

@@ -23,11 +23,11 @@ using UnityEngine;
 namespace DotRecast.Detour
 {
     /**
- * Bounding volume node.
- *
- * @note This structure is rarely if ever used by the end user.
- * @see MeshTile
- */
+    * Bounding volume node.
+    *
+    * @note This structure is rarely if ever used by the end user.
+    * @see MeshTile
+*/
     public readonly struct DtBVNode
     {
         /** Minimum bounds of the node's AABB. [(x, y, z)] */

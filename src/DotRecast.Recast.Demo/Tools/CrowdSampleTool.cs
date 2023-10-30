@@ -31,501 +31,502 @@ using static DotRecast.Recast.Demo.Draw.DebugDraw;
 using static DotRecast.Recast.Demo.Draw.DebugDrawPrimitives;
 using System.Numerics;
 
-namespace DotRecast.Recast.Demo.Tools;
-
-public class CrowdSampleTool : ISampleTool
+namespace DotRecast.Recast.Demo.Tools
 {
-    private DemoSample _sample;
-    private readonly RcCrowdTool _tool;
-
-    private DtNavMesh m_nav;
-
-    private RcCrowdToolMode m_mode = RcCrowdToolMode.CREATE;
-    private int m_modeIdx = RcCrowdToolMode.CREATE.Idx;
-
-    private bool _showCorners = true;
-    private bool _showCollisionSegments = true;
-    private bool _showPath = true;
-    private bool _showVO = true;
-    private bool _showOpt = true;
-    private bool _showNeis = true;
-
-    private bool _showGrid;
-    private bool _showNodes = true;
-    private readonly bool _showDetailAll = true;
-
-    public CrowdSampleTool()
+    public class CrowdSampleTool : ISampleTool
     {
-        _tool = new();
-    }
+        private DemoSample _sample;
+        private readonly RcCrowdTool _tool;
 
-    public void Layout()
-    {
-        ImGui.Text($"Crowd Tool Mode");
-        ImGui.Separator();
-        RcCrowdToolMode previousToolMode = m_mode;
-        ImGui.RadioButton(RcCrowdToolMode.CREATE.Label, ref m_modeIdx, RcCrowdToolMode.CREATE.Idx);
-        ImGui.RadioButton(RcCrowdToolMode.MOVE_TARGET.Label, ref m_modeIdx, RcCrowdToolMode.MOVE_TARGET.Idx);
-        ImGui.RadioButton(RcCrowdToolMode.SELECT.Label, ref m_modeIdx, RcCrowdToolMode.SELECT.Idx);
-        ImGui.RadioButton(RcCrowdToolMode.TOGGLE_POLYS.Label, ref m_modeIdx, RcCrowdToolMode.TOGGLE_POLYS.Idx);
-        ImGui.NewLine();
+        private DtNavMesh m_nav;
 
-        if (previousToolMode.Idx != m_modeIdx)
+        private RcCrowdToolMode m_mode = RcCrowdToolMode.CREATE;
+        private int m_modeIdx = RcCrowdToolMode.CREATE.Idx;
+
+        private bool _showCorners = true;
+        private bool _showCollisionSegments = true;
+        private bool _showPath = true;
+        private bool _showVO = true;
+        private bool _showOpt = true;
+        private bool _showNeis = true;
+
+        private bool _showGrid;
+        private bool _showNodes = true;
+        private readonly bool _showDetailAll = true;
+
+        public CrowdSampleTool()
         {
-            m_mode = RcCrowdToolMode.Values[m_modeIdx];
+            _tool = new();
         }
 
-        var crowdCfg = _tool.GetCrowdConfig();
-        var prevOptimizeVis = crowdCfg.optimizeVis;
-        var prevOptimizeTopo = crowdCfg.optimizeTopo;
-        var prevAnticipateTurns = crowdCfg.anticipateTurns;
-        var prevObstacleAvoidance = crowdCfg.obstacleAvoidance;
-        var prevSeparation = crowdCfg.separation;
-        var prevObstacleAvoidanceType = crowdCfg.obstacleAvoidanceType;
-        var prevSeparationWeight = crowdCfg.separationWeight;
-
-        ImGui.Text("Options");
-        ImGui.Separator();
-        ImGui.Checkbox("Optimize Visibility", ref crowdCfg.optimizeVis);
-        ImGui.Checkbox("Optimize Topology", ref crowdCfg.optimizeTopo);
-        ImGui.Checkbox("Anticipate Turns", ref crowdCfg.anticipateTurns);
-        ImGui.Checkbox("Obstacle Avoidance", ref crowdCfg.obstacleAvoidance);
-        ImGui.SliderInt("Avoidance Quality", ref crowdCfg.obstacleAvoidanceType, 0, 3);
-        ImGui.Checkbox("Separation", ref crowdCfg.separation);
-        ImGui.SliderFloat("Separation Weight", ref crowdCfg.separationWeight, 0f, 20f, "%.2f");
-        ImGui.NewLine();
-
-        if (prevOptimizeVis != crowdCfg.optimizeVis || prevOptimizeTopo != crowdCfg.optimizeTopo
-                                                    || prevAnticipateTurns != crowdCfg.anticipateTurns
-                                                    || prevObstacleAvoidance != crowdCfg.obstacleAvoidance
-                                                    || prevSeparation != crowdCfg.separation
-                                                    || prevObstacleAvoidanceType != crowdCfg.obstacleAvoidanceType
-                                                    || !prevSeparationWeight.Equals(crowdCfg.separationWeight))
+        public void Layout()
         {
-            _tool.UpdateAgentParams();
-        }
+            ImGui.Text($"Crowd Tool Mode");
+            ImGui.Separator();
+            RcCrowdToolMode previousToolMode = m_mode;
+            ImGui.RadioButton(RcCrowdToolMode.CREATE.Label, ref m_modeIdx, RcCrowdToolMode.CREATE.Idx);
+            ImGui.RadioButton(RcCrowdToolMode.MOVE_TARGET.Label, ref m_modeIdx, RcCrowdToolMode.MOVE_TARGET.Idx);
+            ImGui.RadioButton(RcCrowdToolMode.SELECT.Label, ref m_modeIdx, RcCrowdToolMode.SELECT.Idx);
+            ImGui.RadioButton(RcCrowdToolMode.TOGGLE_POLYS.Label, ref m_modeIdx, RcCrowdToolMode.TOGGLE_POLYS.Idx);
+            ImGui.NewLine();
 
-
-        ImGui.Text("Selected Debug Draw");
-        ImGui.Separator();
-        ImGui.Checkbox("Show Corners", ref _showCorners);
-        ImGui.Checkbox("Show Collision Segs", ref _showCollisionSegments);
-        ImGui.Checkbox("Show Path", ref _showPath);
-        ImGui.Checkbox("Show VO", ref _showVO);
-        ImGui.Checkbox("Show Path Optimization", ref _showOpt);
-        ImGui.Checkbox("Show Neighbours", ref _showNeis);
-        ImGui.NewLine();
-
-        ImGui.Text("Debug Draw");
-        ImGui.Separator();
-        ImGui.Checkbox("Show Proximity Grid", ref _showGrid);
-        ImGui.Checkbox("Show Nodes", ref _showNodes);
-        ImGui.Text($"Update Time: {_tool.GetCrowdUpdateTime()} ms");
-    }
-
-    public void HandleRender(NavMeshRenderer renderer)
-    {
-        RecastDebugDraw dd = renderer.GetDebugDraw();
-        var settings = _sample.Settings;
-        float rad = settings.agentRadius;
-
-        var crowd = _tool.GetCrowd();
-        if (crowd is null)
-            return;
-
-        var nav = crowd.GetNavMesh();
-        if (nav is null)
-            return;
-
-        var cfg = _tool.GetCrowdConfig();
-        var agentDebug = _tool.GetCrowdAgentDebugInfo();
-        var agentTrails = _tool.GetCrowdAgentTrails();
-        var moveTargetRef = _tool.GetMoveTargetRef();
-        var moveTargetPos = _tool.GetMoveTargetPos();
-
-        if (_showNodes && crowd.GetPathQueue() != null)
-        {
-            var navquery = crowd.GetNavMeshQuery();
-            if (navquery != null)
+            if (previousToolMode.Idx != m_modeIdx)
             {
-                dd.DebugDrawNavMeshNodes(navquery);
+                m_mode = RcCrowdToolMode.Values[m_modeIdx];
             }
+
+            var crowdCfg = _tool.GetCrowdConfig();
+            var prevOptimizeVis = crowdCfg.optimizeVis;
+            var prevOptimizeTopo = crowdCfg.optimizeTopo;
+            var prevAnticipateTurns = crowdCfg.anticipateTurns;
+            var prevObstacleAvoidance = crowdCfg.obstacleAvoidance;
+            var prevSeparation = crowdCfg.separation;
+            var prevObstacleAvoidanceType = crowdCfg.obstacleAvoidanceType;
+            var prevSeparationWeight = crowdCfg.separationWeight;
+
+            ImGui.Text("Options");
+            ImGui.Separator();
+            ImGui.Checkbox("Optimize Visibility", ref crowdCfg.optimizeVis);
+            ImGui.Checkbox("Optimize Topology", ref crowdCfg.optimizeTopo);
+            ImGui.Checkbox("Anticipate Turns", ref crowdCfg.anticipateTurns);
+            ImGui.Checkbox("Obstacle Avoidance", ref crowdCfg.obstacleAvoidance);
+            ImGui.SliderInt("Avoidance Quality", ref crowdCfg.obstacleAvoidanceType, 0, 3);
+            ImGui.Checkbox("Separation", ref crowdCfg.separation);
+            ImGui.SliderFloat("Separation Weight", ref crowdCfg.separationWeight, 0f, 20f, "%.2f");
+            ImGui.NewLine();
+
+            if (prevOptimizeVis != crowdCfg.optimizeVis || prevOptimizeTopo != crowdCfg.optimizeTopo
+                                                        || prevAnticipateTurns != crowdCfg.anticipateTurns
+                                                        || prevObstacleAvoidance != crowdCfg.obstacleAvoidance
+                                                        || prevSeparation != crowdCfg.separation
+                                                        || prevObstacleAvoidanceType != crowdCfg.obstacleAvoidanceType
+                                                        || !prevSeparationWeight.Equals(crowdCfg.separationWeight))
+            {
+                _tool.UpdateAgentParams();
+            }
+
+
+            ImGui.Text("Selected Debug Draw");
+            ImGui.Separator();
+            ImGui.Checkbox("Show Corners", ref _showCorners);
+            ImGui.Checkbox("Show Collision Segs", ref _showCollisionSegments);
+            ImGui.Checkbox("Show Path", ref _showPath);
+            ImGui.Checkbox("Show VO", ref _showVO);
+            ImGui.Checkbox("Show Path Optimization", ref _showOpt);
+            ImGui.Checkbox("Show Neighbours", ref _showNeis);
+            ImGui.NewLine();
+
+            ImGui.Text("Debug Draw");
+            ImGui.Separator();
+            ImGui.Checkbox("Show Proximity Grid", ref _showGrid);
+            ImGui.Checkbox("Show Nodes", ref _showNodes);
+            ImGui.Text($"Update Time: {_tool.GetCrowdUpdateTime()} ms");
         }
 
-        dd.DepthMask(false);
-
-        // Draw paths
-        if (_showPath)
+        public void HandleRender(NavMeshRenderer renderer)
         {
+            RecastDebugDraw dd = renderer.GetDebugDraw();
+            var settings = _sample.Settings;
+            float rad = settings.agentRadius;
+
+            var crowd = _tool.GetCrowd();
+            if (crowd is null)
+                return;
+
+            var nav = crowd.GetNavMesh();
+            if (nav is null)
+                return;
+
+            var cfg = _tool.GetCrowdConfig();
+            var agentDebug = _tool.GetCrowdAgentDebugInfo();
+            var agentTrails = _tool.GetCrowdAgentTrails();
+            var moveTargetRef = _tool.GetMoveTargetRef();
+            var moveTargetPos = _tool.GetMoveTargetPos();
+
+            if (_showNodes && crowd.GetPathQueue() != null)
+            {
+                var navquery = crowd.GetNavMeshQuery();
+                if (navquery != null)
+                {
+                    dd.DebugDrawNavMeshNodes(navquery);
+                }
+            }
+
+            dd.DepthMask(false);
+
+            // Draw paths
+            if (_showPath)
+            {
+                foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+                {
+                    if (!_showDetailAll && ag != agentDebug.agent)
+                        continue;
+
+                    List<long> path = ag.corridor.GetPath();
+                    int npath = ag.corridor.GetPathCount();
+                    for (int j = 0; j < npath; ++j)
+                    {
+                        dd.DebugDrawNavMeshPoly(nav, path[j], DuRGBA(255, 255, 255, 24));
+                    }
+                }
+            }
+
+            if (moveTargetRef != 0)
+                dd.DebugDrawCross(moveTargetPos.X, moveTargetPos.Y + 0.1f, moveTargetPos.Z, rad, DuRGBA(255, 255, 255, 192), 2f);
+
+            //// Occupancy grid.
+            //if (_showGrid)
+            //{
+            //    float gridy = -float.MaxValue;
+            //    foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+            //    {
+            //        Vector3 pos = ag.corridor.Pos;
+            //        gridy = Math.Max(gridy, pos.Y);
+            //    }
+
+            //    gridy += 1f;
+
+            //    DtProximityGrid grid = crowd.GetGrid();
+            //    if (null != grid)
+            //    {
+            //        dd.Begin(QUADS);
+            //        float cs = grid.GetCellSize();
+            //        foreach (var (combinedKey, count) in grid.GetItemCounts())
+            //        {
+            //            DtProximityGrid.DecomposeKey(combinedKey, out var x, out var y);
+            //            if (count != 0)
+            //            {
+            //                int col = DuRGBA(128, 0, 0, Math.Min(count * 40, 255));
+            //                dd.Vertex(x * cs, gridy, y * cs, col);
+            //                dd.Vertex(x * cs, gridy, y * cs + cs, col);
+            //                dd.Vertex(x * cs + cs, gridy, y * cs + cs, col);
+            //                dd.Vertex(x * cs + cs, gridy, y * cs, col);
+            //            }
+            //        }
+
+            //        dd.End();
+            //    }
+            //}
+
+            // Trail
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
-                if (!_showDetailAll && ag != agentDebug.agent)
-                    continue;
-
-                List<long> path = ag.corridor.GetPath();
-                int npath = ag.corridor.GetPathCount();
-                for (int j = 0; j < npath; ++j)
-                {
-                    dd.DebugDrawNavMeshPoly(nav, path[j], DuRGBA(255, 255, 255, 24));
-                }
-            }
-        }
-
-        if (moveTargetRef != 0)
-            dd.DebugDrawCross(moveTargetPos.X, moveTargetPos.Y + 0.1f, moveTargetPos.Z, rad, DuRGBA(255, 255, 255, 192), 2f);
-
-        //// Occupancy grid.
-        //if (_showGrid)
-        //{
-        //    float gridy = -float.MaxValue;
-        //    foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        //    {
-        //        Vector3 pos = ag.corridor.Pos;
-        //        gridy = Math.Max(gridy, pos.Y);
-        //    }
-
-        //    gridy += 1f;
-
-        //    DtProximityGrid grid = crowd.GetGrid();
-        //    if (null != grid)
-        //    {
-        //        dd.Begin(QUADS);
-        //        float cs = grid.GetCellSize();
-        //        foreach (var (combinedKey, count) in grid.GetItemCounts())
-        //        {
-        //            DtProximityGrid.DecomposeKey(combinedKey, out var x, out var y);
-        //            if (count != 0)
-        //            {
-        //                int col = DuRGBA(128, 0, 0, Math.Min(count * 40, 255));
-        //                dd.Vertex(x * cs, gridy, y * cs, col);
-        //                dd.Vertex(x * cs, gridy, y * cs + cs, col);
-        //                dd.Vertex(x * cs + cs, gridy, y * cs + cs, col);
-        //                dd.Vertex(x * cs + cs, gridy, y * cs, col);
-        //            }
-        //        }
-
-        //        dd.End();
-        //    }
-        //}
-
-        // Trail
-        foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        {
-            RcCrowdAgentTrail trail = agentTrails[ag.idx];
-            Vector3 pos = ag.npos;
-
-            dd.Begin(LINES, 3.0f);
-            Vector3 prev = pos;
-            float preva = 1;
-            for (int j = 0; j < RcCrowdAgentTrail.AGENT_MAX_TRAIL - 1; ++j)
-            {
-                int idx = (trail.htrail + RcCrowdAgentTrail.AGENT_MAX_TRAIL - j) % RcCrowdAgentTrail.AGENT_MAX_TRAIL;
-                int v = idx * 3;
-                float a = 1 - j / (float)RcCrowdAgentTrail.AGENT_MAX_TRAIL;
-                dd.Vertex(prev.X, prev.Y + 0.1f, prev.Z, DuRGBA(0, 0, 0, (int)(128 * preva)));
-                dd.Vertex(trail.trail[v], trail.trail[v + 1] + 0.1f, trail.trail[v + 2], DuRGBA(0, 0, 0, (int)(128 * a)));
-                preva = a;
-                prev.Set(trail.trail, idx);
-            }
-
-            dd.End();
-        }
-
-        // Corners & co
-        foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        {
-            if (_showDetailAll == false && ag != agentDebug.agent)
-                continue;
-
-            float radius = ag.option.radius;
-            Vector3 pos = ag.npos;
-
-            if (_showCorners)
-            {
-                if (0 < ag.corners.Count)
-                {
-                    dd.Begin(LINES, 2f);
-                    for (int j = 0; j < ag.corners.Count; ++j)
-                    {
-                        Vector3 va = j is 0 ? pos : ag.corners[j - 1].pos;
-                        Vector3 vb = ag.corners[j].pos;
-                        dd.Vertex(va.X, va.Y + radius, va.Z, DuRGBA(128, 0, 0, 192));
-                        dd.Vertex(vb.X, vb.Y + radius, vb.Z, DuRGBA(128, 0, 0, 192));
-                    }
-
-                    if ((ag.corners[^1].flags
-                         & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
-                    {
-                        Vector3 v = ag.corners[^1].pos;
-                        dd.Vertex(v.X, v.Y, v.Z, DuRGBA(192, 0, 0, 192));
-                        dd.Vertex(v.X, v.Y + radius * 2, v.Z, DuRGBA(192, 0, 0, 192));
-                    }
-
-                    dd.End();
-
-                    if (cfg.anticipateTurns)
-                    {
-                        /*                  float dvel[3], pos[3];
-                         CalcSmoothSteerDirection(ag.pos, ag.cornerVerts, ag.ncorners, dvel);
-                         pos.x = ag.pos.x + dvel.x;
-                         pos.y = ag.pos.y + dvel.y;
-                         pos.z = ag.pos.z + dvel.z;
-
-                         float off = ag.radius+0.1f;
-                         float[] tgt = &ag.cornerVerts.x;
-                         float y = ag.pos.y+off;
-
-                         dd.Begin(DU_DRAW_LINES, 2f);
-
-                         dd.Vertex(ag.pos.x,y,ag.pos.z, DuRGBA(255,0,0,192));
-                         dd.Vertex(pos.x,y,pos.z, DuRGBA(255,0,0,192));
-
-                         dd.Vertex(pos.x,y,pos.z, DuRGBA(255,0,0,192));
-                         dd.Vertex(tgt.x,y,tgt.z, DuRGBA(255,0,0,192));
-
-                         dd.End();*/
-                    }
-                }
-            }
-
-            if (_showCollisionSegments)
-            {
-                Vector3 center = ag.boundary.GetCenter();
-                dd.DebugDrawCross(center.X, center.Y + radius, center.Z, 0.2f, DuRGBA(192, 0, 128, 255), 2f);
-                dd.DebugDrawCircle(center.X, center.Y + radius, center.Z, ag.option.collisionQueryRange, DuRGBA(192, 0, 128, 128), 2f);
+                RcCrowdAgentTrail trail = agentTrails[ag.idx];
+                Vector3 pos = ag.npos;
 
                 dd.Begin(LINES, 3.0f);
-                //foreach(var segment in ag.boundary.Segments)
-                //{
-                //    int col = DuRGBA(192, 0, 128, 192);
-                //    if (DtUtils.TriArea2D(pos.AsVector2XZ(), in segment.Start, in segment.End) < 0f)
-                //        col = DuDarkenCol(col);
-
-                //    //dd.AppendArrow(s[0].X, s[0].Y + 0.2f, s[0].Z, s[1].X, s[1].Z + 0.2f, s[1].Z, 0f, 0.3f, col);
-                //}
-
-                dd.End();
-            }
-
-            if (_showNeis)
-            {
-                dd.DebugDrawCircle(pos.X, pos.Y + radius, pos.Z, ag.option.collisionQueryRange, DuRGBA(0, 192, 128, 128),
-                    2f);
-
-                dd.Begin(LINES, 2f);
-                for (int j = 0; j < ag.Neighbors.Count; ++j)
+                Vector3 prev = pos;
+                float preva = 1;
+                for (int j = 0; j < RcCrowdAgentTrail.AGENT_MAX_TRAIL - 1; ++j)
                 {
-                    DtCrowdAgent nei = ag.Neighbors[j];
-                    if (nei != null)
-                    {
-                        dd.Vertex(pos.X, pos.Y + radius, pos.Z, DuRGBA(0, 192, 128, 128));
-                        dd.Vertex(nei.npos.X, nei.npos.Y + radius, nei.npos.Z, DuRGBA(0, 192, 128, 128));
-                    }
+                    int idx = (trail.htrail + RcCrowdAgentTrail.AGENT_MAX_TRAIL - j) % RcCrowdAgentTrail.AGENT_MAX_TRAIL;
+                    int v = idx * 3;
+                    float a = 1 - j / (float)RcCrowdAgentTrail.AGENT_MAX_TRAIL;
+                    dd.Vertex(prev.X, prev.Y + 0.1f, prev.Z, DuRGBA(0, 0, 0, (int)(128 * preva)));
+                    dd.Vertex(trail.trail[v], trail.trail[v + 1] + 0.1f, trail.trail[v + 2], DuRGBA(0, 0, 0, (int)(128 * a)));
+                    preva = a;
+                    prev.Set(trail.trail, idx);
                 }
 
                 dd.End();
             }
 
-            if (_showOpt)
-            {
-                dd.Begin(LINES, 2f);
-                dd.Vertex(agentDebug.optStart.X, agentDebug.optStart.Y + 0.3f, agentDebug.optStart.Z,
-                    DuRGBA(0, 128, 0, 192));
-                dd.Vertex(agentDebug.optEnd.X, agentDebug.optEnd.Y + 0.3f, agentDebug.optEnd.Z, DuRGBA(0, 128, 0, 192));
-                dd.End();
-            }
-        }
-
-        // Agent cylinders.
-        foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        {
-            float radius = ag.option.radius;
-            Vector3 pos = ag.npos;
-
-            int col = DuRGBA(0, 0, 0, 32);
-            if (agentDebug.agent == ag)
-                col = DuRGBA(255, 0, 0, 128);
-
-            dd.DebugDrawCircle(pos.X, pos.Y, pos.Z, radius, col, 2f);
-        }
-
-        foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        {
-            float height = ag.option.height;
-            float radius = ag.option.radius;
-            Vector3 pos = ag.npos;
-
-            int col = DuRGBA(220, 220, 220, 128);
-            if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
-                || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
-                col = DuLerpCol(col, DuRGBA(128, 255, 255, 128), 32);
-            else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
-                col = DuLerpCol(col, DuRGBA(128, 0, 255, 128), 128);
-            else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
-                col = DuRGBA(255, 32, 16, 128);
-            else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
-                col = DuLerpCol(col, DuRGBA(64, 255, 0, 128), 128);
-
-            dd.DebugDrawCylinder(pos.X - radius, pos.Y + radius * 0.1f, pos.Z - radius, pos.X + radius, pos.Y + height,
-                pos.Z + radius, col);
-        }
-
-        if (_showVO)
-        {
+            // Corners & co
             foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
             {
                 if (_showDetailAll == false && ag != agentDebug.agent)
                     continue;
 
-                // Draw detail about agent sela
-                DtObstacleAvoidanceDebugData vod = agentDebug.vod;
+                float radius = ag.option.radius;
+                Vector3 pos = ag.npos;
 
-                float dx = ag.npos.X;
-                float dy = ag.npos.Y + ag.option.height;
-                float dz = ag.npos.Z;
-
-                dd.DebugDrawCircle(dx, dy, dz, ag.option.maxSpeed, DuRGBA(255, 255, 255, 64), 2f);
-
-                dd.Begin(QUADS);
-                for (int j = 0; j < vod.GetSampleCount(); ++j)
+                if (_showCorners)
                 {
-                    Vector2 p = vod.GetSampleVelocity(j);
-                    float sr = vod.GetSampleSize(j);
-                    float pen = vod.GetSamplePenalty(j);
-                    float pen2 = vod.GetSamplePreferredSidePenalty(j);
-                    int col = DuLerpCol(DuRGBA(255, 255, 255, 220), DuRGBA(128, 96, 0, 220), (int)(pen * 255));
-                    col = DuLerpCol(col, DuRGBA(128, 0, 0, 220), (int)(pen2 * 128));
-                    dd.Vertex(dx + p.X - sr, dy, dz + p.Y - sr, col);
-                    dd.Vertex(dx + p.X - sr, dy, dz + p.Y + sr, col);
-                    dd.Vertex(dx + p.X + sr, dy, dz + p.Y + sr, col);
-                    dd.Vertex(dx + p.X + sr, dy, dz + p.Y - sr, col);
-                }
-
-                dd.End();
-            }
-        }
-
-        // Velocity stuff.
-        foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-        {
-            float radius = ag.option.radius;
-            float height = ag.option.height;
-            Vector3 pos = ag.npos;
-            Vector2 vel = ag.vel;
-            Vector2 dvel = ag.dvel;
-
-            int col = DuRGBA(220, 220, 220, 192);
-            if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
-                || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
-                col = DuLerpCol(col, DuRGBA(128, 0, 255, 192), 48);
-            else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
-                col = DuLerpCol(col, DuRGBA(128, 0, 255, 192), 128);
-            else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
-                col = DuRGBA(255, 32, 16, 192);
-            else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
-                col = DuLerpCol(col, DuRGBA(64, 255, 0, 192), 128);
-
-            dd.DebugDrawCircle(pos.X, pos.Y + height, pos.Z, radius, col, 2f);
-
-            dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + dvel.X, pos.Y + height, pos.Z + dvel.Y,
-                0f, 0.4f, DuRGBA(0, 192, 255, 192), agentDebug.agent == ag ? 2f : 1f);
-
-            dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + vel.X, pos.Y + height, pos.Z + vel.Y, 0f,
-                0.4f, DuRGBA(0, 0, 0, 160), 2f);
-        }
-
-        dd.DepthMask(true);
-    }
-
-    public IRcToolable GetTool()
-    {
-        return _tool;
-    }
-
-    public void SetSample(DemoSample sample)
-    {
-        _sample = sample;
-    }
-
-    public void OnSampleChanged()
-    {
-        _ = _sample.GetInputGeom();
-        var settings = _sample.Settings;
-        var navMesh = _sample.NavMesh;
-
-        if (navMesh != null && m_nav != navMesh)
-        {
-            m_nav = navMesh;
-            _tool.Setup(settings.agentRadius, navMesh);
-        }
-    }
-
-    public void HandleClick(Vector3 s, Vector3 p, bool shift)
-    {
-        var crowd = _tool.GetCrowd();
-        if (crowd is null)
-        {
-            return;
-        }
-
-        if (m_mode == RcCrowdToolMode.CREATE)
-        {
-            if (shift)
-            {
-                // Delete
-                DtCrowdAgent ahit = _tool.HitTestAgents(s, p);
-                if (ahit != null)
-                {
-                    _tool.RemoveAgent(ahit);
-                }
-            }
-            else
-            {
-                // Add
-                var settings = _sample.Settings;
-                _tool.AddAgent(p, settings.agentRadius, settings.agentHeight, settings.agentMaxAcceleration, settings.agentMaxSpeed);
-            }
-        }
-        else if (m_mode == RcCrowdToolMode.MOVE_TARGET)
-        {
-            _tool.SetMoveTarget(p, shift);
-        }
-        else if (m_mode == RcCrowdToolMode.SELECT)
-        {
-            // Highlight
-            DtCrowdAgent ahit = _tool.HitTestAgents(s, p);
-            _tool.HighlightAgent(ahit);
-        }
-        else if (m_mode == RcCrowdToolMode.TOGGLE_POLYS)
-        {
-            DtNavMesh nav = _sample.NavMesh;
-            DtNavMeshQuery navquery = _sample.NavMeshQuery;
-            if (nav != null && navquery != null)
-            {
-                IDtQueryFilter filter = new DtQueryDefaultFilter();
-                Vector3 halfExtents = crowd.GetQueryExtents();
-
-                navquery.FindNearestPoly(p, halfExtents, filter, out var refs, out _, out _);
-                if (refs != 0)
-                {
-                    var status = nav.GetPolyFlags(refs, out var f);
-                    if (status.Succeeded())
+                    if (0 < ag.corners.Count)
                     {
-                        nav.SetPolyFlags(refs, f ^ SampleAreaModifications.SAMPLE_POLYFLAGS_DISABLED);
+                        dd.Begin(LINES, 2f);
+                        for (int j = 0; j < ag.corners.Count; ++j)
+                        {
+                            Vector3 va = j is 0 ? pos : ag.corners[j - 1].pos;
+                            Vector3 vb = ag.corners[j].pos;
+                            dd.Vertex(va.X, va.Y + radius, va.Z, DuRGBA(128, 0, 0, 192));
+                            dd.Vertex(vb.X, vb.Y + radius, vb.Z, DuRGBA(128, 0, 0, 192));
+                        }
+
+                        if ((ag.corners[^1].flags
+                             & DtNavMeshQuery.DT_STRAIGHTPATH_OFFMESH_CONNECTION) != 0)
+                        {
+                            Vector3 v = ag.corners[^1].pos;
+                            dd.Vertex(v.X, v.Y, v.Z, DuRGBA(192, 0, 0, 192));
+                            dd.Vertex(v.X, v.Y + radius * 2, v.Z, DuRGBA(192, 0, 0, 192));
+                        }
+
+                        dd.End();
+
+                        if (cfg.anticipateTurns)
+                        {
+                            /*                  float dvel[3], pos[3];
+                             CalcSmoothSteerDirection(ag.pos, ag.cornerVerts, ag.ncorners, dvel);
+                             pos.x = ag.pos.x + dvel.x;
+                             pos.y = ag.pos.y + dvel.y;
+                             pos.z = ag.pos.z + dvel.z;
+
+                             float off = ag.radius+0.1f;
+                             float[] tgt = &ag.cornerVerts.x;
+                             float y = ag.pos.y+off;
+
+                             dd.Begin(DU_DRAW_LINES, 2f);
+
+                             dd.Vertex(ag.pos.x,y,ag.pos.z, DuRGBA(255,0,0,192));
+                             dd.Vertex(pos.x,y,pos.z, DuRGBA(255,0,0,192));
+
+                             dd.Vertex(pos.x,y,pos.z, DuRGBA(255,0,0,192));
+                             dd.Vertex(tgt.x,y,tgt.z, DuRGBA(255,0,0,192));
+
+                             dd.End();*/
+                        }
+                    }
+                }
+
+                if (_showCollisionSegments)
+                {
+                    Vector3 center = ag.boundary.GetCenter();
+                    dd.DebugDrawCross(center.X, center.Y + radius, center.Z, 0.2f, DuRGBA(192, 0, 128, 255), 2f);
+                    dd.DebugDrawCircle(center.X, center.Y + radius, center.Z, ag.option.collisionQueryRange, DuRGBA(192, 0, 128, 128), 2f);
+
+                    dd.Begin(LINES, 3.0f);
+                    //foreach(var segment in ag.boundary.Segments)
+                    //{
+                    //    int col = DuRGBA(192, 0, 128, 192);
+                    //    if (DtUtils.TriArea2D(pos.AsVector2XZ(), in segment.Start, in segment.End) < 0f)
+                    //        col = DuDarkenCol(col);
+
+                    //    //dd.AppendArrow(s[0].X, s[0].Y + 0.2f, s[0].Z, s[1].X, s[1].Z + 0.2f, s[1].Z, 0f, 0.3f, col);
+                    //}
+
+                    dd.End();
+                }
+
+                if (_showNeis)
+                {
+                    dd.DebugDrawCircle(pos.X, pos.Y + radius, pos.Z, ag.option.collisionQueryRange, DuRGBA(0, 192, 128, 128),
+                        2f);
+
+                    dd.Begin(LINES, 2f);
+                    for (int j = 0; j < ag.Neighbors.Count; ++j)
+                    {
+                        DtCrowdAgent nei = ag.Neighbors[j];
+                        if (nei != null)
+                        {
+                            dd.Vertex(pos.X, pos.Y + radius, pos.Z, DuRGBA(0, 192, 128, 128));
+                            dd.Vertex(nei.npos.X, nei.npos.Y + radius, nei.npos.Z, DuRGBA(0, 192, 128, 128));
+                        }
+                    }
+
+                    dd.End();
+                }
+
+                if (_showOpt)
+                {
+                    dd.Begin(LINES, 2f);
+                    dd.Vertex(agentDebug.optStart.X, agentDebug.optStart.Y + 0.3f, agentDebug.optStart.Z,
+                        DuRGBA(0, 128, 0, 192));
+                    dd.Vertex(agentDebug.optEnd.X, agentDebug.optEnd.Y + 0.3f, agentDebug.optEnd.Z, DuRGBA(0, 128, 0, 192));
+                    dd.End();
+                }
+            }
+
+            // Agent cylinders.
+            foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+            {
+                float radius = ag.option.radius;
+                Vector3 pos = ag.npos;
+
+                int col = DuRGBA(0, 0, 0, 32);
+                if (agentDebug.agent == ag)
+                    col = DuRGBA(255, 0, 0, 128);
+
+                dd.DebugDrawCircle(pos.X, pos.Y, pos.Z, radius, col, 2f);
+            }
+
+            foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+            {
+                float height = ag.option.height;
+                float radius = ag.option.radius;
+                Vector3 pos = ag.npos;
+
+                int col = DuRGBA(220, 220, 220, 128);
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
+                    col = DuLerpCol(col, DuRGBA(128, 255, 255, 128), 32);
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
+                    col = DuLerpCol(col, DuRGBA(128, 0, 255, 128), 128);
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
+                    col = DuRGBA(255, 32, 16, 128);
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                    col = DuLerpCol(col, DuRGBA(64, 255, 0, 128), 128);
+
+                dd.DebugDrawCylinder(pos.X - radius, pos.Y + radius * 0.1f, pos.Z - radius, pos.X + radius, pos.Y + height,
+                    pos.Z + radius, col);
+            }
+
+            if (_showVO)
+            {
+                foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+                {
+                    if (_showDetailAll == false && ag != agentDebug.agent)
+                        continue;
+
+                    // Draw detail about agent sela
+                    DtObstacleAvoidanceDebugData vod = agentDebug.vod;
+
+                    float dx = ag.npos.X;
+                    float dy = ag.npos.Y + ag.option.height;
+                    float dz = ag.npos.Z;
+
+                    dd.DebugDrawCircle(dx, dy, dz, ag.option.maxSpeed, DuRGBA(255, 255, 255, 64), 2f);
+
+                    dd.Begin(QUADS);
+                    for (int j = 0; j < vod.GetSampleCount(); ++j)
+                    {
+                        Vector2 p = vod.GetSampleVelocity(j);
+                        float sr = vod.GetSampleSize(j);
+                        float pen = vod.GetSamplePenalty(j);
+                        float pen2 = vod.GetSamplePreferredSidePenalty(j);
+                        int col = DuLerpCol(DuRGBA(255, 255, 255, 220), DuRGBA(128, 96, 0, 220), (int)(pen * 255));
+                        col = DuLerpCol(col, DuRGBA(128, 0, 0, 220), (int)(pen2 * 128));
+                        dd.Vertex(dx + p.X - sr, dy, dz + p.Y - sr, col);
+                        dd.Vertex(dx + p.X - sr, dy, dz + p.Y + sr, col);
+                        dd.Vertex(dx + p.X + sr, dy, dz + p.Y + sr, col);
+                        dd.Vertex(dx + p.X + sr, dy, dz + p.Y - sr, col);
+                    }
+
+                    dd.End();
+                }
+            }
+
+            // Velocity stuff.
+            foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+            {
+                float radius = ag.option.radius;
+                float height = ag.option.height;
+                Vector3 pos = ag.npos;
+                Vector2 vel = ag.vel;
+                Vector2 dvel = ag.dvel;
+
+                int col = DuRGBA(220, 220, 220, 192);
+                if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_REQUESTING
+                    || ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_QUEUE)
+                    col = DuLerpCol(col, DuRGBA(128, 0, 255, 192), 48);
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_WAITING_FOR_PATH)
+                    col = DuLerpCol(col, DuRGBA(128, 0, 255, 192), 128);
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_FAILED)
+                    col = DuRGBA(255, 32, 16, 192);
+                else if (ag.TargetState == DtMoveRequestState.DT_CROWDAGENT_TARGET_VELOCITY)
+                    col = DuLerpCol(col, DuRGBA(64, 255, 0, 192), 128);
+
+                dd.DebugDrawCircle(pos.X, pos.Y + height, pos.Z, radius, col, 2f);
+
+                dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + dvel.X, pos.Y + height, pos.Z + dvel.Y,
+                    0f, 0.4f, DuRGBA(0, 192, 255, 192), agentDebug.agent == ag ? 2f : 1f);
+
+                dd.DebugDrawArrow(pos.X, pos.Y + height, pos.Z, pos.X + vel.X, pos.Y + height, pos.Z + vel.Y, 0f,
+                    0.4f, DuRGBA(0, 0, 0, 160), 2f);
+            }
+
+            dd.DepthMask(true);
+        }
+
+        public IRcToolable GetTool()
+        {
+            return _tool;
+        }
+
+        public void SetSample(DemoSample sample)
+        {
+            _sample = sample;
+        }
+
+        public void OnSampleChanged()
+        {
+            _ = _sample.GetInputGeom();
+            var settings = _sample.Settings;
+            var navMesh = _sample.NavMesh;
+
+            if (navMesh != null && m_nav != navMesh)
+            {
+                m_nav = navMesh;
+                _tool.Setup(settings.agentRadius, navMesh);
+            }
+        }
+
+        public void HandleClick(Vector3 s, Vector3 p, bool shift)
+        {
+            var crowd = _tool.GetCrowd();
+            if (crowd is null)
+            {
+                return;
+            }
+
+            if (m_mode == RcCrowdToolMode.CREATE)
+            {
+                if (shift)
+                {
+                    // Delete
+                    DtCrowdAgent ahit = _tool.HitTestAgents(s, p);
+                    if (ahit != null)
+                    {
+                        _tool.RemoveAgent(ahit);
+                    }
+                }
+                else
+                {
+                    // Add
+                    var settings = _sample.Settings;
+                    _tool.AddAgent(p, settings.agentRadius, settings.agentHeight, settings.agentMaxAcceleration, settings.agentMaxSpeed);
+                }
+            }
+            else if (m_mode == RcCrowdToolMode.MOVE_TARGET)
+            {
+                _tool.SetMoveTarget(p, shift);
+            }
+            else if (m_mode == RcCrowdToolMode.SELECT)
+            {
+                // Highlight
+                DtCrowdAgent ahit = _tool.HitTestAgents(s, p);
+                _tool.HighlightAgent(ahit);
+            }
+            else if (m_mode == RcCrowdToolMode.TOGGLE_POLYS)
+            {
+                DtNavMesh nav = _sample.NavMesh;
+                DtNavMeshQuery navquery = _sample.NavMeshQuery;
+                if (nav != null && navquery != null)
+                {
+                    IDtQueryFilter filter = new DtQueryDefaultFilter();
+                    Vector3 halfExtents = crowd.GetQueryExtents();
+
+                    navquery.FindNearestPoly(p, halfExtents, filter, out var refs, out _, out _);
+                    if (refs != 0)
+                    {
+                        var status = nav.GetPolyFlags(refs, out var f);
+                        if (status.Succeeded())
+                        {
+                            nav.SetPolyFlags(refs, f ^ SampleAreaModifications.SAMPLE_POLYFLAGS_DISABLED);
+                        }
                     }
                 }
             }
         }
-    }
 
 
-    public void HandleUpdate(float dt)
-    {
-        _tool.Update(dt);
-    }
+        public void HandleUpdate(float dt)
+        {
+            _tool.Update(dt);
+        }
 
 
-    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
-    {
+        public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
+        {
+        }
     }
 }

@@ -20,36 +20,37 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
 
-namespace DotRecast.Recast.Test;
-
-using static RcConstants;
-
-[Parallelizable]
-public class RecastTest
+namespace DotRecast.Recast.Test
 {
-    [Test]
-    public void TestClearUnwalkableTriangles()
-    {
-        float walkableSlopeAngle = 45;
-        var verts = MemoryMarshal.Cast<float, Vector3>(new float[] { 0, 0, 0, 1, 0, 0, 0, 0, -1 });
-        int[] walkable_tri = { 0, 1, 2 };
-        int[] unwalkable_tri = { 0, 2, 1 };
+    using static RcConstants;
 
+    [Parallelizable]
+    public class RecastTest
+    {
+        [Test]
+        public void TestClearUnwalkableTriangles()
         {
-            int[] areas = { 42 };
-            RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, unwalkable_tri, areas);
-            Assert.That(areas[0], Is.EqualTo(RC_NULL_AREA), "Sets area ID of unwalkable triangle to RC_NULL_AREA");
-        }
-        {
-            int[] areas = { 42 };
-            RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, walkable_tri, areas);
-            Assert.That(areas[0], Is.EqualTo(42), "Does not modify walkable triangle aread ID's");
-        }
-        {
-            int[] areas = { 42 };
-            walkableSlopeAngle = 0;
-            RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, walkable_tri, areas);
-            Assert.That(areas[0], Is.EqualTo(RC_NULL_AREA), "Slopes equal to the max slope are considered unwalkable.");
+            float walkableSlopeAngle = 45;
+            var verts = MemoryMarshal.Cast<float, Vector3>(new float[] { 0, 0, 0, 1, 0, 0, 0, 0, -1 });
+            int[] walkable_tri = { 0, 1, 2 };
+            int[] unwalkable_tri = { 0, 2, 1 };
+
+            {
+                int[] areas = { 42 };
+                RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, unwalkable_tri, areas);
+                Assert.That(areas[0], Is.EqualTo(RC_NULL_AREA), "Sets area ID of unwalkable triangle to RC_NULL_AREA");
+            }
+            {
+                int[] areas = { 42 };
+                RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, walkable_tri, areas);
+                Assert.That(areas[0], Is.EqualTo(42), "Does not modify walkable triangle aread ID's");
+            }
+            {
+                int[] areas = { 42 };
+                walkableSlopeAngle = 0;
+                RcCommons.ClearUnwalkableTriangles(walkableSlopeAngle, verts, walkable_tri, areas);
+                Assert.That(areas[0], Is.EqualTo(RC_NULL_AREA), "Slopes equal to the max slope are considered unwalkable.");
+            }
         }
     }
 }

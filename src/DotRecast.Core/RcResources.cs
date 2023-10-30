@@ -11,7 +11,7 @@ namespace DotRecast.Core
             {
                 filepath = RcDirectory.SearchFile($"resources/{filename}");
             }
-            
+
             using var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read);
             byte[] buffer = new byte[fs.Length];
             fs.Read(buffer, 0, buffer.Length);

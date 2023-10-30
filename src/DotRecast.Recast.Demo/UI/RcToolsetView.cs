@@ -23,83 +23,84 @@ using DotRecast.Core;
 using DotRecast.Recast.Demo.Tools;
 using ImGuiNET;
 
-namespace DotRecast.Recast.Demo.UI;
-
-public class RcToolsetView : IRcView
+namespace DotRecast.Recast.Demo.UI
 {
-    //private readonly NkColor white = NkColor.Create();
-    private int _currentToolIdx;
-    private ISampleTool _currentSampleTool;
-    private readonly ISampleTool[] tools;
-    private bool _isHovered;
-    public bool IsHovered() => _isHovered;
-
-    private RcCanvas _canvas;
-
-    public RcToolsetView(params ISampleTool[] tools)
+    public class RcToolsetView : IRcView
     {
-        this.tools = tools;
-    }
+        //private readonly NkColor white = NkColor.Create();
+        private int _currentToolIdx;
+        private ISampleTool _currentSampleTool;
+        private readonly ISampleTool[] tools;
+        private bool _isHovered;
+        public bool IsHovered() => _isHovered;
 
-    public void Bind(RcCanvas canvas)
-    {
-        _canvas = canvas;
-    }
+        private RcCanvas _canvas;
 
-    public void Update(double dt)
-    {
-    }
-
-    public void Draw(double dt)
-    {
-        ImGui.Begin("Tools");
-
-        // size reset
-        var size = ImGui.GetItemRectSize();
-        if (32 >= size.X && 32 >= size.Y)
+        public RcToolsetView(params ISampleTool[] tools)
         {
-            int width = 310;
-            //ImGui.SetWindowPos(new Vector2(0, 0));
-            ImGui.SetWindowSize(new Vector2(width, _canvas.Size.Y));
+            this.tools = tools;
         }
 
-        _isHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.RootAndChildWindows);
-
-        for (int i = 0; i < tools.Length; ++i)
+        public void Bind(RcCanvas canvas)
         {
-            var tool = tools[i];
-            ImGui.RadioButton(tool.GetTool().GetName(), ref _currentToolIdx, i);
+            _canvas = canvas;
         }
 
-        ImGui.NewLine();
-
-        if (0 > _currentToolIdx || _currentToolIdx >= tools.Length)
+        public void Update(double dt)
         {
+        }
+
+        public void Draw(double dt)
+        {
+            ImGui.Begin("Tools");
+
+            // size reset
+            var size = ImGui.GetItemRectSize();
+            if (32 >= size.X && 32 >= size.Y)
+            {
+                int width = 310;
+                //ImGui.SetWindowPos(new Vector2(0, 0));
+                ImGui.SetWindowSize(new Vector2(width, _canvas.Size.Y));
+            }
+
+            _isHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.RootAndChildWindows);
+
+            for (int i = 0; i < tools.Length; ++i)
+            {
+                var tool = tools[i];
+                ImGui.RadioButton(tool.GetTool().GetName(), ref _currentToolIdx, i);
+            }
+
+            ImGui.NewLine();
+
+            if (0 > _currentToolIdx || _currentToolIdx >= tools.Length)
+            {
+                ImGui.End();
+                return;
+            }
+
+            _currentSampleTool = tools[_currentToolIdx];
+            ImGui.Text(_currentSampleTool.GetTool().GetName());
+            ImGui.Separator();
+            _currentSampleTool.Layout();
+
             ImGui.End();
-            return;
         }
 
-        _currentSampleTool = tools[_currentToolIdx];
-        ImGui.Text(_currentSampleTool.GetTool().GetName());
-        ImGui.Separator();
-        _currentSampleTool.Layout();
+        public static void SetEnabled(bool enabled)
+        {
+            //this.enabled = enabled;
+        }
 
-        ImGui.End();
-    }
+        public ISampleTool GetTool()
+        {
+            return _currentSampleTool;
+        }
 
-    public static void SetEnabled(bool enabled)
-    {
-        //this.enabled = enabled;
-    }
-
-    public ISampleTool GetTool()
-    {
-        return _currentSampleTool;
-    }
-
-    public void SetSample(DemoSample sample)
-    {
-        tools.ForEach(t => t.SetSample(sample));
-        tools.ForEach(t => t.OnSampleChanged());
+        public void SetSample(DemoSample sample)
+        {
+            tools.ForEach(t => t.SetSample(sample));
+            tools.ForEach(t => t.OnSampleChanged());
+        }
     }
 }

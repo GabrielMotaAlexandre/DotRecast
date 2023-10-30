@@ -1,9 +1,10 @@
 ﻿using System.Numerics;
 
-namespace DotRecast.Recast.Demo.Messages;
-
-public class RaycastEvent : IRecastDemoMessage
+namespace DotRecast.Recast.Demo.Messages
 {
-    public required Vector3 Start { get; init; }
-    public required Vector3 End { get; init; }
+    public class RaycastEvent : IRecastDemoMessage
+    {
+        public required Vector3 Start { get; init; }
+        public required Vector3 End { get; init; }
+    }
 }

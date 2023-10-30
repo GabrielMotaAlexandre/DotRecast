@@ -16,7 +16,7 @@ namespace DotRecast.Detour.Extras.Jumplink
         {
             return new Vector3
             {
-                X = Lerp(start.X, end.X, u), 
+                X = Lerp(start.X, end.X, u),
                 Y = InterpolateHeight(start.Y, end.Y, u),
                 Z = Lerp(start.Z, end.Z, u)
             };

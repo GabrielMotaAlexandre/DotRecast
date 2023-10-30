@@ -20,62 +20,63 @@ freely, subject to the following restrictions:
 
 using Silk.NET.OpenGL;
 
-namespace DotRecast.Recast.Demo.Draw;
-
-public class GLCheckerTexture
+namespace DotRecast.Recast.Demo.Draw
 {
-    private readonly GL _gl;
-    private uint m_texId;
-
-    public GLCheckerTexture(GL gl)
+    public class GLCheckerTexture
     {
-        _gl = gl;
-    }
+        private readonly GL _gl;
+        private uint m_texId;
 
-    public void Release()
-    {
-        if (m_texId != 0)
+        public GLCheckerTexture(GL gl)
         {
-            _gl.DeleteTextures(1, m_texId);
+            _gl = gl;
         }
-    }
 
-    public void Bind()
-    {
-        if (m_texId is 0)
+        public void Release()
         {
-            // Create checker pattern.
-            int col0 = DebugDraw.DuRGBA(215, 215, 215, 255);
-            int col1 = DebugDraw.DuRGBA(255, 255, 255, 255);
-            uint TSIZE = 64;
-            int[] data = new int[TSIZE * TSIZE];
-
-            _gl.GenTextures(1, out m_texId);
-            _gl.BindTexture(GLEnum.Texture2D, m_texId);
-
-            int level = 0;
-            uint size = TSIZE;
-            while (size > 0)
+            if (m_texId != 0)
             {
-                for (int y = 0; y < size; ++y)
+                _gl.DeleteTextures(1, m_texId);
+            }
+        }
+
+        public void Bind()
+        {
+            if (m_texId is 0)
+            {
+                // Create checker pattern.
+                int col0 = DebugDraw.DuRGBA(215, 215, 215, 255);
+                int col1 = DebugDraw.DuRGBA(255, 255, 255, 255);
+                uint TSIZE = 64;
+                int[] data = new int[TSIZE * TSIZE];
+
+                _gl.GenTextures(1, out m_texId);
+                _gl.BindTexture(GLEnum.Texture2D, m_texId);
+
+                int level = 0;
+                uint size = TSIZE;
+                while (size > 0)
                 {
-                    for (int x = 0; x < size; ++x)
+                    for (int y = 0; y < size; ++y)
                     {
-                        data[x + y * size] = (x is 0 || y is 0) ? col0 : col1;
+                        for (int x = 0; x < size; ++x)
+                        {
+                            data[x + y * size] = (x is 0 || y is 0) ? col0 : col1;
+                        }
                     }
+
+                    _gl.TexImage2D<int>(GLEnum.Texture2D, level, InternalFormat.Rgba, size, size, 0, GLEnum.Rgba, GLEnum.UnsignedByte, data);
+                    size /= 2;
+                    level++;
                 }
 
-                _gl.TexImage2D<int>(GLEnum.Texture2D, level, InternalFormat.Rgba, size, size, 0, GLEnum.Rgba, GLEnum.UnsignedByte, data);
-                size /= 2;
-                level++;
+                _gl.TexParameterI(GLEnum.Texture2D, GLEnum.TextureMinFilter, (uint)GLEnum.LinearMipmapNearest);
+                _gl.TexParameterI(GLEnum.Texture2D, GLEnum.TextureMagFilter, (uint)GLEnum.Linear);
             }
-
-            _gl.TexParameterI(GLEnum.Texture2D, GLEnum.TextureMinFilter, (uint)GLEnum.LinearMipmapNearest);
-            _gl.TexParameterI(GLEnum.Texture2D, GLEnum.TextureMagFilter, (uint)GLEnum.Linear);
-        }
-        else
-        {
-            _gl.BindTexture(GLEnum.Texture2D, m_texId);
+            else
+            {
+                _gl.BindTexture(GLEnum.Texture2D, m_texId);
+            }
         }
     }
 }

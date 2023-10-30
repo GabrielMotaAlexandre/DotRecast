@@ -1,6 +1,7 @@
-﻿namespace DotRecast.Recast.Demo.Messages;
-
-public class GeomLoadBeganEvent : IRecastDemoMessage
+﻿namespace DotRecast.Recast.Demo.Messages
 {
-    public required string FilePath { get; init; }
+    public class GeomLoadBeganEvent : IRecastDemoMessage
+    {
+        public required string FilePath { get; init; }
+    }
 }

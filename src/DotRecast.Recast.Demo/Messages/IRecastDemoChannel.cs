@@ -1,6 +1,7 @@
-﻿namespace DotRecast.Recast.Demo.Messages;
-
-public interface IRecastDemoChannel
+﻿namespace DotRecast.Recast.Demo.Messages
 {
-    void SendMessage(IRecastDemoMessage message);
+    public interface IRecastDemoChannel
+    {
+        void SendMessage(IRecastDemoMessage message);
+    }
 }

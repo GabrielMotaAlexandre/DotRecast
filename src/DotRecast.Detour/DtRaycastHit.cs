@@ -24,8 +24,8 @@ using System.Numerics;
 namespace DotRecast.Detour
 {
     /**
- * Provides information about raycast hit. Filled by NavMeshQuery::raycast
- */
+    * Provides information about raycast hit. Filled by NavMeshQuery::raycast
+*/
     public struct DtRaycastHit
     {
         /** The hit parameter. (float.MaxValue if no wall hit.) */
@@ -35,7 +35,7 @@ namespace DotRecast.Detour
         public Vector2 hitNormal;
 
         /** Visited polygons. */
-        public  List<long> path;
+        public List<long> path;
 
         /** The cost of the path until hit. */
         public float pathCost;

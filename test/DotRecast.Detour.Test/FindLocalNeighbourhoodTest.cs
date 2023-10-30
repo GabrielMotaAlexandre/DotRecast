@@ -20,13 +20,13 @@ using System.Collections.Generic;
 using System.Numerics;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class FindLocalNeighbourhoodTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly long[][] REFS =
+    [Parallelizable]
+    public class FindLocalNeighbourhoodTest : AbstractDetourTest
     {
+        private static readonly long[][] REFS =
+        {
         new[] { 281474976710696L, 281474976710695L, 281474976710691L, 281474976710697L },
         new[] { 281474976710773L, 281474976710769L, 281474976710772L },
         new[]
@@ -38,8 +38,8 @@ public class FindLocalNeighbourhoodTest : AbstractDetourTest
         new[] { 281474976710733L, 281474976710735L, 281474976710736L }
     };
 
-    private static readonly long[][] PARENT_REFS =
-    {
+        private static readonly long[][] PARENT_REFS =
+        {
         new[] { 0L, 281474976710696L, 281474976710695L, 281474976710695L },
         new[] { 0L, 281474976710773L, 281474976710773L },
         new[]
@@ -51,21 +51,22 @@ public class FindLocalNeighbourhoodTest : AbstractDetourTest
         new[] { 0L, 281474976710733L, 281474976710733L }
     };
 
-    [Test]
-    public void TestFindNearestPoly()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindNearestPoly()
         {
-            Vector3 startPos = startPoss[i];
-            var refs = new List<long>();
-            var parentRefs = new List<long>();
-
-            _ = query.FindLocalNeighbourhood(startRefs[i], startPos, 3.5f, filter, ref refs, ref parentRefs);
-            Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
-            for (int v = 0; v < REFS[i].Length; v++)
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                Assert.That(refs[v], Is.EqualTo(REFS[i][v]));
+                Vector3 startPos = startPoss[i];
+                var refs = new List<long>();
+                var parentRefs = new List<long>();
+
+                _ = query.FindLocalNeighbourhood(startRefs[i], startPos, 3.5f, filter, ref refs, ref parentRefs);
+                Assert.That(refs.Count, Is.EqualTo(REFS[i].Length));
+                for (int v = 0; v < REFS[i].Length; v++)
+                {
+                    Assert.That(refs[v], Is.EqualTo(REFS[i][v]));
+                }
             }
         }
     }

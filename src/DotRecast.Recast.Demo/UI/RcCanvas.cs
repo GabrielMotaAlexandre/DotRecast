@@ -21,43 +21,44 @@ using Serilog;
 using Silk.NET.Maths;
 using Silk.NET.Windowing;
 
-namespace DotRecast.Recast.Demo.UI;
-
-public class RcCanvas
+namespace DotRecast.Recast.Demo.UI
 {
-    private readonly IWindow _window;
-    private readonly IRcView[] _views;
-    private bool _mouseOver;
-
-    public bool IsMouseOver() => _mouseOver;
-
-    public Vector2D<int> Size => _window.Size;
-
-    public RcCanvas(IWindow window, params IRcView[] views)
+    public class RcCanvas
     {
-        _window = window;
-        _views = views;
-        foreach (var view in _views)
+        private readonly IWindow _window;
+        private readonly IRcView[] _views;
+        private bool _mouseOver;
+
+        public bool IsMouseOver() => _mouseOver;
+
+        public Vector2D<int> Size => _window.Size;
+
+        public RcCanvas(IWindow window, params IRcView[] views)
         {
-            view.Bind(this);
+            _window = window;
+            _views = views;
+            foreach (var view in _views)
+            {
+                view.Bind(this);
+            }
         }
-    }
 
-    public void Update(double dt)
-    {
-        foreach (var view in _views)
+        public void Update(double dt)
         {
-            view.Update(dt);
+            foreach (var view in _views)
+            {
+                view.Update(dt);
+            }
         }
-    }
 
-    public void Draw(double dt)
-    {
-        _mouseOver = false;
-        foreach (var view in _views)
+        public void Draw(double dt)
         {
-            view.Draw(dt);
-            _mouseOver |= view.IsHovered();
+            _mouseOver = false;
+            foreach (var view in _views)
+            {
+                view.Draw(dt);
+                _mouseOver |= view.IsHovered();
+            }
         }
     }
 }

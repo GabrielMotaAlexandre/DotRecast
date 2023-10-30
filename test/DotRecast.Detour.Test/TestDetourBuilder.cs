@@ -19,88 +19,89 @@ freely, subject to the following restrictions:
 using DotRecast.Recast;
 using DotRecast.Recast.Geom;
 
-namespace DotRecast.Detour.Test;
-
-public class TestDetourBuilder : DetourBuilder
+namespace DotRecast.Detour.Test
 {
-    public static DtMeshData Build(IInputGeomProvider geom, RcBuilderConfig rcConfig, float agentHeight, float agentRadius,
-        float agentMaxClimb, int x, int y, bool applyRecastDemoFlags)
+    public class TestDetourBuilder : DetourBuilder
     {
-        RcBuilderResult rcResult = RcBuilder.Build(geom, rcConfig);
-        RcPolyMesh pmesh = rcResult.Mesh;
-
-        if (applyRecastDemoFlags)
+        public static DtMeshData Build(IInputGeomProvider geom, RcBuilderConfig rcConfig, float agentHeight, float agentRadius,
+            float agentMaxClimb, int x, int y, bool applyRecastDemoFlags)
         {
-            // Update poly flags from areas.
-            for (int i = 0; i < pmesh.npolys; ++i)
-            {
-                if (pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_GROUND
-                    || pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_GRASS
-                    || pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_ROAD)
-                {
-                    pmesh.flags[i] = SampleAreaModifications.SAMPLE_POLYFLAGS_WALK;
-                }
-                else if (pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_WATER)
-                {
-                    pmesh.flags[i] = SampleAreaModifications.SAMPLE_POLYFLAGS_SWIM;
-                }
-                else if (pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_DOOR)
-                {
-                    pmesh.flags[i] = SampleAreaModifications.SAMPLE_POLYFLAGS_WALK
-                                     | SampleAreaModifications.SAMPLE_POLYFLAGS_DOOR;
-                }
+            RcBuilderResult rcResult = RcBuilder.Build(geom, rcConfig);
+            RcPolyMesh pmesh = rcResult.Mesh;
 
-                if (pmesh.areas[i] > 0)
+            if (applyRecastDemoFlags)
+            {
+                // Update poly flags from areas.
+                for (int i = 0; i < pmesh.npolys; ++i)
                 {
-                    pmesh.areas[i]--;
+                    if (pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_GROUND
+                        || pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_GRASS
+                        || pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_ROAD)
+                    {
+                        pmesh.flags[i] = SampleAreaModifications.SAMPLE_POLYFLAGS_WALK;
+                    }
+                    else if (pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_WATER)
+                    {
+                        pmesh.flags[i] = SampleAreaModifications.SAMPLE_POLYFLAGS_SWIM;
+                    }
+                    else if (pmesh.areas[i] == SampleAreaModifications.SAMPLE_POLYAREA_TYPE_DOOR)
+                    {
+                        pmesh.flags[i] = SampleAreaModifications.SAMPLE_POLYFLAGS_WALK
+                                         | SampleAreaModifications.SAMPLE_POLYFLAGS_DOOR;
+                    }
+
+                    if (pmesh.areas[i] > 0)
+                    {
+                        pmesh.areas[i]--;
+                    }
                 }
             }
+
+            RcPolyMeshDetail dmesh = rcResult.MeshDetail;
+            DtNavMeshCreateParams option = GetNavMeshCreateParams(rcConfig.cfg, pmesh, dmesh, agentHeight, agentRadius,
+                agentMaxClimb);
+            return Build(option, x, y);
         }
 
-        RcPolyMeshDetail dmesh = rcResult.MeshDetail;
-        DtNavMeshCreateParams option = GetNavMeshCreateParams(rcConfig.cfg, pmesh, dmesh, agentHeight, agentRadius,
-            agentMaxClimb);
-        return Build(option, x, y);
-    }
-
-    public static DtNavMeshCreateParams GetNavMeshCreateParams(RcConfig rcConfig, RcPolyMesh pmesh, RcPolyMeshDetail dmesh,
-        float agentHeight, float agentRadius, float agentMaxClimb)
-    {
-        DtNavMeshCreateParams option = new()
+        public static DtNavMeshCreateParams GetNavMeshCreateParams(RcConfig rcConfig, RcPolyMesh pmesh, RcPolyMeshDetail dmesh,
+            float agentHeight, float agentRadius, float agentMaxClimb)
         {
-            verts = pmesh.verts,
-            vertCount = pmesh.nverts,
-            polys = pmesh.polys,
-            polyAreas = pmesh.areas,
-            polyFlags = pmesh.flags,
-            polyCount = pmesh.npolys,
-            nvp = pmesh.nvp
-        };
+            DtNavMeshCreateParams option = new()
+            {
+                verts = pmesh.verts,
+                vertCount = pmesh.nverts,
+                polys = pmesh.polys,
+                polyAreas = pmesh.areas,
+                polyFlags = pmesh.flags,
+                polyCount = pmesh.npolys,
+                nvp = pmesh.nvp
+            };
 
-        if (dmesh.IsValid)
-        {
-            option.detailMeshes = dmesh.meshes;
-            option.detailVerts = dmesh.verts;
-            option.detailTris = dmesh.tris;
+            if (dmesh.IsValid)
+            {
+                option.detailMeshes = dmesh.meshes;
+                option.detailVerts = dmesh.verts;
+                option.detailTris = dmesh.tris;
+            }
+
+            option.walkableHeight = agentHeight;
+            option.walkableRadius = agentRadius;
+            option.walkableClimb = agentMaxClimb;
+            option.bmin = pmesh.bmin;
+            option.bmax = pmesh.bmax;
+            option.cs = rcConfig.Cs;
+            option.ch = rcConfig.Ch;
+            option.buildBvTree = true;
+            /*
+             * option.offMeshConVerts = m_geom->GetOffMeshConnectionVerts();
+             * option.offMeshConRad = m_geom->GetOffMeshConnectionRads();
+             * option.offMeshConDir = m_geom->GetOffMeshConnectionDirs();
+             * option.offMeshConAreas = m_geom->GetOffMeshConnectionAreas();
+             * option.offMeshConFlags = m_geom->GetOffMeshConnectionFlags();
+             * option.offMeshConUserID = m_geom->GetOffMeshConnectionId();
+             * option.offMeshConCount = m_geom->GetOffMeshConnectionCount();
+             */
+            return option;
         }
-
-        option.walkableHeight = agentHeight;
-        option.walkableRadius = agentRadius;
-        option.walkableClimb = agentMaxClimb;
-        option.bmin = pmesh.bmin;
-        option.bmax = pmesh.bmax;
-        option.cs = rcConfig.Cs;
-        option.ch = rcConfig.Ch;
-        option.buildBvTree = true;
-        /*
-         * option.offMeshConVerts = m_geom->GetOffMeshConnectionVerts();
-         * option.offMeshConRad = m_geom->GetOffMeshConnectionRads();
-         * option.offMeshConDir = m_geom->GetOffMeshConnectionDirs();
-         * option.offMeshConAreas = m_geom->GetOffMeshConnectionAreas();
-         * option.offMeshConFlags = m_geom->GetOffMeshConnectionFlags();
-         * option.offMeshConUserID = m_geom->GetOffMeshConnectionId();
-         * option.offMeshConCount = m_geom->GetOffMeshConnectionCount();
-         */
-        return option;
     }
 }

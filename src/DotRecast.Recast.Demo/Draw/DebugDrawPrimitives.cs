@@ -18,12 +18,13 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-namespace DotRecast.Recast.Demo.Draw;
-
-public enum DebugDrawPrimitives
+namespace DotRecast.Recast.Demo.Draw
 {
-    POINTS,
-    LINES,
-    TRIS,
-    QUADS
+    public enum DebugDrawPrimitives
+    {
+        POINTS,
+        LINES,
+        TRIS,
+        QUADS
+    }
 }

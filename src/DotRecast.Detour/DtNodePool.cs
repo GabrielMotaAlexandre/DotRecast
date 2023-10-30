@@ -49,7 +49,7 @@ namespace DotRecast.Detour
 
         public DtNode FindNode(long id)
         {
-            if (m_map.TryGetValue(id, out var nodes) &&  nodes.Count != 0)
+            if (m_map.TryGetValue(id, out var nodes) && nodes.Count != 0)
             {
                 return nodes[0];
             }

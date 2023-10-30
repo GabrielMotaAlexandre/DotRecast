@@ -28,7 +28,7 @@ namespace DotRecast.Detour
 
         /** The polygon is an off-mesh connection consisting of two vertices. */
         public const int DT_POLYTYPE_OFFMESH_CONNECTION = 1;
-        
+
         public readonly int index;
 
         // todoperf

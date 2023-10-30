@@ -60,7 +60,7 @@ namespace DotRecast.Recast
                 this.bmin.Z += tileZ * tsz;
                 this.bmax.X = this.bmin.X + tsx;
                 this.bmax.Z = this.bmin.Z + tsz;
-                
+
                 // Expand the heighfield bounding box by border size to find the extents of geometry we need to build this tile.
                 //
                 // This is done in order to make sure that the navmesh tiles connect correctly at the borders,
@@ -82,7 +82,7 @@ namespace DotRecast.Recast
                 // For example if you build a navmesh for terrain, and want the navmesh tiles to match the terrain tile size
                 // you will need to pass in data from neighbour terrain tiles too! In a simple case, just pass in all the 8 neighbours,
                 // or use the bounding box below to only pass in a sliver of each of the 8 neighbours.
-                
+
                 this.bmin.X -= cfg.BorderSize * cfg.Cs;
                 this.bmin.Z -= cfg.BorderSize * cfg.Cs;
                 this.bmax.X += cfg.BorderSize * cfg.Cs;

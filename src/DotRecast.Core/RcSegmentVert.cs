@@ -12,7 +12,7 @@ namespace DotRecast.Core
             vmin.X = v0;
             vmin.Y = v1;
             vmin.Z = v2;
-            
+
             vmax.X = v3;
             vmax.Y = v4;
             vmax.Z = v5;

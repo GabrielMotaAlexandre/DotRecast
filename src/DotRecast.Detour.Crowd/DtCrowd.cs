@@ -33,78 +33,78 @@ namespace DotRecast.Detour.Crowd
 
 
     /**
- * Members in this module implement local steering and dynamic avoidance features.
- *
- * The crowd is the big beast of the navigation features. It not only handles a lot of the path management for you, but
- * also local steering and dynamic avoidance between members of the crowd. I.e. It can keep your agents from running
- * into each other.
- *
- * Main class: Crowd
- *
- * The #dtNavMeshQuery and #dtPathCorridor classes provide perfectly good, easy to use path planning features. But in
- * the end they only give you points that your navigation client should be moving toward. When it comes to deciding
- * things like agent velocity and steering to avoid other agents, that is up to you to implement. Unless, of course, you
- * decide to use Crowd.
- *
- * Basically, you add an agent to the crowd, providing various configuration settings such as maximum speed and
- * acceleration. You also provide a local target to move toward. The crowd manager then provides, with every update, the
- * new agent position and velocity for the frame. The movement will be constrained to the navigation mesh, and steering
- * will be applied to ensure agents managed by the crowd do not collide with each other.
- *
- * This is very powerful feature set. But it comes with limitations.
- *
- * The biggest limitation is that you must give control of the agent's position completely over to the crowd manager.
- * You can update things like maximum speed and acceleration. But in order for the crowd manager to do its thing, it
- * can't allow you to constantly be giving it overrides to position and velocity. So you give up direct control of the
- * agent's movement. It belongs to the crowd.
- *
- * The second biggest limitation revolves around the fact that the crowd manager deals with local planning. So the
- * agent's target should never be more than 256 polygons away from its current position. If it is, you risk your agent
- * failing to reach its target. So you may still need to do long distance planning and provide the crowd manager with
- * intermediate targets.
- *
- * Other significant limitations:
- *
- * - All agents using the crowd manager will use the same #dtQueryFilter. - Crowd management is relatively expensive.
- * The maximum agents under crowd management at any one time is between 20 and 30. A good place to start is a maximum of
- * 25 agents for 0.5ms per frame.
- *
- * @note This is a summary list of members. Use the index or search feature to find minor members.
- *
- * @struct dtCrowdAgentParams
- * @see CrowdAgent, Crowd::AddAgent(), Crowd::UpdateAgentParameters()
- *
- * @var dtCrowdAgentParams::obstacleAvoidanceType
- * @par
- *
- * 		#dtCrowd permits agents to use different avoidance configurations. This value is the index of the
- *      #dtObstacleAvoidanceParams within the crowd.
- *
- * @see dtObstacleAvoidanceParams, dtCrowd::SetObstacleAvoidanceParams(), dtCrowd::GetObstacleAvoidanceParams()
- *
- * @var dtCrowdAgentParams::collisionQueryRange
- * @par
- *
- * 		Collision elements include other agents and navigation mesh boundaries.
- *
- *      This value is often based on the agent radius and/or maximum speed. E.g. radius * 8
- *
- * @var dtCrowdAgentParams::pathOptimizationRange
- * @par
- *
- * 		Only applicable if #updateFlags includes the #DT_CROWD_OPTIMIZE_VIS flag.
- *
- *      This value is often based on the agent radius. E.g. radius * 30
- *
- * @see dtPathCorridor::OptimizePathVisibility()
- *
- * @var dtCrowdAgentParams::separationWeight
- * @par
- *
- * 		A higher value will result in agents trying to stay farther away from each other at the cost of more difficult
- *      steering in tight spaces.
- *
- */
+    * Members in this module implement local steering and dynamic avoidance features.
+    *
+    * The crowd is the big beast of the navigation features. It not only handles a lot of the path management for you, but
+    * also local steering and dynamic avoidance between members of the crowd. I.e. It can keep your agents from running
+    * into each other.
+    *
+    * Main class: Crowd
+    *
+    * The #dtNavMeshQuery and #dtPathCorridor classes provide perfectly good, easy to use path planning features. But in
+    * the end they only give you points that your navigation client should be moving toward. When it comes to deciding
+    * things like agent velocity and steering to avoid other agents, that is up to you to implement. Unless, of course, you
+    * decide to use Crowd.
+    *
+    * Basically, you add an agent to the crowd, providing various configuration settings such as maximum speed and
+    * acceleration. You also provide a local target to move toward. The crowd manager then provides, with every update, the
+    * new agent position and velocity for the frame. The movement will be constrained to the navigation mesh, and steering
+    * will be applied to ensure agents managed by the crowd do not collide with each other.
+    *
+    * This is very powerful feature set. But it comes with limitations.
+    *
+    * The biggest limitation is that you must give control of the agent's position completely over to the crowd manager.
+    * You can update things like maximum speed and acceleration. But in order for the crowd manager to do its thing, it
+    * can't allow you to constantly be giving it overrides to position and velocity. So you give up direct control of the
+    * agent's movement. It belongs to the crowd.
+    *
+    * The second biggest limitation revolves around the fact that the crowd manager deals with local planning. So the
+    * agent's target should never be more than 256 polygons away from its current position. If it is, you risk your agent
+    * failing to reach its target. So you may still need to do long distance planning and provide the crowd manager with
+    * intermediate targets.
+    *
+    * Other significant limitations:
+    *
+    * - All agents using the crowd manager will use the same #dtQueryFilter. - Crowd management is relatively expensive.
+    * The maximum agents under crowd management at any one time is between 20 and 30. A good place to start is a maximum of
+    * 25 agents for 0.5ms per frame.
+    *
+    * @note This is a summary list of members. Use the index or search feature to find minor members.
+    *
+    * @struct dtCrowdAgentParams
+    * @see CrowdAgent, Crowd::AddAgent(), Crowd::UpdateAgentParameters()
+    *
+    * @var dtCrowdAgentParams::obstacleAvoidanceType
+    * @par
+    *
+    * 		#dtCrowd permits agents to use different avoidance configurations. This value is the index of the
+    *      #dtObstacleAvoidanceParams within the crowd.
+    *
+    * @see dtObstacleAvoidanceParams, dtCrowd::SetObstacleAvoidanceParams(), dtCrowd::GetObstacleAvoidanceParams()
+    *
+    * @var dtCrowdAgentParams::collisionQueryRange
+    * @par
+    *
+    * 		Collision elements include other agents and navigation mesh boundaries.
+    *
+    *      This value is often based on the agent radius and/or maximum speed. E.g. radius * 8
+    *
+    * @var dtCrowdAgentParams::pathOptimizationRange
+    * @par
+    *
+    * 		Only applicable if #updateFlags includes the #DT_CROWD_OPTIMIZE_VIS flag.
+    *
+    *      This value is often based on the agent radius. E.g. radius * 30
+    *
+    * @see dtPathCorridor::OptimizePathVisibility()
+    *
+    * @var dtCrowdAgentParams::separationWeight
+    * @par
+    *
+    * 		A higher value will result in agents trying to stay farther away from each other at the cost of more difficult
+    *      steering in tight spaces.
+    *
+*/
     /**
      * This is the core class of the refs crowd module. See the refs crowd documentation for a summary of the crowd
      * features. A common method for setting up the crowd is as follows: -# Allocate the crowd -# Set the avoidance

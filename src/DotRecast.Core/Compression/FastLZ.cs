@@ -270,7 +270,7 @@ namespace DotRecast.Core.Compression
                 }
                 else
                 {
-                    for (;;)
+                    while(true)
                     {
                         /* safe because the outer check against ip limit */
                         if (input[inOffset + refs++] != input[inOffset + ip++])

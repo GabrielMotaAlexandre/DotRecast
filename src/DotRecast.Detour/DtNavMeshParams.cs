@@ -23,11 +23,11 @@ using System.Numerics;
 namespace DotRecast.Detour
 {
     /**
- * Configuration parameters used to define multi-tile navigation meshes. The values are used to allocate space during
- * the initialization of a navigation mesh.
- *
- * @see NavMesh
- */
+    * Configuration parameters used to define multi-tile navigation meshes. The values are used to allocate space during
+    * the initialization of a navigation mesh.
+    *
+    * @see NavMesh
+*/
     public struct DtNavMeshParams
     {
         /** The world space origin of the navigation mesh's tile space. [(x, y, z)] */

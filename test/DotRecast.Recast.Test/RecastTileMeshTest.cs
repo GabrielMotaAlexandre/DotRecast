@@ -25,152 +25,153 @@ using DotRecast.Core;
 using DotRecast.Recast.Geom;
 using NUnit.Framework;
 
-namespace DotRecast.Recast.Test;
-
-[Parallelizable]
-public class RecastTileMeshTest
+namespace DotRecast.Recast.Test
 {
-    private const float m_cellSize = 0.3f;
-    private const float m_cellHeight = 0.2f;
-    private const float m_agentHeight = 2f;
-    private const float m_agentRadius = 0.6f;
-    private const float m_agentMaxClimb = 0.9f;
-    private const float m_agentMaxSlope = 45.0f;
-    private const int m_regionMinSize = 8;
-    private const int m_regionMergeSize = 20;
-    private const float m_regionMinArea = m_regionMinSize * m_regionMinSize * m_cellSize * m_cellSize;
-    private const float m_regionMergeArea = m_regionMergeSize * m_regionMergeSize * m_cellSize * m_cellSize;
-    private const float m_edgeMaxLen = 12f;
-    private const float m_edgeMaxError = 1.3f;
-    private const int m_vertsPerPoly = 6;
-    private const float m_detailSampleDist = 6.0f;
-    private const float m_detailSampleMaxError = 1f;
-    private readonly RcPartition m_partitionType = RcPartition.WATERSHED;
-    private const int m_tileSize = 32;
-
-    [Test]
-    public void TestDungeon()
+    [Parallelizable]
+    public class RecastTileMeshTest
     {
-        TestBuild("dungeon.obj");
-    }
+        private const float m_cellSize = 0.3f;
+        private const float m_cellHeight = 0.2f;
+        private const float m_agentHeight = 2f;
+        private const float m_agentRadius = 0.6f;
+        private const float m_agentMaxClimb = 0.9f;
+        private const float m_agentMaxSlope = 45.0f;
+        private const int m_regionMinSize = 8;
+        private const int m_regionMergeSize = 20;
+        private const float m_regionMinArea = m_regionMinSize * m_regionMinSize * m_cellSize * m_cellSize;
+        private const float m_regionMergeArea = m_regionMergeSize * m_regionMergeSize * m_cellSize * m_cellSize;
+        private const float m_edgeMaxLen = 12f;
+        private const float m_edgeMaxError = 1.3f;
+        private const int m_vertsPerPoly = 6;
+        private const float m_detailSampleDist = 6.0f;
+        private const float m_detailSampleMaxError = 1f;
+        private readonly RcPartition m_partitionType = RcPartition.WATERSHED;
+        private const int m_tileSize = 32;
 
-    void TestBuild(string filename)
-    {
-        var geom = SimpleInputGeomProvider.LoadFile(filename);
-        RcConfig cfg = new(
-            true, m_tileSize, m_tileSize, RcConfig.CalcBorder(m_agentRadius, m_cellSize),
-            m_partitionType,
-            m_cellSize, m_cellHeight,
-            m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
-            m_regionMinArea, m_regionMergeArea,
-            m_edgeMaxLen, m_edgeMaxError,
-            m_vertsPerPoly,
-            m_detailSampleDist, m_detailSampleMaxError,
-            true, true, true,
-            SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 7, 8);
-        RcBuilderResult rcResult = RcBuilder.Build(geom, bcfg);
-        Assert.That(rcResult.Mesh.npolys, Is.EqualTo(1));
-        Assert.That(rcResult.Mesh.nverts, Is.EqualTo(5));
-        bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 6, 9);
-        rcResult = RcBuilder.Build(geom, bcfg);
-        Assert.That(rcResult.Mesh.npolys, Is.EqualTo(2));
-        Assert.That(rcResult.Mesh.nverts, Is.EqualTo(7));
-        bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 2, 9);
-        rcResult = RcBuilder.Build(geom, bcfg);
-        Assert.That(rcResult.Mesh.npolys, Is.EqualTo(2));
-        Assert.That(rcResult.Mesh.nverts, Is.EqualTo(9));
-        bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 4, 3);
-        rcResult = RcBuilder.Build(geom, bcfg);
-        Assert.That(rcResult.Mesh.npolys, Is.EqualTo(3));
-        Assert.That(rcResult.Mesh.nverts, Is.EqualTo(6));
-        bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 2, 8);
-        rcResult = RcBuilder.Build(geom, bcfg);
-        Assert.That(rcResult.Mesh.npolys, Is.EqualTo(5));
-        Assert.That(rcResult.Mesh.nverts, Is.EqualTo(17));
-        bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 0, 8);
-        rcResult = RcBuilder.Build(geom, bcfg);
-        Assert.That(rcResult.Mesh.npolys, Is.EqualTo(6));
-        Assert.That(rcResult.Mesh.nverts, Is.EqualTo(15));
-    }
-
-    [Test]
-    public void TestPerformance()
-    {
-        IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
-
-        RcConfig cfg = new(
-            true, m_tileSize, m_tileSize,
-            RcConfig.CalcBorder(m_agentRadius, m_cellSize),
-            m_partitionType,
-            m_cellSize, m_cellHeight,
-            m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
-            m_regionMinArea, m_regionMergeArea,
-            m_edgeMaxLen, m_edgeMaxError,
-            m_vertsPerPoly,
-            m_detailSampleDist, m_detailSampleMaxError,
-            true, true, true,
-            SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        for (int i = 0; i < 4; i++)
+        [Test]
+        public void TestDungeon()
         {
-            Build(geom, cfg, 1, true);
-            Build(geom, cfg, 4, true);
+            TestBuild("dungeon.obj");
         }
 
-        long t1 = RcFrequency.Ticks;
-        for (int i = 0; i < 4; i++)
+        void TestBuild(string filename)
         {
-            Build(geom, cfg, 1, false);
-        }
-
-        long t2 = RcFrequency.Ticks;
-        for (int i = 0; i < 4; i++)
-        {
-            Build(geom, cfg, 4, false);
-        }
-
-        long t3 = RcFrequency.Ticks;
-        Console.WriteLine(" Time ST : " + (t2 - t1) / TimeSpan.TicksPerMillisecond);
-        Console.WriteLine(" Time MT : " + (t3 - t2) / TimeSpan.TicksPerMillisecond);
-    }
-
-    private static void Build(IInputGeomProvider geom, RcConfig cfg, int threads, bool validate)
-    {
-        List<RcBuilderResult> tiles;
-        if (threads > 1)
-        {
-            RcBuilder.BuildTilesAsync(geom, cfg, out tiles);
-        }
-        else
-        {
-            tiles = RcBuilder.BuildTiles(geom, cfg);
-        }
-
-        if (validate)
-        {
-            RcBuilderResult rcResult = GetTile(tiles, 7, 8);
+            var geom = SimpleInputGeomProvider.LoadFile(filename);
+            RcConfig cfg = new(
+                true, m_tileSize, m_tileSize, RcConfig.CalcBorder(m_agentRadius, m_cellSize),
+                m_partitionType,
+                m_cellSize, m_cellHeight,
+                m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
+                m_regionMinArea, m_regionMergeArea,
+                m_edgeMaxLen, m_edgeMaxError,
+                m_vertsPerPoly,
+                m_detailSampleDist, m_detailSampleMaxError,
+                true, true, true,
+                SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
+            RcBuilderConfig bcfg = new(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 7, 8);
+            RcBuilderResult rcResult = RcBuilder.Build(geom, bcfg);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(1));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(5));
-            rcResult = GetTile(tiles, 6, 9);
+            bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 6, 9);
+            rcResult = RcBuilder.Build(geom, bcfg);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(2));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(7));
-            rcResult = GetTile(tiles, 2, 9);
+            bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 2, 9);
+            rcResult = RcBuilder.Build(geom, bcfg);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(2));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(9));
-            rcResult = GetTile(tiles, 4, 3);
+            bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 4, 3);
+            rcResult = RcBuilder.Build(geom, bcfg);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(3));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(6));
-            rcResult = GetTile(tiles, 2, 8);
+            bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 2, 8);
+            rcResult = RcBuilder.Build(geom, bcfg);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(5));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(17));
-            rcResult = GetTile(tiles, 0, 8);
+            bcfg = new RcBuilderConfig(cfg, geom.GetMeshBoundsMin(), geom.GetMeshBoundsMax(), 0, 8);
+            rcResult = RcBuilder.Build(geom, bcfg);
             Assert.That(rcResult.Mesh.npolys, Is.EqualTo(6));
             Assert.That(rcResult.Mesh.nverts, Is.EqualTo(15));
         }
-    }
 
-    private static RcBuilderResult GetTile(List<RcBuilderResult> tiles, int x, int z)
-    {
-        return tiles.FirstOrDefault(tile => tile.tileX == x && tile.tileZ == z);
+        [Test]
+        public void TestPerformance()
+        {
+            IInputGeomProvider geom = SimpleInputGeomProvider.LoadFile("dungeon.obj");
+
+            RcConfig cfg = new(
+                true, m_tileSize, m_tileSize,
+                RcConfig.CalcBorder(m_agentRadius, m_cellSize),
+                m_partitionType,
+                m_cellSize, m_cellHeight,
+                m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
+                m_regionMinArea, m_regionMergeArea,
+                m_edgeMaxLen, m_edgeMaxError,
+                m_vertsPerPoly,
+                m_detailSampleDist, m_detailSampleMaxError,
+                true, true, true,
+                SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
+            for (int i = 0; i < 4; i++)
+            {
+                Build(geom, cfg, 1, true);
+                Build(geom, cfg, 4, true);
+            }
+
+            long t1 = RcFrequency.Ticks;
+            for (int i = 0; i < 4; i++)
+            {
+                Build(geom, cfg, 1, false);
+            }
+
+            long t2 = RcFrequency.Ticks;
+            for (int i = 0; i < 4; i++)
+            {
+                Build(geom, cfg, 4, false);
+            }
+
+            long t3 = RcFrequency.Ticks;
+            Console.WriteLine(" Time ST : " + (t2 - t1) / TimeSpan.TicksPerMillisecond);
+            Console.WriteLine(" Time MT : " + (t3 - t2) / TimeSpan.TicksPerMillisecond);
+        }
+
+        private static void Build(IInputGeomProvider geom, RcConfig cfg, int threads, bool validate)
+        {
+            List<RcBuilderResult> tiles;
+            if (threads > 1)
+            {
+                RcBuilder.BuildTilesAsync(geom, cfg, out tiles);
+            }
+            else
+            {
+                tiles = RcBuilder.BuildTiles(geom, cfg);
+            }
+
+            if (validate)
+            {
+                RcBuilderResult rcResult = GetTile(tiles, 7, 8);
+                Assert.That(rcResult.Mesh.npolys, Is.EqualTo(1));
+                Assert.That(rcResult.Mesh.nverts, Is.EqualTo(5));
+                rcResult = GetTile(tiles, 6, 9);
+                Assert.That(rcResult.Mesh.npolys, Is.EqualTo(2));
+                Assert.That(rcResult.Mesh.nverts, Is.EqualTo(7));
+                rcResult = GetTile(tiles, 2, 9);
+                Assert.That(rcResult.Mesh.npolys, Is.EqualTo(2));
+                Assert.That(rcResult.Mesh.nverts, Is.EqualTo(9));
+                rcResult = GetTile(tiles, 4, 3);
+                Assert.That(rcResult.Mesh.npolys, Is.EqualTo(3));
+                Assert.That(rcResult.Mesh.nverts, Is.EqualTo(6));
+                rcResult = GetTile(tiles, 2, 8);
+                Assert.That(rcResult.Mesh.npolys, Is.EqualTo(5));
+                Assert.That(rcResult.Mesh.nverts, Is.EqualTo(17));
+                rcResult = GetTile(tiles, 0, 8);
+                Assert.That(rcResult.Mesh.npolys, Is.EqualTo(6));
+                Assert.That(rcResult.Mesh.nverts, Is.EqualTo(15));
+            }
+        }
+
+        private static RcBuilderResult GetTile(List<RcBuilderResult> tiles, int x, int z)
+        {
+            return tiles.FirstOrDefault(tile => tile.tileX == x && tile.tileZ == z);
+        }
     }
 }

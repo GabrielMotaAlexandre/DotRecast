@@ -31,7 +31,7 @@ namespace DotRecast.Recast.Geom
         Vector3 GetMeshBoundsMax();
 
         IEnumerable<RcTriMesh> Meshes();
-        
+
         // convex volume
         void AddConvexVolume(RcConvexVolume convexVolume);
         IList<RcConvexVolume> ConvexVolumes();

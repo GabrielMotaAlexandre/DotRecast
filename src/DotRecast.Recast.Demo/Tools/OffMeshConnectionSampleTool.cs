@@ -26,100 +26,101 @@ using DotRecast.Recast.Toolset.Tools;
 using ImGuiNET;
 using static DotRecast.Recast.Demo.Draw.DebugDraw;
 
-namespace DotRecast.Recast.Demo.Tools;
-
-public class OffMeshConnectionSampleTool : ISampleTool
+namespace DotRecast.Recast.Demo.Tools
 {
-    private DemoSample _sample;
-
-    private readonly RcOffMeshConnectionTool _tool;
-
-    private int _bidir;
-    private bool _hasStartPt;
-    private Vector3 _startPt;
-
-    public OffMeshConnectionSampleTool()
+    public class OffMeshConnectionSampleTool : ISampleTool
     {
-        _tool = new();
-    }
+        private DemoSample _sample;
 
-    public void Layout()
-    {
-        ImGui.RadioButton("One Way", ref _bidir, 0);
-        ImGui.RadioButton("Bidirectional", ref _bidir, 1);
-    }
+        private readonly RcOffMeshConnectionTool _tool;
 
-    public void HandleRender(NavMeshRenderer renderer)
-    {
-        RecastDebugDraw dd = renderer.GetDebugDraw();
+        private int _bidir;
+        private bool _hasStartPt;
+        private Vector3 _startPt;
 
-        var settings = _sample.Settings;
-        float s = settings.agentRadius;
-
-        if (_hasStartPt)
+        public OffMeshConnectionSampleTool()
         {
-            dd.DebugDrawCross(_startPt.X, _startPt.Y + 0.1f, _startPt.Z, s, DuRGBA(0, 0, 0, 128), 2f);
+            _tool = new();
         }
 
-        DemoInputGeomProvider geom = _sample.GetInputGeom();
-        if (geom != null)
+        public void Layout()
         {
-            renderer.DrawOffMeshConnections(geom, true);
-        }
-    }
-
-
-    public IRcToolable GetTool()
-    {
-        return _tool;
-    }
-
-    public void SetSample(DemoSample sample)
-    {
-        _sample = sample;
-    }
-
-    public void OnSampleChanged()
-    {
-        // ..
-    }
-
-    public void HandleClick(Vector3 s, Vector3 p, bool shift)
-    {
-        DemoInputGeomProvider geom = _sample.GetInputGeom();
-        if (geom is null)
-        {
-            return;
+            ImGui.RadioButton("One Way", ref _bidir, 0);
+            ImGui.RadioButton("Bidirectional", ref _bidir, 1);
         }
 
-        var settings = _sample.Settings;
+        public void HandleRender(NavMeshRenderer renderer)
+        {
+            RecastDebugDraw dd = renderer.GetDebugDraw();
 
-        if (shift)
-        {
-            RcOffMeshConnectionTool.Remove(geom, settings, p);
-        }
-        else
-        {
-            // Create
-            if (!_hasStartPt)
+            var settings = _sample.Settings;
+            float s = settings.agentRadius;
+
+            if (_hasStartPt)
             {
-                _startPt = p;
-                _hasStartPt = true;
+                dd.DebugDrawCross(_startPt.X, _startPt.Y + 0.1f, _startPt.Z, s, DuRGBA(0, 0, 0, 128), 2f);
+            }
+
+            DemoInputGeomProvider geom = _sample.GetInputGeom();
+            if (geom != null)
+            {
+                renderer.DrawOffMeshConnections(geom, true);
+            }
+        }
+
+
+        public IRcToolable GetTool()
+        {
+            return _tool;
+        }
+
+        public void SetSample(DemoSample sample)
+        {
+            _sample = sample;
+        }
+
+        public void OnSampleChanged()
+        {
+            // ..
+        }
+
+        public void HandleClick(Vector3 s, Vector3 p, bool shift)
+        {
+            DemoInputGeomProvider geom = _sample.GetInputGeom();
+            if (geom is null)
+            {
+                return;
+            }
+
+            var settings = _sample.Settings;
+
+            if (shift)
+            {
+                RcOffMeshConnectionTool.Remove(geom, settings, p);
             }
             else
             {
-                RcOffMeshConnectionTool.Add(geom, settings, _startPt, p, 1 == _bidir);
-                _hasStartPt = false;
+                // Create
+                if (!_hasStartPt)
+                {
+                    _startPt = p;
+                    _hasStartPt = true;
+                }
+                else
+                {
+                    RcOffMeshConnectionTool.Add(geom, settings, _startPt, p, 1 == _bidir);
+                    _hasStartPt = false;
+                }
             }
         }
-    }
 
 
-    public void HandleUpdate(float dt)
-    {
-    }
+        public void HandleUpdate(float dt)
+        {
+        }
 
-    public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
-    {
+        public void HandleClickRay(Vector3 start, Vector3 direction, bool shift)
+        {
+        }
     }
 }

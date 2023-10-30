@@ -25,9 +25,9 @@ using UnityEngine;
 namespace DotRecast.Recast
 {
     /**
- * Contains triangle meshes that represent detailed height data associated with the polygons in its associated polygon
- * mesh object.
- */
+    * Contains triangle meshes that represent detailed height data associated with the polygons in its associated polygon
+    * mesh object.
+*/
     public readonly struct RcPolyMeshDetail
     {
         /** The sub-mesh data. [Size: 4*#nmeshes] */

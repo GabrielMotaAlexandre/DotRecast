@@ -35,13 +35,13 @@ namespace DotRecast.Detour.Crowd
 
         /// < Maximum allowed speed. [Limit: >= 0]
         public float maxSpeed;
-                
+
         /// Defines how close a collision element must be before it is considered for steering behaviors. [Limits: > 0]
         public float collisionQueryRange;
 
         /// < The path visibility optimization range. [Limit: > 0]
         public float pathOptimizationRange;
-                
+
         /// How aggresive the agent manager should be at avoiding collisions with this agent. [Limit: >= 0]
         public float separationWeight;
 

@@ -20,13 +20,13 @@ freely, subject to the following restrictions:
 
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Crowd.Test;
-
-[Parallelizable]
-public class Crowd4VelocityTest : AbstractCrowdTest
+namespace DotRecast.Detour.Crowd.Test
 {
-    static readonly float[][] EXPECTED_A1Q3TVTA =
+    [Parallelizable]
+    public class Crowd4VelocityTest : AbstractCrowdTest
     {
+        static readonly float[][] EXPECTED_A1Q3TVTA =
+        {
         new[] { 6.101694f, 10.197294f, -17.678480f, 0.000000f, 0.000000f },
         new[] { 6.024141f, 10.197294f, -17.589798f, -0.107331f, 0.098730f },
         new[] { 6.004839f, 10.197294f, -17.554886f, -0.096506f, 0.174561f },
@@ -96,28 +96,29 @@ public class Crowd4VelocityTest : AbstractCrowdTest
         new[] { 4.327769f, 10.197294f, -8.072167f, -0.003438f, -0.072332f }
     };
 
-    [Test]
-    public void TestAgent1Quality3TVTA()
-    {
-        int updateFlags = DtCrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | DtCrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
-                                                                       | DtCrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | DtCrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
-
-        AddAgentGrid(2, 0.3f, updateFlags, 3, endPoss[0]);
-        SetMoveTarget(endPoss[4], false);
-        for (int i = 0; i < EXPECTED_A1Q3TVTA.Length; i++)
+        [Test]
+        public void TestAgent1Quality3TVTA()
         {
-            crowd.Update(1 / 5f, null);
-            if (i == 20)
-            {
-                SetMoveTarget(startPoss[2], true);
-            }
+            int updateFlags = DtCrowdAgentParams.DT_CROWD_ANTICIPATE_TURNS | DtCrowdAgentParams.DT_CROWD_OPTIMIZE_VIS
+                                                                           | DtCrowdAgentParams.DT_CROWD_OPTIMIZE_TOPO | DtCrowdAgentParams.DT_CROWD_OBSTACLE_AVOIDANCE;
 
-            DtCrowdAgent ag = agents[1];
-            Assert.That(ag.npos.X, Is.EqualTo(EXPECTED_A1Q3TVTA[i][0]).Within(0.001f));
-            Assert.That(ag.npos.Y, Is.EqualTo(EXPECTED_A1Q3TVTA[i][1]).Within(0.001f));
-            Assert.That(ag.npos.Z, Is.EqualTo(EXPECTED_A1Q3TVTA[i][2]).Within(0.001f));
-            Assert.That(ag.nvel.X, Is.EqualTo(EXPECTED_A1Q3TVTA[i][3]).Within(0.001f));
-            Assert.That(ag.nvel.Y, Is.EqualTo(EXPECTED_A1Q3TVTA[i][4]).Within(0.001f));
+            AddAgentGrid(2, 0.3f, updateFlags, 3, endPoss[0]);
+            SetMoveTarget(endPoss[4], false);
+            for (int i = 0; i < EXPECTED_A1Q3TVTA.Length; i++)
+            {
+                crowd.Update(1 / 5f, null);
+                if (i == 20)
+                {
+                    SetMoveTarget(startPoss[2], true);
+                }
+
+                DtCrowdAgent ag = agents[1];
+                Assert.That(ag.npos.X, Is.EqualTo(EXPECTED_A1Q3TVTA[i][0]).Within(0.001f));
+                Assert.That(ag.npos.Y, Is.EqualTo(EXPECTED_A1Q3TVTA[i][1]).Within(0.001f));
+                Assert.That(ag.npos.Z, Is.EqualTo(EXPECTED_A1Q3TVTA[i][2]).Within(0.001f));
+                Assert.That(ag.nvel.X, Is.EqualTo(EXPECTED_A1Q3TVTA[i][3]).Within(0.001f));
+                Assert.That(ag.nvel.Y, Is.EqualTo(EXPECTED_A1Q3TVTA[i][4]).Within(0.001f));
+            }
         }
     }
 }

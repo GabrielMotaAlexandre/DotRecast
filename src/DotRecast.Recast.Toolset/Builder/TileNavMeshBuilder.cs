@@ -97,7 +97,7 @@ namespace DotRecast.Recast.Toolset.Builder
                 detailSampleDist, detailSampleMaxError,
                 filterLowHangingObstacles, filterLedgeSpans, filterWalkableLowHeightSpans,
                 SampleAreaModifications.SAMPLE_AREAMOD_WALKABLE, true);
-            
+
             RcBuilder.BuildTilesAsync(geom, cfg, out var tiles);
 
             return tiles;

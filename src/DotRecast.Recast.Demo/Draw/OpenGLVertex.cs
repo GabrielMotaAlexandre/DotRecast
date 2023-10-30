@@ -2,74 +2,75 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace DotRecast.Recast.Demo.Draw;
-
-[StructLayout(LayoutKind.Explicit, Pack = 1)]
-public struct OpenGLVertex
+namespace DotRecast.Recast.Demo.Draw
 {
-    [FieldOffset(0)]
-    private readonly float x;
-
-    [FieldOffset(4)]
-    private readonly float y;
-
-    [FieldOffset(8)]
-    private readonly float z;
-
-    [FieldOffset(12)]
-    private readonly float u;
-
-    [FieldOffset(16)]
-    private readonly float v;
-
-    [FieldOffset(20)]
-    private readonly int color;
-
-    public OpenGLVertex(Vector3 pos, Vector2 uv, int color) :
-        this(pos.X, pos.Y, pos.Z, uv.X, uv.Y, color)
+    [StructLayout(LayoutKind.Explicit, Pack = 1)]
+    public struct OpenGLVertex
     {
-    }
+        [FieldOffset(0)]
+        private readonly float x;
 
-    public OpenGLVertex(float[] pos, int color) :
-        this(pos[0], pos[1], pos[2], 0f, 0f, color)
-    {
-    }
+        [FieldOffset(4)]
+        private readonly float y;
 
-    public OpenGLVertex(Vector3 pos, int color) :
-        this(pos.X, pos.Y, pos.Z, 0f, 0f, color)
-    {
-    }
+        [FieldOffset(8)]
+        private readonly float z;
+
+        [FieldOffset(12)]
+        private readonly float u;
+
+        [FieldOffset(16)]
+        private readonly float v;
+
+        [FieldOffset(20)]
+        private readonly int color;
+
+        public OpenGLVertex(Vector3 pos, Vector2 uv, int color) :
+            this(pos.X, pos.Y, pos.Z, uv.X, uv.Y, color)
+        {
+        }
+
+        public OpenGLVertex(float[] pos, int color) :
+            this(pos[0], pos[1], pos[2], 0f, 0f, color)
+        {
+        }
+
+        public OpenGLVertex(Vector3 pos, int color) :
+            this(pos.X, pos.Y, pos.Z, 0f, 0f, color)
+        {
+        }
 
 
-    public OpenGLVertex(float x, float y, float z, int color) :
-        this(x, y, z, 0f, 0f, color)
-    {
-    }
+        public OpenGLVertex(float x, float y, float z, int color) :
+            this(x, y, z, 0f, 0f, color)
+        {
+        }
 
-    public OpenGLVertex(float x, float y, float z, float u, float v, int color)
-    {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.u = u;
-        this.v = v;
-        this.color = color;
-    }
+        public OpenGLVertex(float x, float y, float z, float u, float v, int color)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.u = u;
+            this.v = v;
+            this.color = color;
+        }
 
-    public readonly void Store(BinaryWriter writer)
-    {
-        // writer.Write(BitConverter.GetBytes(x));
-        // writer.Write(BitConverter.GetBytes(y));
-        // writer.Write(BitConverter.GetBytes(z));
-        // writer.Write(BitConverter.GetBytes(u));
-        // writer.Write(BitConverter.GetBytes(v));
-        // writer.Write(BitConverter.GetBytes(color));
+        public readonly void Store(BinaryWriter writer)
+        {
+            // writer.Write(BitConverter.GetBytes(x));
+            // writer.Write(BitConverter.GetBytes(y));
+            // writer.Write(BitConverter.GetBytes(z));
+            // writer.Write(BitConverter.GetBytes(u));
+            // writer.Write(BitConverter.GetBytes(v));
+            // writer.Write(BitConverter.GetBytes(color));
 
-        writer.Write(x);
-        writer.Write(y);
-        writer.Write(z);
-        writer.Write(u);
-        writer.Write(v);
-        writer.Write(color);
+            writer.Write(x);
+            writer.Write(y);
+            writer.Write(z);
+            writer.Write(u);
+            writer.Write(v);
+            writer.Write(color);
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace DotRecast.Recast.Toolset.Builder
             RecastBuilderResults = Array.Empty<RcBuilderResult>();
             NavMesh = null;
         }
-        
+
         public NavMeshBuildResult(IList<RcBuilderResult> recastBuilderResults, DtNavMesh navMesh)
         {
             Success = true;

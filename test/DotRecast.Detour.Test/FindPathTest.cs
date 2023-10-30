@@ -21,13 +21,13 @@ using System.Numerics;
 
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class FindPathTest : AbstractDetourTest
+namespace DotRecast.Detour.Test
 {
-    private static readonly DtStatus[] STATUSES =
+    [Parallelizable]
+    public class FindPathTest : AbstractDetourTest
     {
+        private static readonly DtStatus[] STATUSES =
+        {
         DtStatus.DT_SUCCSESS,
         DtStatus.DT_SUCCSESS | DtStatus.DT_PARTIAL_RESULT,
         DtStatus.DT_SUCCSESS,
@@ -35,8 +35,8 @@ public class FindPathTest : AbstractDetourTest
         DtStatus.DT_SUCCSESS
     };
 
-    private static readonly long[][] RESULTS =
-    {
+        private static readonly long[][] RESULTS =
+        {
         new[]
         {
             281474976710696L, 281474976710695L, 281474976710694L, 281474976710703L, 281474976710706L,
@@ -71,8 +71,8 @@ public class FindPathTest : AbstractDetourTest
         }
     };
 
-    private static readonly StraightPathItem[][] STRAIGHT_PATHS =
-    {
+        private static readonly StraightPathItem[][] STRAIGHT_PATHS =
+        {
         new[]
         {
             new StraightPathItem(new Vector3(22.606520f, 10.197294f, -45.918674f), 1, 281474976710696L),
@@ -131,82 +131,83 @@ public class FindPathTest : AbstractDetourTest
         }
     };
 
-    [Test]
-    public void TestFindPath()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var path = new List<long>();
-        for (int i = 0; i < startRefs.Length; i++)
+        [Test]
+        public void TestFindPath()
         {
-            long startRef = startRefs[i];
-            long endRef = endRefs[i];
-            Vector3 startPos = startPoss[i];
-            Vector3 endPos = endPoss[i];
-            var status = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
-            Assert.That(status, Is.EqualTo(STATUSES[i]));
-            Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
-            for (int j = 0; j < RESULTS[i].Length; j++)
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var path = new List<long>();
+            for (int i = 0; i < startRefs.Length; i++)
             {
-                Assert.That(path[j], Is.EqualTo(RESULTS[i][j]));
-            }
-        }
-    }
-
-    [Test]
-    public void TestFindPathSliced()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var path = new List<long>();
-        for (int i = 0; i < startRefs.Length; i++)
-        {
-            long startRef = startRefs[i];
-            long endRef = endRefs[i];
-            var startPos = startPoss[i];
-            var endPos = endPoss[i];
-            query.InitSlicedFindPath(startRef, endRef, startPos, endPos, filter, DtNavMeshQuery.DT_FINDPATH_ANY_ANGLE);
-            DtStatus status = DtStatus.DT_IN_PROGRESS;
-            while (status.InProgress())
-            {
-                query.UpdateSlicedFindPath(10, out var _);
-                status = query.Status;
-            }
-
-            status = query.FinalizeSlicedFindPath(path);
-            Assert.That(status, Is.EqualTo(STATUSES[i]), $"index({i})");
-            Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
-            for (int j = 0; j < RESULTS[i].Length; j++)
-            {
-                Assert.That(path[j], Is.EqualTo(RESULTS[i][j]));
-            }
-        }
-    }
-
-    [Test]
-    public void TestFindPathStraight()
-    {
-        IDtQueryFilter filter = new DtQueryDefaultFilter();
-        var path = new List<long>();
-        for (int i = 0; i < STRAIGHT_PATHS.Length; i++)
-        {
-            // startRefs.Length; i++) {
-            long startRef = startRefs[i];
-            long endRef = endRefs[i];
-            var startPos = startPoss[i];
-            var endPos = endPoss[i];
-
-            _ = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
-            var straightPath = new List<StraightPathItem>();
-            query.FindStraightPath(startPos, endPos, path, ref straightPath, int.MaxValue, 0);
-            Assert.That(straightPath.Count, Is.EqualTo(STRAIGHT_PATHS[i].Length));
-            for (int j = 0; j < STRAIGHT_PATHS[i].Length; j++)
-            {
-                Assert.That(straightPath[j].refs, Is.EqualTo(STRAIGHT_PATHS[i][j].refs));
-                for (int v = 0; v < 3; v++)
+                long startRef = startRefs[i];
+                long endRef = endRefs[i];
+                Vector3 startPos = startPoss[i];
+                Vector3 endPos = endPoss[i];
+                var status = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
+                Assert.That(status, Is.EqualTo(STATUSES[i]));
+                Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
+                for (int j = 0; j < RESULTS[i].Length; j++)
                 {
-                    Assert.That(straightPath[j].pos[v], Is.EqualTo(STRAIGHT_PATHS[i][j].pos[v]).Within(0.01f));
+                    Assert.That(path[j], Is.EqualTo(RESULTS[i][j]));
+                }
+            }
+        }
+
+        [Test]
+        public void TestFindPathSliced()
+        {
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var path = new List<long>();
+            for (int i = 0; i < startRefs.Length; i++)
+            {
+                long startRef = startRefs[i];
+                long endRef = endRefs[i];
+                var startPos = startPoss[i];
+                var endPos = endPoss[i];
+                query.InitSlicedFindPath(startRef, endRef, startPos, endPos, filter, DtNavMeshQuery.DT_FINDPATH_ANY_ANGLE);
+                DtStatus status = DtStatus.DT_IN_PROGRESS;
+                while (status.InProgress())
+                {
+                    query.UpdateSlicedFindPath(10, out var _);
+                    status = query.Status;
                 }
 
-                Assert.That(straightPath[j].flags, Is.EqualTo(STRAIGHT_PATHS[i][j].flags));
+                status = query.FinalizeSlicedFindPath(path);
+                Assert.That(status, Is.EqualTo(STATUSES[i]), $"index({i})");
+                Assert.That(path.Count, Is.EqualTo(RESULTS[i].Length));
+                for (int j = 0; j < RESULTS[i].Length; j++)
+                {
+                    Assert.That(path[j], Is.EqualTo(RESULTS[i][j]));
+                }
+            }
+        }
+
+        [Test]
+        public void TestFindPathStraight()
+        {
+            IDtQueryFilter filter = new DtQueryDefaultFilter();
+            var path = new List<long>();
+            for (int i = 0; i < STRAIGHT_PATHS.Length; i++)
+            {
+                // startRefs.Length; i++) {
+                long startRef = startRefs[i];
+                long endRef = endRefs[i];
+                var startPos = startPoss[i];
+                var endPos = endPoss[i];
+
+                _ = query.FindPath(startRef, endRef, startPos, endPos, filter, ref path, DtFindPathOption.NoOption);
+                var straightPath = new List<StraightPathItem>();
+                query.FindStraightPath(startPos, endPos, path, ref straightPath, int.MaxValue, 0);
+                Assert.That(straightPath.Count, Is.EqualTo(STRAIGHT_PATHS[i].Length));
+                for (int j = 0; j < STRAIGHT_PATHS[i].Length; j++)
+                {
+                    Assert.That(straightPath[j].refs, Is.EqualTo(STRAIGHT_PATHS[i][j].refs));
+                    for (int v = 0; v < 3; v++)
+                    {
+                        Assert.That(straightPath[j].pos[v], Is.EqualTo(STRAIGHT_PATHS[i][j].pos[v]).Within(0.01f));
+                    }
+
+                    Assert.That(straightPath[j].flags, Is.EqualTo(STRAIGHT_PATHS[i][j].flags));
+                }
             }
         }
     }

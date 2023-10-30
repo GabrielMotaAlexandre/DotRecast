@@ -102,7 +102,7 @@ namespace DotRecast.Detour
         public float walkableClimb; // < The agent maximum traversable ledge. (Up/Down) [Unit: wu]
         public float cs; // < The xz-plane cell size of the polygon mesh. [Limit: > 0] [Unit: wu]
         public float ch; // < The y-axis cell height of the polygon mesh. [Limit: > 0] [Unit: wu]
-        
+
         /// True if a bounding volume tree should be built for the tile.
         /// @note The BVTree is not normally needed for layered navigation meshes.
         public bool buildBvTree;

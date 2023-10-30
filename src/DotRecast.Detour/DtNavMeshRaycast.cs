@@ -26,8 +26,8 @@ using UnityEngine;
 namespace DotRecast.Detour
 {
     /**
- * Simple helper to find an intersection between a ray and a nav mesh
- */
+    * Simple helper to find an intersection between a ray and a nav mesh
+*/
     public static class DtNavMeshRaycast
     {
         public static bool Raycast(DtNavMesh mesh, Vector3 src, Vector3 dst, out float hitTime)

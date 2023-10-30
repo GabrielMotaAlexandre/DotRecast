@@ -6,21 +6,21 @@ namespace DotRecast.Recast.Toolset.Gizmos
     {
         public static readonly int[] TRIANLGES =
         {
-            0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2,
-            2, 6, 7, 2, 7, 3, 4, 0, 3, 4, 3, 7
-        };
+        0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2,
+        2, 6, 7, 2, 7, 3, 4, 0, 3, 4, 3, 7
+    };
 
         public static readonly Vector3[] VERTS =
         {
-            new Vector3(-1f, -1f, -1f),
-            new Vector3(1f, -1f, -1f),
-            new Vector3(1f, -1f, 1f),
-            new Vector3(-1f, -1f, 1f),
-            new Vector3(-1f, 1f, -1f),
-            new Vector3(1f, 1f, -1f),
-            new Vector3(1f, 1f, 1f),
-            new Vector3(-1f, 1f, 1f),
-        };
+        new Vector3(-1f, -1f, -1f),
+        new Vector3(1f, -1f, -1f),
+        new Vector3(1f, -1f, 1f),
+        new Vector3(-1f, -1f, 1f),
+        new Vector3(-1f, 1f, -1f),
+        new Vector3(1f, 1f, -1f),
+        new Vector3(1f, 1f, 1f),
+        new Vector3(-1f, 1f, 1f),
+    };
 
         public readonly float[] vertices = new float[8 * 3];
         public readonly Vector3 center;
@@ -50,10 +50,10 @@ namespace DotRecast.Recast.Toolset.Gizmos
         {
             Vector3[] halfEdges =
             {
-                Vector3.Zero,
-                new Vector3(up.X, up.Y, up.Z),
-                Vector3.Zero
-            };
+            Vector3.Zero,
+            new Vector3(up.X, up.Y, up.Z),
+            Vector3.Zero
+        };
             Vector3Extensions.Normalize(ref halfEdges[1]);
             Vector3Extensions.Cross(ref halfEdges[0], up, forward);
             Vector3Extensions.Normalize(ref halfEdges[0]);

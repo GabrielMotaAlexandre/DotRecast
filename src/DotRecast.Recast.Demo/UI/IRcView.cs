@@ -16,12 +16,13 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-namespace DotRecast.Recast.Demo.UI;
-
-public interface IRcView
+namespace DotRecast.Recast.Demo.UI
 {
-    void Bind(RcCanvas canvas);
-    bool IsHovered();
-    void Update(double dt);
-    void Draw(double dt);
+    public interface IRcView
+    {
+        void Bind(RcCanvas canvas);
+        bool IsHovered();
+        void Update(double dt);
+        void Draw(double dt);
+    }
 }

@@ -3,16 +3,17 @@ using Serilog.Configuration;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 
-namespace DotRecast.Recast.Demo.Logging.Sinks;
-
-public static class SerilogSinkExtensions
+namespace DotRecast.Recast.Demo.Logging.Sinks
 {
-    public static LoggerConfiguration LogMessageBroker(
-        this LoggerSinkConfiguration sinkConfiguration,
-        LogEventLevel restrictedToMinimumLevel = LogEventLevel.Verbose,
-        string outputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    public static class SerilogSinkExtensions
     {
-        var formatter = new MessageTemplateTextFormatter(outputTemplate);
-        return sinkConfiguration.Sink(new LogMessageBrokerSink(formatter));
+        public static LoggerConfiguration LogMessageBroker(
+            this LoggerSinkConfiguration sinkConfiguration,
+            LogEventLevel restrictedToMinimumLevel = LogEventLevel.Verbose,
+            string outputTemplate = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+        {
+            var formatter = new MessageTemplateTextFormatter(outputTemplate);
+            return sinkConfiguration.Sink(new LogMessageBrokerSink(formatter));
+        }
     }
 }

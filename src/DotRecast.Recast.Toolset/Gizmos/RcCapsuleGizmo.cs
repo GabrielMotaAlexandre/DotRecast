@@ -16,8 +16,8 @@ namespace DotRecast.Recast.Toolset.Gizmos
         {
             center = new float[]
             {
-                0.5f * (start.X + end.X), 0.5f * (start.Y + end.Y),
-                0.5f * (start.Z + end.Z)
+            0.5f * (start.X + end.X), 0.5f * (start.Y + end.Y),
+            0.5f * (start.Z + end.Z)
             };
             Vector3 axis = new(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
             Vector3[] normals = new Vector3[3];

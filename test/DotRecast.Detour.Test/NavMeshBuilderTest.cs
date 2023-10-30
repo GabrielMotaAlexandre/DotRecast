@@ -18,48 +18,49 @@ freely, subject to the following restrictions:
 
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test;
-
-[Parallelizable]
-public class NavMeshBuilderTest
+namespace DotRecast.Detour.Test
 {
-    private DtMeshData nmd;
-
-    [SetUp]
-    public void SetUp()
+    [Parallelizable]
+    public class NavMeshBuilderTest
     {
-        nmd = new RecastTestMeshBuilder().GetMeshData();
-    }
+        private DtMeshData nmd;
 
-    [Test]
-    public void TestBVTree()
-    {
-        Assert.That(nmd.verts.Length / 3, Is.EqualTo(225));
-        Assert.That(nmd.polys, Has.Length.EqualTo(119));
-        Assert.That(nmd.header.maxLinkCount, Is.EqualTo(457));
-        Assert.That(nmd.detailMeshes, Has.Length.EqualTo(118));
-        Assert.That(nmd.detailTris, Has.Length.EqualTo(291));
-        Assert.That(nmd.detailVerts, Has.Length.EqualTo(60));
-        Assert.That(nmd.offMeshCons, Has.Length.EqualTo(1));
-        Assert.That(nmd.header.offMeshBase, Is.EqualTo(118));
-        Assert.That(nmd.bvTree, Has.Length.EqualTo(236));
-        Assert.That(nmd.bvTree, Has.Length.GreaterThanOrEqualTo(nmd.header.bvNodeCount));
-
-        for (int i = 0; i < 6; i++)
+        [SetUp]
+        public void SetUp()
         {
-            Assert.That(nmd.verts[223 * 3 + i], Is.EqualTo(nmd.offMeshCons[0].pos[i]));
+            nmd = new RecastTestMeshBuilder().GetMeshData();
         }
 
-        Assert.That(nmd.offMeshCons[0].rad, Is.EqualTo(0.1f));
-        Assert.That(nmd.offMeshCons[0].poly, Is.EqualTo(118));
-        Assert.That(nmd.offMeshCons[0].flags, Is.EqualTo(DtNavMesh.DT_OFFMESH_CON_BIDIR));
-        Assert.That(nmd.offMeshCons[0].side, Is.EqualTo(0xFF));
-        Assert.That(nmd.offMeshCons[0].userId, Is.EqualTo(0x4567));
-        Assert.That(nmd.polys[118].vertCount, Is.EqualTo(2));
-        Assert.That(nmd.polys[118].verts[0], Is.EqualTo(223));
-        Assert.That(nmd.polys[118].verts[1], Is.EqualTo(224));
-        Assert.That(nmd.polys[118].flags, Is.EqualTo(12));
-        Assert.That(nmd.polys[118].GetArea(), Is.EqualTo(2));
-        Assert.That(nmd.polys[118].GetPolyType(), Is.EqualTo(DtPoly.DT_POLYTYPE_OFFMESH_CONNECTION));
+        [Test]
+        public void TestBVTree()
+        {
+            Assert.That(nmd.verts.Length / 3, Is.EqualTo(225));
+            Assert.That(nmd.polys, Has.Length.EqualTo(119));
+            Assert.That(nmd.header.maxLinkCount, Is.EqualTo(457));
+            Assert.That(nmd.detailMeshes, Has.Length.EqualTo(118));
+            Assert.That(nmd.detailTris, Has.Length.EqualTo(291));
+            Assert.That(nmd.detailVerts, Has.Length.EqualTo(60));
+            Assert.That(nmd.offMeshCons, Has.Length.EqualTo(1));
+            Assert.That(nmd.header.offMeshBase, Is.EqualTo(118));
+            Assert.That(nmd.bvTree, Has.Length.EqualTo(236));
+            Assert.That(nmd.bvTree, Has.Length.GreaterThanOrEqualTo(nmd.header.bvNodeCount));
+
+            for (int i = 0; i < 6; i++)
+            {
+                Assert.That(nmd.verts[223 * 3 + i], Is.EqualTo(nmd.offMeshCons[0].pos[i]));
+            }
+
+            Assert.That(nmd.offMeshCons[0].rad, Is.EqualTo(0.1f));
+            Assert.That(nmd.offMeshCons[0].poly, Is.EqualTo(118));
+            Assert.That(nmd.offMeshCons[0].flags, Is.EqualTo(DtNavMesh.DT_OFFMESH_CON_BIDIR));
+            Assert.That(nmd.offMeshCons[0].side, Is.EqualTo(0xFF));
+            Assert.That(nmd.offMeshCons[0].userId, Is.EqualTo(0x4567));
+            Assert.That(nmd.polys[118].vertCount, Is.EqualTo(2));
+            Assert.That(nmd.polys[118].verts[0], Is.EqualTo(223));
+            Assert.That(nmd.polys[118].verts[1], Is.EqualTo(224));
+            Assert.That(nmd.polys[118].flags, Is.EqualTo(12));
+            Assert.That(nmd.polys[118].GetArea(), Is.EqualTo(2));
+            Assert.That(nmd.polys[118].GetPolyType(), Is.EqualTo(DtPoly.DT_POLYTYPE_OFFMESH_CONNECTION));
+        }
     }
 }

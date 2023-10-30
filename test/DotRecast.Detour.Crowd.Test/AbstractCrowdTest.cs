@@ -24,23 +24,23 @@ using System.Numerics;
 
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Crowd.Test;
-
-
-
-[Parallelizable]
-public class AbstractCrowdTest
+namespace DotRecast.Detour.Crowd.Test
 {
-    protected readonly long[] startRefs =
+
+
+    [Parallelizable]
+    public class AbstractCrowdTest
     {
+        protected readonly long[] startRefs =
+        {
         281474976710696L, 281474976710773L, 281474976710680L, 281474976710753L,
         281474976710733L
     };
 
-    protected readonly long[] endRefs = { 281474976710721L, 281474976710767L, 281474976710758L, 281474976710731L, 281474976710772L };
+        protected readonly long[] endRefs = { 281474976710721L, 281474976710767L, 281474976710758L, 281474976710731L, 281474976710772L };
 
-    protected readonly Vector3[] startPoss =
-    {
+        protected readonly Vector3[] startPoss =
+        {
         new Vector3(22.60652f, 10.197294f, -45.918674f),
         new Vector3(22.331268f, 10.197294f, -1.0401875f),
         new Vector3(18.694363f, 15.803535f, -73.090416f),
@@ -48,8 +48,8 @@ public class AbstractCrowdTest
         new Vector3(-20.651257f, 5.904126f, -13.712508f),
     };
 
-    protected readonly Vector3[] endPoss =
-    {
+        protected readonly Vector3[] endPoss =
+        {
         new Vector3(6.4576626f, 10.197294f, -18.33406f),
         new Vector3(-5.8023443f, 0.19729415f, 3.008419f),
         new Vector3(38.423977f, 10.197294f, -0.116066754f),
@@ -57,118 +57,119 @@ public class AbstractCrowdTest
         new Vector3(18.784092f, 10.197294f, 3.0543678f),
     };
 
-    protected DtMeshData nmd;
-    protected DtNavMeshQuery query;
-    protected DtNavMesh navmesh;
-    protected DtCrowd crowd;
-    protected List<DtCrowdAgent> agents;
+        protected DtMeshData nmd;
+        protected DtNavMeshQuery query;
+        protected DtNavMesh navmesh;
+        protected DtCrowd crowd;
+        protected List<DtCrowdAgent> agents;
 
-    [SetUp]
-    public void SetUp()
-    {
-        nmd = new RecastTestMeshBuilder().GetMeshData();
-        navmesh = new DtNavMesh(nmd, 6, 0);
-        query = new DtNavMeshQuery(navmesh);
-        DtCrowdConfig config = new(0.6f);
-        crowd = new DtCrowd(config, navmesh);
-        DtObstacleAvoidanceParams option = new()
+        [SetUp]
+        public void SetUp()
         {
-            velBias = 0.5f,
-            adaptiveDivs = 5,
-            adaptiveRings = 2,
-            adaptiveDepth = 1
-        };
-        crowd.SetObstacleAvoidanceParams(0, option);
-        option = new DtObstacleAvoidanceParams
-        {
-            velBias = 0.5f,
-            adaptiveDivs = 5,
-            adaptiveRings = 2,
-            adaptiveDepth = 2
-        };
-        crowd.SetObstacleAvoidanceParams(1, option);
-        option = new DtObstacleAvoidanceParams
-        {
-            velBias = 0.5f,
-            adaptiveDivs = 7,
-            adaptiveRings = 2,
-            adaptiveDepth = 3
-        };
-        crowd.SetObstacleAvoidanceParams(2, option);
-        option = new DtObstacleAvoidanceParams
-        {
-            velBias = 0.5f,
-            adaptiveDivs = 7,
-            adaptiveRings = 3,
-            adaptiveDepth = 3
-        };
-        crowd.SetObstacleAvoidanceParams(3, option);
-        agents = new();
-    }
-
-    protected static DtCrowdAgentParams GetAgentParams(int updateFlags, int obstacleAvoidanceType)
-    {
-        DtCrowdAgentParams ap = new()
-        {
-            radius = 0.6f,
-            height = 2f,
-            maxAcceleration = 8.0f,
-            maxSpeed = 3.5f
-        };
-        ap.collisionQueryRange = ap.radius * 12f;
-        ap.pathOptimizationRange = ap.radius * 30f;
-        ap.updateFlags = updateFlags;
-        ap.obstacleAvoidanceType = obstacleAvoidanceType;
-        ap.separationWeight = 2f;
-        return ap;
-    }
-
-    protected void AddAgentGrid(int size, float distance, int updateFlags, int obstacleAvoidanceType, Vector3 startPos)
-    {
-        DtCrowdAgentParams ap = GetAgentParams(updateFlags, obstacleAvoidanceType);
-        for (int i = 0; i < size; i++)
-        {
-            for (int j = 0; j < size; j++)
+            nmd = new RecastTestMeshBuilder().GetMeshData();
+            navmesh = new DtNavMesh(nmd, 6, 0);
+            query = new DtNavMeshQuery(navmesh);
+            DtCrowdConfig config = new(0.6f);
+            crowd = new DtCrowd(config, navmesh);
+            DtObstacleAvoidanceParams option = new()
             {
-                Vector3 pos = new()
+                velBias = 0.5f,
+                adaptiveDivs = 5,
+                adaptiveRings = 2,
+                adaptiveDepth = 1
+            };
+            crowd.SetObstacleAvoidanceParams(0, option);
+            option = new DtObstacleAvoidanceParams
+            {
+                velBias = 0.5f,
+                adaptiveDivs = 5,
+                adaptiveRings = 2,
+                adaptiveDepth = 2
+            };
+            crowd.SetObstacleAvoidanceParams(1, option);
+            option = new DtObstacleAvoidanceParams
+            {
+                velBias = 0.5f,
+                adaptiveDivs = 7,
+                adaptiveRings = 2,
+                adaptiveDepth = 3
+            };
+            crowd.SetObstacleAvoidanceParams(2, option);
+            option = new DtObstacleAvoidanceParams
+            {
+                velBias = 0.5f,
+                adaptiveDivs = 7,
+                adaptiveRings = 3,
+                adaptiveDepth = 3
+            };
+            crowd.SetObstacleAvoidanceParams(3, option);
+            agents = new();
+        }
+
+        protected static DtCrowdAgentParams GetAgentParams(int updateFlags, int obstacleAvoidanceType)
+        {
+            DtCrowdAgentParams ap = new()
+            {
+                radius = 0.6f,
+                height = 2f,
+                maxAcceleration = 8.0f,
+                maxSpeed = 3.5f
+            };
+            ap.collisionQueryRange = ap.radius * 12f;
+            ap.pathOptimizationRange = ap.radius * 30f;
+            ap.updateFlags = updateFlags;
+            ap.obstacleAvoidanceType = obstacleAvoidanceType;
+            ap.separationWeight = 2f;
+            return ap;
+        }
+
+        protected void AddAgentGrid(int size, float distance, int updateFlags, int obstacleAvoidanceType, Vector3 startPos)
+        {
+            DtCrowdAgentParams ap = GetAgentParams(updateFlags, obstacleAvoidanceType);
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
                 {
-                    X = startPos.X + i * distance,
-                    Y = startPos.Y,
-                    Z = startPos.Z + j * distance
-                };
-                agents.Add(crowd.AddAgent(pos, ap));
+                    Vector3 pos = new()
+                    {
+                        X = startPos.X + i * distance,
+                        Y = startPos.Y,
+                        Z = startPos.Z + j * distance
+                    };
+                    agents.Add(crowd.AddAgent(pos, ap));
+                }
             }
         }
-    }
 
-    protected void SetMoveTarget(Vector3 pos, bool adjust)
-    {
-        Vector3 ext = crowd.GetQueryExtents();
-        IDtQueryFilter filter = crowd.GetFilter(0);
-        if (adjust)
+        protected void SetMoveTarget(Vector3 pos, bool adjust)
         {
-            foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+            Vector3 ext = crowd.GetQueryExtents();
+            IDtQueryFilter filter = crowd.GetFilter(0);
+            if (adjust)
             {
-                Vector3 vel = CalcVel(ag.npos, pos, ag.option.maxSpeed);
-                DtCrowd.RequestMoveVelocity(ag, vel);
+                foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+                {
+                    Vector3 vel = CalcVel(ag.npos, pos, ag.option.maxSpeed);
+                    DtCrowd.RequestMoveVelocity(ag, vel);
+                }
+            }
+            else
+            {
+                query.FindNearestPoly(pos, ext, filter, out var nearestRef, out var nearestPt, out var _);
+                foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
+                {
+                    DtCrowd.RequestMoveTarget(ag, nearestRef, nearestPt);
+                }
             }
         }
-        else
-        {
-            query.FindNearestPoly(pos, ext, filter, out var nearestRef, out var nearestPt, out var _);
-            foreach (DtCrowdAgent ag in crowd.GetActiveAgents())
-            {
-                DtCrowd.RequestMoveTarget(ag, nearestRef, nearestPt);
-            }
-        }
-    }
 
-    protected static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
-    {
-        Vector3 vel = tgt - pos;
-        vel.Y = 0f;
-        vel.Normalize();
-        vel *= speed;
-        return vel;
+        protected static Vector3 CalcVel(Vector3 pos, Vector3 tgt, float speed)
+        {
+            Vector3 vel = tgt - pos;
+            vel.Y = 0f;
+            vel.Normalize();
+            vel *= speed;
+            return vel;
+        }
     }
 }

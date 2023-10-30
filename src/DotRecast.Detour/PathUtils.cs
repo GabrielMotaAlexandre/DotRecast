@@ -133,9 +133,9 @@ namespace DotRecast.Detour
             if (cut > 1)
             {
                 List<long> shortcut = new()
-                {
-                    path[0]
-                };
+            {
+                path[0]
+            };
                 shortcut.AddRange(path.GetRange(cut, path.Count - cut));
                 return shortcut;
             }

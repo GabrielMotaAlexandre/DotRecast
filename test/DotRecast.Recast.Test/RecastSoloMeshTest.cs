@@ -24,319 +24,320 @@ using DotRecast.Core;
 using DotRecast.Recast.Geom;
 using NUnit.Framework;
 
-namespace DotRecast.Recast.Test;
-
-using static RcConstants;
-using static RcAreas;
-
-[Parallelizable]
-public class RecastSoloMeshTest
+namespace DotRecast.Recast.Test
 {
-    private const float m_cellSize = 0.3f;
-    private const float m_cellHeight = 0.2f;
-    private const float m_agentHeight = 2f;
-    private const float m_agentRadius = 0.6f;
-    private const float m_agentMaxClimb = 0.9f;
-    private const float m_agentMaxSlope = 45.0f;
-    private const int m_regionMinSize = 8;
-    private const int m_regionMergeSize = 20;
-    private const float m_edgeMaxLen = 12f;
-    private const float m_edgeMaxError = 1.3f;
-    private const int m_vertsPerPoly = 6;
-    private const float m_detailSampleDist = 6.0f;
-    private const float m_detailSampleMaxError = 1f;
-    private RcPartition m_partitionType = RcPartition.WATERSHED;
+    using static RcConstants;
+    using static RcAreas;
 
-    [Test]
-    public void TestPerformance()
+    [Parallelizable]
+    public class RecastSoloMeshTest
     {
-        for (int i = 0; i < 10; i++)
+        private const float m_cellSize = 0.3f;
+        private const float m_cellHeight = 0.2f;
+        private const float m_agentHeight = 2f;
+        private const float m_agentRadius = 0.6f;
+        private const float m_agentMaxClimb = 0.9f;
+        private const float m_agentMaxSlope = 45.0f;
+        private const int m_regionMinSize = 8;
+        private const int m_regionMergeSize = 20;
+        private const float m_edgeMaxLen = 12f;
+        private const float m_edgeMaxError = 1.3f;
+        private const int m_vertsPerPoly = 6;
+        private const float m_detailSampleDist = 6.0f;
+        private const float m_detailSampleMaxError = 1f;
+        private RcPartition m_partitionType = RcPartition.WATERSHED;
+
+        [Test]
+        public void TestPerformance()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                TestBuild("dungeon.obj", RcPartition.WATERSHED, 52, 16, 15, 223, 118, 118, 513, 291);
+                TestBuild("dungeon.obj", RcPartition.MONOTONE, 0, 17, 16, 210, 100, 100, 453, 264);
+                TestBuild("dungeon.obj", RcPartition.LAYERS, 0, 5, 5, 203, 97, 97, 446, 266);
+            }
+        }
+
+        [Test]
+        public void TestDungeonWatershed()
         {
             TestBuild("dungeon.obj", RcPartition.WATERSHED, 52, 16, 15, 223, 118, 118, 513, 291);
+        }
+
+        [Test]
+        public void TestDungeonMonotone()
+        {
             TestBuild("dungeon.obj", RcPartition.MONOTONE, 0, 17, 16, 210, 100, 100, 453, 264);
+        }
+
+        [Test]
+        public void TestDungeonLayers()
+        {
             TestBuild("dungeon.obj", RcPartition.LAYERS, 0, 5, 5, 203, 97, 97, 446, 266);
         }
-    }
 
-    [Test]
-    public void TestDungeonWatershed()
-    {
-        TestBuild("dungeon.obj", RcPartition.WATERSHED, 52, 16, 15, 223, 118, 118, 513, 291);
-    }
-
-    [Test]
-    public void TestDungeonMonotone()
-    {
-        TestBuild("dungeon.obj", RcPartition.MONOTONE, 0, 17, 16, 210, 100, 100, 453, 264);
-    }
-
-    [Test]
-    public void TestDungeonLayers()
-    {
-        TestBuild("dungeon.obj", RcPartition.LAYERS, 0, 5, 5, 203, 97, 97, 446, 266);
-    }
-
-    [Test]
-    public void TestWatershed()
-    {
-        TestBuild("nav_test.obj", RcPartition.WATERSHED, 60, 48, 47, 349, 155, 155, 812, 561);
-    }
-
-    [Test]
-    public void TestMonotone()
-    {
-        TestBuild("nav_test.obj", RcPartition.MONOTONE, 0, 50, 49, 341, 186, 186, 878, 567);
-    }
-
-    [Test]
-    public void TestLayers()
-    {
-        TestBuild("nav_test.obj", RcPartition.LAYERS, 0, 19, 32, 310, 150, 150, 773, 526);
-    }
-
-    void TestBuild(string filename, RcPartition partitionType, int expDistance, int expRegions,
-        int expContours, int expVerts, int expPolys, int expDetMeshes, int expDetVerts, int expDetTris)
-    {
-        m_partitionType = partitionType;
-        var geomProvider = SimpleInputGeomProvider.LoadFile(filename);
-        long time = RcFrequency.Ticks;
-        Vector3 bmin = geomProvider.GetMeshBoundsMin();
-        Vector3 bmax = geomProvider.GetMeshBoundsMax();
-        //
-        // Step 1. Initialize build config.
-        //
-
-        // Init build configuration from GUI
-        RcConfig cfg = new(
-            partitionType,
-            m_cellSize, m_cellHeight,
-            m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
-            m_regionMinSize, m_regionMergeSize,
-            m_edgeMaxLen, m_edgeMaxError,
-            m_vertsPerPoly,
-            m_detailSampleDist, m_detailSampleMaxError,
-            true, true, true,
-            SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
-        RcBuilderConfig bcfg = new(cfg, bmin, bmax);
-
-        //
-        // Step 2. Rasterize input polygon soup.
-        //
-
-        // Allocate voxel heightfield where we rasterize our input data to.
-        RcHeightfield m_solid = new(bcfg.width, bcfg.height, bcfg.bmin, bcfg.bmax, cfg.Cs, cfg.Ch, cfg.BorderSize);
-
-        foreach (RcTriMesh geom in geomProvider.Meshes())
+        [Test]
+        public void TestWatershed()
         {
-            var verts = MemoryMarshal.Cast<float, Vector3>(geom.Vertices.AsSpan());
-            int[] tris = geom.Triangles;
-
-            // Allocate array that can hold triangle area types.
-            // If you have multiple meshes you need to process, allocate
-            // and array which can hold the max number of triangles you need to process.
-
-            // Find triangles which are walkable based on their slope and rasterize them.
-            // If your input data is multiple meshes, you can transform them here, calculate
-            // the are type for each of the meshes and rasterize them.
-            int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
-            RcRasterizations.RasterizeTriangles(in m_solid, verts, tris, m_triareas, cfg.WalkableClimb);
+            TestBuild("nav_test.obj", RcPartition.WATERSHED, 60, 48, 47, 349, 155, 155, 812, 561);
         }
 
-        //
-        // Step 3. Filter walkable surfaces.
-        //
-
-        // Once all geometry is rasterized, we do initial pass of filtering to
-        // remove unwanted overhangs caused by the conservative rasterization
-        // as well as filter spans where the character cannot possibly stand.
-        RcFilters.FilterLowHangingWalkableObstacles(cfg.WalkableClimb, in m_solid);
-        RcFilters.FilterLedgeSpans(cfg.WalkableHeight, cfg.WalkableClimb, in m_solid);
-        RcFilters.FilterWalkableLowHeightSpans(cfg.WalkableHeight, in m_solid);
-
-        //
-        // Step 4. Partition walkable surface to simple regions.
-        //
-
-        // Compact the heightfield so that it is faster to handle from now on.
-        // This will result more cache coherent data as well as the neighbours
-        // between walkable cells will be calculated.
-        RcCompactHeightfield m_chf = new(in m_solid, in cfg);
-
-        // Erode the walkable area by agent radius.
-        ErodeWalkableArea(cfg.WalkableRadius, m_chf);
-
-        // (Optional) Mark areas.
-        /*
-         * ConvexVolume vols = m_geom->GetConvexVolumes(); for (int i = 0; i < m_geom->GetConvexVolumeCount(); ++i)
-         * RcMarkConvexPolyArea(m_ctx, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned
-         * char)vols[i].area, *m_chf);
-         */
-
-        // Partition the heightfield so that we can use simple algorithm later
-        // to triangulate the walkable areas.
-        // There are 3 partitioning methods, each with some pros and cons:
-        // 1) Watershed partitioning
-        // - the classic Recast partitioning
-        // - creates the nicest tessellation
-        // - usually slowest
-        // - partitions the heightfield into nice regions without holes or
-        // overlaps
-        // - the are some corner cases where this method creates produces holes
-        // and overlaps
-        // - holes may appear when a small obstacles is close to large open area
-        // (triangulation can handle this)
-        // - overlaps may occur if you have narrow spiral corridors (i.e
-        // stairs), this make triangulation to fail
-        // * generally the best choice if you precompute the navmesh, use this
-        // if you have large open areas
-        // 2) Monotone partioning
-        // - fastest
-        // - partitions the heightfield into regions without holes and overlaps
-        // (guaranteed)
-        // - creates long thin polygons, which sometimes causes paths with
-        // detours
-        // * use this if you want fast navmesh generation
-        // 3) Layer partitoining
-        // - quite fast
-        // - partitions the heighfield into non-overlapping regions
-        // - relies on the triangulation code to cope with holes (thus slower
-        // than monotone partitioning)
-        // - produces better triangles than monotone partitioning
-        // - does not have the corner cases of watershed partitioning
-        // - can be slow and create a bit ugly tessellation (still better than
-        // monotone)
-        // if you have large open areas with small obstacles (not a problem if
-        // you use tiles)
-        // * good choice to use for tiled navmesh with medium and small sized
-        // tiles
-        long time3 = RcFrequency.Ticks;
-
-        if (m_partitionType == RcPartition.WATERSHED)
+        [Test]
+        public void TestMonotone()
         {
-            // Prepare for region partitioning, by calculating distance field
-            // along the walkable surface.
-            RcRegions.BuildDistanceField(ref m_chf);
-            // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
-        }
-        else if (m_partitionType == RcPartition.MONOTONE)
-        {
-            // Partition the walkable surface into simple regions without holes.
-            // Monotone partitioning does not need distancefield.
-            RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, false, cfg.MergeRegionArea);
-        }
-        else
-        {
-            // Partition the walkable surface into simple regions without holes.
-            RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, true);
+            TestBuild("nav_test.obj", RcPartition.MONOTONE, 0, 50, 49, 341, 186, 186, 878, 567);
         }
 
-        Assert.That(m_chf.maxDistance, Is.EqualTo(expDistance), "maxDistance");
-        Assert.That(m_chf.maxRegions, Is.EqualTo(expRegions), "Regions");
-        //
-        // Step 5. Trace and simplify region contours.
-        //
-
-        // Create contours.
-        RcContourSet m_cset = RcContours.BuildContours(in cfg, in m_chf, RC_CONTOUR_TESS_WALL_EDGES);
-
-        Assert.That(m_cset.Conts.Count, Is.EqualTo(expContours), "Contours");
-        //
-        // Step 6. Build polygons mesh from contours.
-        //
-
-        // Build polygon navmesh from the contours.
-        RcPolyMesh m_pmesh = RcMeshs.BuildPolyMesh(m_cset, cfg.MaxVertsPerPoly);
-        Assert.That(m_pmesh.nverts, Is.EqualTo(expVerts), "Mesh Verts");
-        Assert.That(m_pmesh.npolys, Is.EqualTo(expPolys), "Mesh Polys");
-
-        //
-        // Step 7. Create detail mesh which allows to access approximate height
-        // on each polygon.
-        //
-
-        RcPolyMeshDetail m_dmesh = RcMeshDetails.BuildPolyMeshDetail(m_pmesh, m_chf, cfg.DetailSampleDist,
-            cfg.DetailSampleMaxError);
-        Assert.That(m_dmesh.nmeshes, Is.EqualTo(expDetMeshes), "Mesh Detail Meshes");
-        Assert.That(m_dmesh.verts, Has.Length.EqualTo(expDetVerts), "Mesh Detail Verts");
-        Assert.That(m_dmesh.tris, Has.Length.EqualTo(expDetTris), "Mesh Detail Tris");
-        long time2 = RcFrequency.Ticks;
-        Console.WriteLine(filename + " : " + partitionType + "  " + (time2 - time) / TimeSpan.TicksPerMillisecond + " ms");
-        Console.WriteLine("           " + (time3 - time) / TimeSpan.TicksPerMillisecond + " ms");
-        SaveObj(filename.Substring(0, filename.LastIndexOf('.')) + "_" + partitionType + "_detail.obj", m_dmesh);
-        SaveObj(filename.Substring(0, filename.LastIndexOf('.')) + "_" + partitionType + ".obj", m_pmesh);
-    }
-
-    private static void SaveObj(string filename, RcPolyMesh mesh)
-    {
-        try
+        [Test]
+        public void TestLayers()
         {
-            string path = Path.Combine("test-output", filename);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            using StreamWriter fw = new(path);
-            for (int v = 0; v < mesh.nverts; v++)
+            TestBuild("nav_test.obj", RcPartition.LAYERS, 0, 19, 32, 310, 150, 150, 773, 526);
+        }
+
+        void TestBuild(string filename, RcPartition partitionType, int expDistance, int expRegions,
+            int expContours, int expVerts, int expPolys, int expDetMeshes, int expDetVerts, int expDetTris)
+        {
+            m_partitionType = partitionType;
+            var geomProvider = SimpleInputGeomProvider.LoadFile(filename);
+            long time = RcFrequency.Ticks;
+            Vector3 bmin = geomProvider.GetMeshBoundsMin();
+            Vector3 bmax = geomProvider.GetMeshBoundsMax();
+            //
+            // Step 1. Initialize build config.
+            //
+
+            // Init build configuration from GUI
+            RcConfig cfg = new(
+                partitionType,
+                m_cellSize, m_cellHeight,
+                m_agentMaxSlope, m_agentHeight, m_agentRadius, m_agentMaxClimb,
+                m_regionMinSize, m_regionMergeSize,
+                m_edgeMaxLen, m_edgeMaxError,
+                m_vertsPerPoly,
+                m_detailSampleDist, m_detailSampleMaxError,
+                true, true, true,
+                SampleAreaModifications.SAMPLE_AREAMOD_GROUND, true);
+            RcBuilderConfig bcfg = new(cfg, bmin, bmax);
+
+            //
+            // Step 2. Rasterize input polygon soup.
+            //
+
+            // Allocate voxel heightfield where we rasterize our input data to.
+            RcHeightfield m_solid = new(bcfg.width, bcfg.height, bcfg.bmin, bcfg.bmax, cfg.Cs, cfg.Ch, cfg.BorderSize);
+
+            foreach (RcTriMesh geom in geomProvider.Meshes())
             {
-                fw.Write("v " + (mesh.bmin.X + mesh.verts[v * 3] * mesh.cs) + " "
-                         + (mesh.bmin.Y + mesh.verts[v * 3 + 1] * mesh.ch) + " "
-                         + (mesh.bmin.Z + mesh.verts[v * 3 + 2] * mesh.cs) + "\n");
+                var verts = MemoryMarshal.Cast<float, Vector3>(geom.Vertices.AsSpan());
+                int[] tris = geom.Triangles;
+
+                // Allocate array that can hold triangle area types.
+                // If you have multiple meshes you need to process, allocate
+                // and array which can hold the max number of triangles you need to process.
+
+                // Find triangles which are walkable based on their slope and rasterize them.
+                // If your input data is multiple meshes, you can transform them here, calculate
+                // the are type for each of the meshes and rasterize them.
+                int[] m_triareas = RcCommons.MarkWalkableTriangles(cfg.WalkableSlopeAngle, verts, tris, cfg.WalkableAreaMod);
+                RcRasterizations.RasterizeTriangles(in m_solid, verts, tris, m_triareas, cfg.WalkableClimb);
             }
 
-            for (int i = 0; i < mesh.npolys; i++)
+            //
+            // Step 3. Filter walkable surfaces.
+            //
+
+            // Once all geometry is rasterized, we do initial pass of filtering to
+            // remove unwanted overhangs caused by the conservative rasterization
+            // as well as filter spans where the character cannot possibly stand.
+            RcFilters.FilterLowHangingWalkableObstacles(cfg.WalkableClimb, in m_solid);
+            RcFilters.FilterLedgeSpans(cfg.WalkableHeight, cfg.WalkableClimb, in m_solid);
+            RcFilters.FilterWalkableLowHeightSpans(cfg.WalkableHeight, in m_solid);
+
+            //
+            // Step 4. Partition walkable surface to simple regions.
+            //
+
+            // Compact the heightfield so that it is faster to handle from now on.
+            // This will result more cache coherent data as well as the neighbours
+            // between walkable cells will be calculated.
+            RcCompactHeightfield m_chf = new(in m_solid, in cfg);
+
+            // Erode the walkable area by agent radius.
+            ErodeWalkableArea(cfg.WalkableRadius, m_chf);
+
+            // (Optional) Mark areas.
+            /*
+             * ConvexVolume vols = m_geom->GetConvexVolumes(); for (int i = 0; i < m_geom->GetConvexVolumeCount(); ++i)
+             * RcMarkConvexPolyArea(m_ctx, vols[i].verts, vols[i].nverts, vols[i].hmin, vols[i].hmax, (unsigned
+             * char)vols[i].area, *m_chf);
+             */
+
+            // Partition the heightfield so that we can use simple algorithm later
+            // to triangulate the walkable areas.
+            // There are 3 partitioning methods, each with some pros and cons:
+            // 1) Watershed partitioning
+            // - the classic Recast partitioning
+            // - creates the nicest tessellation
+            // - usually slowest
+            // - partitions the heightfield into nice regions without holes or
+            // overlaps
+            // - the are some corner cases where this method creates produces holes
+            // and overlaps
+            // - holes may appear when a small obstacles is close to large open area
+            // (triangulation can handle this)
+            // - overlaps may occur if you have narrow spiral corridors (i.e
+            // stairs), this make triangulation to fail
+            // * generally the best choice if you precompute the navmesh, use this
+            // if you have large open areas
+            // 2) Monotone partioning
+            // - fastest
+            // - partitions the heightfield into regions without holes and overlaps
+            // (guaranteed)
+            // - creates long thin polygons, which sometimes causes paths with
+            // detours
+            // * use this if you want fast navmesh generation
+            // 3) Layer partitoining
+            // - quite fast
+            // - partitions the heighfield into non-overlapping regions
+            // - relies on the triangulation code to cope with holes (thus slower
+            // than monotone partitioning)
+            // - produces better triangles than monotone partitioning
+            // - does not have the corner cases of watershed partitioning
+            // - can be slow and create a bit ugly tessellation (still better than
+            // monotone)
+            // if you have large open areas with small obstacles (not a problem if
+            // you use tiles)
+            // * good choice to use for tiled navmesh with medium and small sized
+            // tiles
+            long time3 = RcFrequency.Ticks;
+
+            if (m_partitionType == RcPartition.WATERSHED)
             {
-                int p = i * mesh.nvp * 2;
-                fw.Write("f ");
-                for (int j = 0; j < mesh.nvp; ++j)
+                // Prepare for region partitioning, by calculating distance field
+                // along the walkable surface.
+                RcRegions.BuildDistanceField(ref m_chf);
+                // Partition the walkable surface into simple regions without holes.
+                RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, cfg.MergeRegionArea);
+            }
+            else if (m_partitionType == RcPartition.MONOTONE)
+            {
+                // Partition the walkable surface into simple regions without holes.
+                // Monotone partitioning does not need distancefield.
+                RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, false, cfg.MergeRegionArea);
+            }
+            else
+            {
+                // Partition the walkable surface into simple regions without holes.
+                RcRegions.BuildRegions(ref m_chf, cfg.MinRegionArea, true);
+            }
+
+            Assert.That(m_chf.maxDistance, Is.EqualTo(expDistance), "maxDistance");
+            Assert.That(m_chf.maxRegions, Is.EqualTo(expRegions), "Regions");
+            //
+            // Step 5. Trace and simplify region contours.
+            //
+
+            // Create contours.
+            RcContourSet m_cset = RcContours.BuildContours(in cfg, in m_chf, RC_CONTOUR_TESS_WALL_EDGES);
+
+            Assert.That(m_cset.Conts.Count, Is.EqualTo(expContours), "Contours");
+            //
+            // Step 6. Build polygons mesh from contours.
+            //
+
+            // Build polygon navmesh from the contours.
+            RcPolyMesh m_pmesh = RcMeshs.BuildPolyMesh(m_cset, cfg.MaxVertsPerPoly);
+            Assert.That(m_pmesh.nverts, Is.EqualTo(expVerts), "Mesh Verts");
+            Assert.That(m_pmesh.npolys, Is.EqualTo(expPolys), "Mesh Polys");
+
+            //
+            // Step 7. Create detail mesh which allows to access approximate height
+            // on each polygon.
+            //
+
+            RcPolyMeshDetail m_dmesh = RcMeshDetails.BuildPolyMeshDetail(m_pmesh, m_chf, cfg.DetailSampleDist,
+                cfg.DetailSampleMaxError);
+            Assert.That(m_dmesh.nmeshes, Is.EqualTo(expDetMeshes), "Mesh Detail Meshes");
+            Assert.That(m_dmesh.verts, Has.Length.EqualTo(expDetVerts), "Mesh Detail Verts");
+            Assert.That(m_dmesh.tris, Has.Length.EqualTo(expDetTris), "Mesh Detail Tris");
+            long time2 = RcFrequency.Ticks;
+            Console.WriteLine(filename + " : " + partitionType + "  " + (time2 - time) / TimeSpan.TicksPerMillisecond + " ms");
+            Console.WriteLine("           " + (time3 - time) / TimeSpan.TicksPerMillisecond + " ms");
+            SaveObj(filename.Substring(0, filename.LastIndexOf('.')) + "_" + partitionType + "_detail.obj", m_dmesh);
+            SaveObj(filename.Substring(0, filename.LastIndexOf('.')) + "_" + partitionType + ".obj", m_pmesh);
+        }
+
+        private static void SaveObj(string filename, RcPolyMesh mesh)
+        {
+            try
+            {
+                string path = Path.Combine("test-output", filename);
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                using StreamWriter fw = new(path);
+                for (int v = 0; v < mesh.nverts; v++)
                 {
-                    int v = mesh.polys[p + j];
-                    if (v == RC_MESH_NULL_IDX)
+                    fw.Write("v " + (mesh.bmin.X + mesh.verts[v * 3] * mesh.cs) + " "
+                             + (mesh.bmin.Y + mesh.verts[v * 3 + 1] * mesh.ch) + " "
+                             + (mesh.bmin.Z + mesh.verts[v * 3 + 2] * mesh.cs) + "\n");
+                }
+
+                for (int i = 0; i < mesh.npolys; i++)
+                {
+                    int p = i * mesh.nvp * 2;
+                    fw.Write("f ");
+                    for (int j = 0; j < mesh.nvp; ++j)
                     {
-                        break;
+                        int v = mesh.polys[p + j];
+                        if (v == RC_MESH_NULL_IDX)
+                        {
+                            break;
+                        }
+
+                        fw.Write(v + 1 + " ");
                     }
 
-                    fw.Write(v + 1 + " ");
+                    fw.Write("\n");
                 }
 
-                fw.Write("\n");
+                fw.Close();
             }
-
-            fw.Close();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-    }
-
-    private static void SaveObj(string filename, RcPolyMeshDetail dmesh)
-    {
-        try
-        {
-            string filePath = Path.Combine("test-output", filename);
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            using StreamWriter fw = new(filePath);
-            for (int v = 0; v < dmesh.verts.Length; v++)
+            catch (Exception e)
             {
-                fw.Write(
-                    "v " + dmesh.verts[v].X + " " + dmesh.verts[v].Y + " " + dmesh.verts[v].Z + "\n");
+                Console.WriteLine(e);
             }
+        }
 
-            for (int m = 0; m < dmesh.nmeshes; m++)
+        private static void SaveObj(string filename, RcPolyMeshDetail dmesh)
+        {
+            try
             {
-                int vfirst = dmesh.meshes[m * 4];
-                int tfirst = dmesh.meshes[m * 4 + 2];
-                for (int f = 0; f < dmesh.meshes[m * 4 + 3]; f++)
+                string filePath = Path.Combine("test-output", filename);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                using StreamWriter fw = new(filePath);
+                for (int v = 0; v < dmesh.verts.Length; v++)
                 {
-                    fw.Write("f " + (vfirst + dmesh.tris[tfirst + f].x + 1) + " "
-                             + (vfirst + dmesh.tris[tfirst + f].y + 1) + " "
-                             + (vfirst + dmesh.tris[tfirst + f].z + 1) + "\n");
+                    fw.Write(
+                        "v " + dmesh.verts[v].X + " " + dmesh.verts[v].Y + " " + dmesh.verts[v].Z + "\n");
                 }
-            }
 
-            fw.Close();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
+                for (int m = 0; m < dmesh.nmeshes; m++)
+                {
+                    int vfirst = dmesh.meshes[m * 4];
+                    int tfirst = dmesh.meshes[m * 4 + 2];
+                    for (int f = 0; f < dmesh.meshes[m * 4 + 3]; f++)
+                    {
+                        fw.Write("f " + (vfirst + dmesh.tris[tfirst + f].x + 1) + " "
+                                 + (vfirst + dmesh.tris[tfirst + f].y + 1) + " "
+                                 + (vfirst + dmesh.tris[tfirst + f].z + 1) + "\n");
+                    }
+                }
+
+                fw.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }

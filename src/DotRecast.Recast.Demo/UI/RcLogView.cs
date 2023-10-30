@@ -7,110 +7,111 @@ using DotRecast.Recast.Demo.Logging.Sinks;
 using DotRecast.Recast.Demo.UI.ViewModels;
 using ImGuiNET;
 
-namespace DotRecast.Recast.Demo.UI;
-
-public class RcLogView : IRcView
+namespace DotRecast.Recast.Demo.UI
 {
-    private RcCanvas _canvas;
-    private bool _isHovered;
-    public bool IsHovered() => _isHovered;
-
-    private readonly List<LogMessageItem> _lines;
-    private readonly ConcurrentQueue<LogMessageItem> _queues;
-
-
-    public RcLogView()
+    public class RcLogView : IRcView
     {
-        _lines = new();
-        _queues = new();
+        private RcCanvas _canvas;
+        private bool _isHovered;
+        public bool IsHovered() => _isHovered;
 
-        LogMessageBrokerSink.OnEmitted += OnOut;
-    }
+        private readonly List<LogMessageItem> _lines;
+        private readonly ConcurrentQueue<LogMessageItem> _queues;
 
-    private void OnOut(int level, string message)
-    {
-        var lines = message
-            .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
-            .Select(x => new LogMessageItem { Level = level, Message = x });
 
-        _lines.AddRange(lines);
-    }
-
-    public void Clear()
-    {
-        _lines.Clear();
-    }
-
-    public void Bind(RcCanvas canvas)
-    {
-        _canvas = canvas;
-    }
-
-    public void Update(double dt)
-    {
-        while (_queues.TryDequeue(out var item))
-            _lines.Add(item);
-
-        // buffer
-        if (10240 < _lines.Count)
+        public RcLogView()
         {
-            _lines.RemoveRange(0, _lines.Count - 8196);
-        }
-    }
+            _lines = new();
+            _queues = new();
 
-
-    public void Draw(double dt)
-    {
-        if (!ImGui.Begin("Log"))
-        {
-            ImGui.End();
-            return;
+            LogMessageBrokerSink.OnEmitted += OnOut;
         }
 
-        // size reset
-        var size = ImGui.GetItemRectSize();
-        if (32 >= size.X && 32 >= size.Y)
+        private void OnOut(int level, string message)
         {
-            int otherWidth = 310;
-            int height = 234;
-            var width = _canvas.Size.X - (otherWidth * 2);
-            //var posX = _canvas.Size.X - width;
-            // ImGui.SetNextWindowPos(new Vector2(otherWidth1, _canvas.Size.Y - height));
-            ImGui.SetWindowSize(new Vector2(width, height));
+            var lines = message
+                .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => new LogMessageItem { Level = level, Message = x });
+
+            _lines.AddRange(lines);
         }
 
-
-        if (ImGui.BeginChild("scrolling", Vector2.Zero, false, ImGuiWindowFlags.HorizontalScrollbar))
+        public void Clear()
         {
-            _isHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.RootAndChildWindows);
+            _lines.Clear();
+        }
 
-            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
+        public void Bind(RcCanvas canvas)
+        {
+            _canvas = canvas;
+        }
 
-            unsafe
+        public void Update(double dt)
+        {
+            while (_queues.TryDequeue(out var item))
+                _lines.Add(item);
+
+            // buffer
+            if (10240 < _lines.Count)
             {
-                var clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
-                clipper.Begin(_lines.Count);
-                while (clipper.Step())
+                _lines.RemoveRange(0, _lines.Count - 8196);
+            }
+        }
+
+
+        public void Draw(double dt)
+        {
+            if (!ImGui.Begin("Log"))
+            {
+                ImGui.End();
+                return;
+            }
+
+            // size reset
+            var size = ImGui.GetItemRectSize();
+            if (32 >= size.X && 32 >= size.Y)
+            {
+                int otherWidth = 310;
+                int height = 234;
+                var width = _canvas.Size.X - (otherWidth * 2);
+                //var posX = _canvas.Size.X - width;
+                // ImGui.SetNextWindowPos(new Vector2(otherWidth1, _canvas.Size.Y - height));
+                ImGui.SetWindowSize(new Vector2(width, height));
+            }
+
+
+            if (ImGui.BeginChild("scrolling", Vector2.Zero, false, ImGuiWindowFlags.HorizontalScrollbar))
+            {
+                _isHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.RectOnly | ImGuiHoveredFlags.RootAndChildWindows);
+
+                ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.Zero);
+
+                unsafe
                 {
-                    for (int lineNo = clipper.DisplayStart; lineNo < clipper.DisplayEnd; lineNo++)
+                    var clipper = new ImGuiListClipperPtr(ImGuiNative.ImGuiListClipper_ImGuiListClipper());
+                    clipper.Begin(_lines.Count);
+                    while (clipper.Step())
                     {
-                        ImGui.TextUnformatted(_lines[lineNo].Message);
+                        for (int lineNo = clipper.DisplayStart; lineNo < clipper.DisplayEnd; lineNo++)
+                        {
+                            ImGui.TextUnformatted(_lines[lineNo].Message);
+                        }
                     }
+
+                    clipper.End();
+                    clipper.Destroy();
                 }
 
-                clipper.End();
-                clipper.Destroy();
+                ImGui.PopStyleVar();
+
+                if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
+                {
+                    ImGui.SetScrollHereY(1f);
+                }
             }
 
-            ImGui.PopStyleVar();
-
-            if (ImGui.GetScrollY() >= ImGui.GetScrollMaxY())
-            {
-                ImGui.SetScrollHereY(1f);
-            }
+            ImGui.EndChild();
+            ImGui.End();
         }
-
-        ImGui.EndChild();
-        ImGui.End();
     }
 }

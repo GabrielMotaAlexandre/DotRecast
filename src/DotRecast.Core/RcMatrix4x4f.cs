@@ -4,7 +4,7 @@ namespace DotRecast.Core
 {
     public struct RcMatrix4x4f
     {
-        private static readonly RcMatrix4x4f _identity = new        (
+        private static readonly RcMatrix4x4f _identity = new(
             1f, 0f, 0f, 0f,
             0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,

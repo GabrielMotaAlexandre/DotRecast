@@ -20,12 +20,12 @@ namespace DotRecast.Core
                     // Shift over values
                     data[insertionIndex + 1] = data[insertionIndex];
                 }
-		
+
                 // Insert the value in sorted order.
                 data[insertionIndex + 1] = value;
             }
         }
-            
+
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
         {
             foreach (var item in collection)

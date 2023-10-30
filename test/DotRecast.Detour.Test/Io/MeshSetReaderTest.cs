@@ -22,96 +22,97 @@ using DotRecast.Core;
 using DotRecast.Detour.Io;
 using NUnit.Framework;
 
-namespace DotRecast.Detour.Test.Io;
-
-[Parallelizable]
-public class MeshSetReaderTest
+namespace DotRecast.Detour.Test.Io
 {
-    private readonly DtMeshSetReader reader = new();
-
-    [Test]
-    public void TestNavmesh()
+    [Parallelizable]
+    public class MeshSetReaderTest
     {
-        byte[] @is = RcResources.Load("all_tiles_navmesh.bin");
-        using var ms = new MemoryStream(@is);
-        using var br = new BinaryReader(ms);
-        DtNavMesh mesh = DtMeshSetReader.Read(br, 6);
-        Assert.That(mesh.MaxTiles, Is.EqualTo(128));
-        Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
-        Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
-        List<DtMeshTile> tiles = mesh.GetTilesAt(4, 7);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(7));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(22 * 3));
-        tiles = mesh.GetTilesAt(1, 6);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(7));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(26 * 3));
-        tiles = mesh.GetTilesAt(6, 2);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(1));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(4 * 3));
-        tiles = mesh.GetTilesAt(7, 6);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(8));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(24 * 3));
-    }
+        private readonly DtMeshSetReader reader = new();
 
-    [Test]
-    public void TestDungeon()
-    {
-        byte[] @is = RcResources.Load("dungeon_all_tiles_navmesh.bin");
-        using var ms = new MemoryStream(@is);
-        using var br = new BinaryReader(ms);
+        [Test]
+        public void TestNavmesh()
+        {
+            byte[] @is = RcResources.Load("all_tiles_navmesh.bin");
+            using var ms = new MemoryStream(@is);
+            using var br = new BinaryReader(ms);
+            DtNavMesh mesh = DtMeshSetReader.Read(br, 6);
+            Assert.That(mesh.MaxTiles, Is.EqualTo(128));
+            Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
+            Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
+            List<DtMeshTile> tiles = mesh.GetTilesAt(4, 7);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(7));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(22 * 3));
+            tiles = mesh.GetTilesAt(1, 6);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(7));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(26 * 3));
+            tiles = mesh.GetTilesAt(6, 2);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(1));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(4 * 3));
+            tiles = mesh.GetTilesAt(7, 6);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(8));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(24 * 3));
+        }
 
-        DtNavMesh mesh = DtMeshSetReader.Read(br, 6);
-        Assert.That(mesh.MaxTiles, Is.EqualTo(128));
-        Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
-        Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
-        List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(7 * 3));
-        tiles = mesh.GetTilesAt(2, 9);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(9 * 3));
-        tiles = mesh.GetTilesAt(4, 3);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(3));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(6 * 3));
-        tiles = mesh.GetTilesAt(2, 8);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(5));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(17 * 3));
-    }
+        [Test]
+        public void TestDungeon()
+        {
+            byte[] @is = RcResources.Load("dungeon_all_tiles_navmesh.bin");
+            using var ms = new MemoryStream(@is);
+            using var br = new BinaryReader(ms);
 
-    [Test]
-    public void TestDungeon32Bit()
-    {
-        byte[] @is = RcResources.Load("dungeon_all_tiles_navmesh_32bit.bin");
-        using var ms = new MemoryStream(@is);
-        using var br = new BinaryReader(ms);
+            DtNavMesh mesh = DtMeshSetReader.Read(br, 6);
+            Assert.That(mesh.MaxTiles, Is.EqualTo(128));
+            Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
+            Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
+            List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(7 * 3));
+            tiles = mesh.GetTilesAt(2, 9);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(9 * 3));
+            tiles = mesh.GetTilesAt(4, 3);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(3));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(6 * 3));
+            tiles = mesh.GetTilesAt(2, 8);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(5));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(17 * 3));
+        }
 
-        DtNavMesh mesh = DtMeshSetReader.Read32Bit(br, 6);
-        Assert.That(mesh.MaxTiles, Is.EqualTo(128));
-        Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
-        Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
-        List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(7 * 3));
-        tiles = mesh.GetTilesAt(2, 9);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(9 * 3));
-        tiles = mesh.GetTilesAt(4, 3);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(3));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(6 * 3));
-        tiles = mesh.GetTilesAt(2, 8);
-        Assert.That(tiles.Count, Is.EqualTo(1));
-        Assert.That(tiles[0].data.polys, Has.Length.EqualTo(5));
-        Assert.That(tiles[0].data.verts, Has.Length.EqualTo(17 * 3));
+        [Test]
+        public void TestDungeon32Bit()
+        {
+            byte[] @is = RcResources.Load("dungeon_all_tiles_navmesh_32bit.bin");
+            using var ms = new MemoryStream(@is);
+            using var br = new BinaryReader(ms);
+
+            DtNavMesh mesh = DtMeshSetReader.Read32Bit(br, 6);
+            Assert.That(mesh.MaxTiles, Is.EqualTo(128));
+            Assert.That(mesh.GetParams().maxPolys, Is.EqualTo(0x8000));
+            Assert.That(mesh.GetParams().tileWidth, Is.EqualTo(9.6f).Within(0.001f));
+            List<DtMeshTile> tiles = mesh.GetTilesAt(6, 9);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(7 * 3));
+            tiles = mesh.GetTilesAt(2, 9);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(2));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(9 * 3));
+            tiles = mesh.GetTilesAt(4, 3);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(3));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(6 * 3));
+            tiles = mesh.GetTilesAt(2, 8);
+            Assert.That(tiles.Count, Is.EqualTo(1));
+            Assert.That(tiles[0].data.polys, Has.Length.EqualTo(5));
+            Assert.That(tiles[0].data.verts, Has.Length.EqualTo(17 * 3));
+        }
     }
 }
